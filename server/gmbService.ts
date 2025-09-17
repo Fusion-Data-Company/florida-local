@@ -1,0 +1,743 @@
+import { google } from 'googleapis';
+import { OAuth2Client } from 'google-auth-library';
+import crypto from 'crypto';
+import { storage } from './storage';
+import { InsertGmbToken, InsertGmbSyncHistory, InsertGmbReview } from '@shared/schema';
+import { gmbErrorHandler, GMBErrorType } from './gmbErrorHandler';
+
+// Environment variables for GMB API
+const GMB_CLIENT_ID = process.env.GMB_CLIENT_ID;
+const GMB_CLIENT_SECRET = process.env.GMB_CLIENT_SECRET;
+const GMB_REDIRECT_URI = process.env.GMB_REDIRECT_URI || `${process.env.REPLIT_URL || 'http://localhost:5000'}/api/gmb/oauth/callback`;
+
+// GMB API Scopes
+const GMB_SCOPES = [
+  'https://www.googleapis.com/auth/business.manage'
+];
+
+// Rate limiting configuration
+const RATE_LIMIT = {
+  maxRequests: 100,
+  windowMs: 60 * 1000, // 1 minute
+  requests: new Map<string, number[]>()
+};
+
+/**
+ * Google My Business API Service
+ * Handles OAuth 2.0, API calls, and data synchronization
+ */
+export class GMBService {
+  private oauth2Client: OAuth2Client;
+  private encryptionKey: string;
+
+  constructor() {
+    // In demo mode, GMB credentials are optional
+    const isDemoMode = !GMB_CLIENT_ID || !GMB_CLIENT_SECRET;
+    
+    if (isDemoMode) {
+      console.warn('GMB API credentials not configured. Running in demo mode.');
+      // Use dummy credentials for demo mode
+      this.oauth2Client = new OAuth2Client(
+        'demo-client-id',
+        'demo-client-secret',
+        GMB_REDIRECT_URI
+      );
+    } else {
+      this.oauth2Client = new OAuth2Client(
+        GMB_CLIENT_ID,
+        GMB_CLIENT_SECRET,
+        GMB_REDIRECT_URI
+      );
+    }
+
+    // Use a secure encryption key for token storage
+    this.encryptionKey = process.env.GMB_ENCRYPTION_KEY || crypto.randomBytes(32).toString('hex');
+  }
+
+  /**
+   * Check if GMB integration is available
+   */
+  public isAvailable(): boolean {
+    return !!(GMB_CLIENT_ID && GMB_CLIENT_SECRET);
+  }
+
+  /**
+   * Generate OAuth 2.0 authorization URL
+   */
+  generateAuthUrl(state?: string): string {
+    return this.oauth2Client.generateAuthUrl({
+      access_type: 'offline',
+      scope: GMB_SCOPES,
+      prompt: 'consent', // Forces refresh token
+      state: state, // Can include business ID for tracking
+    });
+  }
+
+  /**
+   * Exchange authorization code for tokens
+   */
+  async exchangeCodeForTokens(code: string, businessId: string, userId: string): Promise<void> {
+    if (!this.isAvailable()) {
+      throw new Error('GMB integration is not available in demo mode. Please configure GMB_CLIENT_ID and GMB_CLIENT_SECRET.');
+    }
+
+    return await gmbErrorHandler.withRetry(
+      async () => {
+        const { tokens } = await this.oauth2Client.getToken(code);
+        
+        if (!tokens.access_token || !tokens.refresh_token) {
+          throw new Error('Failed to obtain valid tokens from Google');
+        }
+
+        // Encrypt tokens before storage
+        const encryptedAccessToken = this.encryptToken(tokens.access_token);
+        const encryptedRefreshToken = this.encryptToken(tokens.refresh_token);
+
+        // Calculate expiration time
+        const expiresAt = new Date();
+        expiresAt.setSeconds(expiresAt.getSeconds() + (tokens.expiry_date ? (tokens.expiry_date - Date.now()) / 1000 : 3600));
+
+        const tokenData: InsertGmbToken = {
+          businessId,
+          userId,
+          accessToken: encryptedAccessToken,
+          refreshToken: encryptedRefreshToken,
+          tokenType: tokens.token_type || 'Bearer',
+          expiresAt,
+          scope: GMB_SCOPES.join(' '),
+          isActive: true
+        };
+
+        await storage.createGmbToken(tokenData);
+
+        // Update business GMB connection status
+        await storage.updateBusinessGmbStatus(businessId, {
+          gmbConnected: true,
+          gmbSyncStatus: 'connected'
+        });
+
+        // Log the connection event
+        await this.logSyncEvent(businessId, 'oauth_connect', 'success', {
+          message: 'Successfully connected to Google My Business'
+        });
+      },
+      { maxRetries: 2 },
+      { 
+        businessId, 
+        operation: 'oauth_connect',
+        userId 
+      }
+    );
+  }
+
+  /**
+   * Get valid access token for a business (refresh if needed)
+   */
+  async getValidAccessToken(businessId: string): Promise<string> {
+    const tokenRecord = await storage.getGmbToken(businessId);
+    
+    if (!tokenRecord || !tokenRecord.isActive) {
+      throw new Error('No active GMB token found for business');
+    }
+
+    // Check if token is expired
+    const now = new Date();
+    if (tokenRecord.expiresAt <= now) {
+      // Refresh the token
+      await this.refreshAccessToken(businessId);
+      return this.getValidAccessToken(businessId); // Recursive call with new token
+    }
+
+    return this.decryptToken(tokenRecord.accessToken);
+  }
+
+  /**
+   * Refresh access token using refresh token
+   */
+  private async refreshAccessToken(businessId: string): Promise<void> {
+    try {
+      const tokenRecord = await storage.getGmbToken(businessId);
+      
+      if (!tokenRecord) {
+        throw new Error('No token record found');
+      }
+
+      const refreshToken = this.decryptToken(tokenRecord.refreshToken);
+      
+      this.oauth2Client.setCredentials({
+        refresh_token: refreshToken
+      });
+
+      const { credentials } = await this.oauth2Client.refreshAccessToken();
+      
+      if (!credentials.access_token) {
+        throw new Error('Failed to refresh access token');
+      }
+
+      // Update token in database
+      const expiresAt = new Date();
+      expiresAt.setSeconds(expiresAt.getSeconds() + (credentials.expiry_date ? (credentials.expiry_date - Date.now()) / 1000 : 3600));
+
+      await storage.updateGmbToken(businessId, {
+        accessToken: this.encryptToken(credentials.access_token),
+        expiresAt,
+        updatedAt: new Date()
+      });
+
+    } catch (error: any) {
+      await this.logSyncEvent(businessId, 'token_refresh', 'error', {
+        error: error.message
+      });
+      
+      // Deactivate token if refresh fails
+      await storage.updateGmbToken(businessId, { isActive: false });
+      
+      throw new Error(`Failed to refresh access token: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get Google My Business accounts for authenticated user
+   */
+  async getBusinessAccounts(businessId: string): Promise<any[]> {
+    if (!this.isAvailable()) {
+      // Return demo data for development
+      return [
+        {
+          name: 'accounts/demo-account',
+          accountName: 'Demo Business Account',
+          role: 'OWNER',
+          state: 'VERIFIED'
+        }
+      ];
+    }
+
+    return await gmbErrorHandler.withRetry(
+      async () => {
+        await this.checkRateLimit(businessId);
+        
+        const accessToken = await this.getValidAccessToken(businessId);
+        
+        const response = await fetch('https://mybusinessaccountmanagement.googleapis.com/v1/accounts', {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          const error = new Error(`API request failed: ${response.status} ${response.statusText}`);
+          (error as any).response = { status: response.status, statusText: response.statusText };
+          throw error;
+        }
+
+        const data = await response.json();
+        return data.accounts || [];
+      },
+      { maxRetries: 3 },
+      { 
+        businessId, 
+        operation: 'get_accounts'
+      }
+    );
+  }
+
+  /**
+   * Get business locations for an account
+   */
+  async getBusinessLocations(businessId: string, accountName: string): Promise<any[]> {
+    return await gmbErrorHandler.withRetry(
+      async () => {
+        await this.checkRateLimit(businessId);
+        
+        const accessToken = await this.getValidAccessToken(businessId);
+        
+        const response = await fetch(`https://mybusinessbusinessinformation.googleapis.com/v1/${accountName}/locations`, {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          const error = new Error(`API request failed: ${response.status} ${response.statusText}`);
+          (error as any).response = { status: response.status, statusText: response.statusText };
+          throw error;
+        }
+
+        const data = await response.json();
+        return data.locations || [];
+      },
+      { maxRetries: 3 },
+      { 
+        businessId, 
+        operation: 'get_locations',
+        accountName 
+      }
+    );
+  }
+
+  /**
+   * Get detailed location information
+   */
+  async getLocationDetails(businessId: string, locationName: string): Promise<any> {
+    await this.checkRateLimit(businessId);
+    
+    try {
+      const accessToken = await this.getValidAccessToken(businessId);
+      
+      const response = await fetch(`https://mybusinessbusinessinformation.googleapis.com/v1/${locationName}`, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+      }
+
+      return await response.json();
+
+    } catch (error: any) {
+      await this.logSyncEvent(businessId, 'get_location_details', 'error', {
+        error: error.message
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Get reviews for a location
+   */
+  async getLocationReviews(businessId: string, locationName: string): Promise<any[]> {
+    return await gmbErrorHandler.withRetry(
+      async () => {
+        await this.checkRateLimit(businessId);
+        
+        const accessToken = await this.getValidAccessToken(businessId);
+        
+        const response = await fetch(`https://mybusiness.googleapis.com/v4/${locationName}/reviews`, {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          const error = new Error(`API request failed: ${response.status} ${response.statusText}`);
+          (error as any).response = { status: response.status, statusText: response.statusText };
+          throw error;
+        }
+
+        const data = await response.json();
+        return data.reviews || [];
+      },
+      { maxRetries: 3 },
+      { 
+        businessId, 
+        operation: 'get_reviews',
+        locationName 
+      }
+    );
+  }
+
+  /**
+   * Sync business data from GMB
+   */
+  async syncBusinessData(businessId: string): Promise<{ success: boolean; changes: any }> {
+    const startTime = Date.now();
+    let itemsProcessed = 0;
+    let itemsUpdated = 0;
+    let itemsErrors = 0;
+    const changes: any = {};
+
+    try {
+      await storage.updateBusinessGmbStatus(businessId, {
+        gmbSyncStatus: 'syncing',
+        gmbLastSyncAt: new Date()
+      });
+
+      // Get GMB accounts and find the matching location
+      const accounts = await this.getBusinessAccounts(businessId);
+      itemsProcessed++;
+
+      let matchedLocation = null;
+      for (const account of accounts) {
+        const locations = await this.getBusinessLocations(businessId, account.name);
+        itemsProcessed += locations.length;
+
+        // Try to match location with our business
+        for (const location of locations) {
+          if (await this.isLocationMatch(businessId, location)) {
+            matchedLocation = location;
+            break;
+          }
+        }
+        if (matchedLocation) break;
+      }
+
+      if (!matchedLocation) {
+        throw new Error('No matching GMB location found for this business');
+      }
+
+      // Get detailed location information
+      const locationDetails = await this.getLocationDetails(businessId, matchedLocation.name);
+      itemsProcessed++;
+
+      // Update business information
+      const businessUpdates = await this.mapGmbDataToBusiness(locationDetails);
+      if (Object.keys(businessUpdates).length > 0) {
+        await storage.updateBusiness(businessId, businessUpdates);
+        changes.businessInfo = businessUpdates;
+        itemsUpdated++;
+      }
+
+      // Sync reviews
+      const reviews = await this.getLocationReviews(businessId, matchedLocation.name);
+      const newReviews = await this.syncReviews(businessId, reviews);
+      if (newReviews.length > 0) {
+        changes.reviews = { newCount: newReviews.length };
+        itemsUpdated += newReviews.length;
+      }
+      itemsProcessed += reviews.length;
+
+      // Update business status
+      await storage.updateBusinessGmbStatus(businessId, {
+        gmbVerified: true,
+        gmbConnected: true,
+        gmbAccountId: matchedLocation.name.split('/')[1],
+        gmbLocationId: matchedLocation.name.split('/')[3],
+        gmbSyncStatus: 'success',
+        gmbLastSyncAt: new Date(),
+        gmbLastError: null,
+        gmbLastErrorAt: null
+      });
+
+      const duration = Date.now() - startTime;
+      
+      await this.logSyncEvent(businessId, 'full_sync', 'success', {
+        changes,
+        itemsProcessed,
+        itemsUpdated,
+        itemsErrors,
+        durationMs: duration
+      });
+
+      return { success: true, changes };
+
+    } catch (error: any) {
+      itemsErrors++;
+      const duration = Date.now() - startTime;
+
+      await storage.updateBusinessGmbStatus(businessId, {
+        gmbSyncStatus: 'error',
+        gmbLastError: error.message,
+        gmbLastErrorAt: new Date()
+      });
+
+      await this.logSyncEvent(businessId, 'full_sync', 'error', {
+        error: error.message,
+        itemsProcessed,
+        itemsUpdated,
+        itemsErrors,
+        durationMs: duration
+      });
+
+      throw error;
+    }
+  }
+
+  /**
+   * Check if GMB location matches our business
+   */
+  private async isLocationMatch(businessId: string, gmbLocation: any): Promise<boolean> {
+    const business = await storage.getBusinessById(businessId);
+    if (!business) return false;
+
+    // Check by Google Place ID if available
+    if (business.googlePlaceId && gmbLocation.metadata?.placeId) {
+      return business.googlePlaceId === gmbLocation.metadata.placeId;
+    }
+
+    // Check by name and address
+    const businessName = business.name.toLowerCase().trim();
+    const gmbName = gmbLocation.title?.toLowerCase().trim() || '';
+    
+    const nameMatch = businessName === gmbName || 
+                     businessName.includes(gmbName) || 
+                     gmbName.includes(businessName);
+
+    // Basic address matching (could be enhanced)
+    const businessAddress = business.address?.toLowerCase().trim() || '';
+    const gmbAddress = gmbLocation.storefrontAddress?.addressLines?.join(' ').toLowerCase().trim() || '';
+    
+    const addressMatch = businessAddress && gmbAddress && 
+                        (businessAddress.includes(gmbAddress) || gmbAddress.includes(businessAddress));
+
+    return nameMatch && (addressMatch || !businessAddress);
+  }
+
+  /**
+   * Map GMB location data to our business schema
+   */
+  private async mapGmbDataToBusiness(gmbLocation: any): Promise<any> {
+    const updates: any = {};
+    
+    // Basic information
+    if (gmbLocation.title) {
+      updates.name = gmbLocation.title;
+    }
+    
+    if (gmbLocation.phoneNumbers?.primary) {
+      updates.phone = gmbLocation.phoneNumbers.primary;
+    }
+    
+    if (gmbLocation.websiteUri) {
+      updates.website = gmbLocation.websiteUri;
+    }
+
+    // Address
+    if (gmbLocation.storefrontAddress) {
+      const address = gmbLocation.storefrontAddress;
+      const fullAddress = [
+        address.addressLines?.join(', '),
+        address.locality,
+        address.administrativeArea,
+        address.postalCode
+      ].filter(Boolean).join(', ');
+      
+      updates.address = fullAddress;
+      updates.location = `${address.locality}, ${address.administrativeArea}`;
+    }
+
+    // Operating hours
+    if (gmbLocation.regularHours) {
+      updates.operatingHours = this.formatOperatingHours(gmbLocation.regularHours);
+    }
+
+    // Categories
+    if (gmbLocation.categories?.primary) {
+      updates.category = gmbLocation.categories.primary.displayName;
+    }
+
+    // Mark data source
+    updates.gmbDataSources = {
+      name: gmbLocation.title ? 'gmb' : 'local',
+      phone: gmbLocation.phoneNumbers?.primary ? 'gmb' : 'local',
+      website: gmbLocation.websiteUri ? 'gmb' : 'local',
+      address: gmbLocation.storefrontAddress ? 'gmb' : 'local',
+      operatingHours: gmbLocation.regularHours ? 'gmb' : 'local',
+      category: gmbLocation.categories?.primary ? 'gmb' : 'local'
+    };
+
+    return updates;
+  }
+
+  /**
+   * Format operating hours from GMB format
+   */
+  private formatOperatingHours(regularHours: any): any {
+    const formatted: any = {};
+    
+    for (const period of regularHours.periods || []) {
+      if (period.openDay && period.openTime && period.closeTime) {
+        const day = this.mapGmbDayToWeekday(period.openDay);
+        formatted[day] = {
+          open: period.openTime,
+          close: period.closeTime,
+          isClosed: false
+        };
+      }
+    }
+
+    return formatted;
+  }
+
+  /**
+   * Map GMB day format to our weekday format
+   */
+  private mapGmbDayToWeekday(gmbDay: string): string {
+    const mapping: Record<string, string> = {
+      'MONDAY': 'monday',
+      'TUESDAY': 'tuesday', 
+      'WEDNESDAY': 'wednesday',
+      'THURSDAY': 'thursday',
+      'FRIDAY': 'friday',
+      'SATURDAY': 'saturday',
+      'SUNDAY': 'sunday'
+    };
+    return mapping[gmbDay] || gmbDay.toLowerCase();
+  }
+
+  /**
+   * Sync reviews from GMB
+   */
+  private async syncReviews(businessId: string, gmbReviews: any[]): Promise<any[]> {
+    const newReviews: any[] = [];
+
+    for (const gmbReview of gmbReviews) {
+      try {
+        // Check if review already exists
+        const existingReview = await storage.getGmbReviewByGmbId(businessId, gmbReview.reviewId);
+        
+        if (!existingReview) {
+          const reviewData: InsertGmbReview = {
+            businessId,
+            gmbReviewId: gmbReview.reviewId,
+            reviewerName: gmbReview.reviewer?.displayName,
+            reviewerPhotoUrl: gmbReview.reviewer?.profilePhotoUrl,
+            rating: gmbReview.starRating,
+            comment: gmbReview.comment,
+            reviewTime: new Date(gmbReview.createTime),
+            replyComment: gmbReview.reviewReply?.comment,
+            replyTime: gmbReview.reviewReply?.updateTime ? new Date(gmbReview.reviewReply.updateTime) : null,
+            gmbCreateTime: new Date(gmbReview.createTime),
+            gmbUpdateTime: new Date(gmbReview.updateTime)
+          };
+
+          await storage.createGmbReview(reviewData);
+          newReviews.push(reviewData);
+        } else {
+          // Update existing review if changed
+          await storage.updateGmbReview(existingReview.id, {
+            lastSyncedAt: new Date()
+          });
+        }
+      } catch (error) {
+        console.error('Error syncing review:', error);
+      }
+    }
+
+    return newReviews;
+  }
+
+  /**
+   * Rate limiting check
+   */
+  private async checkRateLimit(businessId: string): Promise<void> {
+    const now = Date.now();
+    const windowStart = now - RATE_LIMIT.windowMs;
+    
+    if (!RATE_LIMIT.requests.has(businessId)) {
+      RATE_LIMIT.requests.set(businessId, []);
+    }
+
+    const requests = RATE_LIMIT.requests.get(businessId)!;
+    
+    // Remove old requests outside the window
+    const validRequests = requests.filter(time => time > windowStart);
+    
+    if (validRequests.length >= RATE_LIMIT.maxRequests) {
+      throw new Error('Rate limit exceeded. Please try again later.');
+    }
+
+    validRequests.push(now);
+    RATE_LIMIT.requests.set(businessId, validRequests);
+  }
+
+  /**
+   * Log sync events for audit trail
+   */
+  private async logSyncEvent(
+    businessId: string, 
+    syncType: string, 
+    status: 'success' | 'error' | 'partial', 
+    details: any
+  ): Promise<void> {
+    try {
+      const syncData: InsertGmbSyncHistory = {
+        businessId,
+        syncType,
+        status,
+        dataTypes: details.changes ? Object.keys(details.changes) : [],
+        changes: details.changes || null,
+        errorDetails: details.error || null,
+        itemsProcessed: details.itemsProcessed || 0,
+        itemsUpdated: details.itemsUpdated || 0,
+        itemsErrors: details.itemsErrors || 0,
+        durationMs: details.durationMs || null,
+        triggeredBy: 'manual',
+        gmbApiVersion: 'v4.9'
+      };
+
+      await storage.createGmbSyncHistory(syncData);
+    } catch (error) {
+      console.error('Failed to log sync event:', error);
+    }
+  }
+
+  /**
+   * Encrypt token for secure storage
+   */
+  private encryptToken(token: string): string {
+    const cipher = crypto.createCipher('aes-256-cbc', this.encryptionKey);
+    let encrypted = cipher.update(token, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    return encrypted;
+  }
+
+  /**
+   * Decrypt token from storage
+   */
+  private decryptToken(encryptedToken: string): string {
+    const decipher = crypto.createDecipher('aes-256-cbc', this.encryptionKey);
+    let decrypted = decipher.update(encryptedToken, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
+  }
+
+  /**
+   * Disconnect GMB integration for a business
+   */
+  async disconnectBusiness(businessId: string): Promise<void> {
+    try {
+      // Deactivate token
+      await storage.updateGmbToken(businessId, { isActive: false });
+      
+      // Update business status
+      await storage.updateBusinessGmbStatus(businessId, {
+        gmbConnected: false,
+        gmbVerified: false,
+        gmbSyncStatus: 'disconnected',
+        gmbAccountId: null,
+        gmbLocationId: null
+      });
+
+      await this.logSyncEvent(businessId, 'disconnect', 'success', {
+        message: 'Successfully disconnected from Google My Business'
+      });
+
+    } catch (error: any) {
+      await this.logSyncEvent(businessId, 'disconnect', 'error', {
+        error: error.message
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Get sync status for a business
+   */
+  async getSyncStatus(businessId: string): Promise<any> {
+    const business = await storage.getBusinessById(businessId);
+    const token = await storage.getGmbToken(businessId);
+    const recentSyncHistory = await storage.getRecentGmbSyncHistory(businessId, 5);
+
+    return {
+      connected: business?.gmbConnected || false,
+      verified: business?.gmbVerified || false,
+      syncStatus: business?.gmbSyncStatus || 'none',
+      lastSync: business?.gmbLastSyncAt,
+      lastError: business?.gmbLastError,
+      lastErrorAt: business?.gmbLastErrorAt,
+      tokenValid: token?.isActive && token.expiresAt > new Date(),
+      accountId: business?.gmbAccountId,
+      locationId: business?.gmbLocationId,
+      recentHistory: recentSyncHistory
+    };
+  }
+}
+
+// Export singleton instance
+export const gmbService = new GMBService();

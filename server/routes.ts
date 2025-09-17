@@ -10,6 +10,11 @@ import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { ObjectPermission } from "./objectAcl";
 import Stripe from "stripe";
 
+// GMB Integration Services
+import { gmbService } from "./gmbService";
+import { businessVerificationService } from "./businessVerificationService";
+import { dataSyncService } from "./dataSyncService";
+
 // Initialize Stripe - from the blueprint integration
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
@@ -152,6 +157,391 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to unfollow business" });
     }
   });
+
+  // =================== GOOGLE MY BUSINESS INTEGRATION ROUTES ===================
+
+  // Initiate GMB OAuth connection for a business
+  app.post('/api/businesses/:id/gmb/connect', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized to connect GMB for this business" });
+      }
+
+      // Generate OAuth URL with business ID as state parameter
+      const authUrl = gmbService.generateAuthUrl(businessId);
+      
+      res.json({ 
+        success: true,
+        authUrl,
+        message: "Redirect user to this URL to authorize GMB access"
+      });
+    } catch (error: any) {
+      console.error("Error initiating GMB connection:", error);
+      res.status(500).json({ message: error.message || "Failed to initiate GMB connection" });
+    }
+  });
+
+  // Handle GMB OAuth callback
+  app.get('/api/gmb/oauth/callback', async (req, res) => {
+    try {
+      const { code, state: businessId, error } = req.query;
+      
+      if (error) {
+        return res.status(400).json({ 
+          message: "OAuth authorization failed", 
+          error: error as string 
+        });
+      }
+      
+      if (!code || !businessId) {
+        return res.status(400).json({ 
+          message: "Missing authorization code or business ID" 
+        });
+      }
+
+      // Get business to find owner
+      const business = await storage.getBusinessById(businessId as string);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+
+      // Exchange code for tokens
+      await gmbService.exchangeCodeForTokens(
+        code as string, 
+        businessId as string, 
+        business.ownerId
+      );
+
+      // Redirect to business profile page with success message
+      res.redirect(`/business/${businessId}?gmb=connected`);
+    } catch (error: any) {
+      console.error("Error in GMB OAuth callback:", error);
+      res.status(500).json({ message: error.message || "Failed to complete GMB connection" });
+    }
+  });
+
+  // Search for GMB listings for business verification
+  app.get('/api/gmb/search', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const { businessId } = req.query;
+      
+      if (!businessId) {
+        return res.status(400).json({ message: "Business ID is required" });
+      }
+
+      const userId = req.user.claims.sub;
+      
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId as string);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized to search GMB for this business" });
+      }
+
+      // Search for GMB matches
+      const searchResults = await businessVerificationService.searchGMBMatches(businessId as string);
+      
+      res.json(searchResults);
+    } catch (error: any) {
+      console.error("Error searching GMB listings:", error);
+      res.status(500).json({ message: error.message || "Failed to search GMB listings" });
+    }
+  });
+
+  // Initiate business verification with selected GMB listing
+  app.post('/api/businesses/:id/gmb/verify', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      const { gmbLocationName } = req.body;
+      
+      if (!gmbLocationName) {
+        return res.status(400).json({ message: "GMB location name is required" });
+      }
+
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized to verify this business" });
+      }
+
+      // Initiate verification process
+      const result = await businessVerificationService.initiateVerification(
+        businessId, 
+        gmbLocationName
+      );
+      
+      res.json(result);
+    } catch (error: any) {
+      console.error("Error initiating business verification:", error);
+      res.status(500).json({ message: error.message || "Failed to initiate verification" });
+    }
+  });
+
+  // Get GMB verification and connection status
+  app.get('/api/businesses/:id/gmb/status', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      
+      // Verify business ownership (allow read access for any authenticated user)
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      // For detailed status, require ownership
+      const isOwner = business.ownerId === userId;
+      
+      if (isOwner) {
+        // Full status for owners
+        const status = await businessVerificationService.getVerificationStatus(businessId);
+        const syncStatus = await gmbService.getSyncStatus(businessId);
+        
+        res.json({
+          ...status,
+          syncDetails: syncStatus
+        });
+      } else {
+        // Public status for non-owners
+        res.json({
+          isVerified: business.gmbVerified || false,
+          isConnected: business.gmbConnected || false
+        });
+      }
+    } catch (error: any) {
+      console.error("Error fetching GMB status:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch GMB status" });
+    }
+  });
+
+  // Manual data synchronization trigger
+  app.post('/api/businesses/:id/gmb/sync', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      const { 
+        forceUpdate = false, 
+        syncPhotos = true, 
+        syncReviews = true, 
+        syncBusinessInfo = true,
+        conflictResolution = 'merge'
+      } = req.body;
+      
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized to sync this business" });
+      }
+
+      // Check if business is connected to GMB
+      if (!business.gmbConnected) {
+        return res.status(400).json({ 
+          message: "Business is not connected to Google My Business" 
+        });
+      }
+
+      // Perform data synchronization
+      const syncResult = await dataSyncService.performFullSync(businessId, {
+        forceUpdate,
+        syncPhotos,
+        syncReviews,
+        syncBusinessInfo,
+        conflictResolution
+      });
+      
+      res.json(syncResult);
+    } catch (error: any) {
+      console.error("Error syncing business data:", error);
+      res.status(500).json({ message: error.message || "Failed to sync business data" });
+    }
+  });
+
+  // Get data synchronization status and history
+  app.get('/api/businesses/:id/gmb/sync/status', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized to view sync status for this business" });
+      }
+
+      // Get sync status and recent history
+      const syncStatus = await gmbService.getSyncStatus(businessId);
+      
+      res.json(syncStatus);
+    } catch (error: any) {
+      console.error("Error fetching sync status:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch sync status" });
+    }
+  });
+
+  // Get GMB reviews for a business
+  app.get('/api/businesses/:id/gmb/reviews', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      
+      // Verify business ownership (or allow public read if specified)
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      // Allow owners and public access to reviews
+      const isOwner = business.ownerId === userId;
+      
+      const reviews = await storage.getGmbReviewsByBusiness(businessId);
+      
+      // Filter sensitive information for non-owners if needed
+      const filteredReviews = reviews.map(review => ({
+        id: review.id,
+        reviewerName: review.reviewerName,
+        reviewerPhotoUrl: review.reviewerPhotoUrl,
+        rating: review.rating,
+        comment: review.comment,
+        reviewTime: review.reviewTime,
+        replyComment: review.replyComment,
+        replyTime: review.replyTime,
+        // Only include GMB IDs for owners
+        ...(isOwner && { 
+          gmbReviewId: review.gmbReviewId,
+          gmbCreateTime: review.gmbCreateTime,
+          gmbUpdateTime: review.gmbUpdateTime 
+        })
+      }));
+      
+      res.json(filteredReviews);
+    } catch (error: any) {
+      console.error("Error fetching GMB reviews:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch GMB reviews" });
+    }
+  });
+
+  // Disconnect GMB integration
+  app.delete('/api/businesses/:id/gmb/disconnect', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized to disconnect GMB for this business" });
+      }
+
+      // Disconnect GMB integration
+      await gmbService.disconnectBusiness(businessId);
+      
+      res.json({ 
+        success: true,
+        message: "Successfully disconnected from Google My Business" 
+      });
+    } catch (error: any) {
+      console.error("Error disconnecting GMB:", error);
+      res.status(500).json({ message: error.message || "Failed to disconnect GMB" });
+    }
+  });
+
+  // GMB Webhook endpoint for real-time updates (if Google supports it)
+  app.post('/api/gmb/webhook', async (req, res) => {
+    try {
+      // Verify webhook signature if Google provides one
+      // This is a placeholder for webhook implementation
+      
+      const payload = req.body;
+      console.log('Received GMB webhook:', payload);
+      
+      // Process webhook payload
+      // In a real implementation, you'd:
+      // 1. Verify the webhook signature
+      // 2. Parse the payload
+      // 3. Trigger appropriate sync operations
+      // 4. Update business data based on webhook content
+      
+      res.status(200).json({ success: true });
+    } catch (error: any) {
+      console.error("Error processing GMB webhook:", error);
+      res.status(500).json({ message: "Failed to process webhook" });
+    }
+  });
+
+  // Admin endpoint to get GMB integration statistics
+  app.get('/api/admin/gmb/stats', isAdmin, adminRateLimit, async (req: any, res) => {
+    try {
+      // Get GMB integration statistics
+      const stats = await storage.getGMBIntegrationStats();
+      
+      res.json(stats);
+    } catch (error: any) {
+      console.error("Error fetching GMB stats:", error);
+      res.status(500).json({ message: "Failed to fetch GMB statistics" });
+    }
+  });
+
+  // GMB Health Check endpoint for monitoring
+  app.get('/api/gmb/health', async (req, res) => {
+    try {
+      // Import gmbErrorHandler here to avoid circular dependencies
+      const { gmbErrorHandler } = await import('./gmbErrorHandler');
+      
+      const healthStatus = gmbErrorHandler.getHealthStatus();
+      const integrationStats = await storage.getGMBIntegrationStats();
+      
+      const overallHealth = {
+        ...healthStatus,
+        integrationStats,
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        version: '1.0.0'
+      };
+      
+      const httpStatus = healthStatus.status === 'healthy' ? 200 : 
+                        healthStatus.status === 'degraded' ? 200 : 503;
+      
+      res.status(httpStatus).json(overallHealth);
+    } catch (error: any) {
+      console.error("Error in GMB health check:", error);
+      res.status(503).json({ 
+        status: 'unhealthy',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  // =================== END GMB INTEGRATION ROUTES ===================
 
   app.get('/api/businesses/:id/following', isAuthenticated, async (req: any, res) => {
     try {

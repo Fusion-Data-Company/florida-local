@@ -57,6 +57,17 @@ export const businesses = pgTable("businesses", {
   googlePlaceId: varchar("google_place_id"),
   isVerified: boolean("is_verified").default(false),
   isActive: boolean("is_active").default(true),
+  
+  // Google My Business Integration Fields
+  gmbVerified: boolean("gmb_verified").default(false),
+  gmbConnected: boolean("gmb_connected").default(false),
+  gmbAccountId: varchar("gmb_account_id"),
+  gmbLocationId: varchar("gmb_location_id"),
+  gmbSyncStatus: varchar("gmb_sync_status", { length: 20 }).default("none"), // none, pending, success, error
+  gmbLastSyncAt: timestamp("gmb_last_sync_at"),
+  gmbLastErrorAt: timestamp("gmb_last_error_at"),
+  gmbLastError: text("gmb_last_error"),
+  gmbDataSources: jsonb("gmb_data_sources"), // Track which fields come from GMB
   rating: decimal("rating", { precision: 3, scale: 2 }).default("0"),
   reviewCount: integer("review_count").default(0),
   followerCount: integer("follower_count").default(0),
@@ -251,6 +262,62 @@ export const spotlightVotes = pgTable("spotlight_votes", {
   uniqueIndex("idx_unique_user_month_vote").on(table.userId, table.month)
 ]);
 
+// Google My Business OAuth tokens (secure storage)
+export const gmbTokens = pgTable("gmb_tokens", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  accessToken: text("access_token").notNull(), // Encrypted in storage
+  refreshToken: text("refresh_token").notNull(), // Encrypted in storage
+  tokenType: varchar("token_type", { length: 20 }).default("Bearer"),
+  expiresAt: timestamp("expires_at").notNull(),
+  scope: text("scope"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  uniqueIndex("idx_unique_business_gmb_token").on(table.businessId)
+]);
+
+// GMB sync history and audit trail
+export const gmbSyncHistory = pgTable("gmb_sync_history", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  syncType: varchar("sync_type", { length: 30 }).notNull(), // full, partial, reviews, photos, info
+  status: varchar("status", { length: 20 }).notNull(), // success, error, partial
+  dataTypes: jsonb("data_types"), // Array of synced data types
+  changes: jsonb("changes"), // Summary of changes made
+  errorDetails: text("error_details"),
+  itemsProcessed: integer("items_processed").default(0),
+  itemsUpdated: integer("items_updated").default(0),
+  itemsErrors: integer("items_errors").default(0),
+  durationMs: integer("duration_ms"),
+  triggeredBy: varchar("triggered_by", { length: 20 }).default("manual"), // manual, scheduled, webhook
+  gmbApiVersion: varchar("gmb_api_version", { length: 10 }),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// GMB imported reviews
+export const gmbReviews = pgTable("gmb_reviews", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  gmbReviewId: varchar("gmb_review_id").notNull(), // Google's review ID
+  reviewerName: varchar("reviewer_name", { length: 255 }),
+  reviewerPhotoUrl: varchar("reviewer_photo_url"),
+  rating: integer("rating").notNull(), // 1-5 stars
+  comment: text("comment"),
+  reviewTime: timestamp("review_time").notNull(),
+  replyComment: text("reply_comment"),
+  replyTime: timestamp("reply_time"),
+  gmbCreateTime: timestamp("gmb_create_time").notNull(),
+  gmbUpdateTime: timestamp("gmb_update_time").notNull(),
+  isVisible: boolean("is_visible").default(true),
+  importedAt: timestamp("imported_at").defaultNow(),
+  lastSyncedAt: timestamp("last_synced_at").defaultNow(),
+}, (table) => [
+  uniqueIndex("idx_unique_gmb_review").on(table.businessId, table.gmbReviewId)
+]);
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   businesses: many(businesses),
@@ -278,6 +345,9 @@ export const businessesRelations = relations(businesses, ({ one, many }) => ({
   spotlightVotes: many(spotlightVotes),
   sentMessages: many(messages, { relationName: "senderBusiness" }),
   receivedMessages: many(messages, { relationName: "receiverBusiness" }),
+  gmbTokens: one(gmbTokens),
+  gmbSyncHistory: many(gmbSyncHistory),
+  gmbReviews: many(gmbReviews),
 }));
 
 export const productsRelations = relations(products, ({ one, many }) => ({
@@ -424,6 +494,32 @@ export const spotlightVotesRelations = relations(spotlightVotes, ({ one }) => ({
   }),
 }));
 
+// GMB Relations
+export const gmbTokensRelations = relations(gmbTokens, ({ one }) => ({
+  business: one(businesses, {
+    fields: [gmbTokens.businessId],
+    references: [businesses.id],
+  }),
+  user: one(users, {
+    fields: [gmbTokens.userId],
+    references: [users.id],
+  }),
+}));
+
+export const gmbSyncHistoryRelations = relations(gmbSyncHistory, ({ one }) => ({
+  business: one(businesses, {
+    fields: [gmbSyncHistory.businessId],
+    references: [businesses.id],
+  }),
+}));
+
+export const gmbReviewsRelations = relations(gmbReviews, ({ one }) => ({
+  business: one(businesses, {
+    fields: [gmbReviews.businessId],
+    references: [businesses.id],
+  }),
+}));
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -505,6 +601,24 @@ export const insertSpotlightVoteSchema = createInsertSchema(spotlightVotes).omit
   createdAt: true,
 });
 
+// GMB Insert Schemas
+export const insertGmbTokenSchema = createInsertSchema(gmbTokens).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertGmbSyncHistorySchema = createInsertSchema(gmbSyncHistory).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertGmbReviewSchema = createInsertSchema(gmbReviews).omit({
+  id: true,
+  importedAt: true,
+  lastSyncedAt: true,
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -532,3 +646,11 @@ export type EngagementMetrics = typeof engagementMetrics.$inferSelect;
 export type InsertEngagementMetrics = z.infer<typeof insertEngagementMetricsSchema>;
 export type SpotlightVote = typeof spotlightVotes.$inferSelect;
 export type InsertSpotlightVote = z.infer<typeof insertSpotlightVoteSchema>;
+
+// GMB Types
+export type GmbToken = typeof gmbTokens.$inferSelect;
+export type InsertGmbToken = z.infer<typeof insertGmbTokenSchema>;
+export type GmbSyncHistory = typeof gmbSyncHistory.$inferSelect;
+export type InsertGmbSyncHistory = z.infer<typeof insertGmbSyncHistorySchema>;
+export type GmbReview = typeof gmbReviews.$inferSelect;
+export type InsertGmbReview = z.infer<typeof insertGmbReviewSchema>;

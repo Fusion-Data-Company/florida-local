@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams, useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Business, Product, Post } from "@shared/schema";
@@ -10,13 +11,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { UserPlus, UserMinus, MessageCircle, Edit3 } from "lucide-react";
+import { UserPlus, UserMinus, MessageCircle, Edit3, Clock, MapPin, Phone, Globe } from "lucide-react";
+import { GMBVerificationBadge, GMBConnectionFlow, GMBReviewsSection, GMBDataAttribution } from "@/components/gmb-integration";
 
 export default function BusinessProfile() {
   const { id } = useParams() as { id: string };
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
+  const [activeTab, setActiveTab] = useState<'posts' | 'products' | 'reviews' | 'about'>('posts');
 
   const { data: business, isLoading } = useQuery<Business>({
     queryKey: ['/api/businesses', id],
@@ -169,6 +172,7 @@ export default function BusinessProfile() {
                             <i className="fas fa-check-circle mr-1"></i>Verified
                           </Badge>
                         )}
+                        <GMBVerificationBadge business={business} />
                       </div>
                     </div>
 
@@ -255,79 +259,251 @@ export default function BusinessProfile() {
                 </div>
               )}
 
-              {/* Contact Info */}
+              {/* Contact Info & Hours */}
               <div className="mt-6 pt-6 border-t border-border">
-                <div className="grid md:grid-cols-2 gap-4">
-                  {business.phone && (
-                    <div className="flex items-center space-x-2">
-                      <i className="fas fa-phone text-primary"></i>
-                      <span>{business.phone}</span>
-                    </div>
-                  )}
-                  {business.website && (
-                    <div className="flex items-center space-x-2">
-                      <i className="fas fa-globe text-primary"></i>
-                      <a href={business.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                        Visit Website
-                      </a>
-                    </div>
-                  )}
-                  {business.address && (
-                    <div className="flex items-center space-x-2">
-                      <i className="fas fa-map-marker-alt text-primary"></i>
-                      <span>{business.address}</span>
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* Contact Information */}
+                  <div className="space-y-3">
+                    <h3 className="font-semibold text-foreground">Contact Information</h3>
+                    {business.phone && (
+                      <div className="flex items-center space-x-2">
+                        <Phone className="h-4 w-4 text-primary" />
+                        <span>{business.phone}</span>
+                      </div>
+                    )}
+                    {business.website && (
+                      <div className="flex items-center space-x-2">
+                        <Globe className="h-4 w-4 text-primary" />
+                        <a href={business.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                          Visit Website
+                        </a>
+                      </div>
+                    )}
+                    {business.address && (
+                      <div className="flex items-center space-x-2">
+                        <MapPin className="h-4 w-4 text-primary" />
+                        <span>{business.address}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Business Hours */}
+                  {business.operatingHours && (
+                    <div className="space-y-3">
+                      <h3 className="font-semibold text-foreground flex items-center">
+                        <Clock className="h-4 w-4 mr-2" />
+                        Business Hours
+                      </h3>
+                      <div className="space-y-1 text-sm">
+                        {Object.entries(business.operatingHours as any).map(([day, hours]: [string, any]) => (
+                          <div key={day} className="flex justify-between">
+                            <span className="capitalize">{day}:</span>
+                            <span className={hours?.isClosed ? 'text-muted-foreground' : ''}>
+                              {hours?.isClosed ? 'Closed' : `${hours?.open} - ${hours?.close}`}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
+
+                {/* GMB Data Attribution */}
+                <GMBDataAttribution business={business} />
               </div>
             </div>
           </div>
         </div>
+        
+        {/* GMB Connection Flow - Only for owners */}
+        {isOwner && (
+          <div className="container mx-auto px-4">
+            <GMBConnectionFlow business={business} isOwner={isOwner} />
+          </div>
+        )}
       </div>
 
       {/* Content Tabs */}
       <div className="container mx-auto px-4 py-8">
         <div className="flex space-x-1 mb-8 overflow-x-auto">
-          <Button variant="default" className="whitespace-nowrap" data-testid="tab-posts">
+          <Button 
+            variant={activeTab === 'posts' ? 'default' : 'outline'} 
+            className="whitespace-nowrap" 
+            onClick={() => setActiveTab('posts')}
+            data-testid="tab-posts"
+          >
             Posts ({posts.length})
           </Button>
-          <Button variant="outline" className="whitespace-nowrap" data-testid="tab-products">
+          <Button 
+            variant={activeTab === 'products' ? 'default' : 'outline'} 
+            className="whitespace-nowrap" 
+            onClick={() => setActiveTab('products')}
+            data-testid="tab-products"
+          >
             Products ({products.length})
           </Button>
-          <Button variant="outline" className="whitespace-nowrap" data-testid="tab-about">
+          <Button 
+            variant={activeTab === 'reviews' ? 'default' : 'outline'} 
+            className="whitespace-nowrap" 
+            onClick={() => setActiveTab('reviews')}
+            data-testid="tab-reviews"
+          >
+            Reviews
+          </Button>
+          <Button 
+            variant={activeTab === 'about' ? 'default' : 'outline'} 
+            className="whitespace-nowrap" 
+            onClick={() => setActiveTab('about')}
+            data-testid="tab-about"
+          >
             About
           </Button>
         </div>
 
-        {/* Posts Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {posts.length > 0 ? (
-            posts.map((post: any) => (
-              <Card key={post.id} className="hover-lift">
-                <CardContent className="p-4">
-                  <p className="text-foreground mb-3">{post.content}</p>
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <span>{new Date(post.createdAt).toLocaleDateString()}</span>
-                    <div className="flex space-x-4">
-                      <span><i className="fas fa-heart mr-1"></i>{post.likeCount || 0}</span>
-                      <span><i className="fas fa-comment mr-1"></i>{post.commentCount || 0}</span>
+        {/* Tab Content */}
+        {activeTab === 'posts' && (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {posts.length > 0 ? (
+              posts.map((post: any) => (
+                <Card key={post.id} className="hover-lift">
+                  <CardContent className="p-4">
+                    <p className="text-foreground mb-3">{post.content}</p>
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+                      <div className="flex space-x-4">
+                        <span><i className="fas fa-heart mr-1"></i>{post.likeCount || 0}</span>
+                        <span><i className="fas fa-comment mr-1"></i>{post.commentCount || 0}</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-12">
+                <i className="fas fa-file-alt text-4xl text-muted-foreground mb-4"></i>
+                <p className="text-muted-foreground">No posts yet.</p>
+                {isOwner && (
+                  <Button className="mt-4" data-testid="button-create-first-post">
+                    Create Your First Post
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'products' && (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {products.length > 0 ? (
+              products.map((product: any) => (
+                <Card key={product.id} className="hover-lift" data-testid={`product-${product.id}`}>
+                  <CardContent className="p-4">
+                    {product.imageUrl && (
+                      <img 
+                        src={product.imageUrl} 
+                        alt={product.name}
+                        className="w-full h-48 object-cover rounded-lg mb-3"
+                      />
+                    )}
+                    <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
+                    {product.description && (
+                      <p className="text-muted-foreground text-sm mb-3">{product.description}</p>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-primary text-lg">
+                        ${parseFloat(product.price).toFixed(2)}
+                      </span>
+                      {product.category && (
+                        <Badge variant="secondary">{product.category}</Badge>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-12">
+                <i className="fas fa-box text-4xl text-muted-foreground mb-4"></i>
+                <p className="text-muted-foreground">No products listed yet.</p>
+                {isOwner && (
+                  <Button className="mt-4" data-testid="button-add-first-product">
+                    Add Your First Product
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'reviews' && (
+          <GMBReviewsSection businessId={business.id} isOwner={isOwner} />
+        )}
+
+        {activeTab === 'about' && (
+          <div className="max-w-4xl">
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="text-xl font-semibold mb-4">About {business.name}</h3>
+                
+                {business.description ? (
+                  <p className="text-foreground leading-relaxed mb-6">{business.description}</p>
+                ) : (
+                  <p className="text-muted-foreground mb-6">No description available.</p>
+                )}
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* Business Details */}
+                  <div className="space-y-3">
+                    <h4 className="font-medium text-foreground">Business Details</h4>
+                    {business.category && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Category:</span>
+                        <Badge variant="secondary">{business.category}</Badge>
+                      </div>
+                    )}
+                    {business.location && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Location:</span>
+                        <span className="text-foreground">{business.location}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Joined:</span>
+                      <span className="text-foreground">
+                        {new Date(business.createdAt).toLocaleDateString()}
+                      </span>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))
-          ) : (
-            <div className="col-span-full text-center py-12">
-              <i className="fas fa-file-alt text-4xl text-muted-foreground mb-4"></i>
-              <p className="text-muted-foreground">No posts yet.</p>
-              {isOwner && (
-                <Button className="mt-4" data-testid="button-create-first-post">
-                  Create Your First Post
-                </Button>
-              )}
-            </div>
-          )}
-        </div>
+
+                  {/* Statistics */}
+                  <div className="space-y-3">
+                    <h4 className="font-medium text-foreground">Statistics</h4>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Total Followers:</span>
+                      <span className="font-semibold text-primary">{business.followerCount || 0}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Total Posts:</span>
+                      <span className="font-semibold text-secondary">{business.postCount || 0}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Products Listed:</span>
+                      <span className="font-semibold text-accent">{products.length}</span>
+                    </div>
+                    {business.rating && parseFloat(business.rating) > 0 && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Average Rating:</span>
+                        <span className="font-semibold text-yellow-500">
+                          <i className="fas fa-star mr-1"></i>
+                          {parseFloat(business.rating).toFixed(1)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
 
       <MobileBottomNav />

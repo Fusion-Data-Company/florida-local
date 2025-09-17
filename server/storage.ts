@@ -15,6 +15,9 @@ import {
   orders,
   orderItems,
   payments,
+  gmbTokens,
+  gmbSyncHistory,
+  gmbReviews,
   type User,
   type UpsertUser,
   type Business,
@@ -41,6 +44,12 @@ import {
   type InsertOrderItem,
   type Payment,
   type InsertPayment,
+  type GmbToken,
+  type InsertGmbToken,
+  type GmbSyncHistory,
+  type InsertGmbSyncHistory,
+  type GmbReview,
+  type InsertGmbReview,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, sql, and, or, like, inArray } from "drizzle-orm";
@@ -137,6 +146,45 @@ export interface IStorage {
   createPayment(paymentData: InsertPayment): Promise<Payment>;
   updatePaymentStatus(paymentId: string, status: string, paidAt?: Date, failureReason?: string): Promise<void>;
   getPaymentByStripeId(stripePaymentIntentId: string): Promise<Payment | undefined>;
+
+  // GMB Token operations
+  createGmbToken(tokenData: InsertGmbToken): Promise<GmbToken>;
+  getGmbToken(businessId: string): Promise<GmbToken | undefined>;
+  updateGmbToken(businessId: string, tokenData: Partial<GmbToken>): Promise<void>;
+  deactivateGmbToken(businessId: string): Promise<void>;
+
+  // GMB Sync History operations
+  createGmbSyncHistory(syncData: InsertGmbSyncHistory): Promise<GmbSyncHistory>;
+  getGmbSyncHistory(businessId: string): Promise<GmbSyncHistory[]>;
+  getRecentGmbSyncHistory(businessId: string, limit: number): Promise<GmbSyncHistory[]>;
+
+  // GMB Review operations
+  createGmbReview(reviewData: InsertGmbReview): Promise<GmbReview>;
+  getGmbReviewByGmbId(businessId: string, gmbReviewId: string): Promise<GmbReview | undefined>;
+  updateGmbReview(reviewId: string, updates: Partial<GmbReview>): Promise<void>;
+  getGmbReviewsByBusiness(businessId: string): Promise<GmbReview[]>;
+
+  // Business GMB Status operations
+  updateBusinessGmbStatus(businessId: string, updates: {
+    gmbVerified?: boolean;
+    gmbConnected?: boolean;
+    gmbAccountId?: string | null;
+    gmbLocationId?: string | null;
+    gmbSyncStatus?: string;
+    gmbLastSyncAt?: Date | null;
+    gmbLastErrorAt?: Date | null;
+    gmbLastError?: string | null;
+    gmbDataSources?: any;
+  }): Promise<void>;
+
+  // GMB Integration Statistics
+  getGMBIntegrationStats(): Promise<{
+    totalConnectedBusinesses: number;
+    totalVerifiedBusinesses: number;
+    totalSyncOperations: number;
+    recentSyncActivity: any[];
+    errorRates: any;
+  }>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -747,6 +795,183 @@ export class DatabaseStorage implements IStorage {
       .from(payments)
       .where(eq(payments.stripePaymentIntentId, stripePaymentIntentId));
     return payment;
+  }
+
+  // GMB Token operations
+  async createGmbToken(tokenData: InsertGmbToken): Promise<GmbToken> {
+    const [token] = await db
+      .insert(gmbTokens)
+      .values(tokenData)
+      .returning();
+    return token;
+  }
+
+  async getGmbToken(businessId: string): Promise<GmbToken | undefined> {
+    const [token] = await db
+      .select()
+      .from(gmbTokens)
+      .where(and(
+        eq(gmbTokens.businessId, businessId),
+        eq(gmbTokens.isActive, true)
+      ));
+    return token;
+  }
+
+  async updateGmbToken(businessId: string, tokenData: Partial<GmbToken>): Promise<void> {
+    await db
+      .update(gmbTokens)
+      .set({
+        ...tokenData,
+        updatedAt: new Date(),
+      })
+      .where(eq(gmbTokens.businessId, businessId));
+  }
+
+  async deactivateGmbToken(businessId: string): Promise<void> {
+    await db
+      .update(gmbTokens)
+      .set({
+        isActive: false,
+        updatedAt: new Date(),
+      })
+      .where(eq(gmbTokens.businessId, businessId));
+  }
+
+  // GMB Sync History operations
+  async createGmbSyncHistory(syncData: InsertGmbSyncHistory): Promise<GmbSyncHistory> {
+    const [history] = await db
+      .insert(gmbSyncHistory)
+      .values(syncData)
+      .returning();
+    return history;
+  }
+
+  async getGmbSyncHistory(businessId: string): Promise<GmbSyncHistory[]> {
+    return await db
+      .select()
+      .from(gmbSyncHistory)
+      .where(eq(gmbSyncHistory.businessId, businessId))
+      .orderBy(desc(gmbSyncHistory.createdAt));
+  }
+
+  async getRecentGmbSyncHistory(businessId: string, limit: number): Promise<GmbSyncHistory[]> {
+    return await db
+      .select()
+      .from(gmbSyncHistory)
+      .where(eq(gmbSyncHistory.businessId, businessId))
+      .orderBy(desc(gmbSyncHistory.createdAt))
+      .limit(limit);
+  }
+
+  // GMB Review operations
+  async createGmbReview(reviewData: InsertGmbReview): Promise<GmbReview> {
+    const [review] = await db
+      .insert(gmbReviews)
+      .values(reviewData)
+      .returning();
+    return review;
+  }
+
+  async getGmbReviewByGmbId(businessId: string, gmbReviewId: string): Promise<GmbReview | undefined> {
+    const [review] = await db
+      .select()
+      .from(gmbReviews)
+      .where(and(
+        eq(gmbReviews.businessId, businessId),
+        eq(gmbReviews.gmbReviewId, gmbReviewId)
+      ));
+    return review;
+  }
+
+  async updateGmbReview(reviewId: string, updates: Partial<GmbReview>): Promise<void> {
+    await db
+      .update(gmbReviews)
+      .set(updates)
+      .where(eq(gmbReviews.id, reviewId));
+  }
+
+  async getGmbReviewsByBusiness(businessId: string): Promise<GmbReview[]> {
+    return await db
+      .select()
+      .from(gmbReviews)
+      .where(and(
+        eq(gmbReviews.businessId, businessId),
+        eq(gmbReviews.isVisible, true)
+      ))
+      .orderBy(desc(gmbReviews.reviewTime));
+  }
+
+  // Business GMB Status operations
+  async updateBusinessGmbStatus(businessId: string, updates: {
+    gmbVerified?: boolean;
+    gmbConnected?: boolean;
+    gmbAccountId?: string | null;
+    gmbLocationId?: string | null;
+    gmbSyncStatus?: string;
+    gmbLastSyncAt?: Date | null;
+    gmbLastErrorAt?: Date | null;
+    gmbLastError?: string | null;
+    gmbDataSources?: any;
+  }): Promise<void> {
+    await db
+      .update(businesses)
+      .set({
+        ...updates,
+        updatedAt: new Date(),
+      })
+      .where(eq(businesses.id, businessId));
+  }
+
+  // GMB Integration Statistics
+  async getGMBIntegrationStats(): Promise<{
+    totalConnectedBusinesses: number;
+    totalVerifiedBusinesses: number;
+    totalSyncOperations: number;
+    recentSyncActivity: any[];
+    errorRates: any;
+  }> {
+    // Count connected businesses
+    const [connectedResult] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(businesses)
+      .where(eq(businesses.gmbConnected, true));
+
+    // Count verified businesses
+    const [verifiedResult] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(businesses)
+      .where(eq(businesses.gmbVerified, true));
+
+    // Count total sync operations
+    const [syncResult] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(gmbSyncHistory);
+
+    // Get recent sync activity (last 10 operations)
+    const recentSyncActivity = await db
+      .select()
+      .from(gmbSyncHistory)
+      .orderBy(desc(gmbSyncHistory.createdAt))
+      .limit(10);
+
+    // Calculate error rates
+    const [errorResult] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(gmbSyncHistory)
+      .where(eq(gmbSyncHistory.status, 'error'));
+
+    const errorRate = syncResult.count > 0 ? (errorResult.count / syncResult.count) * 100 : 0;
+
+    return {
+      totalConnectedBusinesses: connectedResult.count,
+      totalVerifiedBusinesses: verifiedResult.count,
+      totalSyncOperations: syncResult.count,
+      recentSyncActivity,
+      errorRates: {
+        totalErrors: errorResult.count,
+        errorPercentage: Math.round(errorRate * 100) / 100
+      }
+    };
   }
 
   // Enhanced spotlight operations with algorithms
