@@ -7,6 +7,9 @@ import {
   postComments,
   businessFollowers,
   spotlights,
+  spotlightHistory,
+  engagementMetrics,
+  spotlightVotes,
   messages,
   cartItems,
   orders,
@@ -24,6 +27,12 @@ import {
   type Message,
   type InsertMessage,
   type Spotlight,
+  type SpotlightHistory,
+  type InsertSpotlightHistory,
+  type EngagementMetrics,
+  type InsertEngagementMetrics,
+  type SpotlightVote,
+  type InsertSpotlightVote,
   type CartItem,
   type InsertCartItem,
   type Order,
@@ -40,6 +49,7 @@ export interface IStorage {
   // User operations (required for Replit Auth)
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
+  updateUserAdminStatus(id: string, isAdmin: boolean): Promise<void>;
   
   // Business operations
   createBusiness(business: InsertBusiness): Promise<Business>;
@@ -77,6 +87,36 @@ export interface IStorage {
   
   // Spotlight operations
   getCurrentSpotlights(): Promise<{ daily: Business[], weekly: Business[], monthly: Business[] }>;
+  
+  // Enhanced spotlight operations with algorithms
+  calculateEngagementMetrics(businessId: string): Promise<EngagementMetrics>;
+  updateEngagementMetrics(businessId: string, metrics: Partial<InsertEngagementMetrics>): Promise<EngagementMetrics>;
+  getEngagementMetrics(businessId: string): Promise<EngagementMetrics | undefined>;
+  getAllEngagementMetrics(): Promise<EngagementMetrics[]>;
+  
+  // Spotlight history tracking
+  createSpotlightHistory(history: InsertSpotlightHistory): Promise<SpotlightHistory>;
+  getSpotlightHistory(businessId: string): Promise<SpotlightHistory[]>;
+  getRecentSpotlightHistory(type: 'daily' | 'weekly' | 'monthly', days: number): Promise<SpotlightHistory[]>;
+  
+  // Intelligent spotlight selection algorithms
+  selectDailySpotlights(): Promise<Business[]>;
+  selectWeeklySpotlights(): Promise<Business[]>;
+  selectMonthlySpotlight(): Promise<Business[]>;
+  getBusinessScore(businessId: string): Promise<number>;
+  getEligibleBusinesses(type: 'daily' | 'weekly' | 'monthly'): Promise<Business[]>;
+  
+  // Spotlight voting (for monthly spotlight)
+  createSpotlightVote(vote: InsertSpotlightVote): Promise<SpotlightVote>;
+  getSpotlightVotes(businessId: string, month: string): Promise<SpotlightVote[]>;
+  getMonthlyVoteCounts(month: string): Promise<Array<{ businessId: string, voteCount: number }>>;
+  hasUserVoted(userId: string, month: string): Promise<boolean>;
+  getUserVoteForMonth(userId: string, month: string): Promise<SpotlightVote | undefined>;
+  
+  // Rotation management
+  rotateSpotlights(): Promise<void>;
+  canPerformManualRotation(): Promise<{ canRotate: boolean; reason?: string }>;
+  archiveExpiredSpotlights(): Promise<void>;
   
   // Cart operations
   addToCart(userId: string, productId: string, quantity: number): Promise<CartItem>;
@@ -118,6 +158,16 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return user;
+  }
+
+  async updateUserAdminStatus(id: string, isAdmin: boolean): Promise<void> {
+    await db
+      .update(users)
+      .set({ 
+        isAdmin,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, id));
   }
 
   async createBusiness(businessData: InsertBusiness): Promise<Business> {
@@ -697,6 +747,628 @@ export class DatabaseStorage implements IStorage {
       .from(payments)
       .where(eq(payments.stripePaymentIntentId, stripePaymentIntentId));
     return payment;
+  }
+
+  // Enhanced spotlight operations with algorithms
+  async calculateEngagementMetrics(businessId: string): Promise<EngagementMetrics> {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    // Get current follower count
+    const [business] = await db
+      .select()
+      .from(businesses)
+      .where(eq(businesses.id, businessId));
+
+    if (!business) {
+      throw new Error('Business not found');
+    }
+
+    // Calculate metrics
+    const recentPosts = await db
+      .select()
+      .from(posts)
+      .where(
+        and(
+          eq(posts.businessId, businessId),
+          sql`${posts.createdAt} >= ${sevenDaysAgo}`
+        )
+      );
+
+    const totalEngagement = recentPosts.reduce(
+      (sum, post) => sum + (post.likeCount || 0) + (post.commentCount || 0),
+      0
+    );
+    
+    const postsEngagement = recentPosts.length > 0 ? totalEngagement / recentPosts.length : 0;
+
+    // Get existing metrics to calculate growth
+    const existingMetrics = await this.getEngagementMetrics(businessId);
+    const previousFollowerCount = existingMetrics?.businessId ? business.followerCount - (existingMetrics.followersGrowth || 0) : 0;
+    const followersGrowth = business.followerCount - previousFollowerCount;
+
+    const metrics: InsertEngagementMetrics = {
+      businessId,
+      followersGrowth,
+      postsEngagement: postsEngagement.toString(),
+      recentActivity: recentPosts.length,
+      productViews: 0, // Would be calculated from analytics if available
+      profileViews: 0, // Would be calculated from analytics if available  
+      orderCount: 0, // Would be calculated from actual orders if available
+    };
+
+    return await this.updateEngagementMetrics(businessId, metrics);
+  }
+
+  async updateEngagementMetrics(businessId: string, metrics: Partial<InsertEngagementMetrics>): Promise<EngagementMetrics> {
+    const [updated] = await db
+      .insert(engagementMetrics)
+      .values({
+        businessId,
+        ...metrics,
+      })
+      .onConflictDoUpdate({
+        target: engagementMetrics.businessId,
+        set: {
+          ...metrics,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return updated;
+  }
+
+  async getEngagementMetrics(businessId: string): Promise<EngagementMetrics | undefined> {
+    const [metrics] = await db
+      .select()
+      .from(engagementMetrics)
+      .where(eq(engagementMetrics.businessId, businessId));
+    return metrics;
+  }
+
+  async getAllEngagementMetrics(): Promise<EngagementMetrics[]> {
+    return await db
+      .select()
+      .from(engagementMetrics)
+      .orderBy(desc(engagementMetrics.updatedAt));
+  }
+
+  // Spotlight history tracking
+  async createSpotlightHistory(history: InsertSpotlightHistory): Promise<SpotlightHistory> {
+    const [created] = await db
+      .insert(spotlightHistory)
+      .values(history)
+      .returning();
+    return created;
+  }
+
+  async getSpotlightHistory(businessId: string): Promise<SpotlightHistory[]> {
+    return await db
+      .select()
+      .from(spotlightHistory)
+      .where(eq(spotlightHistory.businessId, businessId))
+      .orderBy(desc(spotlightHistory.createdAt));
+  }
+
+  async getRecentSpotlightHistory(type: 'daily' | 'weekly' | 'monthly', days: number): Promise<SpotlightHistory[]> {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - days);
+
+    return await db
+      .select()
+      .from(spotlightHistory)
+      .where(
+        and(
+          eq(spotlightHistory.type, type),
+          sql`${spotlightHistory.startDate} >= ${cutoffDate}`
+        )
+      )
+      .orderBy(desc(spotlightHistory.startDate));
+  }
+
+  // Intelligent spotlight selection algorithms
+  async selectDailySpotlights(): Promise<Business[]> {
+    const eligibleBusinesses = await this.getEligibleBusinesses('daily');
+    
+    // Calculate scores for all eligible businesses
+    const businessesWithScores = await Promise.all(
+      eligibleBusinesses.map(async (business) => {
+        const score = await this.getBusinessScore(business.id);
+        return { business, score };
+      })
+    );
+
+    // Sort by score and select top 3
+    const selectedBusinesses = businessesWithScores
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3)
+      .map(item => item.business);
+
+    // Archive any existing daily spotlights and create new ones
+    await this.archiveExpiredSpotlights();
+    
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    // Create spotlight entries and history
+    for (let i = 0; i < selectedBusinesses.length; i++) {
+      const business = selectedBusinesses[i];
+      const score = businessesWithScores.find(item => item.business.id === business.id)?.score || 0;
+      
+      // Create spotlight entry
+      await db.insert(spotlights).values({
+        businessId: business.id,
+        type: 'daily',
+        position: i + 1,
+        startDate: today,
+        endDate: tomorrow,
+        isActive: true,
+      });
+
+      // Create history entry
+      await this.createSpotlightHistory({
+        businessId: business.id,
+        type: 'daily',
+        position: i + 1,
+        startDate: today,
+        endDate: tomorrow,
+        totalScore: score.toString(),
+      });
+
+      // Update last featured date
+      await this.updateEngagementMetrics(business.id, {
+        lastFeaturedDaily: today,
+      });
+    }
+
+    return selectedBusinesses;
+  }
+
+  async selectWeeklySpotlights(): Promise<Business[]> {
+    const eligibleBusinesses = await this.getEligibleBusinesses('weekly');
+    
+    // Calculate scores and ensure category diversity
+    const businessesWithScores = await Promise.all(
+      eligibleBusinesses.map(async (business) => {
+        const score = await this.getBusinessScore(business.id);
+        return { business, score };
+      })
+    );
+
+    // Group by category for diversity
+    const businessesByCategory = businessesWithScores.reduce((acc, item) => {
+      const category = item.business.category || 'uncategorized';
+      if (!acc[category]) acc[category] = [];
+      acc[category].push(item);
+      return acc;
+    }, {} as Record<string, typeof businessesWithScores>);
+
+    // Select businesses ensuring category diversity
+    const selectedBusinesses: Business[] = [];
+    const categories = Object.keys(businessesByCategory);
+    
+    // First, select top business from each category (up to 5)
+    for (let i = 0; i < Math.min(5, categories.length); i++) {
+      const category = categories[i];
+      const categoryBusinesses = businessesByCategory[category]
+        .sort((a, b) => b.score - a.score);
+      
+      if (categoryBusinesses.length > 0 && selectedBusinesses.length < 5) {
+        selectedBusinesses.push(categoryBusinesses[0].business);
+      }
+    }
+
+    // Fill remaining slots with highest scoring businesses
+    const remainingBusinesses = businessesWithScores
+      .filter(item => !selectedBusinesses.some(selected => selected.id === item.business.id))
+      .sort((a, b) => b.score - a.score);
+
+    while (selectedBusinesses.length < 5 && remainingBusinesses.length > 0) {
+      selectedBusinesses.push(remainingBusinesses.shift()!.business);
+    }
+
+    // Create spotlight entries
+    const today = new Date();
+    const nextWeek = new Date(today);
+    nextWeek.setDate(nextWeek.getDate() + 7);
+
+    for (let i = 0; i < selectedBusinesses.length; i++) {
+      const business = selectedBusinesses[i];
+      const score = businessesWithScores.find(item => item.business.id === business.id)?.score || 0;
+      
+      await db.insert(spotlights).values({
+        businessId: business.id,
+        type: 'weekly',
+        position: i + 1,
+        startDate: today,
+        endDate: nextWeek,
+        isActive: true,
+      });
+
+      await this.createSpotlightHistory({
+        businessId: business.id,
+        type: 'weekly',
+        position: i + 1,
+        startDate: today,
+        endDate: nextWeek,
+        totalScore: score.toString(),
+      });
+
+      await this.updateEngagementMetrics(business.id, {
+        lastFeaturedWeekly: today,
+      });
+    }
+
+    return selectedBusinesses;
+  }
+
+  async selectMonthlySpotlight(): Promise<Business[]> {
+    const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM format
+    
+    // Get community votes (70% weight)
+    const voteCounts = await this.getMonthlyVoteCounts(currentMonth);
+    
+    // Get eligible businesses
+    const eligibleBusinesses = await this.getEligibleBusinesses('monthly');
+    
+    // Calculate combined scores (70% community votes + 30% admin algorithm)
+    const businessesWithScores = await Promise.all(
+      eligibleBusinesses.map(async (business) => {
+        const voteCount = voteCounts.find(v => v.businessId === business.id)?.voteCount || 0;
+        const algorithmScore = await this.getBusinessScore(business.id);
+        
+        // Normalize vote count (assuming max 1000 votes)
+        const normalizedVotes = Math.min(voteCount / 10, 100);
+        
+        // Combined score: 70% votes + 30% algorithm
+        const combinedScore = (normalizedVotes * 0.7) + (algorithmScore * 0.3);
+        
+        return { business, score: combinedScore, voteCount };
+      })
+    );
+
+    // Select top business
+    const winner = businessesWithScores
+      .sort((a, b) => b.score - a.score)[0];
+
+    if (!winner) {
+      return [];
+    }
+
+    // Create spotlight entry
+    const today = new Date();
+    const nextMonth = new Date(today);
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
+
+    await db.insert(spotlights).values({
+      businessId: winner.business.id,
+      type: 'monthly',
+      position: 1,
+      startDate: today,
+      endDate: nextMonth,
+      isActive: true,
+    });
+
+    await this.createSpotlightHistory({
+      businessId: winner.business.id,
+      type: 'monthly',
+      position: 1,
+      startDate: today,
+      endDate: nextMonth,
+      totalScore: winner.score.toString(),
+    });
+
+    await this.updateEngagementMetrics(winner.business.id, {
+      lastFeaturedMonthly: today,
+    });
+
+    return [winner.business];
+  }
+
+  async getBusinessScore(businessId: string): Promise<number> {
+    // Algorithm: 30% engagement + 25% recency + 20% reviews + 15% growth + 10% community
+    
+    const business = await this.getBusinessById(businessId);
+    if (!business) return 0;
+
+    const metrics = await this.getEngagementMetrics(businessId);
+    
+    // Engagement Score (30%)
+    const engagementScore = metrics?.postsEngagement ? 
+      Math.min(parseFloat(metrics.postsEngagement), 100) : 0;
+
+    // Recency Score (25%) - Higher score for businesses not featured recently
+    const now = new Date();
+    const lastFeatured = metrics?.lastFeaturedDaily || metrics?.lastFeaturedWeekly || metrics?.lastFeaturedMonthly;
+    let recencyScore = 100;
+    
+    if (lastFeatured) {
+      const daysSinceLastFeatured = Math.floor((now.getTime() - lastFeatured.getTime()) / (1000 * 60 * 60 * 24));
+      recencyScore = Math.min(daysSinceLastFeatured * 2, 100); // 2 points per day
+    }
+
+    // Reviews Score (20%)
+    const reviewsScore = Math.min((business.reviewCount || 0) * 5, 100); // 5 points per review, max 100
+
+    // Growth Score (15%)
+    const growthScore = metrics?.followersGrowth ? 
+      Math.min((metrics.followersGrowth || 0) * 2, 100) : 0; // 2 points per new follower
+
+    // Community Score (10%)
+    const followerScore = Math.min((business.followerCount || 0), 100); // 1 point per follower, max 100
+
+    // Calculate weighted score
+    const totalScore = 
+      (engagementScore * 0.30) +
+      (recencyScore * 0.25) +
+      (reviewsScore * 0.20) +
+      (growthScore * 0.15) +
+      (followerScore * 0.10);
+
+    return Math.round(totalScore);
+  }
+
+  async getEligibleBusinesses(type: 'daily' | 'weekly' | 'monthly'): Promise<Business[]> {
+    const now = new Date();
+    let cooldownDays = 1; // Default for daily
+    
+    if (type === 'weekly') cooldownDays = 7;
+    if (type === 'monthly') cooldownDays = 30;
+    
+    const cooldownDate = new Date(now);
+    cooldownDate.setDate(cooldownDate.getDate() - cooldownDays);
+
+    // Get all active businesses
+    const allBusinesses = await db
+      .select()
+      .from(businesses)
+      .where(
+        and(
+          eq(businesses.isActive, true),
+          eq(businesses.isVerified, true) // Only verified businesses
+        )
+      );
+
+    // Filter out businesses currently featured or recently featured
+    const eligibleBusinesses: Business[] = [];
+    
+    for (const business of allBusinesses) {
+      // Check if currently featured in any spotlight
+      const currentSpotlight = await db
+        .select()
+        .from(spotlights)
+        .where(
+          and(
+            eq(spotlights.businessId, business.id),
+            eq(spotlights.isActive, true),
+            sql`${spotlights.endDate} > ${now}`
+          )
+        );
+
+      if (currentSpotlight.length > 0) continue;
+
+      // Check cooldown period for this type
+      const recentHistory = await db
+        .select()
+        .from(spotlightHistory)
+        .where(
+          and(
+            eq(spotlightHistory.businessId, business.id),
+            eq(spotlightHistory.type, type),
+            sql`${spotlightHistory.endDate} > ${cooldownDate}`
+          )
+        );
+
+      if (recentHistory.length === 0) {
+        eligibleBusinesses.push(business);
+      }
+    }
+
+    return eligibleBusinesses;
+  }
+
+  // Spotlight voting (for monthly spotlight)
+  async createSpotlightVote(vote: InsertSpotlightVote): Promise<SpotlightVote> {
+    const [created] = await db
+      .insert(spotlightVotes)
+      .values(vote)
+      .returning();
+    return created;
+  }
+
+  async getSpotlightVotes(businessId: string, month: string): Promise<SpotlightVote[]> {
+    return await db
+      .select()
+      .from(spotlightVotes)
+      .where(
+        and(
+          eq(spotlightVotes.businessId, businessId),
+          eq(spotlightVotes.month, month)
+        )
+      );
+  }
+
+  async getMonthlyVoteCounts(month: string): Promise<Array<{ businessId: string, voteCount: number }>> {
+    const votes = await db
+      .select({
+        businessId: spotlightVotes.businessId,
+        voteCount: sql<number>`count(*)`.as('voteCount'),
+      })
+      .from(spotlightVotes)
+      .where(eq(spotlightVotes.month, month))
+      .groupBy(spotlightVotes.businessId)
+      .orderBy(desc(sql`count(*)`));
+
+    return votes;
+  }
+
+  async hasUserVoted(userId: string, month: string): Promise<boolean> {
+    const [vote] = await db
+      .select()
+      .from(spotlightVotes)
+      .where(
+        and(
+          eq(spotlightVotes.userId, userId),
+          eq(spotlightVotes.month, month)
+        )
+      );
+    return !!vote;
+  }
+
+  // Get which business the user voted for in a specific month
+  async getUserVoteForMonth(userId: string, month: string): Promise<SpotlightVote | undefined> {
+    const [vote] = await db
+      .select()
+      .from(spotlightVotes)
+      .where(
+        and(
+          eq(spotlightVotes.userId, userId),
+          eq(spotlightVotes.month, month)
+        )
+      );
+    return vote;
+  }
+
+  // SECURITY: Enhanced rotation management with guards and frequency controls
+  private rotationInProgress = new Set<string>();
+  private lastRotationTimes = new Map<string, number>();
+
+  async rotateSpotlights(): Promise<void> {
+    const now = new Date();
+    const currentTime = now.getTime();
+    
+    // GUARD: Prevent concurrent rotations
+    if (this.rotationInProgress.has('global')) {
+      console.warn('Spotlight rotation already in progress, skipping...');
+      return;
+    }
+
+    try {
+      this.rotationInProgress.add('global');
+      console.log('Starting spotlight rotation process...');
+
+      // GUARD: Check if rotation was triggered too recently (abuse prevention)
+      const lastRotation = this.lastRotationTimes.get('global');
+      const MIN_ROTATION_INTERVAL = 60 * 1000; // 1 minute minimum between rotations
+      
+      if (lastRotation && (currentTime - lastRotation) < MIN_ROTATION_INTERVAL) {
+        console.warn(`Rotation triggered too soon. Last rotation: ${new Date(lastRotation).toISOString()}`);
+        return;
+      }
+
+      this.lastRotationTimes.set('global', currentTime);
+      
+      let rotationsPerformed = 0;
+
+      // Enhanced daily rotation check with more precise timing
+      if (await this.shouldRotateSpotlight('daily', now)) {
+        console.log('Performing daily spotlight rotation...');
+        await this.selectDailySpotlights();
+        rotationsPerformed++;
+      }
+
+      // Enhanced weekly rotation check 
+      if (await this.shouldRotateSpotlight('weekly', now)) {
+        console.log('Performing weekly spotlight rotation...');
+        await this.selectWeeklySpotlights();
+        rotationsPerformed++;
+      }
+
+      // Enhanced monthly rotation check
+      if (await this.shouldRotateSpotlight('monthly', now)) {
+        console.log('Performing monthly spotlight rotation...');
+        await this.selectMonthlySpotlight();
+        rotationsPerformed++;
+      }
+
+      if (rotationsPerformed === 0) {
+        console.log('No spotlight rotations needed at this time.');
+      } else {
+        console.log(`Completed ${rotationsPerformed} spotlight rotation(s).`);
+      }
+
+      // Archive expired spotlights
+      await this.archiveExpiredSpotlights();
+      
+    } catch (error) {
+      console.error('Error during spotlight rotation:', error);
+      throw error;
+    } finally {
+      this.rotationInProgress.delete('global');
+    }
+  }
+
+  // SECURITY: Enhanced rotation timing validation
+  private async shouldRotateSpotlight(type: 'daily' | 'weekly' | 'monthly', now: Date): Promise<boolean> {
+    // Get the most recent rotation of this type
+    const lastRotation = await db
+      .select()
+      .from(spotlights)
+      .where(eq(spotlights.type, type))
+      .orderBy(desc(spotlights.createdAt))
+      .limit(1);
+
+    if (!lastRotation.length) {
+      return true; // No previous rotation, safe to rotate
+    }
+
+    const lastRotationTime = new Date(lastRotation[0].createdAt).getTime();
+    const currentTime = now.getTime();
+    const timeDiff = currentTime - lastRotationTime;
+
+    // Define minimum intervals with safety margins
+    const intervals = {
+      daily: 20 * 60 * 60 * 1000,   // 20 hours (allows for some flexibility)
+      weekly: 6.5 * 24 * 60 * 60 * 1000,  // 6.5 days 
+      monthly: 25 * 24 * 60 * 60 * 1000   // 25 days (monthly is more flexible due to voting)
+    };
+
+    const shouldRotate = timeDiff > intervals[type];
+    
+    if (!shouldRotate) {
+      const nextRotation = new Date(lastRotationTime + intervals[type]);
+      console.log(`${type} rotation not due yet. Next rotation: ${nextRotation.toISOString()}`);
+    }
+
+    return shouldRotate;
+  }
+
+  // SECURITY: Manual rotation validation for admin use
+  async canPerformManualRotation(): Promise<{ canRotate: boolean; reason?: string }> {
+    if (this.rotationInProgress.has('global')) {
+      return { canRotate: false, reason: 'Rotation already in progress' };
+    }
+
+    const lastRotation = this.lastRotationTimes.get('global');
+    const MIN_MANUAL_INTERVAL = 30 * 1000; // 30 seconds for manual rotations
+    
+    if (lastRotation && (Date.now() - lastRotation) < MIN_MANUAL_INTERVAL) {
+      const nextAllowed = new Date(lastRotation + MIN_MANUAL_INTERVAL);
+      return { 
+        canRotate: false, 
+        reason: `Manual rotation cooling down. Next allowed: ${nextAllowed.toISOString()}` 
+      };
+    }
+
+    return { canRotate: true };
+  }
+
+  async archiveExpiredSpotlights(): Promise<void> {
+    const now = new Date();
+    
+    await db
+      .update(spotlights)
+      .set({ isActive: false })
+      .where(
+        and(
+          eq(spotlights.isActive, true),
+          sql`${spotlights.endDate} <= ${now}`
+        )
+      );
   }
 }
 

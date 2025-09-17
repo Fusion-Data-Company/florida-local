@@ -2,6 +2,8 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import { isAdmin, adminRateLimit } from "./adminAuth";
+import { votingRateLimit, businessActionRateLimit, generalAPIRateLimit, strictRateLimit, publicEndpointRateLimit } from "./rateLimit";
 import { insertBusinessSchema, updateBusinessSchema, insertProductSchema, insertPostSchema, insertMessageSchema, insertCartItemSchema, insertOrderSchema } from "@shared/schema";
 import { z } from "zod";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
@@ -32,8 +34,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Business routes
-  app.post('/api/businesses', isAuthenticated, async (req: any, res) => {
+  // Business routes (SECURITY: Rate limited)
+  app.post('/api/businesses', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const businessData = insertBusinessSchema.parse({
@@ -49,7 +51,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/businesses/search', async (req, res) => {
+  app.get('/api/businesses/search', publicEndpointRateLimit, async (req, res) => {
     try {
       const { q: query = '', category } = req.query;
       const businesses = await storage.searchBusinesses(
@@ -65,6 +67,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/businesses/spotlight', async (req, res) => {
     try {
+      // Check if rotation is needed and perform it automatically
+      await storage.rotateSpotlights();
+      
       const spotlights = await storage.getCurrentSpotlights();
       res.json(spotlights);
     } catch (error) {
@@ -98,7 +103,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/businesses/:id', isAuthenticated, async (req: any, res) => {
+  app.put('/api/businesses/:id', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const { id } = req.params;
@@ -162,7 +167,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Delete business endpoint
-  app.delete('/api/businesses/:id', isAuthenticated, async (req: any, res) => {
+  app.delete('/api/businesses/:id', strictRateLimit, isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const { id } = req.params;
@@ -182,6 +187,309 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Error deleting business:", error);
       res.status(400).json({ message: error.message || "Failed to delete business" });
+    }
+  });
+
+  // Enhanced Spotlight Management Routes
+  
+  // SECURITY: Admin-only manual spotlight rotation with enhanced guards
+  app.post('/api/spotlight/rotate', isAuthenticated, isAdmin, adminRateLimit(60000), async (req: any, res) => {
+    try {
+      console.log(`Admin spotlight rotation requested by: ${req.adminUser.email} (${req.adminUser.id})`);
+      
+      // SECURITY: Check if manual rotation is allowed
+      const rotationCheck = await storage.canPerformManualRotation();
+      if (!rotationCheck.canRotate) {
+        return res.status(429).json({
+          message: "Manual rotation not allowed at this time",
+          reason: rotationCheck.reason,
+          error: "ROTATION_COOLDOWN"
+        });
+      }
+
+      await storage.rotateSpotlights();
+      res.json({ 
+        message: "Spotlight rotation triggered successfully",
+        triggeredBy: req.adminUser.email,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Error in admin spotlight rotation:", error);
+      res.status(500).json({ message: "Failed to rotate spotlights" });
+    }
+  });
+
+  // Get spotlight history for a business
+  app.get('/api/businesses/:id/spotlight-history', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const history = await storage.getSpotlightHistory(id);
+      res.json(history);
+    } catch (error) {
+      console.error("Error fetching spotlight history:", error);
+      res.status(500).json({ message: "Failed to fetch spotlight history" });
+    }
+  });
+
+  // Get engagement metrics for a business
+  app.get('/api/businesses/:id/engagement-metrics', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const metrics = await storage.getEngagementMetrics(id);
+      res.json(metrics);
+    } catch (error) {
+      console.error("Error fetching engagement metrics:", error);
+      res.status(500).json({ message: "Failed to fetch engagement metrics" });
+    }
+  });
+
+  // Calculate and update engagement metrics for a business
+  app.post('/api/businesses/:id/calculate-metrics', isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const metrics = await storage.calculateEngagementMetrics(id);
+      res.json(metrics);
+    } catch (error) {
+      console.error("Error calculating metrics:", error);
+      res.status(500).json({ message: "Failed to calculate engagement metrics" });
+    }
+  });
+
+  // Get business score for spotlight eligibility
+  app.get('/api/businesses/:id/score', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const score = await storage.getBusinessScore(id);
+      res.json({ score });
+    } catch (error) {
+      console.error("Error fetching business score:", error);
+      res.status(500).json({ message: "Failed to fetch business score" });
+    }
+  });
+
+  // Monthly spotlight voting endpoints
+  
+  // Vote for a business for monthly spotlight (SECURITY: Rate limited)
+  app.post('/api/spotlight/vote', votingRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { businessId } = req.body;
+      
+      if (!businessId) {
+        return res.status(400).json({ message: "Business ID is required" });
+      }
+
+      const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM format
+      
+      // SECURITY: Check if user has already voted THIS MONTH (only one vote per month total)
+      const hasVoted = await storage.hasUserVoted(userId, currentMonth);
+      if (hasVoted) {
+        const existingVote = await storage.getUserVoteForMonth(userId, currentMonth);
+        return res.status(400).json({ 
+          message: "You have already voted this month", 
+          votedBusinessId: existingVote?.businessId 
+        });
+      }
+
+      // Verify business exists and is eligible
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+
+      const eligibleBusinesses = await storage.getEligibleBusinesses('monthly');
+      const isEligible = eligibleBusinesses.some(b => b.id === businessId);
+      if (!isEligible) {
+        return res.status(400).json({ message: "Business is not eligible for spotlight voting" });
+      }
+
+      const vote = await storage.createSpotlightVote({
+        businessId,
+        userId,
+        month: currentMonth,
+      });
+
+      res.json({ message: "Vote recorded successfully", vote });
+    } catch (error: any) {
+      console.error("Error recording vote:", error);
+      
+      // Handle unique constraint violation
+      if (error.code === '23505' || error.constraint?.includes('unique_user_month_vote')) {
+        return res.status(400).json({ message: "You have already voted this month" });
+      }
+      
+      res.status(500).json({ message: "Failed to record vote" });
+    }
+  });
+
+  // Get monthly vote counts
+  app.get('/api/spotlight/votes/:month', async (req, res) => {
+    try {
+      const { month } = req.params;
+      
+      // Validate month format (YYYY-MM)
+      if (!/^\d{4}-\d{2}$/.test(month)) {
+        return res.status(400).json({ message: "Invalid month format. Use YYYY-MM" });
+      }
+
+      const voteCounts = await storage.getMonthlyVoteCounts(month);
+      res.json(voteCounts);
+    } catch (error) {
+      console.error("Error fetching vote counts:", error);
+      res.status(500).json({ message: "Failed to fetch vote counts" });
+    }
+  });
+
+  // Get user's current vote status for a specific month (for UI state management)
+  app.get('/api/spotlight/user-vote/:month', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { month } = req.params;
+      
+      // Validate month format (YYYY-MM)
+      if (!/^\d{4}-\d{2}$/.test(month)) {
+        return res.status(400).json({ message: "Invalid month format. Use YYYY-MM" });
+      }
+      
+      const userVote = await storage.getUserVoteForMonth(userId, month);
+      res.json({ 
+        hasVoted: !!userVote,
+        votedBusinessId: userVote?.businessId || null,
+        voteDate: userVote?.createdAt || null
+      });
+    } catch (error) {
+      console.error("Error checking user vote status:", error);
+      res.status(500).json({ message: "Failed to check vote status" });
+    }
+  });
+
+  // DEPRECATED: Legacy endpoint - keeping for backwards compatibility  
+  app.get('/api/spotlight/votes/:month/:businessId/check', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { month } = req.params;
+      
+      const userVote = await storage.getUserVoteForMonth(userId, month);
+      res.json({ 
+        hasVoted: !!userVote,
+        votedBusinessId: userVote?.businessId 
+      });
+    } catch (error) {
+      console.error("Error checking vote status:", error);
+      res.status(500).json({ message: "Failed to check vote status" });
+    }
+  });
+
+  // Get eligible businesses for spotlight voting
+  app.get('/api/spotlight/eligible/:type', async (req, res) => {
+    try {
+      const { type } = req.params;
+      
+      if (!['daily', 'weekly', 'monthly'].includes(type)) {
+        return res.status(400).json({ message: "Invalid spotlight type. Use daily, weekly, or monthly" });
+      }
+
+      const eligibleBusinesses = await storage.getEligibleBusinesses(type as 'daily' | 'weekly' | 'monthly');
+      res.json(eligibleBusinesses);
+    } catch (error) {
+      console.error("Error fetching eligible businesses:", error);
+      res.status(500).json({ message: "Failed to fetch eligible businesses" });
+    }
+  });
+
+  // Admin endpoints for manual spotlight management
+  
+  // SECURITY: Admin-only daily spotlight selection
+  app.post('/api/admin/spotlight/daily', isAuthenticated, isAdmin, adminRateLimit(), async (req: any, res) => {
+    try {
+      console.log(`Admin daily spotlight selection by: ${req.adminUser.email}`);
+      const selectedBusinesses = await storage.selectDailySpotlights();
+      res.json({ 
+        message: "Daily spotlights selected successfully", 
+        businesses: selectedBusinesses,
+        selectedBy: req.adminUser.email
+      });
+    } catch (error) {
+      console.error("Error in admin daily spotlight selection:", error);
+      res.status(500).json({ message: "Failed to select daily spotlights" });
+    }
+  });
+
+  // SECURITY: Admin-only weekly spotlight selection
+  app.post('/api/admin/spotlight/weekly', isAuthenticated, isAdmin, adminRateLimit(), async (req: any, res) => {
+    try {
+      console.log(`Admin weekly spotlight selection by: ${req.adminUser.email}`);
+      const selectedBusinesses = await storage.selectWeeklySpotlights();
+      res.json({ 
+        message: "Weekly spotlights selected successfully", 
+        businesses: selectedBusinesses,
+        selectedBy: req.adminUser.email
+      });
+    } catch (error) {
+      console.error("Error in admin weekly spotlight selection:", error);
+      res.status(500).json({ message: "Failed to select weekly spotlights" });
+    }
+  });
+
+  // SECURITY: Admin-only monthly spotlight selection
+  app.post('/api/admin/spotlight/monthly', isAuthenticated, isAdmin, adminRateLimit(), async (req: any, res) => {
+    try {
+      console.log(`Admin monthly spotlight selection by: ${req.adminUser.email}`);
+      const selectedBusinesses = await storage.selectMonthlySpotlight();
+      res.json({ 
+        message: "Monthly spotlight selected successfully", 
+        businesses: selectedBusinesses,
+        selectedBy: req.adminUser.email
+      });
+    } catch (error) {
+      console.error("Error in admin monthly spotlight selection:", error);
+      res.status(500).json({ message: "Failed to select monthly spotlight" });
+    }
+  });
+
+  // SECURITY: Admin-only spotlight history access
+  app.get('/api/admin/spotlight/history/:type/:days', isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const { type, days } = req.params;
+      
+      if (!['daily', 'weekly', 'monthly'].includes(type)) {
+        return res.status(400).json({ message: "Invalid spotlight type" });
+      }
+
+      const daysNum = parseInt(days);
+      if (isNaN(daysNum) || daysNum < 1 || daysNum > 90) {
+        return res.status(400).json({ message: "Days must be between 1 and 90" });
+      }
+
+      const history = await storage.getRecentSpotlightHistory(
+        type as 'daily' | 'weekly' | 'monthly', 
+        daysNum
+      );
+      res.json({
+        history,
+        requestedBy: req.adminUser.email,
+        type,
+        days: daysNum
+      });
+    } catch (error) {
+      console.error("Error fetching admin spotlight history:", error);
+      res.status(500).json({ message: "Failed to fetch spotlight history" });
+    }
+  });
+
+  // SECURITY: Admin-only spotlight archiving
+  app.post('/api/admin/spotlight/archive', isAuthenticated, isAdmin, adminRateLimit(), async (req: any, res) => {
+    try {
+      console.log(`Admin spotlight archiving by: ${req.adminUser.email}`);
+      await storage.archiveExpiredSpotlights();
+      res.json({ 
+        message: "Expired spotlights archived successfully",
+        archivedBy: req.adminUser.email,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Error in admin spotlight archiving:", error);
+      res.status(500).json({ message: "Failed to archive expired spotlights" });
     }
   });
 
@@ -340,8 +648,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Product routes
-  app.post('/api/products', isAuthenticated, async (req: any, res) => {
+  // Product routes (SECURITY: Rate limited)
+  app.post('/api/products', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
     try {
       const productData = insertProductSchema.parse(req.body);
       const product = await storage.createProduct(productData);
@@ -352,7 +660,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/products/search', async (req, res) => {
+  app.get('/api/products/search', publicEndpointRateLimit, async (req, res) => {
     try {
       const { q: query = '', category } = req.query;
       const products = await storage.searchProducts(
@@ -388,8 +696,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Post routes
-  app.post('/api/posts', isAuthenticated, async (req: any, res) => {
+  // Post routes (SECURITY: Rate limited)
+  app.post('/api/posts', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
     try {
       const postData = insertPostSchema.parse(req.body);
       const post = await storage.createPost(postData);

@@ -1,6 +1,7 @@
 import { sql, relations } from 'drizzle-orm';
 import {
   index,
+  uniqueIndex,
   jsonb,
   pgTable,
   timestamp,
@@ -32,6 +33,7 @@ export const users = pgTable("users", {
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
+  isAdmin: boolean("is_admin").default(false), // SECURITY: Admin role for spotlight management
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -204,6 +206,51 @@ export const payments = pgTable("payments", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Spotlight history for tracking business features
+export const spotlightHistory = pgTable("spotlight_history", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  type: varchar("type", { length: 20 }).notNull(), // daily, weekly, monthly
+  position: integer("position"), // 1, 2, 3 for daily; 1-5 for weekly; 1 for monthly
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date").notNull(),
+  engagementScore: decimal("engagement_score", { precision: 5, scale: 2 }),
+  qualityScore: decimal("quality_score", { precision: 5, scale: 2 }),
+  recencyScore: decimal("recency_score", { precision: 5, scale: 2 }),
+  diversityScore: decimal("diversity_score", { precision: 5, scale: 2 }),
+  totalScore: decimal("total_score", { precision: 5, scale: 2 }),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Engagement metrics for business scoring
+export const engagementMetrics = pgTable("engagement_metrics", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  followersGrowth: integer("followers_growth").default(0), // Growth in last 30 days
+  postsEngagement: decimal("posts_engagement", { precision: 5, scale: 2 }).default("0"), // Avg likes/comments per post
+  recentActivity: integer("recent_activity").default(0), // Posts in last 7 days
+  productViews: integer("product_views").default(0), // Product page views in last 30 days
+  profileViews: integer("profile_views").default(0), // Profile views in last 30 days
+  orderCount: integer("order_count").default(0), // Orders in last 30 days
+  lastFeaturedDaily: timestamp("last_featured_daily"),
+  lastFeaturedWeekly: timestamp("last_featured_weekly"),
+  lastFeaturedMonthly: timestamp("last_featured_monthly"),
+  calculatedAt: timestamp("calculated_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Business votes for monthly spotlight community voting
+export const spotlightVotes = pgTable("spotlight_votes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  month: varchar("month", { length: 7 }).notNull(), // Format: YYYY-MM
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  // CRITICAL: Ensure each user can only vote ONCE per month total (not per business)
+  uniqueIndex("idx_unique_user_month_vote").on(table.userId, table.month)
+]);
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   businesses: many(businesses),
@@ -214,6 +261,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   receivedMessages: many(messages, { relationName: "receivedMessages" }),
   cartItems: many(cartItems),
   orders: many(orders),
+  spotlightVotes: many(spotlightVotes),
 }));
 
 export const businessesRelations = relations(businesses, ({ one, many }) => ({
@@ -225,6 +273,9 @@ export const businessesRelations = relations(businesses, ({ one, many }) => ({
   posts: many(posts),
   followers: many(businessFollowers),
   spotlights: many(spotlights),
+  spotlightHistory: many(spotlightHistory),
+  engagementMetrics: one(engagementMetrics),
+  spotlightVotes: many(spotlightVotes),
   sentMessages: many(messages, { relationName: "senderBusiness" }),
   receivedMessages: many(messages, { relationName: "receiverBusiness" }),
 }));
@@ -348,6 +399,31 @@ export const paymentsRelations = relations(payments, ({ one }) => ({
   }),
 }));
 
+export const spotlightHistoryRelations = relations(spotlightHistory, ({ one }) => ({
+  business: one(businesses, {
+    fields: [spotlightHistory.businessId],
+    references: [businesses.id],
+  }),
+}));
+
+export const engagementMetricsRelations = relations(engagementMetrics, ({ one }) => ({
+  business: one(businesses, {
+    fields: [engagementMetrics.businessId],
+    references: [businesses.id],
+  }),
+}));
+
+export const spotlightVotesRelations = relations(spotlightVotes, ({ one }) => ({
+  business: one(businesses, {
+    fields: [spotlightVotes.businessId],
+    references: [businesses.id],
+  }),
+  user: one(users, {
+    fields: [spotlightVotes.userId],
+    references: [users.id],
+  }),
+}));
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -413,6 +489,22 @@ export const insertPaymentSchema = createInsertSchema(payments).omit({
   updatedAt: true,
 });
 
+export const insertSpotlightHistorySchema = createInsertSchema(spotlightHistory).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertEngagementMetricsSchema = createInsertSchema(engagementMetrics).omit({
+  id: true,
+  calculatedAt: true,
+  updatedAt: true,
+});
+
+export const insertSpotlightVoteSchema = createInsertSchema(spotlightVotes).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -434,3 +526,9 @@ export type OrderItem = typeof orderItems.$inferSelect;
 export type InsertOrderItem = z.infer<typeof insertOrderItemSchema>;
 export type Payment = typeof payments.$inferSelect;
 export type InsertPayment = z.infer<typeof insertPaymentSchema>;
+export type SpotlightHistory = typeof spotlightHistory.$inferSelect;
+export type InsertSpotlightHistory = z.infer<typeof insertSpotlightHistorySchema>;
+export type EngagementMetrics = typeof engagementMetrics.$inferSelect;
+export type InsertEngagementMetrics = z.infer<typeof insertEngagementMetricsSchema>;
+export type SpotlightVote = typeof spotlightVotes.$inferSelect;
+export type InsertSpotlightVote = z.infer<typeof insertSpotlightVoteSchema>;
