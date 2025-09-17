@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Plus, Store, ChevronDown } from "lucide-react";
 import { useState } from "react";
+import CartIcon from "@/components/cart-icon";
 
 export default function NavigationHeader() {
   const { user, isAuthenticated } = useAuth();
@@ -118,6 +119,9 @@ export default function NavigationHeader() {
 
             {isAuthenticated ? (
               <>
+                {/* Cart Icon */}
+                <CartIcon />
+
                 {/* Notifications */}
                 <Button variant="ghost" size="icon" className="relative" data-testid="button-notifications">
                   <i className="fas fa-bell text-lg"></i>

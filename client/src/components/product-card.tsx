@@ -20,15 +20,18 @@ export default function ProductCard({ product }: ProductCardProps) {
   const [isWishlisted, setIsWishlisted] = useState(false);
 
   const addToCartMutation = useMutation({
-    mutationFn: async () => {
-      // TODO: Implement add to cart API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+    mutationFn: async (quantity: number = 1) => {
+      return await apiRequest('POST', '/api/cart', { 
+        productId: product.id, 
+        quantity 
+      });
     },
     onSuccess: () => {
       toast({
         title: "Added to Cart",
         description: `${product.name} has been added to your cart`,
       });
+      queryClient.invalidateQueries({ queryKey: ['/api/cart'] });
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {

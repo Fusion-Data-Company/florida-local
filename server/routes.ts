@@ -2,10 +2,19 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { insertBusinessSchema, updateBusinessSchema, insertProductSchema, insertPostSchema, insertMessageSchema } from "@shared/schema";
+import { insertBusinessSchema, updateBusinessSchema, insertProductSchema, insertPostSchema, insertMessageSchema, insertCartItemSchema, insertOrderSchema } from "@shared/schema";
 import { z } from "zod";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { ObjectPermission } from "./objectAcl";
+import Stripe from "stripe";
+
+// Initialize Stripe - from the blueprint integration
+if (!process.env.STRIPE_SECRET_KEY) {
+  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
+}
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: "2023-10-16",
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -490,6 +499,371 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching messages:", error);
       res.status(500).json({ message: "Failed to fetch messages" });
+    }
+  });
+
+  // Cart routes
+  app.get('/api/cart', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const cartItems = await storage.getCartItems(userId);
+      res.json(cartItems);
+    } catch (error) {
+      console.error("Error fetching cart:", error);
+      res.status(500).json({ message: "Failed to fetch cart" });
+    }
+  });
+
+  app.post('/api/cart', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const cartData = insertCartItemSchema.parse({
+        ...req.body,
+        userId,
+      });
+      
+      // Validate product exists and is available
+      const product = await storage.getProductById(cartData.productId);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      
+      if (!product.isActive) {
+        return res.status(400).json({ message: "Product is no longer available" });
+      }
+      
+      // Validate quantity and inventory
+      if (cartData.quantity <= 0) {
+        return res.status(400).json({ message: "Quantity must be at least 1" });
+      }
+      
+      if (cartData.quantity > product.inventory) {
+        return res.status(400).json({ 
+          message: `Only ${product.inventory} units available for "${product.name}"` 
+        });
+      }
+      
+      // Check if item already exists in cart and validate total quantity
+      const existingCartItems = await storage.getCartItems(userId);
+      const existingItem = existingCartItems.find(item => item.productId === cartData.productId);
+      const totalQuantity = existingItem ? existingItem.quantity + cartData.quantity : cartData.quantity;
+      
+      if (totalQuantity > product.inventory) {
+        return res.status(400).json({ 
+          message: `Cannot add ${cartData.quantity} more. Only ${product.inventory - (existingItem?.quantity || 0)} more units available.` 
+        });
+      }
+      
+      const cartItem = await storage.addToCart(userId, cartData.productId, cartData.quantity);
+      res.json(cartItem);
+    } catch (error: any) {
+      console.error("Error adding to cart:", error);
+      res.status(400).json({ message: error.message || "Failed to add to cart" });
+    }
+  });
+
+  app.put('/api/cart/:productId', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { productId } = req.params;
+      const { quantity } = req.body;
+      
+      // Validate quantity input
+      const quantityNum = parseInt(quantity);
+      if (isNaN(quantityNum) || quantityNum < 0) {
+        return res.status(400).json({ message: "Invalid quantity" });
+      }
+      
+      if (quantityNum === 0) {
+        // Remove item if quantity is 0
+        await storage.removeFromCart(userId, productId);
+        return res.json({ message: "Item removed from cart" });
+      }
+      
+      // Validate product exists and is available
+      const product = await storage.getProductById(productId);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      
+      if (!product.isActive) {
+        return res.status(400).json({ message: "Product is no longer available" });
+      }
+      
+      // Validate inventory
+      if (quantityNum > product.inventory) {
+        return res.status(400).json({ 
+          message: `Only ${product.inventory} units available for "${product.name}"` 
+        });
+      }
+      
+      await storage.updateCartItemQuantity(userId, productId, quantityNum);
+      res.json({ message: "Cart updated successfully" });
+    } catch (error) {
+      console.error("Error updating cart:", error);
+      res.status(500).json({ message: "Failed to update cart" });
+    }
+  });
+
+  app.delete('/api/cart/:productId', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { productId } = req.params;
+      
+      await storage.removeFromCart(userId, productId);
+      res.json({ message: "Item removed from cart" });
+    } catch (error) {
+      console.error("Error removing from cart:", error);
+      res.status(500).json({ message: "Failed to remove from cart" });
+    }
+  });
+
+  app.delete('/api/cart', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      await storage.clearCart(userId);
+      res.json({ message: "Cart cleared successfully" });
+    } catch (error) {
+      console.error("Error clearing cart:", error);
+      res.status(500).json({ message: "Failed to clear cart" });
+    }
+  });
+
+  app.get('/api/cart/total', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const total = await storage.getCartTotal(userId);
+      res.json({ total });
+    } catch (error) {
+      console.error("Error fetching cart total:", error);
+      res.status(500).json({ message: "Failed to fetch cart total" });
+    }
+  });
+
+  // Checkout and Payment routes - from Stripe blueprint
+  app.post("/api/create-payment-intent", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { shippingAddress, billingAddress, customerEmail, customerPhone, notes, currency = "usd" } = req.body;
+      
+      // Get cart items and validate
+      const cartItems = await storage.getCartItems(userId);
+      if (cartItems.length === 0) {
+        return res.status(400).json({ message: "Cart is empty" });
+      }
+
+      // Validate inventory for all items
+      for (const item of cartItems) {
+        if (!item.product.isActive) {
+          return res.status(400).json({ 
+            message: `Product "${item.product.name}" is no longer available` 
+          });
+        }
+        if (item.quantity > item.product.inventory) {
+          return res.status(400).json({ 
+            message: `Only ${item.product.inventory} of "${item.product.name}" available` 
+          });
+        }
+      }
+
+      // Calculate totals server-side
+      const subtotal = cartItems.reduce(
+        (total, item) => total + (parseFloat(item.product.price) * item.quantity),
+        0
+      );
+      const taxAmount = subtotal * 0.08; // 8% tax
+      const shippingAmount = cartItems.some(item => !item.product.isDigital) ? 5.99 : 0;
+      const total = subtotal + taxAmount + shippingAmount;
+
+      // Create provisional order first
+      const order = await storage.createOrder({
+        userId,
+        subtotal: subtotal.toFixed(2),
+        taxAmount: taxAmount.toFixed(2),
+        shippingAmount: shippingAmount.toFixed(2),
+        total: total.toFixed(2),
+        currency,
+        shippingAddress,
+        billingAddress,
+        customerEmail,
+        customerPhone,
+        notes,
+        status: "pending_payment",
+      });
+
+      // Create order items
+      const orderItemsData = cartItems.map(item => ({
+        orderId: order.id,
+        productId: item.productId,
+        productName: item.product.name,
+        productPrice: item.product.price,
+        quantity: item.quantity,
+        totalPrice: (parseFloat(item.product.price) * item.quantity).toFixed(2),
+      }));
+      await storage.createOrderItems(orderItemsData);
+      
+      // Create Stripe PaymentIntent with server-calculated amount
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(total * 100), // Convert to cents
+        currency,
+        metadata: {
+          userId,
+          orderId: order.id,
+        },
+      });
+
+      // Create payment record
+      await storage.createPayment({
+        orderId: order.id,
+        stripePaymentIntentId: paymentIntent.id,
+        stripeClientSecret: paymentIntent.client_secret || "",
+        amount: total.toFixed(2),
+        currency,
+        status: "pending",
+      });
+
+      res.json({ 
+        clientSecret: paymentIntent.client_secret,
+        paymentIntentId: paymentIntent.id,
+        orderId: order.id,
+        orderSummary: {
+          subtotal: subtotal.toFixed(2),
+          taxAmount: taxAmount.toFixed(2),
+          shippingAmount: shippingAmount.toFixed(2),
+          total: total.toFixed(2),
+          itemCount: cartItems.length,
+        }
+      });
+    } catch (error: any) {
+      console.error("Error creating payment intent:", error);
+      res.status(500).json({ message: "Error creating payment intent: " + error.message });
+    }
+  });
+
+  app.post('/api/checkout', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const orderData = insertOrderSchema.parse({
+        ...req.body,
+        userId,
+      });
+
+      // Get cart items
+      const cartItems = await storage.getCartItems(userId);
+      if (cartItems.length === 0) {
+        return res.status(400).json({ message: "Cart is empty" });
+      }
+
+      // Calculate totals
+      const subtotal = cartItems.reduce(
+        (total, item) => total + (parseFloat(item.product.price) * item.quantity),
+        0
+      );
+      const taxAmount = subtotal * 0.08; // 8% tax
+      const shippingAmount = cartItems.some(item => !item.product.isDigital) ? 5.99 : 0;
+      const total = subtotal + taxAmount + shippingAmount;
+
+      // Create order
+      const order = await storage.createOrder({
+        ...orderData,
+        subtotal: subtotal.toFixed(2),
+        taxAmount: taxAmount.toFixed(2),
+        shippingAmount: shippingAmount.toFixed(2),
+        total: total.toFixed(2),
+        status: "pending",
+      });
+
+      // Create order items
+      const orderItemsData = cartItems.map(item => ({
+        orderId: order.id,
+        productId: item.productId,
+        productName: item.product.name,
+        productPrice: item.product.price,
+        quantity: item.quantity,
+        totalPrice: (parseFloat(item.product.price) * item.quantity).toFixed(2),
+      }));
+
+      await storage.createOrderItems(orderItemsData);
+
+      res.json({
+        order,
+        total,
+        cartItems: cartItems.length,
+      });
+    } catch (error: any) {
+      console.error("Error creating checkout:", error);
+      res.status(400).json({ message: error.message || "Failed to create checkout" });
+    }
+  });
+
+  // Order routes
+  app.get('/api/orders', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const orders = await storage.getOrdersByUser(userId);
+      res.json(orders);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      res.status(500).json({ message: "Failed to fetch orders" });
+    }
+  });
+
+  app.get('/api/orders/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: orderId } = req.params;
+      
+      const order = await storage.getOrderById(orderId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      // Check if user owns this order
+      if (order.userId !== userId) {
+        return res.status(403).json({ message: "Not authorized to view this order" });
+      }
+
+      res.json(order);
+    } catch (error) {
+      console.error("Error fetching order:", error);
+      res.status(500).json({ message: "Failed to fetch order" });
+    }
+  });
+
+  app.post('/api/orders/:id/complete', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: orderId } = req.params;
+      const { paymentIntentId } = req.body;
+
+      // Verify the order belongs to the user
+      const order = await storage.getOrderById(orderId);
+      if (!order || order.userId !== userId) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      // Verify payment with Stripe
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      if (paymentIntent.status === "succeeded") {
+        // Update order status
+        await storage.updateOrderStatus(orderId, "processing");
+        
+        // Update payment status
+        const payment = await storage.getPaymentByStripeId(paymentIntentId);
+        if (payment) {
+          await storage.updatePaymentStatus(payment.id, "succeeded", new Date());
+        }
+
+        // Clear user's cart
+        await storage.clearCart(userId);
+
+        res.json({ message: "Order completed successfully", order });
+      } else {
+        res.status(400).json({ message: "Payment not successful" });
+      }
+    } catch (error: any) {
+      console.error("Error completing order:", error);
+      res.status(500).json({ message: "Failed to complete order" });
     }
   });
 

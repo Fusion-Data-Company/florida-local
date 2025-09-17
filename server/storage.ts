@@ -8,6 +8,10 @@ import {
   businessFollowers,
   spotlights,
   messages,
+  cartItems,
+  orders,
+  orderItems,
+  payments,
   type User,
   type UpsertUser,
   type Business,
@@ -20,6 +24,14 @@ import {
   type Message,
   type InsertMessage,
   type Spotlight,
+  type CartItem,
+  type InsertCartItem,
+  type Order,
+  type InsertOrder,
+  type OrderItem,
+  type InsertOrderItem,
+  type Payment,
+  type InsertPayment,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, sql, and, or, like, inArray } from "drizzle-orm";
@@ -65,6 +77,26 @@ export interface IStorage {
   
   // Spotlight operations
   getCurrentSpotlights(): Promise<{ daily: Business[], weekly: Business[], monthly: Business[] }>;
+  
+  // Cart operations
+  addToCart(userId: string, productId: string, quantity: number): Promise<CartItem>;
+  getCartItems(userId: string): Promise<(CartItem & { product: Product })[]>;
+  updateCartItemQuantity(userId: string, productId: string, quantity: number): Promise<void>;
+  removeFromCart(userId: string, productId: string): Promise<void>;
+  clearCart(userId: string): Promise<void>;
+  getCartTotal(userId: string): Promise<number>;
+  
+  // Order operations
+  createOrder(orderData: InsertOrder): Promise<Order>;
+  createOrderItems(orderItems: InsertOrderItem[]): Promise<OrderItem[]>;
+  getOrderById(orderId: string): Promise<(Order & { orderItems: (OrderItem & { product: Product })[] }) | undefined>;
+  getOrdersByUser(userId: string): Promise<Order[]>;
+  updateOrderStatus(orderId: string, status: string): Promise<void>;
+  
+  // Payment operations
+  createPayment(paymentData: InsertPayment): Promise<Payment>;
+  updatePaymentStatus(paymentId: string, status: string, paidAt?: Date, failureReason?: string): Promise<void>;
+  getPaymentByStripeId(stripePaymentIntentId: string): Promise<Payment | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -442,6 +474,229 @@ export class DatabaseStorage implements IStorage {
     ]);
 
     return { daily, weekly, monthly };
+  }
+
+  // Cart operations
+  async addToCart(userId: string, productId: string, quantity: number): Promise<CartItem> {
+    // Check if item already exists in cart
+    const [existingItem] = await db
+      .select()
+      .from(cartItems)
+      .where(
+        and(
+          eq(cartItems.userId, userId),
+          eq(cartItems.productId, productId)
+        )
+      );
+
+    if (existingItem) {
+      // Update quantity if item exists
+      const [updatedItem] = await db
+        .update(cartItems)
+        .set({ quantity: existingItem.quantity + quantity })
+        .where(eq(cartItems.id, existingItem.id))
+        .returning();
+      return updatedItem;
+    } else {
+      // Create new cart item
+      const [cartItem] = await db
+        .insert(cartItems)
+        .values({ userId, productId, quantity })
+        .returning();
+      return cartItem;
+    }
+  }
+
+  async getCartItems(userId: string): Promise<(CartItem & { product: Product })[]> {
+    return await db
+      .select({
+        id: cartItems.id,
+        userId: cartItems.userId,
+        productId: cartItems.productId,
+        quantity: cartItems.quantity,
+        addedAt: cartItems.addedAt,
+        product: {
+          id: products.id,
+          businessId: products.businessId,
+          name: products.name,
+          description: products.description,
+          price: products.price,
+          originalPrice: products.originalPrice,
+          category: products.category,
+          images: products.images,
+          inventory: products.inventory,
+          isActive: products.isActive,
+          isDigital: products.isDigital,
+          tags: products.tags,
+          rating: products.rating,
+          reviewCount: products.reviewCount,
+          createdAt: products.createdAt,
+          updatedAt: products.updatedAt,
+        },
+      })
+      .from(cartItems)
+      .innerJoin(products, eq(cartItems.productId, products.id))
+      .where(eq(cartItems.userId, userId))
+      .orderBy(desc(cartItems.addedAt));
+  }
+
+  async updateCartItemQuantity(userId: string, productId: string, quantity: number): Promise<void> {
+    if (quantity <= 0) {
+      await this.removeFromCart(userId, productId);
+      return;
+    }
+
+    await db
+      .update(cartItems)
+      .set({ quantity })
+      .where(
+        and(
+          eq(cartItems.userId, userId),
+          eq(cartItems.productId, productId)
+        )
+      );
+  }
+
+  async removeFromCart(userId: string, productId: string): Promise<void> {
+    await db
+      .delete(cartItems)
+      .where(
+        and(
+          eq(cartItems.userId, userId),
+          eq(cartItems.productId, productId)
+        )
+      );
+  }
+
+  async clearCart(userId: string): Promise<void> {
+    await db
+      .delete(cartItems)
+      .where(eq(cartItems.userId, userId));
+  }
+
+  async getCartTotal(userId: string): Promise<number> {
+    const cartItemsWithProducts = await this.getCartItems(userId);
+    return cartItemsWithProducts.reduce(
+      (total, item) => total + (parseFloat(item.product.price) * item.quantity),
+      0
+    );
+  }
+
+  // Order operations
+  async createOrder(orderData: InsertOrder): Promise<Order> {
+    const [order] = await db
+      .insert(orders)
+      .values(orderData)
+      .returning();
+    return order;
+  }
+
+  async createOrderItems(orderItemsData: InsertOrderItem[]): Promise<OrderItem[]> {
+    return await db
+      .insert(orderItems)
+      .values(orderItemsData)
+      .returning();
+  }
+
+  async getOrderById(orderId: string): Promise<(Order & { orderItems: (OrderItem & { product: Product })[] }) | undefined> {
+    const [order] = await db
+      .select()
+      .from(orders)
+      .where(eq(orders.id, orderId));
+
+    if (!order) {
+      return undefined;
+    }
+
+    const orderItemsWithProducts = await db
+      .select({
+        id: orderItems.id,
+        orderId: orderItems.orderId,
+        productId: orderItems.productId,
+        productName: orderItems.productName,
+        productPrice: orderItems.productPrice,
+        quantity: orderItems.quantity,
+        totalPrice: orderItems.totalPrice,
+        createdAt: orderItems.createdAt,
+        product: {
+          id: products.id,
+          businessId: products.businessId,
+          name: products.name,
+          description: products.description,
+          price: products.price,
+          originalPrice: products.originalPrice,
+          category: products.category,
+          images: products.images,
+          inventory: products.inventory,
+          isActive: products.isActive,
+          isDigital: products.isDigital,
+          tags: products.tags,
+          rating: products.rating,
+          reviewCount: products.reviewCount,
+          createdAt: products.createdAt,
+          updatedAt: products.updatedAt,
+        },
+      })
+      .from(orderItems)
+      .innerJoin(products, eq(orderItems.productId, products.id))
+      .where(eq(orderItems.orderId, orderId));
+
+    return {
+      ...order,
+      orderItems: orderItemsWithProducts,
+    };
+  }
+
+  async getOrdersByUser(userId: string): Promise<Order[]> {
+    return await db
+      .select()
+      .from(orders)
+      .where(eq(orders.userId, userId))
+      .orderBy(desc(orders.createdAt));
+  }
+
+  async updateOrderStatus(orderId: string, status: string): Promise<void> {
+    await db
+      .update(orders)
+      .set({ 
+        status,
+        updatedAt: new Date(),
+      })
+      .where(eq(orders.id, orderId));
+  }
+
+  // Payment operations
+  async createPayment(paymentData: InsertPayment): Promise<Payment> {
+    const [payment] = await db
+      .insert(payments)
+      .values(paymentData)
+      .returning();
+    return payment;
+  }
+
+  async updatePaymentStatus(
+    paymentId: string, 
+    status: string, 
+    paidAt?: Date, 
+    failureReason?: string
+  ): Promise<void> {
+    await db
+      .update(payments)
+      .set({
+        status,
+        paidAt,
+        failureReason,
+        updatedAt: new Date(),
+      })
+      .where(eq(payments.id, paymentId));
+  }
+
+  async getPaymentByStripeId(stripePaymentIntentId: string): Promise<Payment | undefined> {
+    const [payment] = await db
+      .select()
+      .from(payments)
+      .where(eq(payments.stripePaymentIntentId, stripePaymentIntentId));
+    return payment;
   }
 }
 

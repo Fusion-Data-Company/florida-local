@@ -12,6 +12,10 @@ import Marketplace from "@/pages/marketplace";
 import Messages from "@/pages/messages";
 import CreateBusiness from "@/pages/create-business";
 import EditBusiness from "@/pages/edit-business";
+import Cart from "@/pages/cart";
+import Checkout from "@/pages/checkout";
+import OrderConfirmation from "@/pages/order-confirmation";
+import Orders from "@/pages/orders";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -28,6 +32,10 @@ function Router() {
           <Route path="/business/:id/edit" component={EditBusiness} />
           <Route path="/marketplace" component={Marketplace} />
           <Route path="/messages" component={Messages} />
+          <Route path="/cart" component={Cart} />
+          <Route path="/checkout" component={Checkout} />
+          <Route path="/order-confirmation" component={OrderConfirmation} />
+          <Route path="/orders" component={Orders} />
         </>
       )}
       <Route component={NotFound} />
