@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Message } from "@shared/schema";
 import { useAuth } from "@/hooks/useAuth";
 import NavigationHeader from "@/components/navigation-header";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
@@ -15,11 +16,11 @@ export default function Messages() {
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [messageInput, setMessageInput] = useState("");
 
-  const { data: conversations = [], isLoading: conversationsLoading } = useQuery({
+  const { data: conversations = [], isLoading: conversationsLoading } = useQuery<Message[]>({
     queryKey: ['/api/messages/conversations'],
   });
 
-  const { data: messages = [], isLoading: messagesLoading } = useQuery({
+  const { data: messages = [], isLoading: messagesLoading } = useQuery<Message[]>({
     queryKey: ['/api/messages', selectedConversation],
     enabled: !!selectedConversation,
   });
@@ -78,10 +79,10 @@ export default function Messages() {
             <CardContent className="p-0">
               <ScrollArea className="h-96">
                 {conversations.length > 0 ? (
-                  conversations.map((conversation: any) => {
+                  conversations.map((conversation: Message) => {
                     const otherUser = conversation.senderId === user?.id 
-                      ? { id: conversation.receiverId } 
-                      : { id: conversation.senderId };
+                      ? { id: conversation.receiverId || 'unknown' } 
+                      : { id: conversation.senderId || 'unknown' };
                     
                     return (
                       <div
@@ -105,7 +106,7 @@ export default function Messages() {
                           </p>
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {new Date(conversation.createdAt).toLocaleDateString()}
+                          {conversation.createdAt ? new Date(conversation.createdAt).toLocaleDateString() : 'Unknown date'}
                         </div>
                       </div>
                     );

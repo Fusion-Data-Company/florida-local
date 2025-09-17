@@ -84,7 +84,7 @@ export default function NavigationHeader() {
                 {/* User Profile */}
                 <div className="flex items-center space-x-2">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={user?.profileImageUrl} alt={user?.firstName || "User"} />
+                    <AvatarImage src={user?.profileImageUrl || undefined} alt={user?.firstName || "User"} />
                     <AvatarFallback>
                       <i className="fas fa-user text-sm"></i>
                     </AvatarFallback>

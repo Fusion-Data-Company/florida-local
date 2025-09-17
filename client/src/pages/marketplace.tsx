@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Product } from "@shared/schema";
 import NavigationHeader from "@/components/navigation-header";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 import ProductCard from "@/components/product-card";
@@ -12,7 +13,7 @@ export default function Marketplace() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
 
-  const { data: products = [], isLoading } = useQuery({
+  const { data: products = [], isLoading } = useQuery<Product[]>({
     queryKey: ['/api/products/search', searchQuery, selectedCategory],
     queryFn: () => {
       const params = new URLSearchParams();
@@ -22,7 +23,7 @@ export default function Marketplace() {
     },
   });
 
-  const { data: featuredProducts = [] } = useQuery({
+  const { data: featuredProducts = [] } = useQuery<Product[]>({
     queryKey: ['/api/products/featured'],
   });
 
@@ -74,7 +75,6 @@ export default function Marketplace() {
                       <SelectValue placeholder="All Categories" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Categories</SelectItem>
                       {categories.map((category) => (
                         <SelectItem key={category} value={category}>
                           {category}
@@ -123,7 +123,7 @@ export default function Marketplace() {
               </div>
             ) : (
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {featuredProducts.map((product: any) => (
+                {featuredProducts.map((product: Product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
               </div>
@@ -161,7 +161,7 @@ export default function Marketplace() {
             </div>
           ) : products.length > 0 ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {products.map((product: any) => (
+              {products.map((product: Product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>

@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Business } from "@shared/schema";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
@@ -9,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 interface BusinessCardProps {
-  business: any;
+  business: Business;
   spotlightType?: 'daily' | 'weekly' | 'monthly';
   spotlightPosition?: number;
 }
@@ -152,7 +153,7 @@ export default function BusinessCard({ business, spotlightType, spotlightPositio
             <div className="text-muted-foreground">Posts</div>
           </div>
           <div className="text-center">
-            <div className="font-bold text-accent">{business.productCount || 0}</div>
+            <div className="font-bold text-accent">{0}</div>
             <div className="text-muted-foreground">Products</div>
           </div>
         </div>

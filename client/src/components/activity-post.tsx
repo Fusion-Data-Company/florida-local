@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
+import { Post } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { useToast } from "@/hooks/use-toast";
@@ -9,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ActivityPostProps {
-  post: any;
+  post: Post;
 }
 
 export default function ActivityPost({ post }: ActivityPostProps) {
@@ -88,7 +89,7 @@ export default function ActivityPost({ post }: ActivityPostProps) {
   const sharePost = () => {
     if (navigator.share) {
       navigator.share({
-        title: `Check out this post from ${post.businessName}`,
+        title: `Check out this post from Local Business`,
         text: post.content,
         url: window.location.href,
       });
@@ -144,15 +145,15 @@ export default function ActivityPost({ post }: ActivityPostProps) {
         <div className="flex-1">
           <div className="flex items-center justify-between mb-2">
             <div>
-              <h4 className="font-bold">{post.businessName || "Local Business"}</h4>
+              <h4 className="font-bold">Local Business</h4>
               <p className="text-sm text-muted-foreground">
-                {new Date(post.createdAt).toLocaleDateString('en-US', {
+                {post.createdAt ? new Date(post.createdAt).toLocaleDateString('en-US', {
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric',
                   hour: '2-digit',
                   minute: '2-digit'
-                })}
+                }) : 'Unknown date'}
               </p>
             </div>
             <div className="flex items-center space-x-2">

@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
+import { Product } from "@shared/schema";
 import ProductCard from "./product-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +13,7 @@ export default function MarketplaceSection() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
 
-  const { data: featuredProducts = [], isLoading } = useQuery({
+  const { data: featuredProducts = [], isLoading } = useQuery<Product[]>({
     queryKey: ['/api/products/featured'],
   });
 
@@ -62,7 +63,6 @@ export default function MarketplaceSection() {
                     <SelectValue placeholder="All Categories" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Categories</SelectItem>
                     <SelectItem value="Food & Beverage">Food & Beverage</SelectItem>
                     <SelectItem value="Fashion">Fashion</SelectItem>
                     <SelectItem value="Home & Garden">Home & Garden</SelectItem>
@@ -106,7 +106,7 @@ export default function MarketplaceSection() {
               </div>
             ))
           ) : featuredProducts.length > 0 ? (
-            featuredProducts.slice(0, 4).map((product: any) => (
+            featuredProducts.slice(0, 4).map((product: Product) => (
               <ProductCard key={product.id} product={product} />
             ))
           ) : (

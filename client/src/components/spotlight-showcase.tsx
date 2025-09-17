@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Business } from "@shared/schema";
 import BusinessCard from "./business-card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -7,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function SpotlightShowcase() {
   const [activeTab, setActiveTab] = useState<'daily' | 'weekly' | 'monthly'>('daily');
 
-  const { data: spotlights, isLoading } = useQuery({
+  const { data: spotlights, isLoading } = useQuery<{daily: Business[], weekly: Business[], monthly: Business[]}>({
     queryKey: ['/api/businesses/spotlight'],
   });
 
@@ -85,7 +86,7 @@ export default function SpotlightShowcase() {
               </div>
             ))
           ) : activeBusinesses.length > 0 ? (
-            activeBusinesses.map((business: any, index: number) => (
+            activeBusinesses.map((business: Business, index: number) => (
               <BusinessCard 
                 key={business.id} 
                 business={business} 

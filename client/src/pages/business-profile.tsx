@@ -1,5 +1,6 @@
 import { useParams } from "wouter";
 import { useQuery } from "@tanstack/react-query";
+import { Business, Product, Post } from "@shared/schema";
 import { useAuth } from "@/hooks/useAuth";
 import NavigationHeader from "@/components/navigation-header";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
@@ -12,15 +13,15 @@ export default function BusinessProfile() {
   const { id } = useParams() as { id: string };
   const { user } = useAuth();
 
-  const { data: business, isLoading } = useQuery({
+  const { data: business, isLoading } = useQuery<Business>({
     queryKey: ['/api/businesses', id],
   });
 
-  const { data: products = [] } = useQuery({
+  const { data: products = [] } = useQuery<Product[]>({
     queryKey: ['/api/businesses', id, 'products'],
   });
 
-  const { data: posts = [] } = useQuery({
+  const { data: posts = [] } = useQuery<Post[]>({
     queryKey: ['/api/businesses', id, 'posts'],
   });
 
@@ -57,7 +58,7 @@ export default function BusinessProfile() {
     );
   }
 
-  const isOwner = user?.id === business.ownerId;
+  const isOwner = user?.id === business?.ownerId;
 
   return (
     <div className="min-h-screen bg-background">

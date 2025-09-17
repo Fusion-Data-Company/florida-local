@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
+import { Product } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { useToast } from "@/hooks/use-toast";
@@ -9,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface ProductCardProps {
-  product: any;
+  product: Product;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
@@ -150,7 +151,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       
       <CardContent className="p-4">
         <div className="text-sm text-muted-foreground mb-2">
-          {product.businessName || "Local Business"}
+          Local Business
         </div>
         <h3 className="font-bold mb-2 line-clamp-2">{product.name}</h3>
         <p className="text-sm text-muted-foreground mb-3 line-clamp-2">

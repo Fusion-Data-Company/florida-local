@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
+import { Post } from "@shared/schema";
 import ActivityPost from "./activity-post";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SocialFeed() {
-  const { data: posts = [], isLoading } = useQuery({
+  const { data: posts = [], isLoading } = useQuery<Post[]>({
     queryKey: ['/api/posts'],
   });
 
@@ -49,7 +50,7 @@ export default function SocialFeed() {
                 </div>
               ))
             ) : posts.length > 0 ? (
-              posts.slice(0, 5).map((post: any) => (
+              posts.slice(0, 5).map((post: Post) => (
                 <ActivityPost key={post.id} post={post} />
               ))
             ) : (
