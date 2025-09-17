@@ -1,0 +1,68 @@
+# Florida Local Elite - Business Community Platform
+
+## Overview
+
+Florida Local Elite is a comprehensive business networking and marketplace platform designed to connect Florida-based entrepreneurs and local businesses. The application serves as a digital community hub where businesses can showcase their profiles, sell products, engage through social feeds, and gain visibility through a sophisticated spotlight system. The platform emphasizes local commerce, community building, and business growth through digital presence and networking opportunities.
+
+## User Preferences
+
+Preferred communication style: Simple, everyday language.
+
+## System Architecture
+
+**Frontend Architecture**
+The client is built with React 18 using TypeScript, leveraging Vite for development and build tooling. The application uses Wouter for lightweight routing and TanStack Query for state management and server synchronization. The UI is constructed with shadcn/ui components built on Radix UI primitives, styled with Tailwind CSS for responsive design. The architecture follows a component-based pattern with custom hooks for authentication and shared functionality.
+
+**Backend Architecture**
+The server runs on Express.js with TypeScript, providing RESTful APIs for all business operations. The application uses Replit's authentication system with OpenID Connect, storing sessions in PostgreSQL. The backend implements a storage abstraction layer that handles all database operations through Drizzle ORM, making the data layer easily testable and maintainable. API routes are organized by feature and include comprehensive error handling.
+
+**Database Design**
+PostgreSQL serves as the primary database with Drizzle ORM providing type-safe database operations. The schema includes comprehensive business profiles with rich metadata, user management tied to Replit auth, social features (posts, likes, comments, follows), a complete product catalog with e-commerce capabilities, messaging system for business networking, and a spotlight system for featured businesses. Database migrations are managed through Drizzle Kit.
+
+**Authentication System**
+User authentication is handled through Replit's OpenID Connect implementation with Passport.js middleware. Sessions are stored in PostgreSQL using connect-pg-simple, providing persistent login across requests. The system includes role-based access control and integrates seamlessly with the frontend through HTTP-only cookies for security.
+
+**Social Features**
+The platform includes a comprehensive social networking system with user-generated content through business posts and updates, engagement features including likes and comments, business following relationships, and a real-time messaging system. The social feed aggregates content from followed businesses and provides discovery mechanisms.
+
+**Marketplace Integration**
+E-commerce functionality is built into business profiles, allowing product catalog management, search and filtering capabilities, and featured product promotion. The system supports Stripe integration for payment processing and includes inventory management features.
+
+**Spotlight System**
+A unique three-tier spotlight system rotates featured businesses on daily, weekly, and monthly cycles. The system uses weighted algorithms considering engagement metrics, business performance, and community voting to ensure fair exposure and incentivize quality participation.
+
+## External Dependencies
+
+**Core Framework Dependencies**
+- Vite for frontend build tooling and development server
+- Express.js for backend API server
+- React 18 with TypeScript for frontend framework
+- TanStack Query for client-side state management and caching
+
+**Database & ORM**
+- PostgreSQL as primary database (Neon serverless)
+- Drizzle ORM for type-safe database operations
+- connect-pg-simple for PostgreSQL session storage
+
+**Authentication**
+- Replit Authentication with OpenID Connect
+- Passport.js for authentication middleware
+- express-session for session management
+
+**UI & Styling**
+- shadcn/ui component library built on Radix UI
+- Tailwind CSS for responsive styling
+- Lucide React for icons
+- React Hook Form with Zod for form validation
+
+**External API Integrations**
+- Google My Business API for business data synchronization
+- Spotify Web API for business playlist features
+- Stripe for payment processing
+- Uploadthing for media management and optimization
+
+**Development & Deployment**
+- TypeScript for type safety across the full stack
+- Wouter for lightweight client-side routing
+- Various Radix UI primitives for accessible components
+- ESLint and TypeScript compiler for code quality

@@ -267,6 +267,10 @@ export const insertBusinessSchema = createInsertSchema(businesses).omit({
   reviewCount: true,
 });
 
+export const updateBusinessSchema = insertBusinessSchema.omit({
+  ownerId: true,
+});
+
 export const insertProductSchema = createInsertSchema(products).omit({
   id: true,
   createdAt: true,
@@ -294,6 +298,7 @@ export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type Business = typeof businesses.$inferSelect;
 export type InsertBusiness = z.infer<typeof insertBusinessSchema>;
+export type UpdateBusiness = z.infer<typeof updateBusinessSchema>;
 export type Product = typeof products.$inferSelect;
 export type InsertProduct = z.infer<typeof insertProductSchema>;
 export type Post = typeof posts.$inferSelect;

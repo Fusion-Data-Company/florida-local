@@ -10,6 +10,8 @@ import Home from "@/pages/home";
 import BusinessProfile from "@/pages/business-profile";
 import Marketplace from "@/pages/marketplace";
 import Messages from "@/pages/messages";
+import CreateBusiness from "@/pages/create-business";
+import EditBusiness from "@/pages/edit-business";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -21,7 +23,9 @@ function Router() {
       ) : (
         <>
           <Route path="/" component={Home} />
+          <Route path="/create-business" component={CreateBusiness} />
           <Route path="/business/:id" component={BusinessProfile} />
+          <Route path="/business/:id/edit" component={EditBusiness} />
           <Route path="/marketplace" component={Marketplace} />
           <Route path="/messages" component={Messages} />
         </>

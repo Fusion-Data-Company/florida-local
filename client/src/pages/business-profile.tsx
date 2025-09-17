@@ -72,11 +72,7 @@ export default function BusinessProfile() {
   };
 
   const handleEditBusiness = () => {
-    // TODO: Implement business editing modal/page
-    toast({
-      title: "Coming soon",
-      description: "Business editing feature will be available soon.",
-    });
+    setLocation(`/business/${id}/edit`);
   };
 
   if (isLoading) {

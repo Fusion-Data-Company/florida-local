@@ -1,13 +1,22 @@
 import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Plus, Store, ChevronDown } from "lucide-react";
 import { useState } from "react";
 
 export default function NavigationHeader() {
   const { user, isAuthenticated } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Fetch user businesses to show appropriate business nav
+  const { data: userBusinesses = [] } = useQuery({
+    queryKey: ['/api/businesses/my'],
+    enabled: isAuthenticated,
+  });
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,14 +42,56 @@ export default function NavigationHeader() {
           {/* Desktop Navigation */}
           {isAuthenticated && (
             <nav className="hidden md:flex items-center space-x-6">
-              <Link href="/" className="text-foreground hover:text-primary transition-colors">
-                <a data-testid="nav-home">Discover</a>
+              <Link href="/" className="text-foreground hover:text-primary transition-colors" data-testid="nav-home">
+                Discover
               </Link>
-              <Link href="/marketplace" className="text-foreground hover:text-primary transition-colors">
-                <a data-testid="nav-marketplace">Marketplace</a>
+              <Link href="/marketplace" className="text-foreground hover:text-primary transition-colors" data-testid="nav-marketplace">
+                Marketplace
               </Link>
-              <Link href="/messages" className="text-foreground hover:text-primary transition-colors">
-                <a data-testid="nav-messages">Network</a>
+              
+              {/* Business Navigation */}
+              <DropdownMenu>
+                <DropdownMenuTrigger className="flex items-center space-x-1 text-foreground hover:text-primary transition-colors" data-testid="nav-business-dropdown">
+                  <Store className="h-4 w-4" />
+                  <span>Business</span>
+                  <ChevronDown className="h-3 w-3" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-48">
+                  {userBusinesses.length > 0 ? (
+                    <>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/business/${userBusinesses[0].id}`}>
+                          <Store className="h-4 w-4 mr-2" />
+                          <span data-testid="link-my-business">My Business</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/business/${userBusinesses[0].id}/edit`}>
+                          <i className="fas fa-edit w-4 h-4 mr-2 flex items-center justify-center"></i>
+                          <span data-testid="link-edit-business">Edit Business</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        <Link href="/create-business">
+                          <Plus className="h-4 w-4 mr-2" />
+                          <span data-testid="link-create-another-business">Create Another</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  ) : (
+                    <DropdownMenuItem asChild>
+                      <Link href="/create-business">
+                        <Plus className="h-4 w-4 mr-2" />
+                        <span data-testid="link-create-business">Create Business</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <Link href="/messages" className="text-foreground hover:text-primary transition-colors" data-testid="nav-messages">
+                Network
               </Link>
               <span className="text-foreground hover:text-primary transition-colors cursor-pointer">
                 Spotlight

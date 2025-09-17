@@ -12,6 +12,7 @@ import {
   type UpsertUser,
   type Business,
   type InsertBusiness,
+  type UpdateBusiness,
   type Product,
   type InsertProduct,
   type Post,
@@ -30,6 +31,8 @@ export interface IStorage {
   
   // Business operations
   createBusiness(business: InsertBusiness): Promise<Business>;
+  updateBusiness(id: string, business: UpdateBusiness): Promise<Business>;
+  deleteBusiness(id: string): Promise<void>;
   getBusinessById(id: string): Promise<Business | undefined>;
   getBusinessesByOwner(ownerId: string): Promise<Business[]>;
   searchBusinesses(query: string, category?: string): Promise<Business[]>;
@@ -91,6 +94,22 @@ export class DatabaseStorage implements IStorage {
       .values(businessData)
       .returning();
     return business;
+  }
+
+  async updateBusiness(id: string, businessData: UpdateBusiness): Promise<Business> {
+    const [business] = await db
+      .update(businesses)
+      .set({
+        ...businessData,
+        updatedAt: new Date(),
+      })
+      .where(eq(businesses.id, id))
+      .returning();
+    return business;
+  }
+
+  async deleteBusiness(id: string): Promise<void> {
+    await db.delete(businesses).where(eq(businesses.id, id));
   }
 
   async getBusinessById(id: string): Promise<Business | undefined> {
