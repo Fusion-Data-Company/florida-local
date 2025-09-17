@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Message } from "@shared/schema";
 import { useAuth } from "@/hooks/useAuth";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import NavigationHeader from "@/components/navigation-header";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,9 +12,11 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Send } from "lucide-react";
 
 export default function Messages() {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [messageInput, setMessageInput] = useState("");
 
@@ -25,12 +29,36 @@ export default function Messages() {
     enabled: !!selectedConversation,
   });
 
+  const sendMessageMutation = useMutation({
+    mutationFn: async (messageData: { receiverId: string; content: string }) => {
+      return await apiRequest('POST', '/api/messages', messageData);
+    },
+    onSuccess: () => {
+      setMessageInput("");
+      // Invalidate both conversations and messages queries
+      queryClient.invalidateQueries({ queryKey: ['/api/messages/conversations'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/messages', selectedConversation] });
+      toast({
+        title: "Message sent",
+        description: "Your message has been delivered successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const sendMessage = () => {
-    if (!messageInput.trim() || !selectedConversation) return;
+    if (!messageInput.trim() || !selectedConversation || sendMessageMutation.isPending) return;
     
-    // TODO: Implement message sending
-    console.log('Sending message:', messageInput);
-    setMessageInput("");
+    sendMessageMutation.mutate({
+      receiverId: selectedConversation,
+      content: messageInput.trim(),
+    });
   };
 
   if (conversationsLoading) {
@@ -203,8 +231,16 @@ export default function Messages() {
                         className="flex-1"
                         data-testid="input-message"
                       />
-                      <Button onClick={sendMessage} data-testid="button-send-message">
-                        <i className="fas fa-paper-plane"></i>
+                      <Button 
+                        onClick={sendMessage} 
+                        data-testid="button-send-message"
+                        disabled={sendMessageMutation.isPending || !messageInput.trim()}
+                      >
+                        {sendMessageMutation.isPending ? (
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                        ) : (
+                          <Send className="h-4 w-4" />
+                        )}
                       </Button>
                     </div>
                   </div>

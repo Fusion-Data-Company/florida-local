@@ -11,7 +11,7 @@ import { useState } from "react";
 
 export default function MarketplaceSection() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
 
   const { data: featuredProducts = [], isLoading } = useQuery<Product[]>({
     queryKey: ['/api/products/featured'],

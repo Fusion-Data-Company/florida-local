@@ -5,7 +5,7 @@ import { useState } from "react";
 
 export default function HeroSection() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedCity, setSelectedCity] = useState<string | undefined>(undefined);
 
   const handleSearch = () => {
     if (searchQuery || selectedCity) {

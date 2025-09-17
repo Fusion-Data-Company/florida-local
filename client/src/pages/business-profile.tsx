@@ -1,17 +1,22 @@
-import { useParams } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useParams, useLocation } from "wouter";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Business, Product, Post } from "@shared/schema";
 import { useAuth } from "@/hooks/useAuth";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import NavigationHeader from "@/components/navigation-header";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { UserPlus, UserMinus, MessageCircle, Edit3 } from "lucide-react";
 
 export default function BusinessProfile() {
   const { id } = useParams() as { id: string };
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
+  const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   const { data: business, isLoading } = useQuery<Business>({
     queryKey: ['/api/businesses', id],
@@ -24,6 +29,55 @@ export default function BusinessProfile() {
   const { data: posts = [] } = useQuery<Post[]>({
     queryKey: ['/api/businesses', id, 'posts'],
   });
+
+  // Check if current user is following this business
+  const { data: followStatus } = useQuery({
+    queryKey: ['/api/businesses', id, 'following'],
+    enabled: isAuthenticated && !!id && user?.id !== business?.ownerId,
+  });
+
+  const isFollowing = followStatus?.isFollowing || false;
+
+  // Follow/unfollow mutation
+  const followMutation = useMutation({
+    mutationFn: async () => {
+      if (isFollowing) {
+        await apiRequest('DELETE', `/api/businesses/${id}/follow`);
+      } else {
+        await apiRequest('POST', `/api/businesses/${id}/follow`);
+      }
+    },
+    onSuccess: () => {
+      toast({
+        title: isFollowing ? "Unfollowed" : "Following",
+        description: isFollowing 
+          ? `You've unfollowed ${business?.name}` 
+          : `You're now following ${business?.name}`,
+      });
+      // Invalidate queries to refresh data
+      queryClient.invalidateQueries({ queryKey: ['/api/businesses', id, 'following'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/businesses', id] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: "Failed to update follow status. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleMessage = () => {
+    setLocation('/messages');
+  };
+
+  const handleEditBusiness = () => {
+    // TODO: Implement business editing modal/page
+    toast({
+      title: "Coming soon",
+      description: "Business editing feature will be available soon.",
+    });
+  };
 
   if (isLoading) {
     return (
@@ -125,18 +179,48 @@ export default function BusinessProfile() {
                     {/* Action Buttons */}
                     <div className="flex space-x-3">
                       {isOwner ? (
-                        <Button variant="outline" data-testid="button-edit-business">
-                          <i className="fas fa-edit mr-2"></i>Edit Profile
+                        <Button 
+                          variant="outline" 
+                          onClick={handleEditBusiness}
+                          data-testid="button-edit-business"
+                        >
+                          <Edit3 className="h-4 w-4 mr-2" />
+                          Edit Profile
                         </Button>
-                      ) : (
+                      ) : isAuthenticated ? (
                         <>
-                          <Button data-testid="button-follow-business">
-                            <i className="fas fa-user-plus mr-2"></i>Follow
+                          <Button 
+                            onClick={() => followMutation.mutate()}
+                            disabled={followMutation.isPending}
+                            variant={isFollowing ? "outline" : "default"}
+                            data-testid="button-follow-business"
+                          >
+                            {followMutation.isPending ? (
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+                            ) : isFollowing ? (
+                              <UserMinus className="h-4 w-4 mr-2" />
+                            ) : (
+                              <UserPlus className="h-4 w-4 mr-2" />
+                            )}
+                            {isFollowing ? "Unfollow" : "Follow"}
                           </Button>
-                          <Button variant="outline" data-testid="button-message-business">
-                            <i className="fas fa-comment mr-2"></i>Message
+                          <Button 
+                            variant="outline" 
+                            onClick={handleMessage}
+                            data-testid="button-message-business"
+                          >
+                            <MessageCircle className="h-4 w-4 mr-2" />
+                            Message
                           </Button>
                         </>
+                      ) : (
+                        <Button 
+                          onClick={() => setLocation('/api/login')}
+                          data-testid="button-login-to-follow"
+                        >
+                          <UserPlus className="h-4 w-4 mr-2" />
+                          Login to Follow
+                        </Button>
                       )}
                     </div>
                   </div>

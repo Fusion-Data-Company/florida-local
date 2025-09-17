@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { Post } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
@@ -21,6 +21,19 @@ export default function ActivityPost({ post }: ActivityPostProps) {
   const [isSaved, setIsSaved] = useState(false);
   const [localLikeCount, setLocalLikeCount] = useState(post.likeCount || 0);
 
+  // Check if current user has liked this post
+  const { data: likeStatus } = useQuery({
+    queryKey: ['/api/posts', post.id, 'liked'],
+    enabled: isAuthenticated,
+  });
+
+  // Update isLiked state when likeStatus is loaded
+  useEffect(() => {
+    if (likeStatus?.isLiked !== undefined) {
+      setIsLiked(likeStatus.isLiked);
+    }
+  }, [likeStatus]);
+
   const likeMutation = useMutation({
     mutationFn: async () => {
       if (isLiked) {
@@ -33,6 +46,7 @@ export default function ActivityPost({ post }: ActivityPostProps) {
       setIsLiked(!isLiked);
       setLocalLikeCount(prev => isLiked ? prev - 1 : prev + 1);
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/posts', post.id, 'liked'] });
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {

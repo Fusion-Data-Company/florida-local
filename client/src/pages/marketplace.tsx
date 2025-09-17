@@ -1,17 +1,40 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Product } from "@shared/schema";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Product, insertProductSchema } from "@shared/schema";
+import { useAuth } from "@/hooks/useAuth";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import NavigationHeader from "@/components/navigation-header";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 import ProductCard from "@/components/product-card";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
+import { Plus, Package, Image as ImageIcon } from "lucide-react";
+
+const createProductSchema = insertProductSchema.omit({ id: true }).extend({
+  name: z.string().min(1, "Product name is required").max(255, "Product name must be less than 255 characters"),
+  description: z.string().min(1, "Product description is required"),
+  price: z.string().min(1, "Price is required").refine((val) => !isNaN(Number(val)) && Number(val) > 0, "Price must be a positive number"),
+  category: z.string().min(1, "Category is required"),
+});
+
+type CreateProductForm = z.infer<typeof createProductSchema>;
 
 export default function Marketplace() {
+  const { user, isAuthenticated } = useAuth();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
+  const [isCreateProductOpen, setIsCreateProductOpen] = useState(false);
 
   const { data: products = [], isLoading } = useQuery<Product[]>({
     queryKey: ['/api/products/search', searchQuery, selectedCategory],
@@ -26,6 +49,65 @@ export default function Marketplace() {
   const { data: featuredProducts = [] } = useQuery<Product[]>({
     queryKey: ['/api/products/featured'],
   });
+
+  const { data: userBusinesses = [] } = useQuery({
+    queryKey: ['/api/businesses/my'],
+    enabled: isAuthenticated,
+  });
+
+  const form = useForm<CreateProductForm>({
+    resolver: zodResolver(createProductSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      price: "",
+      category: "",
+      businessId: "",
+      inventory: 0,
+      isActive: true,
+      isDigital: false,
+    },
+  });
+
+  const createProductMutation = useMutation({
+    mutationFn: async (data: CreateProductForm) => {
+      // Convert price to proper decimal format
+      const productData = {
+        ...data,
+        price: parseFloat(data.price).toFixed(2),
+      };
+      return await apiRequest('POST', '/api/products', productData);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Product created",
+        description: "Your product has been added to the marketplace.",
+      });
+      form.reset();
+      setIsCreateProductOpen(false);
+      queryClient.invalidateQueries({ queryKey: ['/api/products/search'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/products/featured'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: "Failed to create product. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onSubmit = (data: CreateProductForm) => {
+    if (!data.businessId) {
+      toast({
+        title: "Business required",
+        description: "Please select a business to add the product to.",
+        variant: "destructive",
+      });
+      return;
+    }
+    createProductMutation.mutate(data);
+  };
 
   const categories = [
     "Food & Beverage",
@@ -46,13 +128,175 @@ export default function Marketplace() {
       <section className="py-12 bg-gradient-to-r from-primary/10 to-secondary/10">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4 gradient-text">
-              Local Marketplace
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Discover unique products from Florida's most innovative businesses. 
-              Support local entrepreneurs while finding exactly what you need.
-            </p>
+            <div className="flex flex-col items-center justify-between gap-4 md:flex-row md:text-left">
+              <div className="flex-1">
+                <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4 gradient-text">
+                  Local Marketplace
+                </h1>
+                <p className="text-xl text-muted-foreground max-w-2xl">
+                  Discover unique products from Florida's most innovative businesses. 
+                  Support local entrepreneurs while finding exactly what you need.
+                </p>
+              </div>
+              {isAuthenticated && userBusinesses.length > 0 && (
+                <Dialog open={isCreateProductOpen} onOpenChange={setIsCreateProductOpen}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      size="lg"
+                      className="whitespace-nowrap"
+                      data-testid="button-add-product"
+                    >
+                      <Plus className="h-5 w-5 mr-2" />
+                      Add Product
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-2xl">
+                    <DialogHeader>
+                      <DialogTitle className="flex items-center gap-2">
+                        <Package className="h-5 w-5" />
+                        Add New Product
+                      </DialogTitle>
+                    </DialogHeader>
+                    <Form {...form}>
+                      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                        <FormField
+                          control={form.control}
+                          name="businessId"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Business</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger data-testid="select-product-business">
+                                    <SelectValue placeholder="Select your business" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {userBusinesses.map((business: any) => (
+                                    <SelectItem key={business.id} value={business.id}>
+                                      {business.name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Product Name</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    placeholder="Enter product name"
+                                    data-testid="input-product-name"
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={form.control}
+                            name="price"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Price ($)</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    placeholder="0.00"
+                                    data-testid="input-product-price"
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        
+                        <FormField
+                          control={form.control}
+                          name="category"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Category</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger data-testid="select-product-category">
+                                    <SelectValue placeholder="Select category" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {categories.map((category) => (
+                                    <SelectItem key={category} value={category}>
+                                      {category}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="description"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Description</FormLabel>
+                              <FormControl>
+                                <Textarea
+                                  placeholder="Describe your product..."
+                                  className="min-h-24"
+                                  data-testid="textarea-product-description"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <div className="flex items-center justify-between">
+                          <Button type="button" variant="outline" size="sm">
+                            <ImageIcon className="h-4 w-4 mr-2" />
+                            Add Images
+                          </Button>
+                          <div className="flex space-x-2">
+                            <Button 
+                              type="button" 
+                              variant="outline" 
+                              onClick={() => setIsCreateProductOpen(false)}
+                            >
+                              Cancel
+                            </Button>
+                            <Button 
+                              type="submit" 
+                              disabled={createProductMutation.isPending}
+                              data-testid="button-submit-product"
+                            >
+                              {createProductMutation.isPending ? "Adding..." : "Add Product"}
+                            </Button>
+                          </div>
+                        </div>
+                      </form>
+                    </Form>
+                  </DialogContent>
+                </Dialog>
+              )}
+            </div>
           </div>
 
           {/* Search and Filter */}
