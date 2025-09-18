@@ -533,6 +533,19 @@ export class DatabaseStorage implements IStorage {
         googlePlaceId: businesses.googlePlaceId,
         isVerified: businesses.isVerified,
         isActive: businesses.isActive,
+        gmbVerified: businesses.gmbVerified,
+        gmbConnected: businesses.gmbConnected,
+        gmbAccountId: businesses.gmbAccountId,
+        gmbLocationId: businesses.gmbLocationId,
+        gmbSyncStatus: businesses.gmbSyncStatus,
+        gmbLastSyncAt: businesses.gmbLastSyncAt,
+        gmbLastErrorAt: businesses.gmbLastErrorAt,
+        gmbLastError: businesses.gmbLastError,
+        gmbDataSources: businesses.gmbDataSources,
+        stripeAccountId: businesses.stripeAccountId,
+        stripeOnboardingStatus: businesses.stripeOnboardingStatus,
+        stripeChargesEnabled: businesses.stripeChargesEnabled,
+        stripePayoutsEnabled: businesses.stripePayoutsEnabled,
         rating: businesses.rating,
         reviewCount: businesses.reviewCount,
         followerCount: businesses.followerCount,
@@ -1295,8 +1308,9 @@ export class DatabaseStorage implements IStorage {
 
     // Get existing metrics to calculate growth
     const existingMetrics = await this.getEngagementMetrics(businessId);
-    const previousFollowerCount = existingMetrics?.businessId ? business.followerCount - (existingMetrics.followersGrowth || 0) : 0;
-    const followersGrowth = business.followerCount - previousFollowerCount;
+    const currentFollowerCount = business.followerCount || 0;
+    const previousFollowerCount = existingMetrics?.businessId ? currentFollowerCount - (existingMetrics.followersGrowth || 0) : 0;
+    const followersGrowth = currentFollowerCount - previousFollowerCount;
 
     const metrics: InsertEngagementMetrics = {
       businessId,
@@ -1824,6 +1838,11 @@ export class DatabaseStorage implements IStorage {
       return true; // No previous rotation, safe to rotate
     }
 
+    // If createdAt is null, treat as requiring rotation (return early true)
+    if (!lastRotation[0].createdAt) {
+      return true;
+    }
+    
     const lastRotationTime = new Date(lastRotation[0].createdAt).getTime();
     const currentTime = now.getTime();
     const timeDiff = currentTime - lastRotationTime;
