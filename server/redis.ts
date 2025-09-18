@@ -1,15 +1,30 @@
 import Redis from "ioredis";
 import { Queue, Worker, QueueEvents } from "bullmq";
 
+// Track Redis availability to prevent spam
+let redisConnected = false;
+let lastErrorLogged = 0;
+const ERROR_LOG_INTERVAL = 60000; // Only log errors every 60 seconds
+
 // Redis connection configuration for general use
 const redisConfig = {
   host: process.env.REDIS_HOST || "localhost",
   port: parseInt(process.env.REDIS_PORT || "6379"),
   password: process.env.REDIS_PASSWORD,
   maxRetriesPerRequest: 3,
+  lazyConnect: true, // Don't connect immediately
   retryStrategy: (times: number) => {
-    const delay = Math.min(times * 50, 2000);
+    // Fail fast if Redis is consistently unavailable
+    if (times > 10) {
+      return null; // Stop retrying
+    }
+    const delay = Math.min(times * 200, 5000); // Slower retry
     return delay;
+  },
+  reconnectOnError: (err) => {
+    // Only reconnect for specific errors
+    const targetError = err.message.includes('READONLY');
+    return targetError;
   },
 };
 
@@ -19,11 +34,28 @@ const bullmqRedisConfig = {
   port: parseInt(process.env.REDIS_PORT || "6379"),
   password: process.env.REDIS_PASSWORD,
   maxRetriesPerRequest: null,
+  lazyConnect: true,
   retryStrategy: (times: number) => {
-    const delay = Math.min(times * 50, 2000);
+    if (times > 10) {
+      return null;
+    }
+    const delay = Math.min(times * 200, 5000);
     return delay;
   },
+  reconnectOnError: (err) => {
+    const targetError = err.message.includes('READONLY');
+    return targetError;
+  },
 };
+
+// Helper function to log errors with throttling
+function logRedisError(error: Error, context: string) {
+  const now = Date.now();
+  if (now - lastErrorLogged > ERROR_LOG_INTERVAL) {
+    console.error(`❌ Redis ${context} error:`, error.message);
+    lastErrorLogged = now;
+  }
+}
 
 // Create Redis clients
 export const redis = new Redis(redisConfig);
@@ -32,41 +64,110 @@ export const redisSubscriber = new Redis(redisConfig);
 // BullMQ connection
 export const queueConnection = new Redis(bullmqRedisConfig);
 
-// Job Queues
-export const emailQueue = new Queue("email", { connection: queueConnection });
-export const imageQueue = new Queue("image-processing", { connection: queueConnection });
-export const syncQueue = new Queue("data-sync", { connection: queueConnection });
-export const analyticsQueue = new Queue("analytics", { connection: queueConnection });
-export const notificationQueue = new Queue("notifications", { connection: queueConnection });
+// Add error handlers to prevent unhandled error events
+redis.on('error', (err) => {
+  redisConnected = false;
+  logRedisError(err, 'main');
+});
 
-// Queue Events for monitoring
-export const emailQueueEvents = new QueueEvents("email", { connection: queueConnection });
-export const imageQueueEvents = new QueueEvents("image-processing", { connection: queueConnection });
+redisSubscriber.on('error', (err) => {
+  logRedisError(err, 'subscriber');
+});
 
-// Redis health check
+queueConnection.on('error', (err) => {
+  logRedisError(err, 'queue');
+});
+
+// Track connection status
+redis.on('connect', () => {
+  redisConnected = true;
+  console.log('✅ Redis connected');
+});
+
+redis.on('close', () => {
+  redisConnected = false;
+});
+
+// Safe queue creation - only create if Redis is intended to be used
+let emailQueue: Queue | null = null;
+let imageQueue: Queue | null = null;
+let syncQueue: Queue | null = null;
+let analyticsQueue: Queue | null = null;
+let notificationQueue: Queue | null = null;
+let emailQueueEvents: QueueEvents | null = null;
+let imageQueueEvents: QueueEvents | null = null;
+
+// Initialize queues lazily
+export function getQueues() {
+  if (!emailQueue) {
+    try {
+      emailQueue = new Queue("email", { connection: queueConnection });
+      imageQueue = new Queue("image-processing", { connection: queueConnection });
+      syncQueue = new Queue("data-sync", { connection: queueConnection });
+      analyticsQueue = new Queue("analytics", { connection: queueConnection });
+      notificationQueue = new Queue("notifications", { connection: queueConnection });
+      emailQueueEvents = new QueueEvents("email", { connection: queueConnection });
+      imageQueueEvents = new QueueEvents("image-processing", { connection: queueConnection });
+    } catch (error) {
+      logRedisError(error as Error, 'queue initialization');
+    }
+  }
+  
+  return {
+    emailQueue,
+    imageQueue,
+    syncQueue,
+    analyticsQueue,
+    notificationQueue,
+    emailQueueEvents,
+    imageQueueEvents
+  };
+}
+
+// Export getters for backward compatibility
+export { emailQueue, imageQueue, syncQueue, analyticsQueue, notificationQueue, emailQueueEvents, imageQueueEvents };
+
+// Redis health check with graceful handling
 export async function checkRedisConnection(): Promise<boolean> {
   try {
     const pong = await redis.ping();
-    return pong === "PONG";
+    const isConnected = pong === "PONG";
+    if (isConnected && !redisConnected) {
+      redisConnected = true;
+      console.log('✅ Redis reconnected');
+    }
+    return isConnected;
   } catch (error) {
-    console.error("Redis connection failed:", error);
+    if (redisConnected) {
+      logRedisError(error as Error, 'health check');
+      redisConnected = false;
+    }
     return false;
   }
 }
 
-// Cache helpers
+// Check if Redis is available
+export function isRedisAvailable(): boolean {
+  return redisConnected;
+}
+
+// Cache helpers with graceful Redis handling
 export const cache = {
   async get<T>(key: string): Promise<T | null> {
+    if (!redisConnected) return null;
+    
     try {
       const value = await redis.get(key);
       return value ? JSON.parse(value) : null;
     } catch (error) {
-      console.error(`Cache get error for key ${key}:`, error);
+      logRedisError(error as Error, `cache get [${key}]`);
       return null;
     }
   },
 
   async set(key: string, value: any, ttlSeconds?: number): Promise<void> {
+    if (!redisConnected) return;
+    
     try {
       const serialized = JSON.stringify(value);
       if (ttlSeconds) {
@@ -75,33 +176,47 @@ export const cache = {
         await redis.set(key, serialized);
       }
     } catch (error) {
-      console.error(`Cache set error for key ${key}:`, error);
+      logRedisError(error as Error, `cache set [${key}]`);
     }
   },
 
   async delete(key: string): Promise<void> {
+    if (!redisConnected) return;
+    
     try {
       await redis.del(key);
     } catch (error) {
-      console.error(`Cache delete error for key ${key}:`, error);
+      logRedisError(error as Error, `cache delete [${key}]`);
     }
   },
 
   async invalidatePattern(pattern: string): Promise<void> {
+    if (!redisConnected) return;
+    
     try {
       const keys = await redis.keys(pattern);
       if (keys.length > 0) {
         await redis.del(...keys);
       }
     } catch (error) {
-      console.error(`Cache invalidate pattern error for ${pattern}:`, error);
+      logRedisError(error as Error, `cache invalidate [${pattern}]`);
     }
   },
 };
 
-// Session store helper
+// Session store helper with fallback
 export function createRedisStore(session: any) {
   const RedisStore = require("connect-redis").default;
+  const MemoryStore = require("memorystore")(session);
+  
+  // Use memory store if Redis is not available
+  if (!redisConnected) {
+    console.log('⚠️  Using memory store for sessions (Redis unavailable)');
+    return new MemoryStore({
+      checkPeriod: 86400000, // 1 day
+    });
+  }
+  
   return new RedisStore({
     client: redis,
     prefix: "sess:",
@@ -109,19 +224,28 @@ export function createRedisStore(session: any) {
   });
 }
 
-// Initialize Redis connection
-redis.on("connect", () => {
-  console.log("✅ Redis connected");
-});
+// Graceful startup - try to connect but don't block the app
+async function initializeRedis() {
+  try {
+    await redis.connect();
+  } catch (error) {
+    logRedisError(error as Error, 'initial connection');
+  }
+}
 
-redis.on("error", (err) => {
-  console.error("❌ Redis error:", err);
-});
+// Initialize without blocking
+initializeRedis();
 
 // Graceful shutdown
 export async function closeRedisConnections() {
-  await redis.quit();
-  await redisSubscriber.quit();
-  await queueConnection.quit();
-  console.log("Redis connections closed");
+  try {
+    if (redisConnected) {
+      await redis.quit();
+      await redisSubscriber.quit();
+      await queueConnection.quit();
+      console.log("Redis connections closed");
+    }
+  } catch (error) {
+    logRedisError(error as Error, 'shutdown');
+  }
 }

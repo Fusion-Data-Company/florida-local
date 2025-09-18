@@ -154,7 +154,7 @@ export default function ActivityPost({ post }: ActivityPostProps) {
     <div className="bg-card rounded-xl border border-border shadow-lg p-6">
       <div className="flex items-start space-x-4 mb-4">
         <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center flex-shrink-0">
-          <i className={`${getPostIcon()} text-white`}></i>
+          <i className={`${getPostIcon()} text-primary-foreground`}></i>
         </div>
         <div className="flex-1">
           <div className="flex items-center justify-between mb-2">

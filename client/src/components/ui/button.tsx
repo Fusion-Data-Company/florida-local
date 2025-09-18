@@ -22,11 +22,11 @@ const buttonVariants = cva(
         // Luxury variants
         lux: "bg-gradient-to-br from-primary via-accent to-secondary text-primary-foreground font-semibold shadow-lg hover:shadow-xl hover:shadow-primary/25 hover:scale-105 transform transition-all duration-300 ease-out before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/20 before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300",
         
-        glass: "glass-panel backdrop-blur-md bg-white/10 border border-white/20 text-foreground hover:bg-white/15 hover:border-white/30 hover:shadow-lg hover:shadow-primary/20 transform hover:scale-105 transition-all duration-300 ease-out",
+        glass: "glass-panel backdrop-blur-md bg-slate-50/80 border border-slate-200 text-slate-900 hover:bg-slate-100/80 hover:border-slate-300 hover:shadow-lg hover:shadow-primary/20 transform hover:scale-105 transition-all duration-300 ease-out",
         
         metal: "metallic text-primary-foreground font-semibold shadow-lg hover:shadow-xl hover:shadow-secondary/30 hover:scale-105 transform transition-all duration-300 ease-out active:scale-95 active:shadow-inner",
         
-        neon: "bg-transparent border-2 border-primary text-primary neon-glow hover:bg-primary/10 hover:text-primary hover:shadow-[0_0_30px_hsl(var(--primary))] transform hover:scale-105 transition-all duration-300 ease-out",
+        refined: "bg-transparent border-2 border-primary text-primary hover:bg-primary/10 hover:text-primary hover:shadow-md transform hover:scale-105 transition-all duration-300 ease-out",
         
         premium: "bg-gradient-to-r from-accent via-primary to-secondary text-primary-foreground font-semibold shadow-lg hover:shadow-xl hover:shadow-accent/25 hover:scale-105 transform transition-all duration-300 ease-out relative before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/30 before:via-white/10 before:to-white/30 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300"
       },

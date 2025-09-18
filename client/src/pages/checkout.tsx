@@ -21,11 +21,10 @@ import { ArrowLeft, CreditCard, Lock } from "lucide-react";
 import { Link } from "wouter";
 import { ApiCartItem } from "@/lib/types";
 
-// Initialize Stripe - from the blueprint integration
-if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
-  throw new Error('Missing required Stripe key: VITE_STRIPE_PUBLIC_KEY');
-}
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+// Initialize Stripe - from the blueprint integration (with graceful fallback)
+const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY 
+  ? loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
+  : null;
 
 const checkoutSchema = z.object({
   shippingAddress: z.object({

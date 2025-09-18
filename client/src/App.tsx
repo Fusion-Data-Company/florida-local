@@ -17,7 +17,6 @@ import Checkout from "@/pages/checkout";
 import OrderConfirmation from "@/pages/order-confirmation";
 import Orders from "@/pages/orders";
 import VendorProducts from "@/pages/vendor-products";
-import SpotlightShowcase from "@/components/spotlight-showcase";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -39,7 +38,6 @@ function Router() {
           <Route path="/order-confirmation" component={OrderConfirmation} />
           <Route path="/orders" component={Orders} />
           <Route path="/vendor/products" component={VendorProducts} />
-          <Route path="/spotlight" component={SpotlightShowcase} />
         </>
       )}
       <Route component={NotFound} />

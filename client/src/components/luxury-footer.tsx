@@ -1,4 +1,5 @@
 import { Link } from "wouter";
+import { TreePine, Facebook, Instagram, Twitter, Linkedin, Heart, Shield, Award, CheckCircle } from "lucide-react";
 
 export default function LuxuryFooter() {
   const currentYear = new Date().getFullYear();
@@ -14,9 +15,9 @@ export default function LuxuryFooter() {
           {/* Brand Column */}
           <div className="lg:col-span-1">
             <div className="flex items-center space-x-3 mb-6">
-              <div className="relative">
-                <i className="fas fa-palm-tree text-3xl neon-cyan neon-glow"></i>
-                <div className="absolute inset-0 neon-cyan opacity-20 blur-lg"></div>
+              <div className="relative group">
+                <TreePine className="text-3xl text-slate-700 group-hover:text-secondary group-hover:scale-105 transition-all duration-500" size={32} />
+                <div className="absolute inset-0 bg-gradient-to-r from-secondary/5 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full"></div>
               </div>
               <div className="flex flex-col">
                 <h2 className="text-xl font-bold metallic gradient-text-gold text-luxury font-serif">
@@ -41,7 +42,7 @@ export default function LuxuryFooter() {
                 className="group relative p-3 rounded-full glass-panel hover-lift transition-all duration-300"
                 data-testid="social-facebook"
               >
-                <i className="fab fa-facebook-f text-lg group-hover:text-primary transition-colors duration-300"></i>
+                <Facebook className="text-lg group-hover:text-primary transition-colors duration-300" size={18} />
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </a>
               <a 
@@ -51,7 +52,7 @@ export default function LuxuryFooter() {
                 className="group relative p-3 rounded-full glass-panel hover-lift transition-all duration-300"
                 data-testid="social-instagram"
               >
-                <i className="fab fa-instagram text-lg group-hover:text-accent transition-colors duration-300"></i>
+                <Instagram className="text-lg group-hover:text-accent transition-colors duration-300" size={18} />
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-accent/20 to-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </a>
               <a 
@@ -61,7 +62,7 @@ export default function LuxuryFooter() {
                 className="group relative p-3 rounded-full glass-panel hover-lift transition-all duration-300"
                 data-testid="social-twitter"
               >
-                <i className="fab fa-twitter text-lg group-hover:text-primary transition-colors duration-300"></i>
+                <Twitter className="text-lg group-hover:text-primary transition-colors duration-300" size={18} />
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </a>
               <a 
@@ -71,7 +72,7 @@ export default function LuxuryFooter() {
                 className="group relative p-3 rounded-full glass-panel hover-lift transition-all duration-300"
                 data-testid="social-linkedin"
               >
-                <i className="fab fa-linkedin-in text-lg group-hover:text-secondary transition-colors duration-300"></i>
+                <Linkedin className="text-lg group-hover:text-secondary transition-colors duration-300" size={18} />
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-secondary/20 to-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </a>
             </div>
@@ -212,7 +213,7 @@ export default function LuxuryFooter() {
                 data-testid="newsletter-email"
               />
               <button
-                className="px-6 py-3 metallic hover-lift btn-press glow-secondary rounded-lg font-semibold transition-all duration-300"
+                className="px-6 py-3 metallic hover-lift btn-press rounded-lg font-semibold transition-all duration-300 shadow-sm"
                 data-testid="newsletter-subscribe"
               >
                 <span className="relative z-10">Subscribe</span>
@@ -230,24 +231,24 @@ export default function LuxuryFooter() {
               </p>
               <div className="flex items-center gap-4">
                 <span className="text-xs text-muted-foreground/70">Made with</span>
-                <i className="fas fa-heart text-accent animate-pulse"></i>
+                <Heart className="text-accent animate-pulse" size={16} />
                 <span className="text-xs text-muted-foreground/70">in Miami</span>
               </div>
             </div>
             
             <div className="flex items-center gap-6 text-sm">
               <a href="#security" className="group relative text-muted-foreground hover:text-foreground transition-all duration-300" data-testid="footer-security">
-                <i className="fas fa-shield-alt mr-2 group-hover:text-secondary transition-colors duration-300"></i>
+                <Shield className="mr-2 group-hover:text-secondary transition-colors duration-300" size={16} />
                 <span className="relative z-10">Secure</span>
                 <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-secondary to-accent transition-all duration-300 group-hover:w-full"></div>
               </a>
               <a href="#certified" className="group relative text-muted-foreground hover:text-foreground transition-all duration-300" data-testid="footer-certified">
-                <i className="fas fa-certificate mr-2 group-hover:text-primary transition-colors duration-300"></i>
+                <Award className="mr-2 group-hover:text-primary transition-colors duration-300" size={16} />
                 <span className="relative z-10">Certified</span>
                 <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-accent transition-all duration-300 group-hover:w-full"></div>
               </a>
               <a href="#verified" className="group relative text-muted-foreground hover:text-foreground transition-all duration-300" data-testid="footer-verified">
-                <i className="fas fa-check-circle mr-2 group-hover:text-accent transition-colors duration-300"></i>
+                <CheckCircle className="mr-2 group-hover:text-accent transition-colors duration-300" size={16} />
                 <span className="relative z-10">Verified</span>
                 <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-accent to-secondary transition-all duration-300 group-hover:w-full"></div>
               </a>

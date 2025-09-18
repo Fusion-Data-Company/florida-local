@@ -17,13 +17,13 @@ const badgeVariants = cva(
         outline: "text-foreground",
         
         // Luxury variants
-        glass: "glass-panel backdrop-blur-md bg-white/10 border border-white/20 text-foreground hover:bg-white/15 hover:border-white/30 hover:shadow-lg hover:shadow-primary/20 hover:scale-105 transform transition-all duration-300",
+        glass: "glass-panel backdrop-blur-md bg-slate-50/80 border border-slate-200 text-slate-900 hover:bg-slate-100/80 hover:border-slate-300 hover:shadow-lg hover:shadow-primary/20 hover:scale-105 transform transition-all duration-300",
         
-        neon: "bg-transparent border border-primary text-primary neon-glow hover:bg-primary/10 hover:border-primary hover:shadow-[0_0_15px_hsl(var(--primary))] hover:scale-105 transform transition-all duration-300",
+        refined: "bg-transparent border border-primary text-primary hover:bg-primary/10 hover:border-primary hover:shadow-md hover:scale-105 transform transition-all duration-300",
         
-        neon_magenta: "bg-transparent border border-accent text-accent hover:bg-accent/10 hover:border-accent hover:shadow-[0_0_15px_hsl(var(--accent))] hover:scale-105 transform transition-all duration-300 glow-accent",
+        refined_magenta: "bg-transparent border border-accent text-accent hover:bg-accent/10 hover:border-accent hover:shadow-md hover:scale-105 transform transition-all duration-300",
         
-        neon_gold: "bg-transparent border border-secondary text-secondary hover:bg-secondary/10 hover:border-secondary hover:shadow-[0_0_15px_hsl(var(--secondary))] hover:scale-105 transform transition-all duration-300 glow-secondary",
+        refined_gold: "bg-transparent border border-secondary text-secondary hover:bg-secondary/10 hover:border-secondary hover:shadow-md hover:scale-105 transform transition-all duration-300",
         
         gradient: "border-transparent bg-gradient-to-r from-primary via-accent to-secondary text-primary-foreground hover:shadow-lg hover:shadow-primary/25 hover:scale-105 transform transition-all duration-300 font-bold",
         

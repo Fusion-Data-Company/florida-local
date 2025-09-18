@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Search, ShoppingBag, Star, Heart, Truck, Award, Filter } from "lucide-react";
 import { useState } from "react";
 
 export default function MarketplaceSection() {
@@ -38,55 +39,79 @@ export default function MarketplaceSection() {
             </p>
             <Link href="/marketplace">
               <Button 
-                className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 rounded-lg font-semibold transition-all"
+                className="metallic hover-lift btn-press px-8 py-4 font-semibold group transition-all duration-300 shadow-sm"
                 data-testid="button-explore-marketplace"
               >
-                Explore Marketplace
+                <ShoppingBag className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform duration-300" />
+                <span className="relative z-10">Explore Marketplace</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
               </Button>
             </Link>
           </div>
           
           <div className="lg:w-1/2">
-            {/* Search and Filter Bar */}
-            <div className="bg-card border border-border rounded-xl p-6 shadow-lg">
-              <div className="flex flex-col md:flex-row gap-4 mb-4">
-                <Input 
-                  type="search" 
-                  placeholder="Search products..." 
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1"
-                  data-testid="input-marketplace-search"
-                />
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger data-testid="select-marketplace-category">
-                    <SelectValue placeholder="All Categories" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Food & Beverage">Food & Beverage</SelectItem>
-                    <SelectItem value="Fashion">Fashion</SelectItem>
-                    <SelectItem value="Home & Garden">Home & Garden</SelectItem>
-                    <SelectItem value="Health & Beauty">Health & Beauty</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button onClick={handleSearch} data-testid="button-marketplace-search">
-                  Search
+            {/* Premium Search and Filter Bar */}
+            <div className="premium-search-panel glass-panel rounded-2xl p-8 card-rim-light hover-lift transition-all duration-300">
+              <div className="flex flex-col md:flex-row gap-6 mb-6">
+                <div className="flex-1 relative group">
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors duration-300" />
+                  <Input 
+                    type="search" 
+                    placeholder="Search premium products..." 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-12 pr-4 py-4 premium-search-input border-border/30 hover:border-primary/50 focus:border-primary/70 transition-all duration-300"
+                    data-testid="input-marketplace-search"
+                  />
+                  <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                </div>
+                <div className="relative group">
+                  <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground group-hover:text-secondary transition-colors duration-300" />
+                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                    <SelectTrigger className="pl-12 pr-4 py-4 min-w-[200px] premium-search-input border-border/30 hover:border-secondary/50 focus:border-secondary/70 transition-all duration-300" data-testid="select-marketplace-category">
+                      <SelectValue placeholder="All Categories" />
+                    </SelectTrigger>
+                    <SelectContent className="premium-dropdown">
+                      <SelectItem value="Food & Beverage">🍽️ Food & Beverage</SelectItem>
+                      <SelectItem value="Fashion">👗 Fashion</SelectItem>
+                      <SelectItem value="Home & Garden">🏡 Home & Garden</SelectItem>
+                      <SelectItem value="Health & Beauty">💅 Health & Beauty</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-secondary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                </div>
+                <Button 
+                  onClick={handleSearch} 
+                  className="px-8 py-4 metallic hover-lift btn-press group font-semibold shadow-sm"
+                  data-testid="button-marketplace-search"
+                >
+                  <Search className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform duration-300" />
+                  <span className="relative z-10">Search</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md"></div>
                 </Button>
               </div>
               
-              {/* Filter Tags */}
-              <div className="flex flex-wrap gap-2">
-                <Badge className="bg-primary text-primary-foreground cursor-pointer" data-testid="filter-local-made">
-                  Local Made
+              {/* Premium Filter Tags */}
+              <div className="flex flex-wrap gap-3 justify-center">
+                <Badge className="premium-filter-tag bg-gradient-to-r from-primary/20 to-primary/30 text-primary border-primary/30 hover-lift group cursor-pointer transition-all duration-300" data-testid="filter-local-made">
+                  <Award className="h-3 w-3 mr-1 group-hover:scale-110 transition-transform duration-300" />
+                  <span className="relative z-10">Local Made</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
                 </Badge>
-                <Badge className="bg-secondary text-secondary-foreground cursor-pointer" data-testid="filter-eco-friendly">
-                  Eco-Friendly
+                <Badge className="premium-filter-tag bg-gradient-to-r from-secondary/20 to-secondary/30 text-secondary border-secondary/30 hover-lift group cursor-pointer transition-all duration-300" data-testid="filter-eco-friendly">
+                  <Heart className="h-3 w-3 mr-1 group-hover:scale-110 transition-transform duration-300" />
+                  <span className="relative z-10">Eco-Friendly</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-secondary/10 to-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
                 </Badge>
-                <Badge className="bg-accent text-accent-foreground cursor-pointer" data-testid="filter-small-batch">
-                  Small Batch
+                <Badge className="premium-filter-tag bg-gradient-to-r from-accent/20 to-accent/30 text-accent border-accent/30 hover-lift group cursor-pointer transition-all duration-300" data-testid="filter-small-batch">
+                  <Star className="h-3 w-3 mr-1 group-hover:scale-110 transition-transform duration-300" />
+                  <span className="relative z-10">Small Batch</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-accent/10 to-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
                 </Badge>
-                <Badge variant="outline" className="cursor-pointer" data-testid="filter-free-shipping">
-                  Free Shipping
+                <Badge className="premium-filter-tag glass-panel text-foreground border-border/30 hover:border-primary/50 hover-lift group cursor-pointer transition-all duration-300" data-testid="filter-free-shipping">
+                  <Truck className="h-3 w-3 mr-1 group-hover:scale-110 transition-transform duration-300" />
+                  <span className="relative z-10">Free Shipping</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
                 </Badge>
               </div>
             </div>
@@ -111,9 +136,12 @@ export default function MarketplaceSection() {
             ))
           ) : (
             <div className="col-span-full text-center py-16">
-              <i className="fas fa-shopping-bag text-4xl text-muted-foreground mb-4"></i>
-              <h3 className="text-xl font-semibold mb-2">No products available</h3>
-              <p className="text-muted-foreground">
+              <div className="relative inline-block mb-6">
+                <ShoppingBag className="text-6xl text-muted-foreground mx-auto" size={64} />
+                <div className="absolute inset-0 text-muted-foreground opacity-20 blur-lg"></div>
+              </div>
+              <h3 className="text-2xl font-bold mb-4 gradient-text text-luxury font-serif">No products available</h3>
+              <p className="text-muted-foreground max-w-md mx-auto">
                 Check back soon for featured products from local businesses.
               </p>
             </div>

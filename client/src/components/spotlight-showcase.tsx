@@ -116,7 +116,7 @@ export default function SpotlightShowcase() {
                 onClick={() => setShowVoting(!showVoting)}
                 variant={showVoting ? "default" : "outline"}
                 className={`flex items-center gap-2 hover-lift btn-press group transition-all duration-300 ${
-                  showVoting ? 'metallic glow-secondary' : 'glass-panel border-border/30 hover:border-accent/50'
+                  showVoting ? 'metallic shadow-sm' : 'glass-panel border-border/30 hover:border-accent/50'
                 }`}
                 data-testid="button-toggle-voting"
               >
@@ -136,7 +136,7 @@ export default function SpotlightShowcase() {
                 variant={activeTab === 'daily' ? 'default' : 'ghost'}
                 onClick={() => setActiveTab('daily')}
                 className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 group relative ${
-                  activeTab === 'daily' ? 'metallic glow-secondary neon-glow' : 'hover:bg-background/50'
+                  activeTab === 'daily' ? 'metallic shadow-sm' : 'hover:bg-background/50'
                 }`}
                 data-testid="tab-daily-spotlight"
               >
@@ -148,7 +148,7 @@ export default function SpotlightShowcase() {
                 variant={activeTab === 'weekly' ? 'default' : 'ghost'}
                 onClick={() => setActiveTab('weekly')}
                 className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 group relative ${
-                  activeTab === 'weekly' ? 'metallic glow-secondary neon-glow' : 'hover:bg-background/50'
+                  activeTab === 'weekly' ? 'metallic shadow-sm' : 'hover:bg-background/50'
                 }`}
                 data-testid="tab-weekly-spotlight"
               >
@@ -160,7 +160,7 @@ export default function SpotlightShowcase() {
                 variant={activeTab === 'monthly' ? 'default' : 'ghost'}
                 onClick={() => setActiveTab('monthly')}
                 className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 group relative ${
-                  activeTab === 'monthly' ? 'metallic glow-secondary neon-glow' : 'hover:bg-background/50'
+                  activeTab === 'monthly' ? 'metallic shadow-sm' : 'hover:bg-background/50'
                 }`}
                 data-testid="tab-monthly-spotlight"
               >
@@ -227,7 +227,7 @@ export default function SpotlightShowcase() {
             <div className="text-center mb-8">
               <div className="relative inline-block mb-6">
                 <h3 className="text-3xl font-bold flex items-center justify-center gap-3 gradient-text text-luxury font-serif">
-                  <Heart className="w-8 h-8 text-accent glow-accent" />
+                  <Heart className="w-8 h-8 text-accent" />
                   Vote for Monthly Spotlight
                 </h3>
                 <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-px bg-gradient-to-r from-transparent via-accent to-transparent"></div>
@@ -274,7 +274,7 @@ export default function SpotlightShowcase() {
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 text-sm glass-panel px-3 py-1 rounded-lg border-border/20">
-                        <Heart className="w-4 h-4 text-accent glow-accent" />
+                        <Heart className="w-4 h-4 text-accent" />
                         <span className="gradient-text-magenta font-medium">{voteCount} votes</span>
                       </div>
                       

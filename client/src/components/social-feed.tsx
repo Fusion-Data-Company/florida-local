@@ -15,7 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Image as ImageIcon } from "lucide-react";
+import { Plus, Image as ImageIcon, MessageSquare, TrendingUp } from "lucide-react";
 
 const createPostSchema = insertPostSchema.omit({ id: true }).extend({
   content: z.string().min(1, "Post content is required").max(2000, "Post content must be less than 2000 characters"),
@@ -101,7 +101,7 @@ export default function SocialFeed() {
               <CardContent className="p-6">
                 <div className="flex items-center space-x-4">
                   <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
-                    <span className="text-white font-semibold">
+                    <span className="text-primary-foreground font-semibold">
                       {user?.firstName?.[0] || 'U'}
                     </span>
                   </div>
@@ -253,9 +253,12 @@ export default function SocialFeed() {
               ))
             ) : (
               <div className="text-center py-16">
-                <i className="fas fa-stream text-4xl text-muted-foreground mb-4"></i>
-                <h3 className="text-xl font-semibold mb-2">No activity yet</h3>
-                <p className="text-muted-foreground mb-4">
+                <div className="relative inline-block mb-6">
+                  <MessageSquare className="text-6xl text-muted-foreground mx-auto" size={64} />
+                  <div className="absolute inset-0 text-muted-foreground opacity-20 blur-lg"></div>
+                </div>
+                <h3 className="text-2xl font-bold mb-4 gradient-text text-luxury font-serif">No activity yet</h3>
+                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                   Be the first to share an update with the community!
                 </p>
                 {isAuthenticated && userBusinesses.length > 0 && (
@@ -275,10 +278,12 @@ export default function SocialFeed() {
           {posts.length > 5 && (
             <div className="text-center mt-12">
               <Button 
-                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 rounded-lg font-semibold transition-all"
+                className="metallic hover-lift btn-press px-8 py-4 font-semibold group transition-all duration-300 shadow-sm"
                 data-testid="button-load-more-posts"
               >
-                Load More Updates
+                <TrendingUp className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform duration-300" />
+                <span className="relative z-10">Load More Updates</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
               </Button>
             </div>
           )}

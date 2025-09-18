@@ -128,7 +128,7 @@ export default function BusinessProfile() {
               : 'linear-gradient(135deg, hsl(198 93% 60%) 0%, hsl(25 75% 47%) 100%)'
           }}
         >
-          <div className="absolute inset-0 bg-black/30"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-50/50 to-slate-100/60"></div>
         </div>
 
         {/* Business Info Overlay */}
@@ -145,7 +145,7 @@ export default function BusinessProfile() {
                       className="w-full h-full object-cover rounded-full"
                     />
                   ) : (
-                    <i className="fas fa-store text-white text-2xl"></i>
+                    <i className="fas fa-store text-primary text-2xl"></i>
                   )}
                 </div>
 
