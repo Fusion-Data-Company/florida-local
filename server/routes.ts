@@ -1259,11 +1259,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Validate quantity and inventory
-      if (cartData.quantity <= 0) {
+      if (!cartData.quantity || cartData.quantity <= 0) {
         return res.status(400).json({ message: "Quantity must be at least 1" });
       }
       
-      if (cartData.quantity > product.inventory) {
+      if (cartData.quantity > (product.inventory || 0)) {
         return res.status(400).json({ 
           message: `Only ${product.inventory} units available for "${product.name}"` 
         });
@@ -1272,15 +1272,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if item already exists in cart and validate total quantity
       const existingCartItems = await storage.getCartItems(userId);
       const existingItem = existingCartItems.find(item => item.productId === cartData.productId);
-      const totalQuantity = existingItem ? existingItem.quantity + cartData.quantity : cartData.quantity;
+      const totalQuantity = existingItem ? (existingItem.quantity || 0) + (cartData.quantity || 0) : (cartData.quantity || 0);
       
-      if (totalQuantity > product.inventory) {
+      if (totalQuantity > (product.inventory || 0)) {
         return res.status(400).json({ 
-          message: `Cannot add ${cartData.quantity} more. Only ${product.inventory - (existingItem?.quantity || 0)} more units available.` 
+          message: `Cannot add ${cartData.quantity} more. Only ${(product.inventory || 0) - (existingItem?.quantity || 0)} more units available.` 
         });
       }
       
-      const cartItem = await storage.addToCart(userId, cartData.productId, cartData.quantity);
+      const cartItem = await storage.addToCart(userId, cartData.productId, cartData.quantity || 0);
       res.json(cartItem);
     } catch (error: any) {
       console.error("Error adding to cart:", error);
@@ -1317,7 +1317,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Validate inventory
-      if (quantityNum > product.inventory) {
+      if (quantityNum > (product.inventory || 0)) {
         return res.status(400).json({ 
           message: `Only ${product.inventory} units available for "${product.name}"` 
         });
@@ -1385,9 +1385,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
             message: `Product "${item.product.name}" is no longer available` 
           });
         }
-        if (item.quantity > item.product.inventory) {
+        if (item.quantity > (item.product.inventory || 0)) {
           return res.status(400).json({ 
-            message: `Only ${item.product.inventory} of "${item.product.name}" available` 
+            message: `Only ${item.product.inventory || 0} of "${item.product.name}" available` 
           });
         }
       }
@@ -1733,6 +1733,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Update business with Stripe account ID
       await storage.updateBusiness(businessId, {
+        name: business.name,
         stripeAccountId: account.id,
         stripeOnboardingStatus: "pending",
       });
@@ -1819,6 +1820,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Update business status if changed
       if (onboarded && business.stripeOnboardingStatus !== "active") {
         await storage.updateBusiness(businessId, {
+          name: business.name,
           stripeOnboardingStatus: "active",
         });
       }
