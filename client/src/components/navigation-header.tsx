@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Plus, Store, ChevronDown, Search, Bell, MessageCircle, Menu, X, TreePine, Edit, Package, User, LogOut } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CartIcon from "@/components/cart-icon";
 import type { Business } from "@shared/schema";
 
@@ -14,6 +14,7 @@ export default function NavigationHeader() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [location] = useLocation();
+  const [scrolled, setScrolled] = useState(false);
 
   // Fetch user businesses to show appropriate business nav
   const { data: userBusinesses = [] } = useQuery<Business[]>({
@@ -21,11 +22,19 @@ export default function NavigationHeader() {
     enabled: isAuthenticated,
   });
 
+  // Magic MCP Scroll Effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // TODO: Implement search navigation
-      console.log('Searching for:', searchQuery);
+      window.location.href = `/marketplace?q=${encodeURIComponent(searchQuery)}`;
     }
   };
 
@@ -38,13 +47,30 @@ export default function NavigationHeader() {
   };
 
   const isActivePath = (path: string) => {
-    return location === path;
+    return location === path || location.startsWith(path);
   };
+
+  // Magic MCP Navigation Items with ALL pages
+  const navigationItems = [
+    { href: "/", label: "Discover", icon: "✨", testId: "nav-discover" },
+    { href: "/marketplace", label: "Marketplace", icon: "🏪", testId: "nav-marketplace" },
+    { href: "/messages", label: "Messages", icon: "💬", testId: "nav-messages" },
+    { href: "/cart", label: "Cart", icon: "🛒", testId: "nav-cart" },
+    { href: "/orders", label: "Orders", icon: "📋", testId: "nav-orders" },
+  ];
 
   return (
     <>
-      {/* Premium Navigation Header */}
-      <header className="sticky top-0 z-50 w-full premium-nav-glass border-b border-slate-200">
+      {/* Magic MCP Elite Navigation Header */}
+      <header 
+        className={`
+          sticky top-0 z-50 w-full transition-all duration-500
+          ${scrolled 
+            ? 'magic-glass-elite border-b border-white/20 shadow-2xl' 
+            : 'premium-nav-glass border-b border-slate-200'
+          }
+        `}
+      >
         <div className="container mx-auto px-6 lg:px-12">
           <div className="flex h-20 items-center justify-between relative">
             
@@ -66,24 +92,37 @@ export default function NavigationHeader() {
               </div>
             </Link>
 
-            {/* Premium Desktop Navigation */}
+            {/* Magic MCP Elite Desktop Navigation */}
             {isAuthenticated && (
-              <nav className="hidden lg:flex items-center space-x-2">
-                <Link 
-                  href="/" 
-                  className={`premium-nav-link ${isActivePath('/') ? 'active' : ''}`}
-                  data-testid="nav-discover"
-                >
-                  <span className="relative z-10 font-medium">Discover</span>
-                </Link>
-                
-                <Link 
-                  href="/marketplace" 
-                  className={`premium-nav-link ${isActivePath('/marketplace') ? 'active' : ''}`}
-                  data-testid="nav-marketplace"
-                >
-                  <span className="relative z-10 font-medium">Marketplace</span>
-                </Link>
+              <nav className="hidden lg:flex items-center space-x-1">
+                {navigationItems.map((item) => (
+                  <Link 
+                    key={item.href}
+                    href={item.href} 
+                    className={`
+                      relative px-4 py-2 rounded-xl font-medium transition-all duration-300
+                      flex items-center gap-2 group overflow-hidden
+                      ${isActivePath(item.href) 
+                        ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg' 
+                        : 'text-slate-700 hover:bg-white/50 hover:text-slate-900'
+                      }
+                    `}
+                    data-testid={item.testId}
+                  >
+                    {/* Magic MCP Active Indicator */}
+                    {isActivePath(item.href) && (
+                      <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 to-blue-400/20 animate-pulse" />
+                    )}
+                    
+                    <div className="relative z-10 flex items-center gap-2">
+                      <span>{item.icon}</span>
+                      <span>{item.label}</span>
+                    </div>
+
+                    {/* Magic MCP Hover Shimmer */}
+                    <div className="absolute top-0 -left-full w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 group-hover:left-full transition-all duration-700" />
+                  </Link>
+                ))}
                 
                 {/* Premium Business Dropdown */}
                 <DropdownMenu>

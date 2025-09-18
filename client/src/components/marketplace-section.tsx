@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Product } from "@shared/schema";
 import ProductCard from "./product-card";
+import MagicEliteProductCard from "./magic-elite-product-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -137,8 +138,8 @@ export default function MarketplaceSection() {
               </div>
             ))
           ) : featuredProducts.length > 0 ? (
-            featuredProducts.slice(0, 4).map((product: Product) => (
-              <ProductCard key={product.id} product={product} />
+            featuredProducts.slice(0, 4).map((product: Product, index) => (
+              <MagicEliteProductCard key={product.id} product={product} index={index} />
             ))
           ) : (
             <div className="col-span-full text-center py-16">

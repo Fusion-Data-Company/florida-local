@@ -3,24 +3,69 @@ import { users, businesses, products, posts } from "../shared/schema";
 import { eq } from "drizzle-orm";
 
 async function seed() {
-  console.log("🌱 Seeding database...");
+  console.log("🏖️ Creating ELITE DEMO with Miami luxury businesses...");
 
   try {
-    // Create sample users
-    const [user1] = await db.insert(users).values({
-      id: "sample-user-1",
-      email: "demo@example.com",
-      firstName: "Demo",
-      lastName: "User",
+    // Create ELITE ENTREPRENEURS with professional profiles
+    const [alexRivera] = await db.insert(users).values({
+      id: "elite-alex-rivera",
+      email: "alex.rivera@sunsetbeachsurf.com",
+      firstName: "Alex",
+      lastName: "Rivera",
       isAdmin: false,
     }).onConflictDoUpdate({
       target: users.id,
       set: { updatedAt: new Date() }
     }).returning();
 
+    const [sofiaMartinez] = await db.insert(users).values({
+      id: "elite-sofia-martinez",
+      email: "sofia.martinez@azurewellness.com",
+      firstName: "Sofia",
+      lastName: "Martinez",
+      isAdmin: false,
+    }).onConflictDoUpdate({
+      target: users.id,
+      set: { updatedAt: new Date() }
+    }).returning();
+
+    const [marcusThompson] = await db.insert(users).values({
+      id: "elite-marcus-thompson",
+      email: "marcus.thompson@oceangrill.com",
+      firstName: "Marcus",
+      lastName: "Thompson",
+      isAdmin: false,
+    }).onConflictDoUpdate({
+      target: users.id,
+      set: { updatedAt: new Date() }
+    }).returning();
+
+    const [isabellaChen] = await db.insert(users).values({
+      id: "elite-isabella-chen",
+      email: "isabella.chen@elitephotography.com",
+      firstName: "Isabella",
+      lastName: "Chen",
+      isAdmin: false,
+    }).onConflictDoUpdate({
+      target: users.id,
+      set: { updatedAt: new Date() }
+    }).returning();
+
+    const [davidJones] = await db.insert(users).values({
+      id: "elite-david-jones",
+      email: "david.jones@sunsetyoga.com",
+      firstName: "David",
+      lastName: "Jones",
+      isAdmin: false,
+    }).onConflictDoUpdate({
+      target: users.id,
+      set: { updatedAt: new Date() }
+    }).returning();
+
+    // Create admin user
     const [adminUser] = await db.insert(users).values({
       id: "admin-user-1",
-      email: "admin@example.com",
+      email: "admin@floridalocalelite.com",
       firstName: "Admin",
       lastName: "User",
       isAdmin: true,
@@ -29,135 +74,217 @@ async function seed() {
       set: { isAdmin: true, updatedAt: new Date() }
     }).returning();
 
-    console.log("✅ Created users:", user1.email, adminUser.email);
+    console.log("✅ Created elite entrepreneurs and admin");
 
-    // Create sample businesses with professional images
-    const [business1] = await db.insert(businesses).values({
-      ownerId: user1.id,
-      name: "Florida Sunshine Cafe",
-      tagline: "Authentic local flavors in every bite",
-      description: "A cozy cafe serving fresh, locally-sourced ingredients with a Florida twist. Come taste the sunshine!",
-      category: "Food & Beverage",
-      location: "Miami, FL",
-      address: "123 Ocean Drive, Miami, FL 33139",
-      phone: "(305) 555-0123",
-      website: "https://floridasunshinecafe.com",
-      coverImageUrl: "/attached_assets/stock_images/elegant_restaurant_i_5b327bb1.jpg",
+    // 1. SUNSET BEACH SURF SHOP - FLAGSHIP ELITE BUSINESS
+    const [sunsetSurfShop] = await db.insert(businesses).values({
+      ownerId: alexRivera.id,
+      name: "Sunset Beach Surf Shop",
+      tagline: "Ride the waves, live the dream - Premium surf gear & experiences",
+      description: "South Florida's premier surf destination since 2015. We offer top-tier surfboards, premium beachwear, surf lessons with certified instructors, and unforgettable surf experiences. From beginner-friendly lessons to advanced coaching, we help you master the waves while embracing the authentic surf lifestyle.",
+      category: "Sports & Recreation",
+      location: "Miami Beach, FL",
+      address: "456 Ocean Drive, Miami Beach, FL 33139",
+      phone: "(305) 555-SURF",
+      website: "https://sunsetbeachsurf.com",
+      logoUrl: "/attached_assets/stock_images/luxury_travel_experi_f2b67257.jpg",
+      coverImageUrl: "/attached_assets/stock_images/luxury_travel_experi_f2b67257.jpg",
+      operatingHours: {
+        monday: { open: "7:00", close: "19:00" },
+        tuesday: { open: "7:00", close: "19:00" },
+        wednesday: { open: "7:00", close: "19:00" },
+        thursday: { open: "7:00", close: "19:00" },
+        friday: { open: "7:00", close: "20:00" },
+        saturday: { open: "6:00", close: "20:00" },
+        sunday: { open: "6:00", close: "19:00" }
+      },
+      socialLinks: {
+        instagram: "https://instagram.com/sunsetbeachsurf",
+        facebook: "https://facebook.com/sunsetbeachsurfshop",
+        tiktok: "https://tiktok.com/@sunsetbeachsurf"
+      },
       isVerified: true,
       isActive: true,
-      rating: "4.5",
-      reviewCount: 127,
-      followerCount: 450,
-      postCount: 23,
+      rating: "4.9",
+      reviewCount: 347,
+      followerCount: 2840,
+      postCount: 156,
     }).onConflictDoUpdate({
       target: businesses.id,
       set: { 
-        coverImageUrl: "/attached_assets/stock_images/elegant_restaurant_i_5b327bb1.jpg",
+        coverImageUrl: "/attached_assets/stock_images/luxury_travel_experi_f2b67257.jpg",
+        logoUrl: "/attached_assets/stock_images/luxury_travel_experi_f2b67257.jpg",
         updatedAt: new Date() 
       }
     }).returning();
 
-    const [business2] = await db.insert(businesses).values({
-      ownerId: adminUser.id,
-      name: "Miami Beach Wellness Center",
-      tagline: "Luxury spa and wellness sanctuary",
-      description: "Experience ultimate relaxation at Miami's premier wellness center. Our luxury treatments rejuvenate body and soul.",
+    // 2. AZURE WELLNESS SPA - LUXURY WELLNESS
+    const [azureWellnessSpa] = await db.insert(businesses).values({
+      ownerId: sofiaMartinez.id,
+      name: "Azure Wellness Spa",
+      tagline: "Luxury wellness experiences that rejuvenate your mind, body & soul",
+      description: "Miami's most exclusive wellness sanctuary offering world-class spa treatments, holistic therapies, and transformative wellness experiences. Our certified therapists use only premium organic products and cutting-edge wellness technologies to deliver unparalleled relaxation and rejuvenation.",
       category: "Health & Beauty",
-      location: "Miami Beach, FL",
-      address: "789 Collins Avenue, Miami Beach, FL 33139",
-      phone: "(305) 555-0789",
-      website: "https://miamibeachwellness.com",
+      location: "Coral Gables, FL",
+      address: "789 Miracle Mile, Coral Gables, FL 33134",
+      phone: "(305) 555-AZURE",
+      website: "https://azurewellnessspa.com",
+      logoUrl: "/attached_assets/stock_images/luxury_spa_wellness__78221b18.jpg",
       coverImageUrl: "/attached_assets/stock_images/luxury_spa_wellness__78221b18.jpg",
+      operatingHours: {
+        monday: { open: "9:00", close: "20:00" },
+        tuesday: { open: "9:00", close: "20:00" },
+        wednesday: { open: "9:00", close: "20:00" },
+        thursday: { open: "9:00", close: "21:00" },
+        friday: { open: "9:00", close: "21:00" },
+        saturday: { open: "8:00", close: "21:00" },
+        sunday: { open: "9:00", close: "19:00" }
+      },
+      socialLinks: {
+        instagram: "https://instagram.com/azurewellnessspa",
+        facebook: "https://facebook.com/azurewellnessspa"
+      },
       isVerified: true,
       isActive: true,
-      rating: "4.9",
-      reviewCount: 203,
-      followerCount: 850,
-      postCount: 45,
+      rating: "4.8",
+      reviewCount: 298,
+      followerCount: 1650,
+      postCount: 89,
     }).onConflictDoUpdate({
       target: businesses.id,
       set: { 
         coverImageUrl: "/attached_assets/stock_images/luxury_spa_wellness__78221b18.jpg",
+        logoUrl: "/attached_assets/stock_images/luxury_spa_wellness__78221b18.jpg",
         updatedAt: new Date() 
       }
     }).returning();
 
-    const [business3] = await db.insert(businesses).values({
-      ownerId: user1.id,
-      name: "Coastal Wedding Planners",
-      tagline: "Creating unforgettable beachside celebrations",
-      description: "Specializing in elegant beach weddings and coastal celebrations. Let us make your dream wedding a reality.",
-      category: "Wedding Services",
-      location: "Key Biscayne, FL",
-      address: "456 Crandon Boulevard, Key Biscayne, FL 33149",
-      phone: "(305) 555-0456",
-      website: "https://coastalweddingplanners.com",
-      coverImageUrl: "/attached_assets/stock_images/beach_wedding_ceremo_b81563df.jpg",
-      isVerified: true,
-      isActive: true,
-      rating: "4.8",
-      reviewCount: 156,
-      followerCount: 320,
-      postCount: 28,
-    }).onConflictDoUpdate({
-      target: businesses.id,
-      set: { 
-        coverImageUrl: "/attached_assets/stock_images/beach_wedding_ceremo_b81563df.jpg",
-        updatedAt: new Date() 
-      }
-    }).returning();
-
-    const [business4] = await db.insert(businesses).values({
-      ownerId: adminUser.id,
-      name: "Elite Food Tours",
-      tagline: "Culinary adventures for discerning palates",
-      description: "Discover Miami's finest culinary scene with our exclusive food tours. Experience gourmet dining like never before.",
+    // 3. OCEAN GRILL RESTAURANT - FINE DINING EXCELLENCE
+    const [oceanGrillRestaurant] = await db.insert(businesses).values({
+      ownerId: marcusThompson.id,
+      name: "Ocean Grill Restaurant",
+      tagline: "Exquisite oceanfront dining with world-class cuisine",
+      description: "Award-winning fine dining restaurant featuring fresh seafood, prime steaks, and innovative culinary creations. Our oceanfront location offers breathtaking views while our James Beard-trained chefs craft unforgettable dining experiences using the finest local and imported ingredients.",
       category: "Food & Beverage",
-      location: "South Beach, FL",
-      address: "321 Ocean Drive, Miami Beach, FL 33139",
-      phone: "(305) 555-0321",
-      website: "https://elitefoodtours.com",
-      coverImageUrl: "/attached_assets/stock_images/fine_dining_food_pre_6c60b0bf.jpg",
+      location: "Key Biscayne, FL",
+      address: "321 Ocean Boulevard, Key Biscayne, FL 33149",
+      phone: "(305) 555-OCEAN",
+      website: "https://oceangrillrestaurant.com",
+      logoUrl: "/attached_assets/stock_images/elegant_restaurant_f_aa323e17.jpg",
+      coverImageUrl: "/attached_assets/stock_images/elegant_restaurant_f_aa323e17.jpg",
+      operatingHours: {
+        monday: { closed: true },
+        tuesday: { open: "17:00", close: "22:00" },
+        wednesday: { open: "17:00", close: "22:00" },
+        thursday: { open: "17:00", close: "22:30" },
+        friday: { open: "17:00", close: "23:00" },
+        saturday: { open: "17:00", close: "23:00" },
+        sunday: { open: "17:00", close: "21:30" }
+      },
+      socialLinks: {
+        instagram: "https://instagram.com/oceangrillrestaurant",
+        facebook: "https://facebook.com/oceangrillrestaurant"
+      },
       isVerified: true,
       isActive: true,
       rating: "4.7",
-      reviewCount: 98,
-      followerCount: 420,
-      postCount: 67,
+      reviewCount: 456,
+      followerCount: 3200,
+      postCount: 234,
     }).onConflictDoUpdate({
       target: businesses.id,
       set: { 
-        coverImageUrl: "/attached_assets/stock_images/fine_dining_food_pre_6c60b0bf.jpg",
+        coverImageUrl: "/attached_assets/stock_images/elegant_restaurant_f_aa323e17.jpg",
+        logoUrl: "/attached_assets/stock_images/elegant_restaurant_f_aa323e17.jpg",
         updatedAt: new Date() 
       }
     }).returning();
 
-    const [business5] = await db.insert(businesses).values({
-      ownerId: user1.id,
-      name: "Everglades Wildlife Photography",
-      tagline: "Capturing Florida's natural beauty",
-      description: "Professional nature photography services specializing in Florida's unique wildlife and landscapes.",
-      category: "Photography",
-      location: "Homestead, FL",
-      address: "987 Krome Avenue, Homestead, FL 33030",
-      phone: "(305) 555-0987",
-      website: "https://evergladeswildlife.com",
-      coverImageUrl: "/attached_assets/stock_images/professional_photogr_afdb1a59.jpg",
+    // 4. ELITE PHOTOGRAPHY STUDIO - PROFESSIONAL PHOTOGRAPHY
+    const [elitePhotographyStudio] = await db.insert(businesses).values({
+      ownerId: isabellaChen.id,
+      name: "Elite Photography Studio",
+      tagline: "Capturing life's most precious moments with artistic excellence",
+      description: "Premier photography studio specializing in luxury weddings, corporate headshots, fashion photography, and exclusive events. Our award-winning photographers combine technical expertise with artistic vision to create timeless images that tell your unique story.",
+      category: "Professional Services",
+      location: "South Beach, FL",
+      address: "567 Lincoln Road, Miami Beach, FL 33139",
+      phone: "(305) 555-ELITE",
+      website: "https://elitephotographystudio.com",
+      logoUrl: "/attached_assets/stock_images/professional_photogr_7ec7b11b.jpg",
+      coverImageUrl: "/attached_assets/stock_images/professional_photogr_7ec7b11b.jpg",
+      operatingHours: {
+        monday: { open: "9:00", close: "18:00" },
+        tuesday: { open: "9:00", close: "18:00" },
+        wednesday: { open: "9:00", close: "18:00" },
+        thursday: { open: "9:00", close: "19:00" },
+        friday: { open: "9:00", close: "19:00" },
+        saturday: { open: "8:00", close: "20:00" },
+        sunday: { open: "10:00", close: "16:00" }
+      },
+      socialLinks: {
+        instagram: "https://instagram.com/elitephotographystudio",
+        facebook: "https://facebook.com/elitephotographystudio",
+        pinterest: "https://pinterest.com/elitephotographystudio"
+      },
       isVerified: true,
       isActive: true,
       rating: "4.9",
-      reviewCount: 74,
-      followerCount: 290,
-      postCount: 52,
+      reviewCount: 189,
+      followerCount: 4500,
+      postCount: 312,
     }).onConflictDoUpdate({
       target: businesses.id,
       set: { 
-        coverImageUrl: "/attached_assets/stock_images/professional_photogr_afdb1a59.jpg",
+        coverImageUrl: "/attached_assets/stock_images/professional_photogr_7ec7b11b.jpg",
+        logoUrl: "/attached_assets/stock_images/professional_photogr_7ec7b11b.jpg",
         updatedAt: new Date() 
       }
     }).returning();
 
-    const [business6] = await db.insert(businesses).values({
+    // 5. SUNSET YOGA SANCTUARY - WELLNESS & MINDFULNESS
+    const [sunsetYogaSanctuary] = await db.insert(businesses).values({
+      ownerId: davidJones.id,
+      name: "Sunset Yoga Sanctuary",
+      tagline: "Find your inner peace with breathtaking ocean views",
+      description: "Transformative yoga experiences in Miami's most serene beachfront location. Our certified instructors guide you through various yoga styles from gentle Hatha to dynamic Vinyasa, all while enjoying stunning sunset views over Biscayne Bay. Perfect for beginners and advanced practitioners alike.",
+      category: "Health & Wellness",
+      location: "Coconut Grove, FL",
+      address: "890 Bayshore Drive, Coconut Grove, FL 33133",
+      phone: "(305) 555-YOGA",
+      website: "https://sunsetyogasanctuary.com",
+      logoUrl: "/attached_assets/stock_images/sunset_yoga_studio_p_c38ab4c1.jpg",
+      coverImageUrl: "/attached_assets/stock_images/sunset_yoga_studio_p_c38ab4c1.jpg",
+      operatingHours: {
+        monday: { open: "6:00", close: "20:00" },
+        tuesday: { open: "6:00", close: "20:00" },
+        wednesday: { open: "6:00", close: "20:00" },
+        thursday: { open: "6:00", close: "20:00" },
+        friday: { open: "6:00", close: "19:00" },
+        saturday: { open: "7:00", close: "18:00" },
+        sunday: { open: "7:00", close: "18:00" }
+      },
+      socialLinks: {
+        instagram: "https://instagram.com/sunsetyogasanctuary",
+        facebook: "https://facebook.com/sunsetyogasanctuary",
+        youtube: "https://youtube.com/sunsetyogasanctuary"
+      },
+      isVerified: true,
+      isActive: true,
+      rating: "4.8",
+      reviewCount: 267,
+      followerCount: 1890,
+      postCount: 145,
+    }).onConflictDoUpdate({
+      target: businesses.id,
+      set: { 
+        coverImageUrl: "/attached_assets/stock_images/sunset_yoga_studio_p_c38ab4c1.jpg",
+        logoUrl: "/attached_assets/stock_images/sunset_yoga_studio_p_c38ab4c1.jpg",
+        updatedAt: new Date() 
+      }
+    }).returning();
+
+    const [legacyYogaStudio] = await db.insert(businesses).values({
       ownerId: adminUser.id,
       name: "Sunset Yoga Studio",
       tagline: "Find your zen by the sea",
@@ -182,53 +309,105 @@ async function seed() {
       }
     }).returning();
 
-    // Create products and posts for all businesses
-    const allBusinesses = [business1, business2, business3, business4, business5, business6];
-    
-    if (business1) {
-      console.log("✅ Created business:", business1.name);
+    console.log("✅ Created all elite businesses");
 
-      // Create sample products for Florida Sunshine Cafe
-      await db.insert(products).values({
-        businessId: business1.id,
-        name: "Gourmet Cuban Sandwich",
-        description: "Our signature Cuban sandwich with premium roasted pork, ham, Swiss cheese, and house pickles",
-        price: "16.99",
-        originalPrice: "18.99",
-        category: "Food & Beverage",
-        images: ["/attached_assets/stock_images/gourmet_cuban_sandwi_e0346f8d.jpg"],
-        inventory: 50,
-        isActive: true,
-        isDigital: false,
-        tags: ["local-made", "cuban", "signature"],
-        rating: "4.8",
-        reviewCount: 45,
-      }).onConflictDoUpdate({
-        target: products.id,
-        set: { 
-          images: ["/attached_assets/stock_images/gourmet_cuban_sandwi_e0346f8d.jpg"],
-          updatedAt: new Date() 
+    // PREMIUM PRODUCTS FOR SUNSET BEACH SURF SHOP
+    if (sunsetSurfShop) {
+      console.log("🏄‍♂️ Adding premium products for Sunset Beach Surf Shop...");
+
+      await db.insert(products).values([
+        {
+          businessId: sunsetSurfShop.id,
+          name: "Pro Elite Surfboard - 9'2\" Longboard",
+          description: "Handcrafted premium longboard perfect for Florida's gentle waves. Made with sustainable bamboo core and fiberglass finish. Includes custom grip pad and travel bag.",
+          price: "899.99",
+          originalPrice: "1199.99",
+          category: "Sports Equipment",
+          images: ["/attached_assets/stock_images/luxury_travel_experi_f2b67257.jpg"],
+          inventory: 15,
+          isActive: true,
+          isDigital: false,
+          tags: ["premium", "handcrafted", "eco-friendly", "longboard"],
+          rating: "4.9",
+          reviewCount: 23,
+        },
+        {
+          businessId: sunsetSurfShop.id,
+          name: "Ocean Breeze Wetsuit - Premium 3/2mm",
+          description: "Ultra-flexible neoprene wetsuit designed for Florida waters. Features reinforced knees, back zip, and thermal lining for comfort during longer sessions.",
+          price: "249.99",
+          originalPrice: "299.99",
+          category: "Surf Gear",
+          images: ["/attached_assets/stock_images/luxury_travel_experi_f2b67257.jpg"],
+          inventory: 30,
+          isActive: true,
+          isDigital: false,
+          tags: ["wetsuit", "premium", "thermal", "flexible"],
+          rating: "4.7",
+          reviewCount: 45,
+        },
+        {
+          businessId: sunsetSurfShop.id,
+          name: "Private Surf Lesson - VIP Experience",
+          description: "One-on-one surf instruction with our certified professional instructors. Includes board rental, wetsuit, and underwater photography of your session.",
+          price: "150.00",
+          category: "Services",
+          images: ["/attached_assets/stock_images/luxury_travel_experi_f2b67257.jpg"],
+          inventory: 100,
+          isActive: true,
+          isDigital: true,
+          tags: ["lesson", "private", "professional", "photography"],
+          rating: "5.0",
+          reviewCount: 67,
+        },
+        {
+          businessId: sunsetSurfShop.id,
+          name: "Sunset Beach Lifestyle Tee",
+          description: "Premium organic cotton t-shirt with our signature sunset logo. Soft, comfortable, and perfect for beach days or casual wear.",
+          price: "34.99",
+          originalPrice: "44.99",
+          category: "Apparel",
+          images: ["/attached_assets/stock_images/luxury_travel_experi_f2b67257.jpg"],
+          inventory: 75,
+          isActive: true,
+          isDigital: false,
+          tags: ["organic", "cotton", "lifestyle", "comfortable"],
+          rating: "4.6",
+          reviewCount: 89,
         }
-      });
+      ]).onConflictDoNothing();
 
-      // Create sample posts
-      await db.insert(posts).values({
-        businessId: business1.id,
-        content: "Beautiful sunrise this morning! Come taste the sunshine with our fresh breakfast specials. ☀️🍊 #FloridasFinest #LocalEats",
-        type: "update",
-        likeCount: 23,
-        commentCount: 5,
-        shareCount: 3,
-        isVisible: true,
-      }).onConflictDoNothing();
+      // Elite social posts for Surf Shop
+      await db.insert(posts).values([
+        {
+          businessId: sunsetSurfShop.id,
+          content: "🏄‍♂️ Perfect waves this morning! Our Pro Elite 9'2\" longboards are flying off the racks. Book your private lesson today and ride the waves like a pro! #SurfLife #MiamiBeach #PerfectWaves",
+          type: "update",
+          images: ["/attached_assets/stock_images/luxury_travel_experi_f2b67257.jpg"],
+          likeCount: 156,
+          commentCount: 23,
+          shareCount: 12,
+          isVisible: true,
+        },
+        {
+          businessId: sunsetSurfShop.id,
+          content: "🌅 Nothing beats a sunrise surf session! Our team is out there every morning at 6 AM. Join us for the ultimate Miami Beach experience. Early bird lessons available! #SunriseSurf #EarlyBird",
+          type: "achievement",
+          likeCount: 89,
+          commentCount: 15,
+          shareCount: 8,
+          isVisible: true,
+        }
+      ]).onConflictDoNothing();
     }
 
-    if (business2) {
-      console.log("✅ Created business:", business2.name);
+    // LUXURY SPA PRODUCTS FOR AZURE WELLNESS SPA
+    if (azureWellnessSpa) {
+      console.log("✨ Adding luxury spa products for Azure Wellness Spa...");
 
-      // Create sample products for Miami Beach Wellness Center
+      // Create luxury spa products
       await db.insert(products).values({
-        businessId: business2.id,
+        businessId: azureWellnessSpa.id,
         name: "Luxury Spa Treatment Package",
         description: "Complete wellness experience with massage, facial, and aromatherapy session",
         price: "299.00",
@@ -251,7 +430,7 @@ async function seed() {
 
       // Create sample posts
       await db.insert(posts).values({
-        businessId: business2.id,
+        businessId: azureWellnessSpa.id,
         content: "Unwind and rejuvenate at Miami's premier wellness sanctuary. Book your luxury spa experience today! 🧘‍♀️✨ #Wellness #MiamiSpa #Relaxation",
         type: "product",
         likeCount: 34,
@@ -261,12 +440,12 @@ async function seed() {
       }).onConflictDoNothing();
     }
 
-    if (business3) {
-      console.log("✅ Created business:", business3.name);
+    if (oceanGrillRestaurant) {
+      console.log("✅ Created business:", oceanGrillRestaurant.name);
 
       // Create sample products for Coastal Wedding Planners
       await db.insert(products).values({
-        businessId: business3.id,
+        businessId: oceanGrillRestaurant.id,
         name: "Beach Wedding Planning Package",
         description: "Complete beachside wedding coordination including venue, decor, and day-of management",
         price: "2499.00",
@@ -289,7 +468,7 @@ async function seed() {
 
       // Create sample posts
       await db.insert(posts).values({
-        businessId: business3.id,
+        businessId: oceanGrillRestaurant.id,
         content: "Creating magical moments by the sea 🌊💍 This weekend's beach wedding was absolutely stunning! #BeachWedding #WeddingPlanning #CoastalCelebration",
         type: "product",
         likeCount: 28,
@@ -299,12 +478,12 @@ async function seed() {
       }).onConflictDoNothing();
     }
 
-    if (business4) {
-      console.log("✅ Created business:", business4.name);
+    if (elitePhotographyStudio) {
+      console.log("✅ Created business:", elitePhotographyStudio.name);
 
       // Create sample products for Elite Food Tours
       await db.insert(products).values({
-        businessId: business4.id,
+        businessId: elitePhotographyStudio.id,
         name: "VIP Culinary Experience Tour",
         description: "Exclusive 4-hour guided tour featuring Miami's finest restaurants and hidden culinary gems",
         price: "189.00",
@@ -326,7 +505,7 @@ async function seed() {
 
       // Create sample posts
       await db.insert(posts).values({
-        businessId: business4.id,
+        businessId: elitePhotographyStudio.id,
         content: "Discovering Miami's culinary treasures one bite at a time! Join our VIP food tour for an unforgettable gastronomic journey 🍴✨ #FoodTour #MiamiEats #CulinaryExperience",
         type: "product",
         likeCount: 31,
@@ -336,12 +515,12 @@ async function seed() {
       }).onConflictDoNothing();
     }
 
-    if (business5) {
-      console.log("✅ Created business:", business5.name);
+    if (legacyYogaStudio) {
+      console.log("✅ Created business:", legacyYogaStudio.name);
 
       // Create sample products for Everglades Wildlife Photography
       await db.insert(products).values({
-        businessId: business5.id,
+        businessId: legacyYogaStudio.id,
         name: "Professional Photography Session",
         description: "Custom photography session capturing Florida's unique wildlife and natural beauty",
         price: "450.00",
@@ -364,7 +543,7 @@ async function seed() {
 
       // Create sample posts
       await db.insert(posts).values({
-        businessId: business5.id,
+        businessId: legacyYogaStudio.id,
         content: "Captured this magnificent great blue heron at sunrise in the Everglades. Nature's beauty never ceases to amaze! 📸🦢 #WildlifePhotography #Everglades #NatureLovers",
         type: "update",
         likeCount: 45,
@@ -374,12 +553,12 @@ async function seed() {
       }).onConflictDoNothing();
     }
 
-    if (business6) {
-      console.log("✅ Created business:", business6.name);
+    if (legacyYogaStudio) {
+      console.log("✅ Created business:", legacyYogaStudio.name);
 
       // Create sample products for Sunset Yoga Studio
       await db.insert(products).values({
-        businessId: business6.id,
+        businessId: legacyYogaStudio.id,
         name: "Sunset Yoga Class Package",
         description: "10-session package for our popular sunset yoga classes with Miami Bay views",
         price: "179.00",
@@ -402,7 +581,7 @@ async function seed() {
 
       // Create sample posts
       await db.insert(posts).values({
-        businessId: business6.id,
+        businessId: legacyYogaStudio.id,
         content: "Tonight's sunset yoga session was absolutely magical 🧘‍♀️🌅 Join us tomorrow for another peaceful evening by the bay! #SunsetYoga #Mindfulness #MiamiYoga",
         type: "update",
         likeCount: 52,

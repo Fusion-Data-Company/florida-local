@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import NavigationHeader from "@/components/navigation-header";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 import ProductCard from "@/components/product-card";
+import MagicEliteProductCard, { MagicEliteProductGrid } from "@/components/magic-elite-product-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -404,10 +405,8 @@ export default function Marketplace() {
               ))}
             </div>
           ) : products.length > 0 ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {products.map((product: Product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
+            <div className="magic-glow-intense">
+              <MagicEliteProductGrid products={products} />
             </div>
           ) : (searchQuery || selectedCategory) ? (
             <div className="text-center py-16">

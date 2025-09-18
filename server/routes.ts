@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import express, { type Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
@@ -7,6 +7,7 @@ import { votingRateLimit, businessActionRateLimit, generalAPIRateLimit, strictRa
 import { checkRedisConnection } from "./redis";
 import { insertBusinessSchema, updateBusinessSchema, insertProductSchema, insertPostSchema, insertMessageSchema, insertCartItemSchema, insertOrderSchema } from "@shared/schema";
 import { z } from "zod";
+import path from "path";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { ObjectPermission } from "./objectAcl";
 import Stripe from "stripe";
@@ -924,6 +925,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Serve stock images for demo
+  app.use('/stock-images', express.static(path.join(process.cwd(), 'client/src/assets/stock_images')));
+  app.use('/attached_assets', express.static(path.join(process.cwd(), 'attached_assets')));
+
   // Stable public route for serving uploaded images
   app.get("/api/images/public/:objectId", async (req, res) => {
     const { objectId } = req.params;
@@ -1874,6 +1879,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Error performing search:", error);
       res.status(500).json({ message: error.message || "Search failed" });
+    }
+  });
+
+  // AI Business Intelligence Dashboard Endpoints
+  app.get('/api/ai/business-metrics/:businessId', isAuthenticated, async (req: any, res) => {
+    try {
+      const { businessId } = req.params;
+      const userId = req.user.claims.sub;
+
+      // Verify user owns this business
+      const business = await storage.getBusinessById(businessId);
+      if (!business || business.ownerId !== userId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      // Generate AI-powered metrics
+      const { generateBusinessMetrics } = await import("./aiService");
+      const metrics = await generateBusinessMetrics(businessId);
+      res.json(metrics);
+    } catch (error: any) {
+      console.error("Error getting AI business metrics:", error);
+      res.status(500).json({ message: error.message || "Failed to get business metrics" });
+    }
+  });
+
+  app.get('/api/ai/business-insights/:businessId', isAuthenticated, async (req: any, res) => {
+    try {
+      const { businessId } = req.params;
+      const userId = req.user.claims.sub;
+
+      // Verify user owns this business
+      const business = await storage.getBusinessById(businessId);
+      if (!business || business.ownerId !== userId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      // Generate AI insights
+      const { generateBusinessInsights } = await import("./aiService");
+      const insights = await generateBusinessInsights(businessId);
+      
+      // Convert to dashboard format  
+      const { generateAIDashboardInsights } = await import("./aiService");
+      const dashboardInsights = await generateAIDashboardInsights(businessId, insights);
+      res.json(dashboardInsights);
+    } catch (error: any) {
+      console.error("Error getting AI business insights:", error);
+      res.status(500).json({ message: error.message || "Failed to get business insights" });
     }
   });
 

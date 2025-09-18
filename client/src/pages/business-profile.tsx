@@ -11,6 +11,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import AIBusinessDashboard from "@/components/ai-business-dashboard";
+import MagicEliteProductCard from "@/components/magic-elite-product-card";
 import { UserPlus, UserMinus, MessageCircle, Edit3, Clock, MapPin, Phone, Globe } from "lucide-react";
 import { GMBVerificationBadge, GMBConnectionFlow, GMBReviewsSection, GMBDataAttribution } from "@/components/gmb-integration";
 
@@ -19,7 +21,7 @@ export default function BusinessProfile() {
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
-  const [activeTab, setActiveTab] = useState<'posts' | 'products' | 'reviews' | 'about'>('posts');
+  const [activeTab, setActiveTab] = useState<'posts' | 'analytics' | 'products' | 'reviews' | 'about'>('posts');
 
   const { data: business, isLoading } = useQuery<Business>({
     queryKey: ['/api/businesses', id],
@@ -119,22 +121,59 @@ export default function BusinessProfile() {
 
       {/* Business Header */}
       <div className="relative">
-        {/* Cover Image */}
+        {/* Magic MCP Elite Cover Image */}
         <div 
-          className="h-64 md:h-80 bg-cover bg-center relative"
+          className="h-96 md:h-[500px] bg-cover bg-center relative overflow-hidden magic-glow-intense"
           style={{
             backgroundImage: business.coverImageUrl 
-              ? `url(${business.coverImageUrl})` 
-              : 'linear-gradient(135deg, hsl(198 93% 60%) 0%, hsl(25 75% 47%) 100%)'
+              ? `linear-gradient(135deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 100%), url(${business.coverImageUrl})` 
+              : 'linear-gradient(135deg, var(--miami-vice-cyan) 0%, var(--miami-emerald) 100%)'
           }}
         >
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-50/50 to-slate-100/60"></div>
+          {/* Magic MCP Floating Particles */}
+          <div className="absolute inset-0">
+            {[...Array(15)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute w-2 h-2 bg-white/30 rounded-full animate-pulse"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  animationDelay: `${Math.random() * 3}s`,
+                  animationDuration: `${2 + Math.random() * 2}s`
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Elite Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+          
+          {/* Premium Frame Effect */}
+          <div className="absolute inset-4 border-2 border-white/20 rounded-3xl pointer-events-none opacity-60" />
         </div>
 
         {/* Business Info Overlay */}
         <div className="container mx-auto px-4">
           <div className="relative -mt-20 z-10">
-            <div className="bg-card rounded-xl shadow-lg border border-border p-6">
+            <div 
+              className="elite-business-card p-8 rounded-3xl overflow-hidden relative group magic-shadow-luxury"
+              style={{
+                background: `
+                  linear-gradient(145deg, 
+                    rgba(255,255,255,0.95) 0%, 
+                    rgba(255,255,255,0.85) 100%)
+                `,
+                backdropFilter: 'blur(30px) saturate(200%)',
+                border: '3px solid rgba(255,255,255,0.3)',
+                boxShadow: `
+                  0 32px 64px rgba(0,0,0,0.12),
+                  0 0 40px rgba(25, 182, 246, 0.2),
+                  0 0 80px rgba(255, 152, 67, 0.1),
+                  inset 0 1px 0 rgba(255,255,255,1)
+                `
+              }}
+            >
               <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
                 {/* Logo */}
                 <div className="w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center flex-shrink-0">
@@ -334,6 +373,16 @@ export default function BusinessProfile() {
           >
             Posts ({posts.length})
           </Button>
+          {isOwner && (
+            <Button 
+              variant={activeTab === 'analytics' ? 'default' : 'outline'} 
+              className="whitespace-nowrap btn-miami-glass" 
+              onClick={() => setActiveTab('analytics')}
+              data-testid="tab-analytics"
+            >
+              🧠 AI Analytics
+            </Button>
+          )}
           <Button 
             variant={activeTab === 'products' ? 'default' : 'outline'} 
             className="whitespace-nowrap" 
@@ -392,11 +441,17 @@ export default function BusinessProfile() {
           </div>
         )}
 
+        {activeTab === 'analytics' && isOwner && (
+          <AIBusinessDashboard businessId={business.id} />
+        )}
+
         {activeTab === 'products' && (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {products.length > 0 ? (
-              products.map((product: any) => (
-                <Card key={product.id} className="miami-hover-lift miami-card-glow overflow-hidden rounded-2xl" data-testid={`product-${product.id}`}>
+              products.map((product: any, index) => (
+                <div key={product.id} className="magic-glow-intense">
+                  <MagicEliteProductCard product={product} index={index} />
+                </div>
                   <div className="relative">
                     {product.imageUrl && (
                       <div className="relative h-48 overflow-hidden">
