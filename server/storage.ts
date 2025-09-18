@@ -55,10 +55,23 @@ import { db } from "./db";
 import { eq, desc, sql, and, or, like, inArray } from "drizzle-orm";
 
 export interface IStorage {
+  getUserById(userId: string): Promise<User | null>;
   // User operations (required for Replit Auth)
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
   updateUserAdminStatus(id: string, isAdmin: boolean): Promise<void>;
+  updateUserOnlineStatus(userId: string, status: "online" | "away" | "offline"): Promise<void>;
+  getUserConnections(userId: string): Promise<string[]>;
+  userHasAccessToConversation(userId: string, conversationId: string): Promise<boolean>;
+  
+  // AI & Analytics operations
+  getUserFollowedBusinesses(userId: string): Promise<any[]>;
+  getUserLikedPosts(userId: string): Promise<any[]>;
+  getUserPurchaseHistory(userId: string): Promise<any[]>;
+  getBusinessMetrics(businessId: string): Promise<any>;
+  getTrendingBusinesses(limit: number): Promise<Business[]>;
+  getOrderItemsWithProducts(orderId: string): Promise<any[]>;
+  updateOrderInvoiceNumber(orderId: string, invoiceNumber: string): Promise<void>;
   
   // Business operations
   createBusiness(business: InsertBusiness): Promise<Business>;
@@ -74,6 +87,7 @@ export interface IStorage {
   
   // Product operations
   createProduct(product: InsertProduct): Promise<Product>;
+  updateProduct(id: string, product: Partial<InsertProduct>): Promise<Product>;
   getProductById(id: string): Promise<Product | undefined>;
   getProductsByBusiness(businessId: string): Promise<Product[]>;
   searchProducts(query: string, category?: string): Promise<Product[]>;
@@ -188,6 +202,9 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
+  async getUserById(userId: string): Promise<User | null> {
+    return (await db.select().from(users).where(eq(users.id, userId)).limit(1))[0] || null;
+  }
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user;
@@ -211,11 +228,228 @@ export class DatabaseStorage implements IStorage {
   async updateUserAdminStatus(id: string, isAdmin: boolean): Promise<void> {
     await db
       .update(users)
-      .set({ 
+      .set({
         isAdmin,
         updatedAt: new Date(),
       })
       .where(eq(users.id, id));
+  }
+
+  async updateUserOnlineStatus(userId: string, status: "online" | "away" | "offline"): Promise<void> {
+    await db
+      .update(users)
+      .set({
+        onlineStatus: status,
+        lastSeenAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId));
+  }
+
+  async getUserConnections(userId: string): Promise<string[]> {
+    // Get all users who follow businesses owned by this user
+    const myBusinesses = await db
+      .select({ id: businesses.id })
+      .from(businesses)
+      .where(eq(businesses.ownerId, userId));
+
+    if (myBusinesses.length === 0) {
+      return [];
+    }
+
+    const businessIds = myBusinesses.map(b => b.id);
+    const followers = await db
+      .select({ userId: businessFollowers.userId })
+      .from(businessFollowers)
+      .where(inArray(businessFollowers.businessId, businessIds))
+      .groupBy(businessFollowers.userId);
+
+    // Also get users this user has messaged
+    const messageConnections = await db
+      .select({ userId: messages.senderId })
+      .from(messages)
+      .where(
+        or(
+          eq(messages.senderId, userId),
+          eq(messages.receiverId, userId)
+        )
+      )
+      .groupBy(messages.senderId)
+      .union(
+        db
+          .select({ userId: messages.receiverId })
+          .from(messages)
+          .where(
+            or(
+              eq(messages.senderId, userId),
+              eq(messages.receiverId, userId)
+            )
+          )
+          .groupBy(messages.receiverId)
+      );
+
+    const connectionIds = new Set([
+      ...followers.map(f => f.userId),
+      ...messageConnections.map(m => m.userId).filter(id => id !== userId),
+    ]);
+
+    return Array.from(connectionIds);
+  }
+
+  async userHasAccessToConversation(userId: string, conversationId: string): Promise<boolean> {
+    // For now, check if user is part of the message thread
+    const message = await db
+      .select()
+      .from(messages)
+      .where(
+        and(
+          eq(messages.id, conversationId),
+          or(
+            eq(messages.senderId, userId),
+            eq(messages.receiverId, userId)
+          )
+        )
+      )
+      .limit(1);
+
+    return message.length > 0;
+  }
+
+  async getUserFollowedBusinesses(userId: string): Promise<any[]> {
+    const follows = await db
+      .select({
+        id: businesses.id,
+        name: businesses.name,
+        category: businesses.category,
+        followedAt: businessFollowers.createdAt,
+      })
+      .from(businessFollowers)
+      .innerJoin(businesses, eq(businesses.id, businessFollowers.businessId))
+      .where(eq(businessFollowers.userId, userId))
+      .orderBy(desc(businessFollowers.createdAt))
+      .limit(50);
+    
+    return follows;
+  }
+
+  async getUserLikedPosts(userId: string): Promise<any[]> {
+    const likes = await db
+      .select({
+        postId: postLikes.postId,
+        businessId: posts.businessId,
+        likedAt: postLikes.createdAt,
+      })
+      .from(postLikes)
+      .innerJoin(posts, eq(posts.id, postLikes.postId))
+      .where(eq(postLikes.userId, userId))
+      .orderBy(desc(postLikes.createdAt))
+      .limit(50);
+    
+    return likes;
+  }
+
+  async getUserPurchaseHistory(userId: string): Promise<any[]> {
+    const purchases = await db
+      .select({
+        orderId: orders.id,
+        productId: orderItems.productId,
+        productName: orderItems.productName,
+        quantity: orderItems.quantity,
+        createdAt: orders.createdAt,
+      })
+      .from(orders)
+      .innerJoin(orderItems, eq(orderItems.orderId, orders.id))
+      .where(
+        and(
+          eq(orders.userId, userId),
+          eq(orders.status, "completed")
+        )
+      )
+      .orderBy(desc(orders.createdAt))
+      .limit(50);
+    
+    return purchases;
+  }
+
+  async getBusinessMetrics(businessId: string): Promise<any> {
+    // Get average product rating
+    const productStats = await db
+      .select({
+        avgRating: sql<number>`AVG(CAST(${products.rating} AS DECIMAL))`,
+        productCount: sql<number>`COUNT(*)`,
+      })
+      .from(products)
+      .where(eq(products.businessId, businessId));
+
+    // Get total engagement
+    const postStats = await db
+      .select({
+        totalLikes: sql<number>`SUM(${posts.likeCount})`,
+        totalComments: sql<number>`SUM(${posts.commentCount})`,
+        totalShares: sql<number>`SUM(${posts.shareCount})`,
+        postCount: sql<number>`COUNT(*)`,
+      })
+      .from(posts)
+      .where(eq(posts.businessId, businessId));
+
+    const business = await this.getBusinessById(businessId);
+
+    return {
+      avgProductRating: productStats[0]?.avgRating || 0,
+      productCount: productStats[0]?.productCount || 0,
+      totalEngagement: 
+        (postStats[0]?.totalLikes || 0) + 
+        (postStats[0]?.totalComments || 0) + 
+        (postStats[0]?.totalShares || 0),
+      postCount: postStats[0]?.postCount || 0,
+      followerCount: business?.followerCount || 0,
+      rating: business?.rating || "0",
+      reviewCount: business?.reviewCount || 0,
+    };
+  }
+
+  async getTrendingBusinesses(limit: number): Promise<Business[]> {
+    return await db
+      .select()
+      .from(businesses)
+      .where(
+        and(
+          eq(businesses.isActive, true),
+          eq(businesses.isVerified, true)
+        )
+      )
+      .orderBy(
+        desc(businesses.followerCount),
+        desc(businesses.rating)
+      )
+      .limit(limit);
+  }
+
+  async getOrderItemsWithProducts(orderId: string): Promise<any[]> {
+    return await db
+      .select({
+        id: orderItems.id,
+        orderId: orderItems.orderId,
+        productId: orderItems.productId,
+        productName: orderItems.productName,
+        productPrice: orderItems.productPrice,
+        quantity: orderItems.quantity,
+        totalPrice: orderItems.totalPrice,
+        product: products,
+      })
+      .from(orderItems)
+      .leftJoin(products, eq(products.id, orderItems.productId))
+      .where(eq(orderItems.orderId, orderId));
+  }
+
+  async updateOrderInvoiceNumber(orderId: string, invoiceNumber: string): Promise<void> {
+    await db
+      .update(orders)
+      .set({
+        invoiceNumber,
+        updatedAt: new Date(),
+      })
+      .where(eq(orders.id, orderId));
   }
 
   async createBusiness(businessData: InsertBusiness): Promise<Business> {
@@ -374,6 +608,18 @@ export class DatabaseStorage implements IStorage {
     return product;
   }
 
+  async updateProduct(id: string, productData: Partial<InsertProduct>): Promise<Product> {
+    const [product] = await db
+      .update(products)
+      .set({
+        ...productData,
+        updatedAt: new Date(),
+      })
+      .where(eq(products.id, id))
+      .returning();
+    return product;
+  }
+
   async getProductById(id: string): Promise<Product | undefined> {
     const [product] = await db
       .select()
@@ -457,9 +703,15 @@ export class DatabaseStorage implements IStorage {
     return await db
       .select()
       .from(posts)
-      .where(and(eq(posts.businessId, businessId), eq(posts.isVisible, true)))
+      .where(
+        and(
+          eq(posts.businessId, businessId),
+          eq(posts.isVisible, true)
+        )
+      )
       .orderBy(desc(posts.createdAt));
   }
+
 
   async likePost(userId: string, postId: string): Promise<void> {
     await db.insert(postLikes).values({
@@ -761,6 +1013,37 @@ export class DatabaseStorage implements IStorage {
         updatedAt: new Date(),
       })
       .where(eq(orders.id, orderId));
+
+    // Adjust inventory when order moves to processing
+    if (status === 'processing') {
+      await this.adjustInventoryForOrder(orderId);
+    }
+  }
+
+  private async adjustInventoryForOrder(orderId: string): Promise<void> {
+    try {
+      // Get order items
+      const orderItemsList = await db
+        .select()
+        .from(orderItems)
+        .where(eq(orderItems.orderId, orderId));
+
+      // Reduce inventory for each product
+      for (const item of orderItemsList) {
+        await db
+          .update(products)
+          .set({
+            inventory: sql`GREATEST(${products.inventory} - ${item.quantity}, 0)`,
+            updatedAt: new Date(),
+          })
+          .where(eq(products.id, item.productId));
+      }
+
+      console.log(`✅ Adjusted inventory for ${orderItemsList.length} products in order ${orderId}`);
+    } catch (error) {
+      console.error(`❌ Failed to adjust inventory for order ${orderId}:`, error);
+      // Don't throw - we don't want to fail the order status update
+    }
   }
 
   // Payment operations

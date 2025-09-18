@@ -72,6 +72,12 @@ export default function NavigationHeader() {
                           <span data-testid="link-edit-business">Edit Business</span>
                         </Link>
                       </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/vendor/products">
+                          <i className="fas fa-box w-4 h-4 mr-2 flex items-center justify-center"></i>
+                          <span data-testid="link-vendor-products">Manage Products</span>
+                        </Link>
+                      </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild>
                         <Link href="/create-business">

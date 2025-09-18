@@ -5,10 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ShoppingCart } from "lucide-react";
 import { Link } from "wouter";
 
-interface CartItem {
-  id: string;
-  quantity: number;
-}
+interface CartItem { id: string; quantity: number; productId: string }
 
 export default function CartIcon() {
   const { isAuthenticated } = useAuth();

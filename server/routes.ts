@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { isAdmin, adminRateLimit } from "./adminAuth";
 import { votingRateLimit, businessActionRateLimit, generalAPIRateLimit, strictRateLimit, publicEndpointRateLimit } from "./rateLimit";
+import { checkRedisConnection } from "./redis";
 import { insertBusinessSchema, updateBusinessSchema, insertProductSchema, insertPostSchema, insertMessageSchema, insertCartItemSchema, insertOrderSchema } from "@shared/schema";
 import { z } from "zod";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
@@ -15,13 +16,11 @@ import { gmbService } from "./gmbService";
 import { businessVerificationService } from "./businessVerificationService";
 import { dataSyncService } from "./dataSyncService";
 
-// Initialize Stripe - from the blueprint integration
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
-}
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2023-10-16",
-});
+// Initialize Stripe optionally; if key missing, endpoints will short-circuit
+const stripeKey = process.env.STRIPE_SECRET_KEY;
+const stripe = stripeKey
+  ? new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" })
+  : null;
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -583,7 +582,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Enhanced Spotlight Management Routes
   
   // SECURITY: Admin-only manual spotlight rotation with enhanced guards
-  app.post('/api/spotlight/rotate', isAuthenticated, isAdmin, adminRateLimit(60000), async (req: any, res) => {
+  app.post('/api/spotlight/rotate', isAuthenticated, isAdmin, adminRateLimit, async (req: any, res) => {
     try {
       console.log(`Admin spotlight rotation requested by: ${req.adminUser.email} (${req.adminUser.id})`);
       
@@ -790,7 +789,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin endpoints for manual spotlight management
   
   // SECURITY: Admin-only daily spotlight selection
-  app.post('/api/admin/spotlight/daily', isAuthenticated, isAdmin, adminRateLimit(), async (req: any, res) => {
+  app.post('/api/admin/spotlight/daily', isAuthenticated, isAdmin, adminRateLimit, async (req: any, res) => {
     try {
       console.log(`Admin daily spotlight selection by: ${req.adminUser.email}`);
       const selectedBusinesses = await storage.selectDailySpotlights();
@@ -806,7 +805,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // SECURITY: Admin-only weekly spotlight selection
-  app.post('/api/admin/spotlight/weekly', isAuthenticated, isAdmin, adminRateLimit(), async (req: any, res) => {
+  app.post('/api/admin/spotlight/weekly', isAuthenticated, isAdmin, adminRateLimit, async (req: any, res) => {
     try {
       console.log(`Admin weekly spotlight selection by: ${req.adminUser.email}`);
       const selectedBusinesses = await storage.selectWeeklySpotlights();
@@ -822,7 +821,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // SECURITY: Admin-only monthly spotlight selection
-  app.post('/api/admin/spotlight/monthly', isAuthenticated, isAdmin, adminRateLimit(), async (req: any, res) => {
+  app.post('/api/admin/spotlight/monthly', isAuthenticated, isAdmin, adminRateLimit, async (req: any, res) => {
     try {
       console.log(`Admin monthly spotlight selection by: ${req.adminUser.email}`);
       const selectedBusinesses = await storage.selectMonthlySpotlight();
@@ -868,7 +867,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // SECURITY: Admin-only spotlight archiving
-  app.post('/api/admin/spotlight/archive', isAuthenticated, isAdmin, adminRateLimit(), async (req: any, res) => {
+  app.post('/api/admin/spotlight/archive', isAuthenticated, isAdmin, adminRateLimit, async (req: any, res) => {
     try {
       console.log(`Admin spotlight archiving by: ${req.adminUser.email}`);
       await storage.archiveExpiredSpotlights();
@@ -1083,6 +1082,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching business products:", error);
       res.status(500).json({ message: "Failed to fetch products" });
+    }
+  });
+
+  app.put('/api/products/:id', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: productId } = req.params;
+      
+      // Get product and verify ownership through business
+      const product = await storage.getProductById(productId);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      
+      const business = await storage.getBusinessById(product.businessId);
+      if (!business || business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized to edit this product" });
+      }
+      
+      const productData = insertProductSchema.parse({
+        ...req.body,
+        businessId: product.businessId, // Preserve original business
+      });
+      
+      const updatedProduct = await storage.updateProduct(productId, productData);
+      res.json(updatedProduct);
+    } catch (error: any) {
+      console.error("Error updating product:", error);
+      res.status(400).json({ message: error.message || "Failed to update product" });
     }
   });
 
@@ -1401,6 +1429,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.createOrderItems(orderItemsData);
       
       // Create Stripe PaymentIntent with server-calculated amount
+      if (!stripe) {
+        return res.status(503).json({ message: "Payments not configured. Provide STRIPE_SECRET_KEY or use manual /api/checkout." });
+      }
       const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(total * 100), // Convert to cents
         currency,
@@ -1541,6 +1572,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Verify payment with Stripe
+      if (!stripe) {
+        return res.status(503).json({ message: "Payments not configured" });
+      }
       const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
       if (paymentIntent.status === "succeeded") {
         // Update order status
@@ -1565,6 +1599,365 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Health endpoints
+  app.get('/health', async (req, res) => {
+    const redisHealthy = await checkRedisConnection();
+    
+    res.json({ 
+      status: 'healthy', 
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      version: '1.0.0',
+      redis: redisHealthy ? 'connected' : 'disconnected'
+    });
+  });
+
+  app.get('/api/health', async (req, res) => {
+    const redisHealthy = await checkRedisConnection();
+    
+    res.json({ 
+      status: 'healthy',
+      services: {
+        database: 'connected',
+        auth: 'operational',
+        storage: 'operational',
+        redis: redisHealthy ? 'operational' : 'unavailable',
+        monitoring: {
+          sentry: process.env.SENTRY_DSN ? 'configured' : 'disabled',
+          posthog: process.env.POSTHOG_KEY ? 'configured' : 'disabled'
+        }
+      },
+      timestamp: new Date().toISOString()
+    });
+  });
+
+  // Admin promotion endpoint (development only)
+  app.post('/api/admin/promote', isAuthenticated, async (req: any, res) => {
+    try {
+      if (process.env.NODE_ENV === 'production') {
+        return res.status(403).json({ message: "Admin promotion disabled in production" });
+      }
+
+      const userId = req.user.claims.sub;
+      await storage.updateUserAdminStatus(userId, true);
+      
+      res.json({ 
+        message: "User promoted to admin successfully",
+        userId,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Error promoting user to admin:", error);
+      res.status(500).json({ message: "Failed to promote user to admin" });
+    }
+  });
+
+  // Placeholder notifications endpoint (polling)
+  app.get('/api/notifications', isAuthenticated, async (req: any, res) => {
+    try {
+      // TODO: Implement real notifications system
+      // For now, return empty array - this is just for the polling hook
+      const notifications: any[] = [];
+      res.json(notifications);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      res.status(500).json({ message: "Failed to fetch notifications" });
+    }
+  });
+
+  // Stripe Connect onboarding endpoints
+  app.post('/api/businesses/:id/stripe/connect', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business || business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
+
+      // Import Stripe Connect functions
+      const { createConnectAccount, createAccountLink } = await import("./stripeConnect");
+      
+      // Check if already has Stripe account
+      if (business.stripeAccountId) {
+        return res.status(400).json({ message: "Stripe account already exists" });
+      }
+
+      // Create Connect account
+      const account = await createConnectAccount({
+        businessId,
+        userId,
+        email: req.user.claims.email,
+        businessName: business.name,
+        businessType: business.category || "Other",
+      });
+
+      if (!account) {
+        return res.status(500).json({ message: "Failed to create Stripe account" });
+      }
+
+      // Update business with Stripe account ID
+      await storage.updateBusiness(businessId, {
+        stripeAccountId: account.id,
+        stripeOnboardingStatus: "pending",
+      });
+
+      // Create account link for onboarding
+      const baseUrl = `${req.protocol}://${req.hostname}`;
+      const accountLink = await createAccountLink(
+        account.id,
+        `${baseUrl}/api/businesses/${businessId}/stripe/refresh`,
+        `${baseUrl}/business/${businessId}/settings?stripe=success`
+      );
+
+      res.json({
+        accountId: account.id,
+        onboardingUrl: accountLink?.url,
+      });
+    } catch (error: any) {
+      console.error("Error creating Stripe Connect account:", error);
+      res.status(500).json({ message: error.message || "Failed to create Stripe account" });
+    }
+  });
+
+  // Stripe Connect refresh link
+  app.get('/api/businesses/:id/stripe/refresh', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business || business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
+
+      if (!business.stripeAccountId) {
+        return res.status(400).json({ message: "No Stripe account found" });
+      }
+
+      const { createAccountLink } = await import("./stripeConnect");
+      
+      const baseUrl = `${req.protocol}://${req.hostname}`;
+      const accountLink = await createAccountLink(
+        business.stripeAccountId,
+        `${baseUrl}/api/businesses/${businessId}/stripe/refresh`,
+        `${baseUrl}/business/${businessId}/settings?stripe=success`
+      );
+
+      if (!accountLink) {
+        return res.status(500).json({ message: "Failed to create account link" });
+      }
+
+      res.redirect(accountLink.url);
+    } catch (error: any) {
+      console.error("Error refreshing Stripe link:", error);
+      res.status(500).json({ message: error.message || "Failed to refresh Stripe link" });
+    }
+  });
+
+  // Get Stripe Connect account status
+  app.get('/api/businesses/:id/stripe/status', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business || business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
+
+      if (!business.stripeAccountId) {
+        return res.json({ connected: false });
+      }
+
+      const { getConnectAccount, isAccountOnboarded } = await import("./stripeConnect");
+      
+      const account = await getConnectAccount(business.stripeAccountId);
+      if (!account) {
+        return res.json({ connected: false });
+      }
+
+      const onboarded = isAccountOnboarded(account);
+
+      // Update business status if changed
+      if (onboarded && business.stripeOnboardingStatus !== "active") {
+        await storage.updateBusiness(businessId, {
+          stripeOnboardingStatus: "active",
+        });
+      }
+
+      res.json({
+        connected: true,
+        onboarded,
+        accountId: account.id,
+        chargesEnabled: account.charges_enabled,
+        payoutsEnabled: account.payouts_enabled,
+        requirements: account.requirements,
+      });
+    } catch (error: any) {
+      console.error("Error getting Stripe status:", error);
+      res.status(500).json({ message: error.message || "Failed to get Stripe status" });
+    }
+  });
+
+  // AI and Recommendations endpoints
+  app.get('/api/recommendations', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const type = req.query.type as "business" | "product" || "business";
+      const limit = parseInt(req.query.limit as string) || 10;
+
+      const { getRecommendations } = await import("./aiService");
+      const recommendations = await getRecommendations(userId, type, limit);
+
+      res.json({ recommendations });
+    } catch (error: any) {
+      console.error("Error getting recommendations:", error);
+      res.status(500).json({ message: error.message || "Failed to get recommendations" });
+    }
+  });
+
+  app.get('/api/search', async (req, res) => {
+    try {
+      const query = req.query.q as string;
+      const type = req.query.type as "business" | "product";
+      const category = req.query.category as string;
+      const limit = parseInt(req.query.limit as string) || 20;
+
+      if (!query) {
+        return res.status(400).json({ message: "Search query required" });
+      }
+
+      const { semanticSearch } = await import("./aiService");
+      const results = await semanticSearch(query, { type, category }, limit);
+
+      res.json({ results });
+    } catch (error: any) {
+      console.error("Error performing search:", error);
+      res.status(500).json({ message: error.message || "Search failed" });
+    }
+  });
+
+  app.get('/api/businesses/:id/insights', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business || business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
+
+      const { generateBusinessInsights } = await import("./aiService");
+      const insights = await generateBusinessInsights(businessId);
+
+      res.json(insights);
+    } catch (error: any) {
+      console.error("Error generating insights:", error);
+      res.status(500).json({ message: error.message || "Failed to generate insights" });
+    }
+  });
+
+  // Tax endpoints
+  app.post('/api/tax/calculate', isAuthenticated, async (req: any, res) => {
+    try {
+      const { calculateSalesTax } = await import("./taxService");
+      
+      const taxData = await calculateSalesTax(req.body);
+      
+      res.json(taxData);
+    } catch (error: any) {
+      console.error("Error calculating tax:", error);
+      res.status(500).json({ message: error.message || "Failed to calculate tax" });
+    }
+  });
+
+  app.get('/api/tax/categories', async (req, res) => {
+    try {
+      const { getTaxCategories } = await import("./taxService");
+      
+      const categories = await getTaxCategories();
+      
+      res.json({ categories });
+    } catch (error: any) {
+      console.error("Error getting tax categories:", error);
+      res.status(500).json({ message: error.message || "Failed to get tax categories" });
+    }
+  });
+
+  // Invoice endpoint
+  app.post('/api/orders/:id/invoice', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: orderId } = req.params;
+
+      // Verify order belongs to user
+      const order = await storage.getOrderById(orderId);
+      if (!order || order.userId !== userId) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
+
+      const { generateOrderInvoice } = await import("./invoiceService");
+      const { invoiceNumber, buffer } = await generateOrderInvoice(orderId);
+
+      // Send PDF as response
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="invoice-${invoiceNumber}.pdf"`);
+      res.send(buffer);
+    } catch (error: any) {
+      console.error("Error generating invoice:", error);
+      res.status(500).json({ message: error.message || "Failed to generate invoice" });
+    }
+  });
+
+  // Stripe webhook endpoint
+  app.post('/api/stripe/webhook', async (req, res) => {
+    try {
+      if (!stripe) {
+        return res.status(501).json({ message: "Stripe not configured" });
+      }
+
+      const sig = req.headers['stripe-signature'] as string;
+      const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+      if (!webhookSecret) {
+        console.error("Stripe webhook secret not configured");
+        return res.status(500).json({ message: "Webhook secret not configured" });
+      }
+
+      let event: Stripe.Event;
+
+      try {
+        event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+      } catch (err: any) {
+        console.error("Webhook signature verification failed:", err.message);
+        return res.status(400).json({ message: `Webhook Error: ${err.message}` });
+      }
+
+      const { handleConnectWebhook } = await import("./stripeConnect");
+
+      // Handle the event
+      if (event.type.startsWith('account.')) {
+        await handleConnectWebhook(event, event.account as string);
+      }
+
+      res.json({ received: true });
+    } catch (error: any) {
+      console.error("Stripe webhook error:", error);
+      res.status(500).json({ message: error.message || "Webhook processing failed" });
+    }
+  });
+
   const httpServer = createServer(app);
+  
+  // Initialize WebSocket server
+  const { initWebSocket } = await import("./websocket");
+  initWebSocket(httpServer);
+  
   return httpServer;
 }

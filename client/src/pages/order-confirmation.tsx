@@ -66,7 +66,7 @@ export default function OrderConfirmation() {
   // Get payment intent ID and order ID from URL
   const urlParams = new URLSearchParams(window.location.search);
   const paymentIntentId = urlParams.get('payment_intent');
-  const orderId = urlParams.get('order_id');
+  const orderId = urlParams.get('orderId') || urlParams.get('order_id');
 
   const completeOrderMutation = useMutation({
     mutationFn: async (data: { orderId: string; paymentIntentId: string }) => {
@@ -87,18 +87,35 @@ export default function OrderConfirmation() {
   });
 
   useEffect(() => {
-    if (!paymentIntentId || !orderId) {
-      console.error('Missing payment intent ID or order ID in URL');
+    if (!orderId) {
+      console.error('Missing order ID in URL');
       setIsLoading(false);
       return;
     }
 
-    // Complete the order with the payment intent
-    completeOrderMutation.mutate({ 
-      orderId: orderId, 
-      paymentIntentId: paymentIntentId 
-    });
+    if (paymentIntentId) {
+      // Complete the order with the payment intent (Stripe flow)
+      completeOrderMutation.mutate({ 
+        orderId: orderId, 
+        paymentIntentId: paymentIntentId 
+      });
+    } else {
+      // Manual checkout flow - just fetch the order
+      fetchOrder();
+    }
   }, [paymentIntentId, orderId]);
+
+  const fetchOrder = async () => {
+    try {
+      const res = await apiRequest('GET', `/api/orders/${orderId}`);
+      const orderData = await res.json();
+      setOrder(orderData);
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error fetching order:', error);
+      setIsLoading(false);
+    }
+  };
 
   if (!isAuthenticated) {
     return (

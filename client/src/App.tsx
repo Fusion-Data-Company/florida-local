@@ -16,6 +16,7 @@ import Cart from "@/pages/cart";
 import Checkout from "@/pages/checkout";
 import OrderConfirmation from "@/pages/order-confirmation";
 import Orders from "@/pages/orders";
+import VendorProducts from "@/pages/vendor-products";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -36,6 +37,7 @@ function Router() {
           <Route path="/checkout" component={Checkout} />
           <Route path="/order-confirmation" component={OrderConfirmation} />
           <Route path="/orders" component={Orders} />
+          <Route path="/vendor/products" component={VendorProducts} />
         </>
       )}
       <Route component={NotFound} />

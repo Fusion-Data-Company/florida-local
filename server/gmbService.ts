@@ -1,3 +1,31 @@
+// Minimal stubs for Google My Business service integration
+// These are placeholders and should be replaced with real Google APIs when keys are provided.
+
+const gmbServiceStub = {
+  generateAuthUrl(businessId: string): string {
+    // Placeholder OAuth URL
+    return `/api/gmb/mock-auth?businessId=${encodeURIComponent(businessId)}`;
+  },
+
+  async exchangeCodeForTokens(code: string, businessId: string, userId: string) {
+    // Store mock token association; real implementation would persist encrypted tokens
+    return { success: true, businessId, userId, provider: "google" };
+  },
+
+  async getSyncStatus(businessId: string) {
+    return {
+      businessId,
+      lastSyncAt: null,
+      status: "not_configured",
+      details: {},
+    };
+  },
+
+  async disconnectBusiness(businessId: string) {
+    return { success: true, businessId };
+  },
+};
+
 import { google } from 'googleapis';
 import { OAuth2Client } from 'google-auth-library';
 import crypto from 'crypto';

@@ -1,3 +1,5 @@
+// Data sync service stub - will be replaced by class implementation below
+
 import { gmbService } from './gmbService';
 import { storage } from './storage';
 import { Business, InsertGmbReview } from '@shared/schema';

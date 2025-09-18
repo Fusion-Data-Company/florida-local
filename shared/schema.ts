@@ -34,6 +34,8 @@ export const users = pgTable("users", {
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
   isAdmin: boolean("is_admin").default(false), // SECURITY: Admin role for spotlight management
+  onlineStatus: varchar("online_status", { length: 20 }).default("offline"), // online, away, offline
+  lastSeenAt: timestamp("last_seen_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -68,6 +70,12 @@ export const businesses = pgTable("businesses", {
   gmbLastErrorAt: timestamp("gmb_last_error_at"),
   gmbLastError: text("gmb_last_error"),
   gmbDataSources: jsonb("gmb_data_sources"), // Track which fields come from GMB
+  
+  // Stripe Connect fields
+  stripeAccountId: text("stripe_account_id"),
+  stripeOnboardingStatus: text("stripe_onboarding_status"), // pending, active, disabled
+  stripeChargesEnabled: boolean("stripe_charges_enabled").default(false),
+  stripePayoutsEnabled: boolean("stripe_payouts_enabled").default(false),
   rating: decimal("rating", { precision: 3, scale: 2 }).default("0"),
   reviewCount: integer("review_count").default(0),
   followerCount: integer("follower_count").default(0),
@@ -185,6 +193,7 @@ export const orders = pgTable("orders", {
   customerEmail: varchar("customer_email"),
   customerPhone: varchar("customer_phone", { length: 20 }),
   notes: text("notes"),
+  invoiceNumber: varchar("invoice_number", { length: 50 }),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

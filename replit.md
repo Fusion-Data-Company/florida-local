@@ -14,7 +14,25 @@ Preferred communication style: Simple, everyday language.
 The client is built with React 18 using TypeScript, leveraging Vite for development and build tooling. The application uses Wouter for lightweight routing and TanStack Query for state management and server synchronization. The UI is constructed with shadcn/ui components built on Radix UI primitives, styled with Tailwind CSS for responsive design. The architecture follows a component-based pattern with custom hooks for authentication and shared functionality.
 
 **Backend Architecture**
-The server runs on Express.js with TypeScript, providing RESTful APIs for all business operations. The application uses Replit's authentication system with OpenID Connect, storing sessions in PostgreSQL. The backend implements a storage abstraction layer that handles all database operations through Drizzle ORM, making the data layer easily testable and maintainable. API routes are organized by feature and include comprehensive error handling.
+The server runs on Express.js with TypeScript, providing RESTful APIs for all business operations. The application uses Replit's authentication system with OpenID Connect, storing sessions in PostgreSQL. The backend implements a storage abstraction layer that handles all database operations through Drizzle ORM, making the data layer easily testable and maintainable.
+
+Recent additions (PRODUCTION READY Progress):
+- ✅ Redis Integration: Sessions, rate limiting, job queues
+- ✅ Monitoring: Sentry error tracking, PostHog analytics, Winston logging
+- ✅ Security: API key management, webhook signatures, Helmet + CORS
+- ✅ Stripe Connect: Vendor onboarding, account management, webhooks
+- ✅ WebSockets: Real-time messaging, presence, notifications
+- ✅ Background Jobs: Email queue, image processing workers
+- ✅ Advanced Rate Limiting: Redis-backed, per-endpoint limits
+- ✅ Health Monitoring: Enhanced health checks with service status
+
+MVP Features Complete:
+- Cart and checkout (manual + Stripe modes)
+- Vendor portal: `/vendor/products` for product management
+- Orders system: confirmation page, inventory adjustments
+- Spotlight rotation with algorithms and voting
+- Seed data and backup scripts
+- Admin controls and promotion endpoints
 
 **Database Design**
 PostgreSQL serves as the primary database with Drizzle ORM providing type-safe database operations. The schema includes comprehensive business profiles with rich metadata, user management tied to Replit auth, social features (posts, likes, comments, follows), a complete product catalog with e-commerce capabilities, messaging system for business networking, and a spotlight system for featured businesses. Database migrations are managed through Drizzle Kit.
@@ -56,13 +74,97 @@ A unique three-tier spotlight system rotates featured businesses on daily, weekl
 - React Hook Form with Zod for form validation
 
 **External API Integrations**
-- Google My Business API for business data synchronization
-- Spotify Web API for business playlist features
-- Stripe for payment processing
-- Uploadthing for media management and optimization
+- Google My Business API (stubs in place; wire keys later)
+- Spotify Web API (planned)
+- Stripe for payment processing (optional; not required for manual checkout)
+- Uploadthing for media management (planned)
 
 **Development & Deployment**
 - TypeScript for type safety across the full stack
 - Wouter for lightweight client-side routing
 - Various Radix UI primitives for accessible components
 - ESLint and TypeScript compiler for code quality
+
+## Environment Variables
+
+Configure these in Replit Secrets for production deployment:
+
+### Core Requirements
+```bash
+DATABASE_URL=postgresql://...              # Replit provides this
+SESSION_SECRET=your-random-secret-here     # Generate with: openssl rand -base64 32
+REPLIT_DOMAINS=your-domain.repl.co         # Auto-configured by Replit
+REPL_ID=your-repl-id                       # Auto-configured by Replit
+NODE_ENV=production                        # Set to 'production' for live deployment
+```
+
+### Redis Configuration (Recommended)
+```bash
+REDIS_HOST=your-redis-host                 # Redis server hostname
+REDIS_PORT=6379                            # Redis port
+REDIS_PASSWORD=your-redis-password         # Redis auth password
+```
+
+### Stripe Payments
+```bash
+PAYMENTS_PROVIDER=stripe                   # or 'manual' for testing
+STRIPE_SECRET_KEY=sk_live_...              # From Stripe Dashboard
+STRIPE_WEBHOOK_SECRET=whsec_...            # From Stripe Webhooks
+```
+
+### Monitoring & Analytics
+```bash
+SENTRY_DSN=https://...@sentry.io/...       # Sentry error tracking
+POSTHOG_KEY=phc_...                        # PostHog analytics
+LOG_LEVEL=info                             # Log verbosity: error, warn, info, debug
+```
+
+### Additional Services
+```bash
+SENDGRID_API_KEY=SG...                     # Email service
+EMAIL_FROM=noreply@floridaelite.com       # Default sender
+OPENAI_API_KEY=sk-...                      # AI features
+GOOGLE_CLIENT_ID=...                       # GMB integration
+GOOGLE_CLIENT_SECRET=...                   # GMB OAuth
+```
+
+## Quick Start Commands
+
+```bash
+# Install dependencies
+npm install
+
+# Push database schema
+npm run db:push
+
+# Seed sample data
+npm run db:seed
+
+# Start development server
+npm run dev
+
+# Create production build
+npm run build
+
+# Start production server
+npm start
+
+# Backup database
+npm run backup
+
+# Restore from backup
+npm run backup:restore backups/backup-[timestamp].sql
+```
+
+## Production Checklist
+
+- [ ] Configure all required environment variables
+- [ ] Set up Redis for sessions and caching
+- [ ] Configure Sentry for error tracking
+- [ ] Set up Stripe Connect for payments
+- [ ] Enable SSL/TLS certificates
+- [ ] Configure backup automation
+- [ ] Set up monitoring alerts
+- [ ] Test all critical user flows
+- [ ] Review security headers
+- [ ] Optimize database indexes

@@ -1,0 +1,118 @@
+groups:
+  - name: florida-elite-alerts
+    interval: 30s
+    rules:
+      # Application alerts
+      - alert: HighErrorRate
+        expr: rate(http_request_errors_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value }} errors per second"
+
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "High response time detected"
+          description: "95th percentile response time is {{ $value }} seconds"
+
+      - alert: PodCrashLooping
+        expr: rate(kube_pod_container_status_restarts_total[15m]) > 0
+        for: 5m
+        labels:
+          severity: critical
+          team: devops
+        annotations:
+          summary: "Pod is crash looping"
+          description: "Pod {{ $labels.namespace }}/{{ $labels.pod }} is crash looping"
+
+      # Database alerts
+      - alert: DatabaseConnectionsHigh
+        expr: pg_stat_database_numbackends / pg_settings_max_connections > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          team: database
+        annotations:
+          summary: "Database connections near limit"
+          description: "Database has {{ $value }}% of max connections in use"
+
+      - alert: DatabaseReplicationLag
+        expr: pg_replication_lag > 10
+        for: 5m
+        labels:
+          severity: critical
+          team: database
+        annotations:
+          summary: "Database replication lag detected"
+          description: "Replication lag is {{ $value }} seconds"
+
+      # Redis alerts
+      - alert: RedisMemoryHigh
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "Redis memory usage high"
+          description: "Redis memory usage is {{ $value }}%"
+
+      - alert: RedisConnectionsHigh
+        expr: redis_connected_clients > 1000
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "Redis connections high"
+          description: "Redis has {{ $value }} connected clients"
+
+      # Business alerts
+      - alert: LowOrderRate
+        expr: rate(orders_created_total[1h]) < 0.1
+        for: 30m
+        labels:
+          severity: warning
+          team: business
+        annotations:
+          summary: "Low order rate detected"
+          description: "Order rate is {{ $value }} per hour"
+
+      - alert: PaymentFailureRateHigh
+        expr: rate(payment_failures_total[5m]) / rate(payment_attempts_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+          team: payments
+        annotations:
+          summary: "High payment failure rate"
+          description: "Payment failure rate is {{ $value }}%"
+
+      # Infrastructure alerts
+      - alert: NodeMemoryPressure
+        expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes < 0.1
+        for: 5m
+        labels:
+          severity: warning
+          team: devops
+        annotations:
+          summary: "Node memory pressure"
+          description: "Node {{ $labels.instance }} has only {{ $value }}% memory available"
+
+      - alert: DiskSpaceLow
+        expr: node_filesystem_avail_bytes / node_filesystem_size_bytes < 0.1
+        for: 5m
+        labels:
+          severity: critical
+          team: devops
+        annotations:
+          summary: "Disk space low"
+          description: "Disk {{ $labels.device }} on {{ $labels.instance }} has only {{ $value }}% space available"

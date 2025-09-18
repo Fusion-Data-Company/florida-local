@@ -1,3 +1,5 @@
+// Business verification service will be implemented below
+
 import { gmbService } from './gmbService';
 import { storage } from './storage';
 import { Business } from '@shared/schema';
