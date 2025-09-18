@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import AIBusinessDashboard from "@/components/ai-business-dashboard";
 import MagicEliteProductCard from "@/components/magic-elite-product-card";
-import { UserPlus, UserMinus, MessageCircle, Edit3, Clock, MapPin, Phone, Globe } from "lucide-react";
+import { UserPlus, UserMinus, MessageCircle, Edit3, Clock, MapPin, Phone, Globe, Star } from "lucide-react";
 import { GMBVerificationBadge, GMBConnectionFlow, GMBReviewsSection, GMBDataAttribution } from "@/components/gmb-integration";
 
 export default function BusinessProfile() {
@@ -452,42 +452,6 @@ export default function BusinessProfile() {
                 <div key={product.id} className="magic-glow-intense">
                   <MagicEliteProductCard product={product} index={index} />
                 </div>
-                  <div className="relative">
-                    {product.imageUrl && (
-                      <div className="relative h-48 overflow-hidden">
-                        <img 
-                          src={product.imageUrl} 
-                          alt={product.name}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
-                      </div>
-                    )}
-                  </div>
-                  <CardContent className="p-6">
-                    <div className="mb-4">
-                      <h3 className="font-semibold text-xl mb-2 miami-heading">{product.name}</h3>
-                      {product.description && (
-                        <p className="text-muted-foreground text-sm mb-4 miami-body-text line-clamp-2">{product.description}</p>
-                      )}
-                    </div>
-                    
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="font-bold text-2xl miami-accent-text font-serif">
-                        ${parseFloat(product.price).toFixed(2)}
-                      </span>
-                      {product.category && (
-                        <Badge className="miami-glass border-white/20 text-slate-700">{product.category}</Badge>
-                      )}
-                    </div>
-                    
-                    <div className="flex items-center justify-center space-x-2 text-sm px-3 py-2 rounded-lg miami-glass border border-white/20">
-                      <Star className="text-orange-400 fill-current" size={14} />
-                      <span className="font-bold">4.8</span>
-                      <span className="text-muted-foreground">({Math.floor(Math.random() * 20) + 5} reviews)</span>
-                    </div>
-                  </CardContent>
-                </Card>
               ))
             ) : (
               <div className="col-span-full text-center py-16 miami-glass rounded-2xl">
