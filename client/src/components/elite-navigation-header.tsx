@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { ChevronDown, TreePine, Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import CartIcon from "@/components/cart-icon";
-import type { Business } from "@shared/schema";
+import type { Business } from "@shared/types";
 
 export default function EliteNavigationHeader() {
   const { user, isAuthenticated } = useAuth();

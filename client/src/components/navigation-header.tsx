@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Plus, Store, ChevronDown, Search, Bell, MessageCircle, Menu, X, TreePine, Edit, Package, User, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
 import CartIcon from "@/components/cart-icon";
-import type { Business } from "@shared/schema";
+import type { Business } from "@shared/types";
 
 export default function NavigationHeader() {
   const { user, isAuthenticated } = useAuth();

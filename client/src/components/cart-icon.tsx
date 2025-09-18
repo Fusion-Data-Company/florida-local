@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart } from "lucide-react";
 import { Link } from "wouter";
-import { CartItem } from "@shared/schema";
+import { CartItem } from "@shared/types";
 
 export default function CartIcon() {
   const { isAuthenticated } = useAuth();

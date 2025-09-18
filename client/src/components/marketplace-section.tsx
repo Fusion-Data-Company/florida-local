@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { Product } from "@shared/schema";
+import { Product } from "@shared/types";
 import ProductCard from "./product-card";
 import MagicEliteProductCard from "./magic-elite-product-card";
 import { Button } from "@/components/ui/button";

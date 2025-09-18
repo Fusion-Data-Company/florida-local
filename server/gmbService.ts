@@ -26,8 +26,13 @@ const gmbServiceStub = {
   },
 };
 
-import { google } from 'googleapis';
-import { OAuth2Client } from 'google-auth-library';
+// import { google } from 'googleapis';
+// import { OAuth2Client } from 'google-auth-library';
+// Temporarily disabled for deployment - using demo mode
+const google = { auth: { OAuth2: class MockOAuth2Client {} } };
+class OAuth2Client {
+  constructor(public clientId?: string, public clientSecret?: string, public redirectUri?: string) {}
+}
 import crypto from 'crypto';
 import { storage } from './storage';
 import { InsertGmbToken, InsertGmbSyncHistory, InsertGmbReview } from '@shared/schema';

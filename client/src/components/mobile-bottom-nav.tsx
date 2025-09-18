@@ -2,7 +2,7 @@ import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { Home, ShoppingBag, Store, Plus, MessageSquare } from "lucide-react";
-import { type Business } from "@shared/schema";
+import { type Business } from "@shared/types";
 
 // Define nav item type
 type NavItem = {
