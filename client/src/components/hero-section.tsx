@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { TreePine, Sun, ChevronDown, Search, Sparkles, MapPin } from "lucide-react";
+import { TreePalm, Sun, ChevronDown, Search, Sparkles, MapPin } from "lucide-react";
 import { useState } from "react";
 
 export default function HeroSection() {
@@ -31,7 +31,7 @@ export default function HeroSection() {
 
       {/* Miami Luxury Floating Elements */}
       <div className="absolute top-20 right-10 miami-float group">
-        <TreePine className="text-4xl text-cyan-400 group-hover:text-cyan-300 transition-colors duration-500 drop-shadow-lg" size={40} />
+        <TreePalm className="text-4xl text-cyan-400 group-hover:text-cyan-300 transition-colors duration-500 drop-shadow-lg" size={40} />
         <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 to-emerald-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full blur-xl"></div>
       </div>
       <div className="absolute bottom-20 left-10 miami-float group" style={{ animationDelay: '2s' }}>

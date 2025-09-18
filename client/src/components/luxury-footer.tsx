@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { TreePine, Facebook, Instagram, Twitter, Linkedin, Heart, Shield, Award, CheckCircle } from "lucide-react";
+import { TreePalm, Facebook, Instagram, Twitter, Linkedin, Heart, Shield, Award, CheckCircle } from "lucide-react";
 
 export default function LuxuryFooter() {
   const currentYear = new Date().getFullYear();
@@ -16,16 +16,13 @@ export default function LuxuryFooter() {
           <div className="lg:col-span-1">
             <div className="flex items-center space-x-3 mb-6">
               <div className="relative group">
-                <TreePine className="text-3xl text-slate-700 group-hover:text-secondary group-hover:scale-105 transition-all duration-500" size={32} />
+                <TreePalm className="text-3xl text-slate-700 group-hover:text-secondary group-hover:scale-105 transition-all duration-500" size={32} />
                 <div className="absolute inset-0 bg-gradient-to-r from-secondary/5 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full"></div>
               </div>
               <div className="flex flex-col">
                 <h2 className="text-xl font-bold metallic gradient-text-gold text-luxury font-serif">
-                  Florida Local
+                  The Florida Local
                 </h2>
-                <p className="text-xs gradient-text-cyan font-medium tracking-wider uppercase">
-                  Elite
-                </p>
               </div>
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed mb-6">
@@ -227,7 +224,7 @@ export default function LuxuryFooter() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex flex-col md:flex-row items-center gap-4 text-sm text-muted-foreground">
               <p className="text-luxury">
-                © {currentYear} Florida Local Elite. All rights reserved.
+                © {currentYear} The Florida Local. All rights reserved.
               </p>
               <div className="flex items-center gap-4">
                 <span className="text-xs text-muted-foreground/70">Made with</span>

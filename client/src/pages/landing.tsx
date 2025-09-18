@@ -81,8 +81,7 @@ export default function Landing() {
               <div className="flex items-center space-x-2 mb-6">
                 <i className="fas fa-palm-tree text-2xl text-primary"></i>
                 <div>
-                  <h1 className="text-xl font-bold gradient-text">Florida Local</h1>
-                  <p className="text-xs text-muted-foreground">Elite</p>
+                  <h1 className="text-xl font-bold gradient-text">The Florida Local</h1>
                 </div>
               </div>
               <p className="text-muted-foreground mb-6 leading-relaxed">
@@ -156,7 +155,7 @@ export default function Landing() {
           <div className="pt-8 border-t border-border">
             <div className="flex flex-col md:flex-row items-center justify-between">
               <p className="text-muted-foreground text-sm mb-4 md:mb-0">
-                © 2024 Florida Local Elite. All rights reserved.
+                © 2024 The Florida Local. All rights reserved.
               </p>
               <div className="flex space-x-6 text-sm">
                 <a href="#" className="text-muted-foreground hover:text-primary transition-colors">Privacy Policy</a>

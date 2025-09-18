@@ -1,8 +1,8 @@
-# Florida Local Elite - Business Community Platform
+# The Florida Local - Business Community Platform
 
 ## Overview
 
-Florida Local Elite is a comprehensive business networking and marketplace platform designed to connect Florida-based entrepreneurs and local businesses. The application serves as a digital community hub where businesses can showcase their profiles, sell products, engage through social feeds, and gain visibility through a sophisticated spotlight system. The platform emphasizes local commerce, community building, and business growth through digital presence and networking opportunities.
+The Florida Local is a comprehensive business networking and marketplace platform designed to connect Florida-based entrepreneurs and local businesses. The application serves as a digital community hub where businesses can showcase their profiles, sell products, engage through social feeds, and gain visibility through a sophisticated spotlight system. The platform emphasizes local commerce, community building, and business growth through digital presence and networking opportunities.
 
 ## User Preferences
 

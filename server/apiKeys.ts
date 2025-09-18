@@ -22,7 +22,7 @@ interface ApiKey {
 
 // Generate a secure API key
 export function generateApiKey(): string {
-  const prefix = "flel"; // Florida Local Elite
+  const prefix = "flel"; // The Florida Local
   const randomBytes = crypto.randomBytes(32).toString("base64url");
   return `${prefix}_${randomBytes}`;
 }

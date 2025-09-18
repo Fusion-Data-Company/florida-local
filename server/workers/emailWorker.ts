@@ -48,7 +48,7 @@ async function simulateEmailSend(data: EmailJobData): Promise<void> {
   // sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   // await sgMail.send({
   //   to: data.to,
-  //   from: 'noreply@floridaelite.com',
+  //   from: 'noreply@thefloridalocal.com',
   //   subject: data.subject,
   //   html: renderTemplate(data.template, data.data),
   // });
@@ -57,7 +57,7 @@ async function simulateEmailSend(data: EmailJobData): Promise<void> {
 // Email templates
 export const emailTemplates = {
   welcome: (data: any) => `
-    <h1>Welcome to Florida Local Elite, ${data.name}!</h1>
+    <h1>Welcome to The Florida Local, ${data.name}!</h1>
     <p>We're excited to have you join our community.</p>
   `,
   

@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ChevronDown, TreePine, Menu, X } from "lucide-react";
+import { ChevronDown, TreePalm, Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import CartIcon from "@/components/cart-icon";
 import type { Business } from "@shared/schema";
@@ -54,11 +54,11 @@ export default function EliteNavigationHeader() {
             <Link href="/" className="elite-logo-container group" data-testid="brand-logo">
               <div className="flex items-center space-x-3">
                 <div className="elite-logo-icon">
-                  <TreePine className="h-8 w-8 text-cyan-600 group-hover:text-cyan-500 transition-colors duration-300" />
+                  <TreePalm className="h-8 w-8 text-cyan-600 group-hover:text-cyan-500 transition-colors duration-300" />
                 </div>
                 <div>
                   <h1 className="elite-logo-text">
-                    Florida Local Elite
+                    The Florida Local
                   </h1>
                   <p className="elite-logo-subtitle">Premium Business Network</p>
                 </div>
