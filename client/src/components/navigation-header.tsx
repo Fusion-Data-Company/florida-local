@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Plus, Store, ChevronDown, Search, Bell, MessageCircle, Menu, X, TreePalm, Edit, Package, User, LogOut } from "lucide-react";
+import { Plus, Store, ChevronDown, Search, Bell, MessageCircle, Menu, X, TreePine, Edit, Package, User, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
 import CartIcon from "@/components/cart-icon";
 import type { Business } from "@shared/schema";
@@ -78,13 +78,16 @@ export default function NavigationHeader() {
             <Link href="/" className="elite-brand-container group" data-testid="brand-logo">
               <div className="flex items-center space-x-4">
                 <div className="relative">
-                  <TreePalm className="text-4xl text-slate-700 group-hover:text-secondary transition-all duration-500 group-hover:scale-105" size={32} />
+                  <TreePine className="text-4xl text-slate-700 group-hover:text-secondary transition-all duration-500 group-hover:scale-105" size={32} />
                   <div className="absolute inset-0 bg-gradient-to-r from-secondary/5 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full"></div>
                 </div>
                 <div className="flex flex-col justify-center">
                   <h1 className="elite-logo-text group-hover:scale-105 transition-transform duration-500">
-                    The Florida Local
+                    Florida Local
                   </h1>
+                  <p className="elite-subtitle-text">
+                    Elite
+                  </p>
                 </div>
               </div>
             </Link>
