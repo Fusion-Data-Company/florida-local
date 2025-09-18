@@ -7,7 +7,7 @@ import { insertBusinessSchema } from "@shared/schema";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import NavigationHeader from "@/components/navigation-header";
+import EliteNavigationHeader from "@/components/elite-navigation-header";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 import ImageUpload from "@/components/image-upload";
 import { Button } from "@/components/ui/button";
@@ -114,7 +114,7 @@ export default function CreateBusiness() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-background">
-        <NavigationHeader />
+        <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-16 text-center">
           <Store className="mx-auto h-16 w-16 text-muted-foreground mb-6" />
           <h1 className="text-3xl font-bold mb-4">Sign In Required</h1>
@@ -132,7 +132,7 @@ export default function CreateBusiness() {
 
   return (
     <div className="min-h-screen bg-background">
-      <NavigationHeader />
+      <EliteNavigationHeader />
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}

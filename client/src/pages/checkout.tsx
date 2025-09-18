@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
-import NavigationHeader from "@/components/navigation-header";
+import EliteNavigationHeader from "@/components/elite-navigation-header";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -191,7 +191,7 @@ export default function Checkout() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-background">
-        <NavigationHeader />
+        <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-12 text-center">
           <h1 className="text-2xl font-bold mb-4">Please log in to checkout</h1>
           <Button asChild>
@@ -208,7 +208,7 @@ export default function Checkout() {
   if (cartLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <NavigationHeader />
+        <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-12 text-center">
           <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
           <p className="mt-4">Loading checkout...</p>
@@ -221,7 +221,7 @@ export default function Checkout() {
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen bg-background">
-        <NavigationHeader />
+        <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-12 text-center">
           <h1 className="text-2xl font-bold mb-4">Your cart is empty</h1>
           <p className="text-muted-foreground mb-6">Add some items to your cart before checking out</p>
@@ -238,7 +238,7 @@ export default function Checkout() {
 
   return (
     <div className="min-h-screen bg-background">
-      <NavigationHeader />
+      <EliteNavigationHeader />
 
       <div className="container mx-auto px-4 py-8 lg:px-8">
         <div className="mb-8">

@@ -7,7 +7,7 @@ import { Product, insertProductSchema } from "@shared/schema";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import NavigationHeader from "@/components/navigation-header";
+import EliteNavigationHeader from "@/components/elite-navigation-header";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 import ProductCard from "@/components/product-card";
 import MagicEliteProductCard, { MagicEliteProductGrid } from "@/components/magic-elite-product-card";
@@ -123,7 +123,7 @@ export default function Marketplace() {
 
   return (
     <div className="min-h-screen bg-background">
-      <NavigationHeader />
+      <EliteNavigationHeader />
 
       {/* Miami Elite Marketplace Header */}
       <section className="py-12 bg-gradient-to-r from-primary/10 to-secondary/10 miami-marketplace-hero">

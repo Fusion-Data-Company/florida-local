@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
 import { useLocation, Link } from "wouter";
-import NavigationHeader from "@/components/navigation-header";
+import EliteNavigationHeader from "@/components/elite-navigation-header";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -120,7 +120,7 @@ export default function OrderConfirmation() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-background">
-        <NavigationHeader />
+        <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-12 text-center">
           <h1 className="text-2xl font-bold mb-4">Please log in to view order confirmation</h1>
           <Button asChild>
@@ -137,7 +137,7 @@ export default function OrderConfirmation() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <NavigationHeader />
+        <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-12 text-center">
           <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
           <h2 className="text-xl font-semibold">Confirming your order...</h2>
@@ -150,7 +150,7 @@ export default function OrderConfirmation() {
 
   return (
     <div className="min-h-screen bg-background">
-      <NavigationHeader />
+      <EliteNavigationHeader />
 
       <div className="container mx-auto px-4 py-8 lg:px-8">
         {/* Success Header */}

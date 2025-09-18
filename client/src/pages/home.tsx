@@ -4,7 +4,7 @@ import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { type Business } from "@shared/schema";
-import NavigationHeader from "@/components/navigation-header";
+import EliteNavigationHeader from "@/components/elite-navigation-header";
 import SpotlightShowcase from "@/components/spotlight-showcase";
 import MarketplaceSection from "@/components/marketplace-section";
 import SocialFeed from "@/components/social-feed";
@@ -51,7 +51,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      <NavigationHeader />
+      <EliteNavigationHeader />
       
       {/* Welcome Hero for Authenticated Users */}
       <section className="relative py-20 bg-gradient-to-r from-primary/10 to-secondary/10">

@@ -1,4 +1,4 @@
-import NavigationHeader from "@/components/navigation-header";
+import EliteNavigationHeader from "@/components/elite-navigation-header";
 import HeroSection from "@/components/hero-section";
 import SpotlightShowcase from "@/components/spotlight-showcase";
 import MarketplaceSection from "@/components/marketplace-section";
@@ -9,7 +9,7 @@ import { Store, ShoppingCart, Users } from "lucide-react";
 export default function Landing() {
   return (
     <div className="min-h-screen bg-background">
-      <NavigationHeader />
+      <EliteNavigationHeader />
       <HeroSection />
       <SpotlightShowcase />
       

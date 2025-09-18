@@ -112,8 +112,8 @@ async function seed() {
     }).onConflictDoUpdate({
       target: businesses.id,
       set: { 
-        coverImageUrl: "/attached_assets/stock_images/luxury_travel_experi_f2b67257.jpg",
-        logoUrl: "/attached_assets/stock_images/luxury_travel_experi_f2b67257.jpg",
+      coverImageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      logoUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
         updatedAt: new Date() 
       }
     }).returning();
@@ -153,8 +153,8 @@ async function seed() {
     }).onConflictDoUpdate({
       target: businesses.id,
       set: { 
-        coverImageUrl: "/attached_assets/stock_images/luxury_spa_wellness__78221b18.jpg",
-        logoUrl: "/attached_assets/stock_images/luxury_spa_wellness__78221b18.jpg",
+      coverImageUrl: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      logoUrl: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
         updatedAt: new Date() 
       }
     }).returning();
@@ -194,8 +194,8 @@ async function seed() {
     }).onConflictDoUpdate({
       target: businesses.id,
       set: { 
-        coverImageUrl: "/attached_assets/stock_images/elegant_restaurant_f_aa323e17.jpg",
-        logoUrl: "/attached_assets/stock_images/elegant_restaurant_f_aa323e17.jpg",
+      coverImageUrl: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      logoUrl: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
         updatedAt: new Date() 
       }
     }).returning();
@@ -323,7 +323,7 @@ async function seed() {
           price: "899.99",
           originalPrice: "1199.99",
           category: "Sports Equipment",
-          images: ["/attached_assets/stock_images/luxury_travel_experi_f2b67257.jpg"],
+          images: ["https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"],
           inventory: 15,
           isActive: true,
           isDigital: false,
@@ -338,7 +338,7 @@ async function seed() {
           price: "249.99",
           originalPrice: "299.99",
           category: "Surf Gear",
-          images: ["/attached_assets/stock_images/luxury_travel_experi_f2b67257.jpg"],
+          images: ["https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"],
           inventory: 30,
           isActive: true,
           isDigital: false,
@@ -352,7 +352,7 @@ async function seed() {
           description: "One-on-one surf instruction with our certified professional instructors. Includes board rental, wetsuit, and underwater photography of your session.",
           price: "150.00",
           category: "Services",
-          images: ["/attached_assets/stock_images/luxury_travel_experi_f2b67257.jpg"],
+          images: ["https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"],
           inventory: 100,
           isActive: true,
           isDigital: true,
@@ -367,7 +367,7 @@ async function seed() {
           price: "34.99",
           originalPrice: "44.99",
           category: "Apparel",
-          images: ["/attached_assets/stock_images/luxury_travel_experi_f2b67257.jpg"],
+          images: ["https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"],
           inventory: 75,
           isActive: true,
           isDigital: false,
@@ -383,7 +383,7 @@ async function seed() {
           businessId: sunsetSurfShop.id,
           content: "🏄‍♂️ Perfect waves this morning! Our Pro Elite 9'2\" longboards are flying off the racks. Book your private lesson today and ride the waves like a pro! #SurfLife #MiamiBeach #PerfectWaves",
           type: "update",
-          images: ["/attached_assets/stock_images/luxury_travel_experi_f2b67257.jpg"],
+          images: ["https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"],
           likeCount: 156,
           commentCount: 23,
           shareCount: 12,
@@ -498,7 +498,7 @@ async function seed() {
       }).onConflictDoUpdate({
         target: products.id,
         set: { 
-          images: ["/attached_assets/stock_images/luxury_travel_experi_f2b67257.jpg"],
+          images: ["https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"],
           updatedAt: new Date() 
         }
       });

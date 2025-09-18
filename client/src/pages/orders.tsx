@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "wouter";
-import NavigationHeader from "@/components/navigation-header";
+import EliteNavigationHeader from "@/components/elite-navigation-header";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -73,7 +73,7 @@ export default function Orders() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-background">
-        <NavigationHeader />
+        <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-12 text-center">
           <ShoppingBag className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
           <h1 className="text-2xl font-bold mb-4">Please log in to view your orders</h1>
@@ -90,7 +90,7 @@ export default function Orders() {
 
   return (
     <div className="min-h-screen bg-background">
-      <NavigationHeader />
+      <EliteNavigationHeader />
 
       <div className="container mx-auto px-4 py-8 lg:px-8">
         <div className="mb-8">

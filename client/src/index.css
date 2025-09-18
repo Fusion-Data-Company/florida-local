@@ -1723,3 +1723,221 @@ textarea:focus-visible,
 .magic-glow-intense:hover::before {
   opacity: 1;
 }
+
+/* === ELITE MARKETING FIRM HEADER === */
+
+/* Ultra-Premium Glass Header */
+.elite-glass-header {
+  background: 
+    linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%),
+    linear-gradient(135deg, rgba(25,182,246,0.03) 0%, rgba(255,152,67,0.02) 100%);
+  backdrop-filter: blur(20px) saturate(180%) brightness(110%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%) brightness(110%);
+  border-bottom: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 
+    0 8px 32px rgba(0,0,0,0.06),
+    inset 0 1px 0 rgba(255,255,255,0.15),
+    0 0 0 1px rgba(255,255,255,0.05);
+}
+
+/* Elite Logo Container */
+.elite-logo-container {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.elite-logo-container:hover {
+  transform: translateY(-1px);
+}
+
+.elite-logo-icon {
+  position: relative;
+  padding: 8px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(25,182,246,0.1), rgba(16,185,129,0.1));
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.elite-logo-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #0891b2, #0d9488);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.elite-logo-subtitle {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+/* Elite Navigation Items */
+.elite-nav-item {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 8px;
+}
+
+.elite-nav-item::before {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #06b6d4, #10b981);
+  transform: translateX(-50%);
+  transition: width 0.3s ease;
+  border-radius: 1px;
+}
+
+.elite-nav-item:hover::before {
+  width: 80%;
+}
+
+.elite-nav-active {
+  background: linear-gradient(135deg, #06b6d4, #10b981);
+  color: white;
+  box-shadow: 
+    0 4px 12px rgba(6,182,212,0.3),
+    0 0 0 1px rgba(255,255,255,0.1);
+}
+
+.elite-nav-active::before {
+  display: none;
+}
+
+/* Elite User Avatar - NO MORE SHIT BADGE */
+.elite-user-avatar-container {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 12px;
+  padding: 8px;
+}
+
+.elite-user-avatar-container:hover {
+  background: rgba(255,255,255,0.1);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.elite-user-avatar {
+  position: relative;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #06b6d4, #10b981);
+  padding: 2px;
+  box-shadow: 
+    0 4px 12px rgba(6,182,212,0.3),
+    0 0 0 2px rgba(255,255,255,0.1);
+}
+
+.elite-user-avatar::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, #06b6d4, #10b981, #f97316, #06b6d4);
+  animation: elite-avatar-rotate 6s linear infinite;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.elite-user-avatar:hover::before {
+  opacity: 1;
+}
+
+@keyframes elite-avatar-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.elite-avatar-fallback {
+  background: linear-gradient(135deg, #06b6d4, #10b981);
+  color: white;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.elite-user-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.2;
+}
+
+.elite-user-status {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+/* Elite Glass Dropdown */
+.elite-glass-dropdown {
+  background: 
+    linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 
+    0 12px 40px rgba(0,0,0,0.1),
+    0 4px 20px rgba(0,0,0,0.05),
+    inset 0 1px 0 rgba(255,255,255,0.7);
+  border-radius: 12px;
+  padding: 8px;
+}
+
+.elite-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #334155;
+  font-weight: 500;
+}
+
+.elite-dropdown-item:hover {
+  background: rgba(6,182,212,0.1);
+  color: #0891b2;
+  transform: translateX(2px);
+}
+
+.elite-dropdown-separator {
+  background: rgba(255,255,255,0.3);
+  margin: 8px 0;
+}
+
+/* Elite Mobile Menu */
+.elite-glass-mobile-menu {
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  background: 
+    linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  z-index: 45;
+}
+
+.elite-mobile-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  color: #334155;
+  font-weight: 500;
+}
+
+.elite-mobile-nav-item:hover {
+  background: rgba(6,182,212,0.1);
+  color: #0891b2;
+}

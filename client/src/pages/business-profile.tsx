@@ -5,7 +5,7 @@ import { Business, Product, Post } from "@shared/schema";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import NavigationHeader from "@/components/navigation-header";
+import EliteNavigationHeader from "@/components/elite-navigation-header";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -83,7 +83,7 @@ export default function BusinessProfile() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <NavigationHeader />
+        <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-8">
           <div className="space-y-6">
             <Skeleton className="h-64 w-full" />
@@ -104,7 +104,7 @@ export default function BusinessProfile() {
   if (!business) {
     return (
       <div className="min-h-screen bg-background">
-        <NavigationHeader />
+        <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-8 text-center">
           <h1 className="text-2xl font-bold text-muted-foreground">Business Not Found</h1>
         </div>
@@ -117,7 +117,7 @@ export default function BusinessProfile() {
 
   return (
     <div className="min-h-screen bg-background">
-      <NavigationHeader />
+      <EliteNavigationHeader />
 
       {/* Business Header */}
       <div className="relative">

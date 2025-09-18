@@ -8,7 +8,7 @@ import { updateBusinessSchema, type Business } from "@shared/schema";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import NavigationHeader from "@/components/navigation-header";
+import EliteNavigationHeader from "@/components/elite-navigation-header";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 import ImageUpload from "@/components/image-upload";
 import { Button } from "@/components/ui/button";
@@ -171,7 +171,7 @@ export default function EditBusiness() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-background">
-        <NavigationHeader />
+        <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-16 text-center">
           <Store className="mx-auto h-16 w-16 text-muted-foreground mb-6" />
           <h1 className="text-3xl font-bold mb-4">Sign In Required</h1>
@@ -191,7 +191,7 @@ export default function EditBusiness() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <NavigationHeader />
+        <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-8 max-w-4xl">
           <div className="space-y-8">
             <div className="flex items-center space-x-4">
@@ -226,7 +226,7 @@ export default function EditBusiness() {
   if (error || !business) {
     return (
       <div className="min-h-screen bg-background">
-        <NavigationHeader />
+        <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-16 text-center">
           <AlertTriangle className="mx-auto h-16 w-16 text-muted-foreground mb-6" />
           <h1 className="text-3xl font-bold mb-4">Business Not Found</h1>
@@ -246,7 +246,7 @@ export default function EditBusiness() {
   if (business.ownerId !== user?.id) {
     return (
       <div className="min-h-screen bg-background">
-        <NavigationHeader />
+        <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-16 text-center">
           <AlertTriangle className="mx-auto h-16 w-16 text-destructive mb-6" />
           <h1 className="text-3xl font-bold mb-4">Access Denied</h1>
@@ -273,7 +273,7 @@ export default function EditBusiness() {
 
   return (
     <div className="min-h-screen bg-background">
-      <NavigationHeader />
+      <EliteNavigationHeader />
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}

@@ -1,4 +1,4 @@
-import NavigationHeader from "@/components/navigation-header";
+import EliteNavigationHeader from "@/components/elite-navigation-header";
 import LuxuryFooter from "@/components/luxury-footer";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 
@@ -11,7 +11,7 @@ interface LayoutProps {
 export default function Layout({ children, showFooter = true, showMobileNav = true }: LayoutProps) {
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <NavigationHeader />
+      <EliteNavigationHeader />
       <main className="flex-1">
         {children}
       </main>
