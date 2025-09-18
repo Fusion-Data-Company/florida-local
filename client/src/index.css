@@ -238,6 +238,14 @@
   -webkit-text-fill-color: transparent;
   background-size: 200% 200%;
   animation: gradient-shift 3s ease-in-out infinite;
+  color: hsl(180, 85%, 25%); /* Fallback for better visibility */
+}
+
+@supports not (-webkit-background-clip: text) {
+  .gradient-text {
+    color: hsl(180, 85%, 25%) !important;
+    -webkit-text-fill-color: unset;
+  }
 }
 
 @keyframes gradient-shift {
@@ -250,6 +258,14 @@
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  color: hsl(180, 85%, 25%); /* Fallback for better visibility */
+}
+
+@supports not (-webkit-background-clip: text) {
+  .gradient-text-cyan {
+    color: hsl(180, 85%, 25%) !important;
+    -webkit-text-fill-color: unset;
+  }
 }
 
 .gradient-text-gold {
@@ -257,6 +273,14 @@
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  color: hsl(45, 80%, 25%); /* Fallback for better visibility */
+}
+
+@supports not (-webkit-background-clip: text) {
+  .gradient-text-gold {
+    color: hsl(45, 80%, 25%) !important;
+    -webkit-text-fill-color: unset;
+  }
 }
 
 .gradient-text-magenta {
@@ -264,6 +288,14 @@
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  color: hsl(320, 70%, 25%); /* Fallback for better visibility */
+}
+
+@supports not (-webkit-background-clip: text) {
+  .gradient-text-magenta {
+    color: hsl(320, 70%, 25%) !important;
+    -webkit-text-fill-color: unset;
+  }
 }
 
 /* Premium Typography Features for Light Theme */
@@ -342,6 +374,87 @@
 }
 
 /* === ACCESSIBILITY & RESPONSIVENESS === */
+
+/* === ENHANCED LUXURY CARD EFFECTS === */
+
+/* Premium Card Rim Light */
+.card-rim-light {
+  position: relative;
+}
+
+.card-rim-light::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(135deg, 
+    rgba(180, 140, 100, 0.3) 0%,
+    rgba(255, 255, 255, 0.8) 25%,
+    rgba(160, 100, 140, 0.2) 50%,
+    rgba(255, 255, 255, 0.9) 75%,
+    rgba(200, 160, 80, 0.25) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Enhanced Button Press Effect */
+.btn-press {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-press:active {
+  transform: scale(0.98) translateY(1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Sophisticated Ambient Particles */
+.ambient-particles {
+  background-image: 
+    radial-gradient(circle at 20% 80%, rgba(180, 150, 120, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(160, 100, 140, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(200, 180, 140, 0.08) 0%, transparent 50%);
+  animation: particles-drift 12s ease-in-out infinite;
+}
+
+@keyframes particles-drift {
+  0%, 100% { 
+    transform: translateX(0) translateY(0) scale(1);
+    opacity: 0.4;
+  }
+  25% { 
+    transform: translateX(10px) translateY(-5px) scale(1.1);
+    opacity: 0.6;
+  }
+  50% { 
+    transform: translateX(-5px) translateY(-10px) scale(0.9);
+    opacity: 0.8;
+  }
+  75% { 
+    transform: translateX(-8px) translateY(5px) scale(1.05);
+    opacity: 0.5;
+  }
+}
+
+/* Enhanced Luxury Shadows */
+.shadow-luxury-multi {
+  box-shadow: 
+    0 4px 8px rgba(0, 0, 0, 0.12),
+    0 8px 16px rgba(0, 0, 0, 0.08),
+    0 16px 32px rgba(0, 0, 0, 0.06),
+    0 32px 64px rgba(0, 0, 0, 0.04);
+}
+
+.shadow-fortune-500 {
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+}
 
 /* Line clamp utilities */
 .line-clamp-2 {

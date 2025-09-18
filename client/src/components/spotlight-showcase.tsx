@@ -263,8 +263,8 @@ export default function SpotlightShowcase() {
                         </div>
                       )}
                       <div className="flex-1">
-                        <h4 className="font-semibold gradient-text-gold text-luxury">{business.name}</h4>
-                        <p className="text-sm gradient-text-cyan font-medium">{business.category}</p>
+                        <h4 className="font-semibold text-slate-900">{business.name}</h4>
+                        <p className="text-sm text-gray-700 font-medium">{business.category}</p>
                       </div>
                     </div>
 
@@ -275,7 +275,7 @@ export default function SpotlightShowcase() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 text-sm glass-panel px-3 py-1 rounded-lg border-border/20">
                         <Heart className="w-4 h-4 text-accent" />
-                        <span className="gradient-text-magenta font-medium">{voteCount} votes</span>
+                        <span className="text-slate-900 font-medium">{voteCount} votes</span>
                       </div>
                       
                       <Button

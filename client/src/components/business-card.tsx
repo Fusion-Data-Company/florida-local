@@ -186,7 +186,7 @@ export default function BusinessCard({ business, spotlightType, spotlightPositio
   };
 
   return (
-    <div className={`group relative transition-all duration-700 transform hover:scale-[1.02] hover:-translate-y-6 ${ 
+    <div className={`group relative transition-all duration-700 transform hover:scale-[1.02] hover:-translate-y-6 card-rim-light shadow-luxury-multi ${ 
       spotlightType === 'daily' && spotlightPosition === 1 ? 'ring-4 ring-secondary/30 ring-offset-4 ring-offset-background' : ''
     } cursor-pointer`}
     style={{
@@ -246,7 +246,7 @@ export default function BusinessCard({ business, spotlightType, spotlightPositio
                      boxShadow: '0 12px 40px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,1)'
                    }}>
                 <i className="fas fa-star text-secondary mr-2"></i>
-                <span className="gradient-text-gold font-black text-base">{parseFloat(business.rating).toFixed(1)}</span>
+                <span className="text-slate-900 font-black text-base">{parseFloat(business.rating).toFixed(1)}</span>
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-secondary/15 to-primary/15 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               </div>
             )}
@@ -264,7 +264,7 @@ export default function BusinessCard({ business, spotlightType, spotlightPositio
           {/* Fortune 500 Header Section */}
           <div className="flex items-start justify-between mb-8">
             <div className="flex-1 pr-6">
-              <h3 className="text-3xl font-black text-luxury gradient-text-gold font-serif leading-tight mb-3 group-hover:scale-105 transition-transform duration-500">
+              <h3 className="text-3xl font-black text-slate-900 font-serif leading-tight mb-3 group-hover:scale-105 transition-transform duration-500">
                 {business.name}
               </h3>
               {business.tagline && (
@@ -329,7 +329,7 @@ export default function BusinessCard({ business, spotlightType, spotlightPositio
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.6) 100%)',
                   backdropFilter: 'blur(20px)'
                 }}>
-                <div className="font-black text-primary text-3xl gradient-text-cyan mb-2 group-hover:scale-115 transition-transform duration-500">
+                <div className="font-black text-slate-900 text-3xl mb-2 group-hover:scale-115 transition-transform duration-500">
                   {business.followerCount || 0}
                 </div>
                 <div className="text-muted-foreground text-xs uppercase tracking-wider font-bold">Followers</div>
@@ -342,7 +342,7 @@ export default function BusinessCard({ business, spotlightType, spotlightPositio
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.6) 100%)',
                   backdropFilter: 'blur(20px)'
                 }}>
-                <div className="font-black text-secondary text-3xl gradient-text-gold mb-2 group-hover:scale-115 transition-transform duration-500">
+                <div className="font-black text-slate-900 text-3xl mb-2 group-hover:scale-115 transition-transform duration-500">
                   {business.postCount || 0}
                 </div>
                 <div className="text-muted-foreground text-xs uppercase tracking-wider font-bold">Posts</div>
@@ -355,7 +355,7 @@ export default function BusinessCard({ business, spotlightType, spotlightPositio
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.6) 100%)',
                   backdropFilter: 'blur(20px)'
                 }}>
-                <div className="font-black text-accent text-3xl gradient-text-magenta mb-2 group-hover:scale-115 transition-transform duration-500">
+                <div className="font-black text-slate-900 text-3xl mb-2 group-hover:scale-115 transition-transform duration-500">
                   {0}
                 </div>
                 <div className="text-muted-foreground text-xs uppercase tracking-wider font-bold">Products</div>

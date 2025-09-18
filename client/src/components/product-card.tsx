@@ -213,7 +213,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <Card className={`group relative transition-all duration-700 transform hover:scale-[1.02] hover:-translate-y-4 cursor-pointer overflow-hidden rounded-3xl`}
+    <Card className={`group relative transition-all duration-700 transform hover:scale-[1.02] hover:-translate-y-4 cursor-pointer overflow-hidden rounded-3xl card-rim-light shadow-luxury-multi`}
           style={{
             background: 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%)',
             backdropFilter: 'blur(30px) saturate(200%)',
@@ -294,12 +294,12 @@ export default function ProductCard({ product }: ProductCardProps) {
       
       <CardContent className="p-8 relative bg-gradient-to-b from-transparent to-white/40">
         {/* Premium Product Category */}
-        <div className="text-base gradient-text-cyan font-bold mb-3 uppercase tracking-wider">
+        <div className="text-base text-slate-700 font-bold mb-3 uppercase tracking-wider">
           Local Business Product
         </div>
         
         {/* Enhanced Product Title */}
-        <h3 className="font-black mb-4 line-clamp-2 text-luxury gradient-text-gold font-serif text-xl leading-tight group-hover:scale-105 transition-transform duration-500">
+        <h3 className="font-black mb-4 line-clamp-2 text-slate-900 font-serif text-xl leading-tight group-hover:scale-105 transition-transform duration-500">
           {product.name}
         </h3>
         
@@ -311,7 +311,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Fortune 500-Level Price & Rating Section */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-3">
-            <span className="font-black text-2xl gradient-text-gold text-price font-serif">
+            <span className="font-black text-2xl text-slate-900 text-price font-serif">
               ${parseFloat(product.price || "0").toFixed(2)}
             </span>
             {product.originalPrice && parseFloat(product.originalPrice) > parseFloat(product.price) && (
@@ -326,7 +326,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               backdropFilter: 'blur(15px)'
             }}>
             <Star className="text-secondary fill-current" size={16} />
-            <span className="gradient-text-gold font-bold">{product.rating ? parseFloat(product.rating).toFixed(1) : "4.8"}</span>
+            <span className="text-slate-900 font-bold">{product.rating ? parseFloat(product.rating).toFixed(1) : "4.8"}</span>
             <span className="text-muted-foreground font-medium">
               ({product.reviewCount || 0})
             </span>
