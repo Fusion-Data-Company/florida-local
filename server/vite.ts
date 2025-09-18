@@ -44,6 +44,11 @@ export async function setupVite(app: Express, server: Server) {
   app.use("*", async (req, res, next) => {
     const url = req.originalUrl;
 
+    // Skip API and auth routes - let them be handled by Express routes
+    if (url.startsWith('/api/') || url.startsWith('/auth/') || url.startsWith('/metrics')) {
+      return next();
+    }
+
     try {
       const clientTemplate = path.resolve(
         import.meta.dirname,

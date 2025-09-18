@@ -8,13 +8,14 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Plus, Store, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import CartIcon from "@/components/cart-icon";
+import type { Business } from "@shared/schema";
 
 export default function NavigationHeader() {
   const { user, isAuthenticated } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
 
   // Fetch user businesses to show appropriate business nav
-  const { data: userBusinesses = [] } = useQuery({
+  const { data: userBusinesses = [] } = useQuery<Business[]>({
     queryKey: ['/api/businesses/my'],
     enabled: isAuthenticated,
   });
@@ -100,9 +101,9 @@ export default function NavigationHeader() {
               <Link href="/messages" className="text-foreground hover:text-primary transition-colors" data-testid="nav-messages">
                 Network
               </Link>
-              <span className="text-foreground hover:text-primary transition-colors cursor-pointer">
+              <Link href="/spotlight" className="text-foreground hover:text-primary transition-colors" data-testid="nav-spotlight">
                 Spotlight
-              </span>
+              </Link>
             </nav>
           )}
 

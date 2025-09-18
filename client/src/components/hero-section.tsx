@@ -47,17 +47,18 @@ export default function HeroSection() {
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
           <Button 
-            size="lg"
-            className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 text-lg font-semibold transition-all transform hover:scale-105 shadow-lg"
+            variant="premium"
+            size="xl"
+            className="btn-press"
             onClick={() => window.location.href = '/api/login'}
             data-testid="button-join-community"
           >
             Join the Community
           </Button>
           <Button 
-            size="lg"
-            variant="outline"
-            className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary px-8 py-4 text-lg font-semibold transition-all transform hover:scale-105"
+            variant="glass"
+            size="xl"
+            className="btn-press"
             data-testid="button-explore-businesses"
           >
             Explore Businesses
@@ -93,8 +94,10 @@ export default function HeroSection() {
               </Select>
             </div>
             <Button 
+              variant="lux"
+              size="lg"
+              className="btn-press"
               onClick={handleSearch}
-              className="bg-secondary hover:bg-secondary/90 text-secondary-foreground px-8 py-3 rounded-lg font-semibold transition-all"
               data-testid="button-search-hero"
             >
               <i className="fas fa-search mr-2"></i>Search

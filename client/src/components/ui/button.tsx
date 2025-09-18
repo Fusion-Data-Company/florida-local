@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 relative overflow-hidden",
   {
     variants: {
       variant: {
@@ -18,12 +18,24 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        
+        // Luxury variants
+        lux: "bg-gradient-to-br from-primary via-accent to-secondary text-primary-foreground font-semibold shadow-lg hover:shadow-xl hover:shadow-primary/25 hover:scale-105 transform transition-all duration-300 ease-out before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/20 before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300",
+        
+        glass: "glass-panel backdrop-blur-md bg-white/10 border border-white/20 text-foreground hover:bg-white/15 hover:border-white/30 hover:shadow-lg hover:shadow-primary/20 transform hover:scale-105 transition-all duration-300 ease-out",
+        
+        metal: "metallic text-primary-foreground font-semibold shadow-lg hover:shadow-xl hover:shadow-secondary/30 hover:scale-105 transform transition-all duration-300 ease-out active:scale-95 active:shadow-inner",
+        
+        neon: "bg-transparent border-2 border-primary text-primary neon-glow hover:bg-primary/10 hover:text-primary hover:shadow-[0_0_30px_hsl(var(--primary))] transform hover:scale-105 transition-all duration-300 ease-out",
+        
+        premium: "bg-gradient-to-r from-accent via-primary to-secondary text-primary-foreground font-semibold shadow-lg hover:shadow-xl hover:shadow-accent/25 hover:scale-105 transform transition-all duration-300 ease-out relative before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/30 before:via-white/10 before:to-white/30 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300"
       },
       size: {
         default: "h-10 px-4 py-2",
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
         icon: "h-10 w-10",
+        xl: "h-14 rounded-lg px-12 text-lg"
       },
     },
     defaultVariants: {
