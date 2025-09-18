@@ -4,6 +4,7 @@ import SpotlightShowcase from "@/components/spotlight-showcase";
 import MarketplaceSection from "@/components/marketplace-section";
 import SocialFeed from "@/components/social-feed";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
+import { Store, ShoppingCart, Users } from "lucide-react";
 
 export default function Landing() {
   return (
@@ -27,28 +28,28 @@ export default function Landing() {
 
             {/* Feature Grid */}
             <div className="grid md:grid-cols-3 gap-8 mb-12">
-              <div className="glass-effect p-6 rounded-xl">
-                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <i className="fas fa-store text-2xl"></i>
+              <div className="bg-slate-900/95 backdrop-blur-xl border border-white/10 p-8 rounded-2xl hover-lift card-rim-light group transition-all duration-500 shadow-luxury-multi">
+                <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-elevated">
+                  <Store className="text-white" size={32} />
                 </div>
-                <h3 className="text-xl font-bold mb-3">Rich Business Profiles</h3>
-                <p className="opacity-90">Showcase your brand with high-quality images, videos, and detailed descriptions.</p>
+                <h3 className="text-2xl font-bold mb-4 text-white">Rich Business Profiles</h3>
+                <p className="text-white/90 leading-relaxed">Showcase your brand with high-quality images, videos, and detailed descriptions that captivate your audience.</p>
               </div>
               
-              <div className="glass-effect p-6 rounded-xl">
-                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <i className="fas fa-shopping-cart text-2xl"></i>
+              <div className="bg-slate-900/95 backdrop-blur-xl border border-white/10 p-8 rounded-2xl hover-lift card-rim-light group transition-all duration-500 shadow-luxury-multi">
+                <div className="w-20 h-20 bg-gradient-to-br from-secondary to-secondary/80 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-elevated">
+                  <ShoppingCart className="text-white" size={32} />
                 </div>
-                <h3 className="text-xl font-bold mb-3">E-Commerce Integration</h3>
-                <p className="opacity-90">Sell products directly through your profile with built-in payment processing.</p>
+                <h3 className="text-2xl font-bold mb-4 text-white">E-Commerce Integration</h3>
+                <p className="text-white/90 leading-relaxed">Sell products directly through your profile with secure built-in payment processing and inventory management.</p>
               </div>
               
-              <div className="glass-effect p-6 rounded-xl">
-                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <i className="fas fa-users text-2xl"></i>
+              <div className="bg-slate-900/95 backdrop-blur-xl border border-white/10 p-8 rounded-2xl hover-lift card-rim-light group transition-all duration-500 shadow-luxury-multi">
+                <div className="w-20 h-20 bg-gradient-to-br from-accent to-accent/80 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-elevated">
+                  <Users className="text-white" size={32} />
                 </div>
-                <h3 className="text-xl font-bold mb-3">Community Network</h3>
-                <p className="opacity-90">Connect with other businesses, collaborate, and build lasting partnerships.</p>
+                <h3 className="text-2xl font-bold mb-4 text-white">Community Network</h3>
+                <p className="text-white/90 leading-relaxed">Connect with other businesses, collaborate on projects, and build lasting partnerships that grow your network.</p>
               </div>
             </div>
 
