@@ -5,31 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-
-type CartProduct = {
-  id: string;
-  name: string;
-  price: string;
-  images: string[] | null;
-  isDigital: boolean | null;
-  inventory: number | null;
-  description?: string;
-  category?: string;
-};
-
-type CartItem = {
-  id: string;
-  productId: string;
-  quantity: number;
-  product: CartProduct;
-};
+import { ApiCartItem } from "@/lib/types";
 
 export default function CartPage() {
   const { isAuthenticated } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: items = [], isLoading } = useQuery<CartItem[]>({
+  const { data: items = [], isLoading } = useQuery<ApiCartItem[]>({
     queryKey: ["/api/cart"],
     enabled: isAuthenticated,
   });

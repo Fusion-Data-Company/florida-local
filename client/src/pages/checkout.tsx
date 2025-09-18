@@ -19,6 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, CreditCard, Lock } from "lucide-react";
 import { Link } from "wouter";
+import { ApiCartItem } from "@/lib/types";
 
 // Initialize Stripe - from the blueprint integration
 if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
@@ -53,31 +54,6 @@ const checkoutSchema = z.object({
 
 type CheckoutForm = z.infer<typeof checkoutSchema>;
 
-interface CartItem {
-  id: string;
-  userId: string;
-  productId: string;
-  quantity: number;
-  addedAt: string;
-  product: {
-    id: string;
-    businessId: string;
-    name: string;
-    description: string;
-    price: string;
-    originalPrice?: string;
-    category: string;
-    images?: string[];
-    inventory: number;
-    isActive: boolean;
-    isDigital: boolean;
-    tags?: string[];
-    rating: string;
-    reviewCount: number;
-    createdAt: string;
-    updatedAt: string;
-  };
-}
 
 function CheckoutForm({ clientSecret, orderId }: { clientSecret: string; orderId: string }) {
   const stripe = useStripe();
@@ -158,7 +134,7 @@ export default function Checkout() {
   const [clientSecret, setClientSecret] = useState("");
   const [orderId, setOrderId] = useState("");
 
-  const { data: cartItems = [], isLoading: cartLoading } = useQuery<CartItem[]>({
+  const { data: cartItems = [], isLoading: cartLoading } = useQuery<ApiCartItem[]>({
     queryKey: ['/api/cart'],
     enabled: isAuthenticated,
   });
