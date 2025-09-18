@@ -73,7 +73,7 @@ export default function CartPage() {
               <Card key={item.id}>
                 <CardContent className="p-6">
                   <div className="flex gap-4">
-                    {item.product.images?.[0] ? (
+                    {Array.isArray(item.product.images) && item.product.images.length > 0 ? (
                       <img
                         src={item.product.images[0]}
                         alt={item.product.name}

@@ -157,17 +157,18 @@ export default function Checkout() {
 
   const createPaymentIntentMutation = useMutation({
     mutationFn: async (data: CheckoutForm) => {
-      return await apiRequest('POST', '/api/create-payment-intent', {
+      const response = await apiRequest('POST', '/api/create-payment-intent', {
         shippingAddress: data.shippingAddress,
         billingAddress: sameBillingAddress ? data.shippingAddress : data.billingAddress,
         customerEmail: data.customerEmail,
         customerPhone: data.customerPhone,
         notes: data.notes,
       });
+      return await response.json();
     },
-    onSuccess: (response) => {
-      setOrderId(response.orderId);
-      setClientSecret(response.clientSecret);
+    onSuccess: (data) => {
+      setOrderId(data.orderId);
+      setClientSecret(data.clientSecret);
       toast({
         title: "Ready to Pay",
         description: "Payment form loaded successfully",
