@@ -1613,22 +1613,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get('/api/health', async (req, res) => {
-    const redisHealthy = await checkRedisConnection();
-    
-    res.json({ 
-      status: 'healthy',
-      services: {
-        database: 'connected',
-        auth: 'operational',
-        storage: 'operational',
-        redis: redisHealthy ? 'operational' : 'unavailable',
-        monitoring: {
-          sentry: process.env.SENTRY_DSN ? 'configured' : 'disabled',
-          posthog: process.env.POSTHOG_KEY ? 'configured' : 'disabled'
-        }
-      },
-      timestamp: new Date().toISOString()
-    });
+    try {
+      const redisHealthy = await checkRedisConnection();
+      
+      // Import database health functions
+      const { getDatabaseStatus, testDatabaseConnection } = await import("./db");
+      
+      // Get comprehensive database status
+      const dbStatus = getDatabaseStatus();
+      const dbHealthCheck = await testDatabaseConnection().catch(() => false);
+      
+      const overallHealthy = dbHealthCheck && (redisHealthy || true); // Redis is optional
+      
+      res.status(overallHealthy ? 200 : 503).json({ 
+        status: overallHealthy ? 'healthy' : 'degraded',
+        services: {
+          database: {
+            status: dbHealthCheck ? 'connected' : 'disconnected',
+            isConnected: dbStatus.isConnected,
+            lastError: dbStatus.lastError,
+            lastErrorTime: dbStatus.lastErrorTime,
+            reconnectAttempts: dbStatus.reconnectAttempts,
+            pool: {
+              idle: dbStatus.poolIdleCount,
+              total: dbStatus.poolTotalCount,
+              waiting: dbStatus.poolWaitingCount
+            }
+          },
+          auth: 'operational',
+          storage: 'operational',
+          redis: {
+            status: redisHealthy ? 'operational' : 'unavailable',
+            required: false // Redis is optional, falls back to PostgreSQL sessions
+          },
+          monitoring: {
+            sentry: process.env.SENTRY_DSN ? 'configured' : 'disabled',
+            posthog: process.env.POSTHOG_KEY ? 'configured' : 'disabled'
+          }
+        },
+        uptime: process.uptime(),
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error("Health check error:", error);
+      res.status(503).json({
+        status: 'unhealthy',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
   });
 
   // Admin promotion endpoint (development only)

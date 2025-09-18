@@ -21,7 +21,7 @@ const redisConfig = {
     const delay = Math.min(times * 200, 5000); // Slower retry
     return delay;
   },
-  reconnectOnError: (err) => {
+  reconnectOnError: (err: Error) => {
     // Only reconnect for specific errors
     const targetError = err.message.includes('READONLY');
     return targetError;
@@ -42,7 +42,7 @@ const bullmqRedisConfig = {
     const delay = Math.min(times * 200, 5000);
     return delay;
   },
-  reconnectOnError: (err) => {
+  reconnectOnError: (err: Error) => {
     const targetError = err.message.includes('READONLY');
     return targetError;
   },

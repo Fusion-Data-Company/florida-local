@@ -7,7 +7,9 @@ import type { Express, RequestHandler } from "express";
 import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
-import { createRedisStore, redis } from "./redis";
+import { createRedisStore, redis, isRedisAvailable, checkRedisConnection } from "./redis";
+import { getDatabaseStatus, testDatabaseConnection } from "./db";
+import { randomBytes } from "crypto";
 
 if (!process.env.REPLIT_DOMAINS) {
   throw new Error("Environment variable REPLIT_DOMAINS not provided");
@@ -23,23 +25,56 @@ const getOidcConfig = memoize(
   { maxAge: 3600 * 1000 }
 );
 
-export function getSession() {
-  const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
+export async function getSession() {
+  const sessionTtl = 7 * 24 * 60 * 60; // 1 week in seconds
+  const sessionTtlMs = sessionTtl * 1000; // 1 week in milliseconds
   
   // Use Redis store if available, otherwise fall back to PostgreSQL
   let sessionStore: any;
   
-  if (redis.status === "ready") {
+  // Check if Redis is available and working
+  const redisAvailable = isRedisAvailable() && await checkRedisConnection().catch(() => false);
+  const dbStatus = getDatabaseStatus();
+  
+  if (redisAvailable) {
     console.log("✅ Using Redis for session storage");
-    sessionStore = createRedisStore(session);
-  } else {
+    try {
+      sessionStore = createRedisStore(session);
+    } catch (error) {
+      console.error("❌ Failed to create Redis session store:", error);
+      sessionStore = null;
+    }
+  }
+  
+  // If Redis store creation failed or Redis isn't available, use PostgreSQL
+  if (!sessionStore) {
     console.log("⚠️ Redis not available, using PostgreSQL for sessions");
+    
+    // Ensure database is connected before creating PostgreSQL session store
+    if (!dbStatus.isConnected) {
+      console.log("🔄 Testing database connection for session store...");
+      const dbConnected = await testDatabaseConnection();
+      if (!dbConnected) {
+        throw new Error("Database connection required for session storage but unavailable");
+      }
+    }
+    
     const pgStore = connectPg(session);
     sessionStore = new pgStore({
       conString: process.env.DATABASE_URL,
-      createTableIfMissing: false,
+      createTableIfMissing: true, // Ensure sessions table exists
       ttl: sessionTtl,
       tableName: "sessions",
+      schemaName: "public",
+      // Error handling for PostgreSQL session store
+      errorLog: (error: Error) => {
+        console.error("❌ PostgreSQL session store error:", error.message);
+      },
+    });
+    
+    // Handle PostgreSQL session store connection errors
+    sessionStore.on('error', (error: Error) => {
+      console.error("❌ Session store connection error:", error);
     });
   }
   
@@ -48,11 +83,16 @@ export function getSession() {
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
+    rolling: true, // Extend session on activity
     cookie: {
       httpOnly: true,
-      secure: true,
-      maxAge: sessionTtl,
+      secure: process.env.NODE_ENV === 'production', // Only secure in production
+      maxAge: sessionTtlMs,
       sameSite: "lax",
+    },
+    // Add session error handling
+    genid: () => {
+      return randomBytes(32).toString('hex');
     },
   });
 }
@@ -81,7 +121,11 @@ async function upsertUser(
 
 export async function setupAuth(app: Express) {
   app.set("trust proxy", 1);
-  app.use(getSession());
+  
+  // Session setup is now async, so we need to await it
+  const sessionMiddleware = await getSession();
+  app.use(sessionMiddleware);
+  
   app.use(passport.initialize());
   app.use(passport.session());
 
