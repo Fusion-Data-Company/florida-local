@@ -119,10 +119,10 @@ export default function Home() {
             </>
           ) : (
             <>
-              <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6 gradient-text">
+              <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6 miami-gradient-text miami-heading">
                 Welcome Back to Your Community
               </h1>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8 miami-body-text">
                 Stay connected with Florida's thriving business network. Discover new opportunities, 
                 showcase your latest updates, and grow your local presence.
               </p>

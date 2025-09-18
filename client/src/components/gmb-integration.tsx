@@ -351,8 +351,8 @@ export function GMBReviewsSection({ businessId, isOwner }: { businessId: string;
   return (
     <div className="space-y-4">
       {reviews.map((review) => (
-        <Card key={review.id} data-testid={`review-${review.id}`}>
-          <CardContent className="p-4">
+        <Card key={review.id} className="miami-glass miami-hover-lift miami-card-glow rounded-2xl overflow-hidden" data-testid={`review-${review.id}`}>
+          <CardContent className="p-6">
             <div className="flex items-start space-x-3">
               {review.reviewerPhotoUrl ? (
                 <img 
@@ -371,7 +371,7 @@ export function GMBReviewsSection({ businessId, isOwner }: { businessId: string;
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-2">
                   <div>
-                    <h4 className="font-medium">{review.reviewerName || 'Anonymous'}</h4>
+                    <h4 className="font-medium miami-heading">{review.reviewerName || 'Anonymous'}</h4>
                     <div className="flex items-center space-x-1">
                       {[...Array(5)].map((_, i) => (
                         <Star 
@@ -391,7 +391,7 @@ export function GMBReviewsSection({ businessId, isOwner }: { businessId: string;
                 </div>
                 
                 {review.comment && (
-                  <p className="text-foreground mb-3">{review.comment}</p>
+                  <p className="text-foreground mb-3 miami-body-text leading-relaxed">{review.comment}</p>
                 )}
                 
                 {review.replyComment && (

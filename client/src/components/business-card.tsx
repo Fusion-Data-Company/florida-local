@@ -213,17 +213,18 @@ export default function BusinessCard({ business, spotlightType, spotlightPositio
             className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-115"
             style={{
               backgroundImage: `url(${business.coverImageUrl || getCategoryImage(business)})`,
-              filter: 'contrast(1.15) saturate(1.3) brightness(1.08)'
+              filter: 'contrast(1.1) saturate(1.25) brightness(1.1)'
             }}
           />
           
-          {/* Sophisticated Multi-Layer Gradients */}
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 via-slate-700/10 to-transparent opacity-60"></div>
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-accent/20 mix-blend-overlay"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-secondary/15 via-transparent to-primary/8 mix-blend-soft-light"></div>
+          {/* Miami Elite Light Overlays - Images Actually Visible */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-black/5 to-transparent opacity-40"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/15 via-transparent to-orange-400/12 mix-blend-soft-light"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-emerald-500/8 via-transparent to-cyan-400/6 mix-blend-overlay"></div>
           
-          {/* Premium Frame Effect */}
-          <div className="absolute inset-3 border-2 border-slate-200 rounded-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+          {/* Miami Luxury Frame Effect */}
+          <div className="absolute inset-2 border-2 border-white/30 rounded-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 shadow-lg"></div>
+          <div className="absolute inset-1 border border-cyan-400/40 rounded-2xl pointer-events-none opacity-0 group-hover:opacity-80 transition-opacity duration-500"></div>
           
           {/* Luxury Noise Texture Overlay */}
           <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay"

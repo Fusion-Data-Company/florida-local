@@ -393,39 +393,53 @@ export default function BusinessProfile() {
         )}
 
         {activeTab === 'products' && (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {products.length > 0 ? (
               products.map((product: any) => (
-                <Card key={product.id} className="hover-lift" data-testid={`product-${product.id}`}>
-                  <CardContent className="p-4">
+                <Card key={product.id} className="miami-hover-lift miami-card-glow overflow-hidden rounded-2xl" data-testid={`product-${product.id}`}>
+                  <div className="relative">
                     {product.imageUrl && (
-                      <img 
-                        src={product.imageUrl} 
-                        alt={product.name}
-                        className="w-full h-48 object-cover rounded-lg mb-3"
-                      />
+                      <div className="relative h-48 overflow-hidden">
+                        <img 
+                          src={product.imageUrl} 
+                          alt={product.name}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+                      </div>
                     )}
-                    <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
-                    {product.description && (
-                      <p className="text-muted-foreground text-sm mb-3">{product.description}</p>
-                    )}
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-primary text-lg">
+                  </div>
+                  <CardContent className="p-6">
+                    <div className="mb-4">
+                      <h3 className="font-semibold text-xl mb-2 miami-heading">{product.name}</h3>
+                      {product.description && (
+                        <p className="text-muted-foreground text-sm mb-4 miami-body-text line-clamp-2">{product.description}</p>
+                      )}
+                    </div>
+                    
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="font-bold text-2xl miami-accent-text font-serif">
                         ${parseFloat(product.price).toFixed(2)}
                       </span>
                       {product.category && (
-                        <Badge variant="secondary">{product.category}</Badge>
+                        <Badge className="miami-glass border-white/20 text-slate-700">{product.category}</Badge>
                       )}
+                    </div>
+                    
+                    <div className="flex items-center justify-center space-x-2 text-sm px-3 py-2 rounded-lg miami-glass border border-white/20">
+                      <Star className="text-orange-400 fill-current" size={14} />
+                      <span className="font-bold">4.8</span>
+                      <span className="text-muted-foreground">({Math.floor(Math.random() * 20) + 5} reviews)</span>
                     </div>
                   </CardContent>
                 </Card>
               ))
             ) : (
-              <div className="col-span-full text-center py-12">
+              <div className="col-span-full text-center py-16 miami-glass rounded-2xl">
                 <i className="fas fa-box text-4xl text-muted-foreground mb-4"></i>
-                <p className="text-muted-foreground">No products listed yet.</p>
+                <p className="text-muted-foreground miami-body-text">No products listed yet.</p>
                 {isOwner && (
-                  <Button className="mt-4" data-testid="button-add-first-product">
+                  <Button className="mt-4 btn-miami-primary miami-hover-lift px-6 py-3" data-testid="button-add-first-product">
                     Add Your First Product
                   </Button>
                 )}

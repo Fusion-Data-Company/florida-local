@@ -243,7 +243,7 @@ export default function SpotlightShowcase() {
                 return (
                   <div 
                     key={business.id} 
-                    className="glass-panel rounded-2xl p-6 hover-lift card-rim-light transition-all duration-300"
+                    className="miami-glass rounded-2xl p-6 miami-hover-lift miami-card-glow transition-all duration-300"
                   >
                     <div className="flex items-center space-x-4 mb-4">
                       {business.logoUrl ? (
@@ -263,12 +263,12 @@ export default function SpotlightShowcase() {
                         </div>
                       )}
                       <div className="flex-1">
-                        <h4 className="font-semibold text-slate-900">{business.name}</h4>
+                        <h4 className="font-semibold text-slate-900 miami-heading">{business.name}</h4>
                         <p className="text-sm text-gray-700 font-medium">{business.category}</p>
                       </div>
                     </div>
 
-                    <p className="text-sm text-muted-foreground mb-6 line-clamp-2 leading-relaxed">
+                    <p className="text-sm text-muted-foreground mb-6 line-clamp-2 leading-relaxed miami-body-text">
                       {business.tagline || business.description}
                     </p>
 

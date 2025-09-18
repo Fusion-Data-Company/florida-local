@@ -124,16 +124,16 @@ export default function Marketplace() {
     <div className="min-h-screen bg-background">
       <NavigationHeader />
 
-      {/* Marketplace Header */}
-      <section className="py-12 bg-gradient-to-r from-primary/10 to-secondary/10">
+      {/* Miami Elite Marketplace Header */}
+      <section className="py-12 bg-gradient-to-r from-primary/10 to-secondary/10 miami-marketplace-hero">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="text-center mb-8">
             <div className="flex flex-col items-center justify-between gap-4 md:flex-row md:text-left">
               <div className="flex-1">
-                <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4 gradient-text">
+                <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4 miami-gradient-text miami-heading">
                   Local Marketplace
                 </h1>
-                <p className="text-xl text-muted-foreground max-w-2xl">
+                <p className="text-xl text-muted-foreground max-w-2xl miami-body-text">
                   Discover unique products from Florida's most innovative businesses. 
                   Support local entrepreneurs while finding exactly what you need.
                 </p>
@@ -143,7 +143,7 @@ export default function Marketplace() {
                   <DialogTrigger asChild>
                     <Button 
                       size="lg"
-                      className="whitespace-nowrap"
+                      className="whitespace-nowrap btn-miami-primary miami-hover-lift px-6 py-3"
                       data-testid="button-add-product"
                     >
                       <Plus className="h-5 w-5 mr-2" />

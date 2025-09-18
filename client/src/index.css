@@ -4,39 +4,49 @@
 @tailwind utilities;
 
 :root {
-  /* Luxury Miami Fashion Light Color Palette */
+  /* MIAMI NETWORKING AGENCY ELITE COLOR PALETTE */
   --background: hsl(36, 25%, 96%);  /* Warm cream base */
   --foreground: hsl(220, 15%, 15%);  /* Rich charcoal text */
   --card: hsl(36, 30%, 98%);  /* Pearl white cards */
   --card-foreground: hsl(220, 15%, 20%);
   --popover: hsl(36, 30%, 98%);
   --popover-foreground: hsl(220, 15%, 20%);
-  --primary: hsl(180, 85%, 35%);  /* Deep teal cyan */
+  --primary: hsl(195, 100%, 50%);  /* Miami Ocean Blue */
   --primary-foreground: hsl(36, 30%, 98%);
-  --secondary: hsl(45, 80%, 45%);  /* Rich gold */
+  --secondary: hsl(25, 100%, 65%);  /* Miami Sunset Orange */
   --secondary-foreground: hsl(36, 30%, 98%);
   --muted: hsl(36, 20%, 92%);
   --muted-foreground: hsl(220, 10%, 45%);
-  --accent: hsl(320, 70%, 45%);  /* Deep magenta */
+  --accent: hsl(320, 85%, 55%);  /* Miami Vice Pink */
   --accent-foreground: hsl(36, 30%, 98%);
   --destructive: hsl(0, 70%, 50%);
   --destructive-foreground: hsl(36, 30%, 98%);
   --border: hsl(36, 20%, 85%);
   --input: hsl(36, 25%, 94%);
-  --ring: hsl(180, 85%, 35%);
-  --chart-1: hsl(180, 85%, 35%);
-  --chart-2: hsl(320, 70%, 45%);
-  --chart-3: hsl(45, 80%, 45%);
-  --chart-4: hsl(280, 60%, 50%);
-  --chart-5: hsl(60, 70%, 50%);
+  --ring: hsl(195, 100%, 50%);
+  --chart-1: hsl(195, 100%, 50%);
+  --chart-2: hsl(320, 85%, 55%);
+  --chart-3: hsl(25, 100%, 65%);
+  --chart-4: hsl(165, 80%, 45%);
+  --chart-5: hsl(45, 95%, 70%);
   --sidebar: hsl(36, 25%, 96%);
   --sidebar-foreground: hsl(220, 15%, 20%);
-  --sidebar-primary: hsl(180, 85%, 35%);
+  --sidebar-primary: hsl(195, 100%, 50%);
   --sidebar-primary-foreground: hsl(36, 30%, 98%);
   --sidebar-accent: hsl(36, 20%, 92%);
-  --sidebar-accent-foreground: hsl(180, 85%, 35%);
+  --sidebar-accent-foreground: hsl(195, 100%, 50%);
   --sidebar-border: hsl(36, 20%, 85%);
-  --sidebar-ring: hsl(180, 85%, 35%);
+  --sidebar-ring: hsl(195, 100%, 50%);
+  
+  /* MIAMI LUXURY DESIGN TOKENS */
+  --miami-ocean: hsl(195, 100%, 85%);
+  --miami-sunset: hsl(25, 100%, 65%);
+  --miami-gold: hsl(45, 95%, 70%);
+  --miami-coral: hsl(15, 85%, 75%);
+  --miami-emerald: hsl(165, 80%, 45%);
+  --miami-pearl: hsl(36, 40%, 96%);
+  --miami-vice-cyan: hsl(180, 100%, 50%);
+  --miami-vice-pink: hsl(320, 85%, 55%);
   
   /* Typography */
   --font-sans: Inter, sans-serif;
@@ -50,11 +60,17 @@
   --glass-border: rgba(0, 0, 0, 0.1);
   --noise-opacity: 0.02;
   
-  /* Luxury shadows for light theme */
+  /* MIAMI ELITE SHADOWS */
   --shadow-luxury: 0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
   --shadow-refined: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-elevated: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-miami: 0 32px 64px -12px rgba(25, 182, 246, 0.25), 
+                  0 0 0 1px rgba(255, 255, 255, 0.05),
+                  0 8px 16px rgba(0, 0, 0, 0.1);
+  --shadow-miami-glow: 0 0 30px var(--miami-vice-cyan),
+                       0 0 60px var(--miami-vice-cyan),
+                       0 0 90px var(--miami-vice-cyan);
 }
 
 
@@ -85,9 +101,70 @@
   }
 }
 
+/* === MIAMI NETWORKING AGENCY LUXURY CLASSES === */
+
+/* Miami Hero Section */
+.miami-hero-section {
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+}
+
+@media (max-width: 768px) {
+  .miami-hero-section {
+    background-attachment: scroll;
+  }
+}
+
+/* Miami Mesh Overlay */
+.miami-mesh-overlay {
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(25, 182, 246, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 152, 67, 0.10) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(165, 243, 252, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 60% 60%, rgba(251, 146, 60, 0.06) 0%, transparent 50%);
+  animation: miami-mesh-movement 15s ease-in-out infinite;
+}
+
+@keyframes miami-mesh-movement {
+  0%, 100% { background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%; }
+  25% { background-size: 120% 120%, 80% 80%, 110% 110%, 90% 90%; }
+  50% { background-size: 80% 80%, 120% 120%, 90% 90%, 110% 110%; }
+  75% { background-size: 110% 110%, 90% 90%, 120% 120%, 80% 80%; }
+}
+
 /* === LUXURY UTILITY CLASSES === */
 
-/* Glass Panel Effect for Light Theme */
+/* Miami Glass Morphism */
+.miami-glass {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(255, 255, 255, 0.10) 100%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 0 0 1px rgba(25, 182, 246, 0.1);
+  position: relative;
+}
+
+.miami-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(25, 182, 246, 0.3), rgba(255, 152, 67, 0.2));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Glass Panel Effect for Light Theme (legacy) */
 .glass-panel {
   background: linear-gradient(135deg, 
     rgba(255, 255, 255, 0.85) 0%,
@@ -228,17 +305,54 @@
   pointer-events: none;
 }
 
-/* === ENHANCED TYPOGRAPHY === */
+/* === MIAMI ELITE TYPOGRAPHY === */
 
-/* Gradient Text Effects */
-.gradient-text {
-  background: var(--luxury-gradient);
+/* Miami Gradient Text Effects */
+.miami-gradient-text {
+  background: linear-gradient(135deg, var(--miami-vice-cyan), var(--miami-emerald), var(--miami-vice-pink));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   background-size: 200% 200%;
-  animation: gradient-shift 3s ease-in-out infinite;
-  color: hsl(180, 85%, 25%); /* Fallback for better visibility */
+  animation: miami-gradient-shift 4s ease-in-out infinite;
+  color: hsl(195, 100%, 35%); /* Fallback for better visibility */
+}
+
+@keyframes miami-gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  33% { background-position: 50% 0%; }
+  66% { background-position: 100% 50%; }
+}
+
+.miami-accent-text {
+  color: var(--miami-sunset);
+  text-shadow: 0 2px 4px rgba(255, 152, 67, 0.3);
+  font-weight: 700;
+}
+
+.miami-heading {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.miami-body-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  line-height: 1.7;
+  color: hsl(220, 15%, 25%);
+}
+
+/* Gradient Text Effects (legacy) */
+.gradient-text {
+  background: linear-gradient(135deg, var(--miami-vice-cyan), var(--miami-emerald));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 200%;
+  animation: miami-gradient-shift 4s ease-in-out infinite;
+  color: hsl(195, 100%, 35%); /* Fallback for better visibility */
 }
 
 @supports not (-webkit-background-clip: text) {
@@ -327,41 +441,53 @@
   box-shadow: var(--shadow-luxury);
 }
 
-/* Enhanced Floating Animation */
-.floating-animation {
-  animation: luxury-float 4s ease-in-out infinite;
+/* Miami Elite Floating Animation */
+.miami-float {
+  animation: miami-luxury-float 6s ease-in-out infinite;
 }
 
-@keyframes luxury-float {
+@keyframes miami-luxury-float {
   0%, 100% { 
-    transform: translateY(0px) scale(1); 
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    transform: translateY(0px) rotate(0deg);
+    filter: drop-shadow(0 10px 20px rgba(25, 182, 246, 0.2));
   }
-  25% { 
-    transform: translateY(-8px) scale(1.02); 
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+  33% { 
+    transform: translateY(-15px) rotate(1deg);
+    filter: drop-shadow(0 20px 40px rgba(25, 182, 246, 0.3));
   }
-  50% { 
-    transform: translateY(-12px) scale(1.05); 
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-  }
-  75% { 
-    transform: translateY(-8px) scale(1.02); 
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+  66% { 
+    transform: translateY(-8px) rotate(-0.5deg);
+    filter: drop-shadow(0 15px 30px rgba(255, 152, 67, 0.2));
   }
 }
 
-/* Enhanced Hover Lift */
+/* Enhanced Floating Animation (legacy support) */
+.floating-animation {
+  animation: miami-luxury-float 6s ease-in-out infinite;
+}
+
+/* Miami Elite Hover Effects */
+.miami-hover-lift {
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  transform-origin: center;
+}
+
+.miami-hover-lift:hover {
+  transform: translateY(-12px) scale(1.02) rotateX(2deg);
+  box-shadow: 
+    0 32px 64px rgba(25, 182, 246, 0.25),
+    0 16px 32px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Enhanced Hover Lift (legacy support) */
 .hover-lift {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .hover-lift:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 
-    0 25px 50px rgba(0, 0, 0, 0.15),
-    0 0 20px rgba(180, 140, 100, 0.3),
-    0 0 40px rgba(160, 100, 140, 0.2);
+  transform: translateY(-12px) scale(1.02);
+  box-shadow: var(--shadow-miami);
 }
 
 /* Enhanced Spotlight Glow for Light Theme */
@@ -377,7 +503,21 @@
 
 /* === ENHANCED LUXURY CARD EFFECTS === */
 
-/* Premium Card Rim Light */
+/* Miami Card Effects */
+.miami-card-glow {
+  position: relative;
+  box-shadow: var(--shadow-miami);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.miami-card-glow:hover {
+  box-shadow: 
+    var(--shadow-miami),
+    0 0 20px rgba(25, 182, 246, 0.2),
+    0 0 40px rgba(255, 152, 67, 0.1);
+}
+
+/* Premium Card Rim Light (legacy) */
 .card-rim-light {
   position: relative;
 }
@@ -1144,4 +1284,185 @@ textarea:focus-visible,
     text-shadow: none;
     border: 2px solid currentColor;
   }
+}
+
+/* === MIAMI ELITE BUTTON STYLES === */
+
+/* Miami Primary Button */
+.btn-miami-primary {
+  background: linear-gradient(135deg, var(--miami-vice-cyan), var(--miami-emerald));
+  color: white;
+  font-weight: 600;
+  border-radius: 12px;
+  box-shadow: var(--shadow-miami);
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-miami-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.btn-miami-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 32px 64px -12px rgba(25, 182, 246, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.btn-miami-primary:hover::before {
+  opacity: 1;
+}
+
+/* Miami Glass Button */
+.btn-miami-glass {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(255, 255, 255, 0.10) 100%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: hsl(220, 15%, 25%);
+  font-weight: 600;
+  border-radius: 12px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-miami-glass:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 16px 48px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 0 0 1px rgba(25, 182, 246, 0.2);
+}
+
+/* Mobile Responsive Miami Styles */
+@media (max-width: 768px) {
+  .miami-hover-lift:hover {
+    transform: none;
+  }
+  
+  .miami-float {
+    animation-play-state: paused;
+  }
+  
+  .btn-miami-primary:hover,
+  .btn-miami-glass:hover {
+    transform: none;
+  }
+  
+  .miami-glass {
+    backdrop-filter: blur(10px);
+  }
+}
+
+/* === MIAMI MARKETPLACE SPECIFIC STYLES === */
+
+/* Miami Marketplace Hero */
+.miami-marketplace-hero {
+  background: linear-gradient(135deg, 
+    rgba(25, 182, 246, 0.08) 0%, 
+    rgba(255, 152, 67, 0.06) 50%, 
+    rgba(165, 243, 252, 0.08) 100%);
+  position: relative;
+}
+
+.miami-marketplace-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* Miami Marketplace Section */
+.miami-marketplace-section {
+  background: linear-gradient(180deg, 
+    rgba(255, 255, 255, 1) 0%, 
+    rgba(250, 250, 250, 0.8) 50%, 
+    rgba(255, 255, 255, 1) 100%);
+  position: relative;
+}
+
+.miami-marketplace-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(25, 182, 246, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 152, 67, 0.04) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Miami Products Grid */
+.miami-products-grid {
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .miami-products-grid {
+    gap: 2.5rem;
+  }
+}
+
+/* Miami Results Section */
+.miami-results-section {
+  background: linear-gradient(180deg, 
+    rgba(255, 255, 255, 0.9) 0%, 
+    rgba(248, 250, 252, 0.6) 100%);
+}
+
+/* Miami Section Headers */
+.miami-section-header h3 {
+  position: relative;
+}
+
+.miami-section-header h3::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--miami-vice-cyan), var(--miami-emerald));
+  border-radius: 2px;
+}
+
+/* Miami CTA Section */
+.miami-cta-section {
+  background: linear-gradient(135deg, 
+    var(--miami-vice-cyan) 0%, 
+    var(--miami-emerald) 50%, 
+    var(--miami-vice-pink) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.miami-cta-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
+  animation: miami-cta-shimmer 8s ease-in-out infinite;
+}
+
+@keyframes miami-cta-shimmer {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
 }

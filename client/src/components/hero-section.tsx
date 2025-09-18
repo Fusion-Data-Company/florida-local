@@ -16,37 +16,41 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden miami-hero-section">
       {/* Hero Background */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-fixed" 
         style={{
-          backgroundImage: `linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(255,248,235,0.9) 25%, rgba(250,245,220,0.85) 50%, rgba(255,252,240,0.9) 75%, rgba(255,255,255,0.85) 100%), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2073&q=80')`
+          backgroundImage: `linear-gradient(135deg, rgba(25,182,246,0.08) 0%, rgba(255,255,255,0.12) 25%, rgba(250,245,220,0.10) 50%, rgba(255,152,67,0.08) 75%, rgba(255,255,255,0.12) 100%), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2073&q=80')`
         }}
       ></div>
+      
+      {/* Miami Luxury Depth Layers */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/3 to-cyan-500/8" />
+      <div className="absolute inset-0 miami-mesh-overlay opacity-40" />
 
-      {/* Floating elements */}
-      <div className="absolute top-20 right-10 floating-animation group">
-        <TreePine className="text-4xl text-slate-400 group-hover:text-primary transition-colors duration-500" size={40} />
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full"></div>
+      {/* Miami Luxury Floating Elements */}
+      <div className="absolute top-20 right-10 miami-float group">
+        <TreePine className="text-4xl text-cyan-400 group-hover:text-cyan-300 transition-colors duration-500 drop-shadow-lg" size={40} />
+        <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 to-emerald-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full blur-xl"></div>
       </div>
-      <div className="absolute bottom-20 left-10 floating-animation group" style={{ animationDelay: '1s' }}>
-        <Sun className="text-3xl text-slate-500 group-hover:text-secondary transition-colors duration-500" size={32} />
-        <div className="absolute inset-0 bg-gradient-to-r from-secondary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full"></div>
+      <div className="absolute bottom-20 left-10 miami-float group" style={{ animationDelay: '2s' }}>
+        <Sun className="text-3xl text-orange-400 group-hover:text-orange-300 transition-colors duration-500 drop-shadow-lg" size={32} />
+        <div className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-pink-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full blur-xl"></div>
       </div>
-      <div className="absolute top-1/3 left-20 floating-animation group" style={{ animationDelay: '2s' }}>
-        <Sparkles className="text-2xl text-slate-400 group-hover:text-accent transition-colors duration-500" size={24} />
-        <div className="absolute inset-0 bg-gradient-to-r from-accent/5 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full"></div>
+      <div className="absolute top-1/3 left-20 miami-float group" style={{ animationDelay: '4s' }}>
+        <Sparkles className="text-2xl text-pink-400 group-hover:text-pink-300 transition-colors duration-500 drop-shadow-lg" size={24} />
+        <div className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-cyan-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full blur-xl"></div>
       </div>
 
       {/* Hero Content */}
       <div className="relative z-10 text-center text-slate-900 max-w-4xl mx-auto px-4">
-        <h1 className="text-5xl md:text-7xl font-serif font-bold mb-6 leading-tight text-slate-900">
-          Life's <span className="gradient-text">BETTER</span> when you're<br />
-          Living Like a <span className="text-secondary">LOCAL</span>
+        <h1 className="text-5xl md:text-7xl font-serif font-bold mb-6 leading-tight text-slate-900 miami-heading">
+          Life's <span className="miami-gradient-text">BETTER</span> when you're<br />
+          Living Like a <span className="miami-accent-text">LOCAL</span>
         </h1>
         
-        <p className="text-xl md:text-2xl mb-12 text-slate-700 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-xl md:text-2xl mb-12 text-slate-800 max-w-2xl mx-auto leading-relaxed miami-body-text">
           Discover, connect, and thrive with Florida's most vibrant business community. 
           Where local entrepreneurs build lasting relationships and grow together.
         </p>
@@ -54,18 +58,14 @@ export default function HeroSection() {
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
           <Button 
-            variant="premium"
-            size="xl"
-            className="btn-press"
+            className="btn-miami-primary miami-hover-lift px-8 py-4 text-lg font-semibold"
             onClick={() => window.location.href = '/api/login'}
             data-testid="button-join-community"
           >
             Join the Community
           </Button>
           <Button 
-            variant="glass"
-            size="xl"
-            className="btn-press"
+            className="btn-miami-glass miami-hover-lift px-8 py-4 text-lg font-semibold"
             data-testid="button-explore-businesses"
           >
             Explore Businesses
@@ -74,7 +74,7 @@ export default function HeroSection() {
 
         {/* Quick Search */}
         <div className="max-w-3xl mx-auto premium-search-hero">
-          <div className="glass-panel rounded-2xl p-8 card-rim-light">
+          <div className="miami-glass rounded-2xl p-8 miami-card-glow">
             <div className="flex flex-col lg:flex-row gap-6">
               <div className="flex-1 relative group">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-600 group-hover:text-primary transition-colors duration-300" />

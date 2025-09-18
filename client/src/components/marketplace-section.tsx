@@ -26,20 +26,20 @@ export default function MarketplaceSection() {
   };
 
   return (
-    <section className="py-20 bg-background">
+    <section className="py-20 bg-background miami-marketplace-section">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex flex-col lg:flex-row items-center justify-between mb-16">
           <div className="lg:w-1/2 mb-8 lg:mb-0">
-            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 gradient-text">
+            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 miami-gradient-text">
               Local Marketplace
             </h2>
-            <p className="text-xl text-muted-foreground leading-relaxed mb-6">
+            <p className="text-xl text-muted-foreground leading-relaxed mb-6 miami-body-text">
               Discover unique products and services from Florida's most innovative businesses. 
               Support local entrepreneurs while finding exactly what you need.
             </p>
             <Link href="/marketplace">
               <Button 
-                className="metallic hover-lift btn-press px-8 py-4 font-semibold group transition-all duration-300 shadow-sm"
+                className="btn-miami-primary miami-hover-lift px-8 py-4 font-semibold group transition-all duration-300"
                 data-testid="button-explore-marketplace"
               >
                 <ShoppingBag className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform duration-300" />
@@ -51,7 +51,7 @@ export default function MarketplaceSection() {
           
           <div className="lg:w-1/2">
             {/* Premium Search and Filter Bar */}
-            <div className="premium-search-panel glass-panel rounded-2xl p-8 card-rim-light hover-lift transition-all duration-300">
+            <div className="premium-search-panel miami-glass rounded-2xl p-8 miami-card-glow miami-hover-lift transition-all duration-300">
               <div className="flex flex-col md:flex-row gap-6 mb-6">
                 <div className="flex-1 relative group">
                   <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors duration-300" />
@@ -82,7 +82,7 @@ export default function MarketplaceSection() {
                 </div>
                 <Button 
                   onClick={handleSearch} 
-                  className="px-8 py-4 metallic hover-lift btn-press group font-semibold shadow-sm"
+                  className="px-8 py-4 btn-miami-glass miami-hover-lift group font-semibold"
                   data-testid="button-marketplace-search"
                 >
                   <Search className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform duration-300" />
@@ -118,7 +118,13 @@ export default function MarketplaceSection() {
           </div>
         </div>
 
-        {/* Featured Products Grid */}
+        {/* Miami Elite Featured Products Grid */}
+        <div className="miami-section-header mb-12">
+          <h3 className="text-3xl font-serif font-bold text-center mb-4 miami-heading">
+            Featured Products
+          </h3>
+          <div className="w-24 h-1 bg-gradient-to-r from-cyan-400 to-emerald-400 mx-auto rounded-full"></div>
+        </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {isLoading ? (
             // Loading skeletons
@@ -140,7 +146,7 @@ export default function MarketplaceSection() {
                 <ShoppingBag className="text-6xl text-muted-foreground mx-auto" size={64} />
                 <div className="absolute inset-0 text-muted-foreground opacity-20 blur-lg"></div>
               </div>
-              <h3 className="text-2xl font-bold mb-4 gradient-text text-luxury font-serif">No products available</h3>
+              <h3 className="text-2xl font-bold mb-4 miami-gradient-text text-luxury font-serif">No products available</h3>
               <p className="text-muted-foreground max-w-md mx-auto">
                 Check back soon for featured products from local businesses.
               </p>

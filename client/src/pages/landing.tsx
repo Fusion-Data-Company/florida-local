@@ -13,15 +13,15 @@ export default function Landing() {
       <HeroSection />
       <SpotlightShowcase />
       
-      {/* Profile Creation CTA */}
-      <section className="py-20 bg-gradient-to-r from-primary to-secondary">
+      {/* Miami Elite Profile Creation CTA */}
+      <section className="py-20 bg-gradient-to-r from-primary to-secondary miami-cta-section">
         <div className="container mx-auto px-4 lg:px-8 text-center text-white">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6">
+            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 miami-heading">
               Ready to Shine in the Spotlight?
             </h2>
             
-            <p className="text-xl mb-12 opacity-90 leading-relaxed">
+            <p className="text-xl mb-12 opacity-90 leading-relaxed miami-body-text">
               Join thousands of Florida businesses building their digital presence, 
               connecting with customers, and growing their community impact.
             </p>
@@ -56,7 +56,7 @@ export default function Landing() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button 
                 onClick={() => window.location.href = '/api/login'} 
-                className="bg-white text-primary hover:bg-white/90 px-8 py-4 rounded-lg text-lg font-semibold transition-all transform hover:scale-105 shadow-lg"
+                className="btn-miami-glass text-primary miami-hover-lift px-8 py-4 rounded-lg text-lg font-semibold"
                 data-testid="button-create-profile"
               >
                 Create Your Business Profile
