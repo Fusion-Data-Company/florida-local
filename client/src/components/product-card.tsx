@@ -106,64 +106,69 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   const getBadgeForProduct = () => {
     if (product.isDigital) {
-      return <Badge className="bg-blue-500 text-white">Digital</Badge>;
+      return <Badge className="glass-panel border-primary/50 glow-primary text-primary font-semibold">Digital</Badge>;
     }
     if (product.originalPrice && parseFloat(product.originalPrice) > parseFloat(product.price)) {
       const discount = Math.round(((parseFloat(product.originalPrice) - parseFloat(product.price)) / parseFloat(product.originalPrice)) * 100);
-      return <Badge className="bg-red-500 text-white">{discount}% Off</Badge>;
+      return <Badge className="metallic glow-secondary neon-glow font-semibold">{discount}% Off</Badge>;
     }
     if (product.tags && Array.isArray(product.tags)) {
       if (product.tags.includes('local-made')) {
-        return <Badge className="bg-secondary text-secondary-foreground">Local Made</Badge>;
+        return <Badge className="glass-panel border-secondary/50 glow-secondary text-secondary font-semibold">Local Made</Badge>;
       }
       if (product.tags.includes('eco-friendly')) {
-        return <Badge className="bg-green-500 text-white">Eco-Friendly</Badge>;
+        return <Badge className="glass-panel border-accent/50 glow-accent text-accent font-semibold">Eco-Friendly</Badge>;
       }
       if (product.tags.includes('handcrafted')) {
-        return <Badge className="bg-accent text-accent-foreground">Handcrafted</Badge>;
+        return <Badge className="glass-panel border-accent/50 glow-accent text-accent font-semibold">Handcrafted</Badge>;
       }
     }
     return null;
   };
 
   return (
-    <Card className="hover-lift overflow-hidden">
+    <Card className="glass-panel hover-lift card-rim-light ambient-particles overflow-hidden rounded-2xl transition-all duration-500">
       {/* Product Image */}
       <div 
-        className="h-48 bg-cover bg-center relative"
+        className="h-48 bg-cover bg-center relative overflow-hidden"
         style={{ backgroundImage: `url(${getProductImage()})` }}
       >
-        <div className="absolute top-3 right-3">
+        {/* Luxury Overlay Gradients */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10"></div>
+        
+        <div className="absolute top-3 right-3 z-10">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => wishlistMutation.mutate()}
             disabled={wishlistMutation.isPending || !isAuthenticated}
-            className={`bg-white/90 p-2 rounded-full shadow-lg transition-colors ${
-              isWishlisted ? "text-accent" : "text-muted-foreground hover:text-accent"
+            className={`glass-panel p-3 rounded-full hover-lift btn-press transition-all duration-300 group ${
+              isWishlisted ? "text-accent neon-glow border-accent/50" : "text-muted-foreground hover:text-accent border-border/30"
             }`}
             data-testid={`button-wishlist-${product.id}`}
           >
-            <i className={isWishlisted ? "fas fa-heart" : "far fa-heart"}></i>
+            <i className={`${isWishlisted ? "fas fa-heart" : "far fa-heart"} transition-transform duration-300 group-hover:scale-110`}></i>
+            {isWishlisted && <div className="absolute inset-0 bg-accent/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>}
           </Button>
         </div>
-        <div className="absolute bottom-3 left-3">
+        <div className="absolute bottom-3 left-3 z-10">
           {getBadgeForProduct()}
         </div>
       </div>
       
-      <CardContent className="p-4">
-        <div className="text-sm text-muted-foreground mb-2">
+      <CardContent className="p-6 relative">
+        <div className="text-sm gradient-text-cyan font-medium mb-2 uppercase tracking-wide">
           Local Business
         </div>
-        <h3 className="font-bold mb-2 line-clamp-2">{product.name}</h3>
-        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-          {product.description || "Quality product from a local business."}
+        <h3 className="font-bold mb-3 line-clamp-2 text-luxury gradient-text-gold font-serif text-lg">{product.name}</h3>
+        <p className="text-sm text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
+          {product.description || "Premium quality product from a distinguished local business."}
         </p>
         
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center space-x-1">
-            <span className="font-bold text-lg">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-2">
+            <span className="font-bold text-xl gradient-text-gold text-price">
               ${parseFloat(product.price || "0").toFixed(2)}
             </span>
             {product.originalPrice && parseFloat(product.originalPrice) > parseFloat(product.price) && (
@@ -172,9 +177,9 @@ export default function ProductCard({ product }: ProductCardProps) {
               </span>
             )}
           </div>
-          <div className="flex items-center space-x-1 text-sm">
-            <i className="fas fa-star text-yellow-400"></i>
-            <span>{product.rating ? parseFloat(product.rating).toFixed(1) : "4.5"}</span>
+          <div className="flex items-center space-x-1 text-sm glass-panel px-3 py-1 rounded-lg border-border/20">
+            <i className="fas fa-star text-secondary glow-secondary"></i>
+            <span className="gradient-text-gold font-medium">{product.rating ? parseFloat(product.rating).toFixed(1) : "4.5"}</span>
             <span className="text-muted-foreground">
               ({product.reviewCount || 0})
             </span>
@@ -184,19 +189,22 @@ export default function ProductCard({ product }: ProductCardProps) {
         <Button
           onClick={() => addToCartMutation.mutate()}
           disabled={addToCartMutation.isPending || !product.isActive}
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold transition-all"
+          className="w-full metallic hover-lift btn-press font-semibold transition-all duration-300 group relative overflow-hidden"
           data-testid={`button-add-to-cart-${product.id}`}
         >
-          {addToCartMutation.isPending ? (
-            <>
-              <i className="fas fa-spinner fa-spin mr-2"></i>
-              Adding...
-            </>
-          ) : product.inventory === 0 ? (
-            "Out of Stock"
-          ) : (
-            "Add to Cart"
-          )}
+          <span className="relative z-10">
+            {addToCartMutation.isPending ? (
+              <>
+                <i className="fas fa-spinner fa-spin mr-2"></i>
+                Adding...
+              </>
+            ) : product.inventory === 0 ? (
+              "Out of Stock"
+            ) : (
+              "Add to Cart"
+            )}
+          </span>
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         </Button>
       </CardContent>
     </Card>
