@@ -8,23 +8,66 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, ShoppingBag, Star, Heart, Truck, Award, Filter } from "lucide-react";
-import { useState } from "react";
+import { Search, ShoppingBag, Star, Heart, Truck, Award, Filter, Layers, Check, SortAsc, DollarSign } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
 export default function MarketplaceSection() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
+  // New advanced filters
+  const [categories, setCategories] = useState<string[]>([]);
+  const [minPrice, setMinPrice] = useState<string>("");
+  const [maxPrice, setMaxPrice] = useState<string>("");
+  const [minRating, setMinRating] = useState<string>("");
+  const [inStock, setInStock] = useState<boolean>(false);
+  const [isDigital, setIsDigital] = useState<boolean>(false);
+  const [tags, setTags] = useState<string[]>([]);
+  const [sort, setSort] = useState<'rating_desc' | 'price_asc' | 'price_desc' | 'newest' | 'popular'>("rating_desc");
+  const [pageSize] = useState<number>(8);
+  const [debouncedQuery, setDebouncedQuery] = useState<string>("");
 
   const { data: featuredProducts = [], isLoading } = useQuery<Product[]>({
     queryKey: ['/api/products/featured', 20, 'unique=images'],
     queryFn: () => fetch(`/api/products/featured?limit=20&unique=images`).then(res => res.json()),
   });
 
+  // Debounce search query
+  useEffect(() => {
+    const id = setTimeout(() => setDebouncedQuery(searchQuery.trim()), 300);
+    return () => clearTimeout(id);
+  }, [searchQuery]);
+
+  // Build search params
+  const searchParams = useMemo(() => {
+    const params = new URLSearchParams();
+    if (debouncedQuery) params.set('q', debouncedQuery);
+    const allCats = categories.length ? categories : (selectedCategory ? [selectedCategory] : []);
+    if (allCats.length) params.set('categories', allCats.join(','));
+    if (minPrice) params.set('minPrice', minPrice);
+    if (maxPrice) params.set('maxPrice', maxPrice);
+    if (minRating) params.set('minRating', minRating);
+    if (inStock) params.set('inStock', 'true');
+    if (isDigital) params.set('isDigital', 'true');
+    if (tags.length) params.set('tags', tags.join(','));
+    if (sort) params.set('sort', sort);
+    params.set('page', '1');
+    params.set('pageSize', String(pageSize));
+    return params;
+  }, [debouncedQuery, categories, selectedCategory, minPrice, maxPrice, minRating, inStock, isDigital, tags, sort, pageSize]);
+
+  const { data: searchData } = useQuery<{ items: Product[]; total: number }>({
+    queryKey: ['/api/products/search', searchParams.toString()],
+    queryFn: () => fetch(`/api/products/search?${searchParams}`).then(res => res.json()),
+  });
+
   const handleSearch = () => {
-    if (searchQuery || selectedCategory) {
-      // TODO: Navigate to marketplace with search params
-      window.location.href = `/marketplace?q=${searchQuery}&category=${selectedCategory}`;
-    }
+    const params = new URLSearchParams(searchParams);
+    // Navigate to full marketplace with current filters
+    window.location.href = `/marketplace?${params.toString()}`;
+  };
+
+  const toggleArrayValue = (arr: string[], val: string, setter: (v: string[]) => void) => {
+    if (arr.includes(val)) setter(arr.filter(v => v !== val)); else setter([...arr, val]);
   };
 
   return (
@@ -68,19 +111,21 @@ export default function MarketplaceSection() {
                   <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                 </div>
                 <div className="relative group">
-                  <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground group-hover:text-secondary transition-colors duration-300" />
-                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                    <SelectTrigger className="pl-12 pr-4 py-4 min-w-[200px] premium-search-input border-border/30 hover:border-secondary/50 focus:border-secondary/70 transition-all duration-300" data-testid="select-marketplace-category">
-                      <SelectValue placeholder="All Categories" />
-                    </SelectTrigger>
-                    <SelectContent className="premium-dropdown">
-                      <SelectItem value="Food & Beverage">🍽️ Food & Beverage</SelectItem>
-                      <SelectItem value="Fashion">👗 Fashion</SelectItem>
-                      <SelectItem value="Home & Garden">🏡 Home & Garden</SelectItem>
-                      <SelectItem value="Health & Beauty">💅 Health & Beauty</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-secondary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                  <Layers className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground group-hover:text-secondary transition-colors duration-300" />
+                  <div className="pl-12 pr-4 py-4 min-w-[240px] premium-search-input border border-border/30 rounded-md">
+                    <div className="flex flex-wrap gap-2">
+                      {['Food & Beverage','Fashion','Home & Garden','Health & Beauty'].map(c => (
+                        <button
+                          key={c}
+                          type="button"
+                          onClick={() => toggleArrayValue(categories, c, setCategories)}
+                          className={`px-2 py-1 rounded-md text-sm border ${categories.includes(c) ? 'bg-primary/10 border-primary text-primary' : 'border-border text-foreground/80 hover:border-secondary'}`}
+                        >
+                          {categories.includes(c) && <Check className="inline h-3 w-3 mr-1" />} {c}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
                 <Button 
                   onClick={handleSearch} 
@@ -116,9 +161,73 @@ export default function MarketplaceSection() {
                   <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
                 </Badge>
               </div>
+
+              {/* Advanced Filters */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                <div>
+                  <label className="text-sm font-medium mb-2 flex items-center"><DollarSign className="h-4 w-4 mr-2" /> Price Range</label>
+                  <div className="flex gap-2">
+                    <Input type="number" min={0} placeholder="Min" value={minPrice} onChange={(e)=>setMinPrice(e.target.value)} />
+                    <Input type="number" min={0} placeholder="Max" value={maxPrice} onChange={(e)=>setMaxPrice(e.target.value)} />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-2 flex items-center"><Star className="h-4 w-4 mr-2" /> Min Rating</label>
+                  <Select value={minRating} onValueChange={setMinRating}>
+                    <SelectTrigger className="premium-search-input">
+                      <SelectValue placeholder="Any" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {["3","3.5","4","4.5"].map(r => (
+                        <SelectItem key={r} value={r}>{r}+</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-2 flex items-center"><SortAsc className="h-4 w-4 mr-2" /> Sort</label>
+                  <Select value={sort} onValueChange={(v)=>setSort(v as any)}>
+                    <SelectTrigger className="premium-search-input">
+                      <SelectValue placeholder="Sort" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="rating_desc">Top Rated</SelectItem>
+                      <SelectItem value="price_asc">Price: Low to High</SelectItem>
+                      <SelectItem value="price_desc">Price: High to Low</SelectItem>
+                      <SelectItem value="newest">Newest</SelectItem>
+                      <SelectItem value="popular">Most Reviewed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="flex items-center gap-6 mt-4">
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input type="checkbox" checked={inStock} onChange={(e)=>setInStock(e.target.checked)} /> In Stock
+                </label>
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input type="checkbox" checked={isDigital} onChange={(e)=>setIsDigital(e.target.checked)} /> Digital Only
+                </label>
+              </div>
             </div>
           </div>
         </div>
+
+        {/* Live Search Results (Top Matches) */}
+        {searchData?.items && (debouncedQuery || categories.length || selectedCategory || minPrice || maxPrice || minRating || inStock || isDigital || tags.length) ? (
+          <div className="mb-12">
+            <div className="miami-section-header mb-6 flex items-center justify-between">
+              <h3 className="text-2xl font-serif font-bold miami-heading">Top Matches</h3>
+              <Link href={`/marketplace?${searchParams.toString()}`}>
+                <Button variant="outline" className="btn-magic">See all ({searchData?.total || 0})</Button>
+              </Link>
+            </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {searchData.items.slice(0, pageSize).map((product: Product, index: number) => (
+                <MagicEliteProductCard key={product.id} product={product} index={index} />
+              ))}
+            </div>
+          </div>
+        ) : null}
 
         {/* Miami Elite Featured Products Grid */}
         <div className="miami-section-header mb-12">

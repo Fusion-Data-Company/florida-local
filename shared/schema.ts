@@ -157,16 +157,42 @@ export const spotlights = pgTable("spotlights", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Messages
+// Messages with enhanced features for business networking and file sharing
 export const messages = pgTable("messages", {
   id: uuid("id").primaryKey().defaultRandom(),
   senderId: varchar("sender_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
   receiverId: varchar("receiver_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
   senderBusinessId: uuid("sender_business_id").references(() => businesses.id, { onDelete: 'cascade' }),
   receiverBusinessId: uuid("receiver_business_id").references(() => businesses.id, { onDelete: 'cascade' }),
+  
+  // Message content and type
   content: text("content").notNull(),
+  messageType: varchar("message_type", { length: 30 }).notNull().default("text"), // text, file, business_share, product_share, ice_breaker
+  
+  // File attachment fields
+  fileUrl: varchar("file_url"),
+  fileName: varchar("file_name"),
+  fileType: varchar("file_type", { length: 100 }),
+  fileSize: integer("file_size"), // in bytes
+  
+  // Shared content references for business networking
+  sharedBusinessId: uuid("shared_business_id").references(() => businesses.id),
+  sharedProductId: uuid("shared_product_id").references(() => products.id),
+  
+  // Message metadata
   isRead: boolean("is_read").default(false),
+  readAt: timestamp("read_at"),
+  isDelivered: boolean("is_delivered").default(false),
+  deliveredAt: timestamp("delivered_at"),
+  
+  // Conversation threading
+  conversationId: varchar("conversation_id").notNull(), // Generated from user IDs for grouping
+  
+  // Business networking context
+  networkingContext: jsonb("networking_context"), // For storing ice-breaker prompts, Florida business tips, etc.
+  
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Shopping cart items

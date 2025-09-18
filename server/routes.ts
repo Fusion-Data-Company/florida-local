@@ -1066,12 +1066,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/products/search', publicEndpointRateLimit, async (req, res) => {
     try {
-      const { q: query = '', category } = req.query;
-      const products = await storage.searchProducts(
-        query as string,
-        category as string | undefined
-      );
-      res.json(products);
+      const q = (req.query.q as string) || '';
+      const categories = typeof req.query.categories === 'string'
+        ? String(req.query.categories).split(',').filter(Boolean)
+        : (req.query.categories as string[]) || [];
+      const minPrice = req.query.minPrice ? parseFloat(String(req.query.minPrice)) : undefined;
+      const maxPrice = req.query.maxPrice ? parseFloat(String(req.query.maxPrice)) : undefined;
+      const inStock = req.query.inStock ? String(req.query.inStock) === 'true' : undefined;
+      const isDigital = req.query.isDigital ? String(req.query.isDigital) === 'true' : undefined;
+      const minRating = req.query.minRating ? parseFloat(String(req.query.minRating)) : undefined;
+      const tags = typeof req.query.tags === 'string'
+        ? String(req.query.tags).split(',').filter(Boolean)
+        : (req.query.tags as string[]) || [];
+      const sort = (req.query.sort as any) || 'rating_desc';
+      const page = req.query.page ? parseInt(String(req.query.page)) : 1;
+      const pageSize = req.query.pageSize ? parseInt(String(req.query.pageSize)) : 24;
+
+      const { items, total } = await storage.searchProducts(q, {
+        categories,
+        minPrice,
+        maxPrice,
+        inStock,
+        isDigital,
+        minRating,
+        tags,
+        sort,
+        page,
+        pageSize,
+        includeTotal: true,
+      });
+
+      res.json({ items, total, page, pageSize });
     } catch (error) {
       console.error("Error searching products:", error);
       res.status(500).json({ message: "Failed to search products" });
@@ -1242,20 +1267,148 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Message routes
-  app.post('/api/messages', isAuthenticated, async (req: any, res) => {
+  // Enhanced Message routes with file sharing and business networking
+  app.post('/api/messages', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
     try {
       const senderId = req.user.claims.sub;
+      
+      // Generate conversation ID from user IDs for consistency
+      const conversationId = [senderId, req.body.receiverId].sort().join('-');
+      
       const messageData = insertMessageSchema.parse({
         ...req.body,
         senderId,
+        conversationId,
+        isDelivered: true,
+        deliveredAt: new Date(),
       });
       
       const message = await storage.createMessage(messageData);
+      
+      // Emit real-time message via WebSocket
+      const { sendMessage } = await import("./websocket");
+      sendMessage(conversationId, {
+        id: message.id,
+        senderId: message.senderId,
+        content: message.content,
+        timestamp: message.createdAt?.toISOString() || new Date().toISOString(),
+      });
+      
       res.json(message);
     } catch (error: any) {
       console.error("Error creating message:", error);
       res.status(400).json({ message: error.message || "Failed to send message" });
+    }
+  });
+
+  // File upload for messages
+  app.post('/api/messages/upload', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const senderId = req.user.claims.sub;
+      const { receiverId, file } = req.body;
+      
+      if (!file || !receiverId) {
+        return res.status(400).json({ message: "File and receiver ID are required" });
+      }
+
+      // Validate file type and size
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'text/plain', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      const maxSize = 10 * 1024 * 1024; // 10MB
+
+      if (!allowedTypes.includes(file.type)) {
+        return res.status(400).json({ message: "File type not allowed" });
+      }
+
+      if (file.size > maxSize) {
+        return res.status(400).json({ message: "File size too large (max 10MB)" });
+      }
+
+      // Generate conversation ID
+      const conversationId = [senderId, receiverId].sort().join('-');
+
+      // Create message with file attachment
+      const messageData = insertMessageSchema.parse({
+        senderId,
+        receiverId,
+        conversationId,
+        content: `Shared a file: ${file.name}`,
+        messageType: 'file',
+        fileUrl: file.url,
+        fileName: file.name,
+        fileType: file.type,
+        fileSize: file.size,
+        isDelivered: true,
+        deliveredAt: new Date(),
+      });
+
+      const message = await storage.createMessage(messageData);
+
+      // Emit real-time message via WebSocket
+      const { sendMessage } = await import("./websocket");
+      sendMessage(conversationId, {
+        id: message.id,
+        senderId: message.senderId,
+        content: message.content,
+        timestamp: message.createdAt?.toISOString() || new Date().toISOString(),
+      });
+
+      res.json(message);
+    } catch (error: any) {
+      console.error("Error uploading file message:", error);
+      res.status(500).json({ message: error.message || "Failed to upload file" });
+    }
+  });
+
+  // Share business in message
+  app.post('/api/messages/share-business', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const senderId = req.user.claims.sub;
+      const { receiverId, businessId } = req.body;
+      
+      if (!receiverId || !businessId) {
+        return res.status(400).json({ message: "Receiver ID and business ID are required" });
+      }
+
+      // Verify business exists
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+
+      // Generate conversation ID
+      const conversationId = [senderId, receiverId].sort().join('-');
+
+      const messageData = insertMessageSchema.parse({
+        senderId,
+        receiverId,
+        conversationId,
+        content: `Shared a business: ${business.name}`,
+        messageType: 'business_share',
+        sharedBusinessId: businessId,
+        networkingContext: {
+          businessName: business.name,
+          businessCategory: business.category,
+          businessLocation: business.location,
+        },
+        isDelivered: true,
+        deliveredAt: new Date(),
+      });
+
+      const message = await storage.createMessage(messageData);
+
+      // Emit real-time message via WebSocket
+      const { sendMessage } = await import("./websocket");
+      sendMessage(conversationId, {
+        id: message.id,
+        senderId: message.senderId,
+        content: message.content,
+        timestamp: message.createdAt?.toISOString() || new Date().toISOString(),
+      });
+
+      res.json(message);
+    } catch (error: any) {
+      console.error("Error sharing business:", error);
+      res.status(500).json({ message: error.message || "Failed to share business" });
     }
   });
 
@@ -1270,6 +1423,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get('/api/messages/conversation/:conversationId', isAuthenticated, async (req: any, res) => {
+    try {
+      const currentUserId = req.user.claims.sub;
+      const { conversationId } = req.params;
+      const offset = parseInt(req.query.offset as string) || 0;
+      const limit = parseInt(req.query.limit as string) || 50;
+      
+      // Verify user has access to this conversation
+      const hasAccess = await storage.userHasAccessToConversation(currentUserId, conversationId);
+      if (!hasAccess) {
+        return res.status(403).json({ message: "Access denied to this conversation" });
+      }
+      
+      const messages = await storage.getConversationMessages(conversationId, offset, limit);
+      res.json(messages);
+    } catch (error) {
+      console.error("Error fetching conversation messages:", error);
+      res.status(500).json({ message: "Failed to fetch messages" });
+    }
+  });
+
   app.get('/api/messages/:userId', isAuthenticated, async (req: any, res) => {
     try {
       const currentUserId = req.user.claims.sub;
@@ -1280,6 +1454,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching messages:", error);
       res.status(500).json({ message: "Failed to fetch messages" });
+    }
+  });
+
+  // Mark message as read
+  app.put('/api/messages/:messageId/read', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { messageId } = req.params;
+      
+      // Verify message exists and user is the receiver
+      const message = await storage.getMessageById(messageId);
+      if (!message) {
+        return res.status(404).json({ message: "Message not found" });
+      }
+      
+      if (message.receiverId !== userId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      await storage.markMessageAsRead(messageId, new Date());
+      res.json({ message: "Message marked as read" });
+    } catch (error) {
+      console.error("Error marking message as read:", error);
+      res.status(500).json({ message: "Failed to mark message as read" });
+    }
+  });
+
+  // Get unread message count
+  app.get('/api/messages/unread-count', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const count = await storage.getUnreadMessageCount(userId);
+      res.json({ unreadCount: count });
+    } catch (error) {
+      console.error("Error fetching unread message count:", error);
+      res.status(500).json({ message: "Failed to fetch unread count" });
+    }
+  });
+
+  // Search messages
+  app.get('/api/messages/search', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const query = req.query.q as string;
+      
+      if (!query || query.trim().length < 2) {
+        return res.status(400).json({ message: "Search query must be at least 2 characters" });
+      }
+      
+      const messages = await storage.searchMessages(userId, query.trim());
+      res.json(messages);
+    } catch (error) {
+      console.error("Error searching messages:", error);
+      res.status(500).json({ message: "Failed to search messages" });
     }
   });
 

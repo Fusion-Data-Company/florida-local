@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Message } from "@shared/schema";
+import { Message, Business } from "@shared/schema";
 import { useAuth } from "@/hooks/useAuth";
+import { useWebSocket } from "@/hooks/useWebSocket";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import EliteNavigationHeader from "@/components/elite-navigation-header";
@@ -12,36 +13,142 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Send } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ObjectUploader } from "@/components/ObjectUploader";
+import { 
+  Send, 
+  Search, 
+  Paperclip, 
+  Share2, 
+  Building2, 
+  Package, 
+  Phone, 
+  MapPin,
+  Clock,
+  CheckCircle,
+  Circle,
+  Download,
+  Image as ImageIcon,
+  FileText,
+  MoreVertical,
+  Smile,
+  Users,
+  Globe
+} from "lucide-react";
+
+interface ConversationUser {
+  id: string;
+  name: string;
+  avatar?: string;
+  businessName?: string;
+  isOnline: boolean;
+  lastSeen?: Date;
+}
+
+interface EnhancedMessage extends Message {
+  user?: ConversationUser;
+  business?: Business;
+  product?: any;
+}
 
 export default function Messages() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [messageInput, setMessageInput] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingUsers, setTypingUsers] = useState<Set<string>>(new Set());
+  const [showBusinessDialog, setShowBusinessDialog] = useState(false);
+  const [showFileUpload, setShowFileUpload] = useState(false);
+  
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout>();
+  
+  const { socket, isConnected } = useWebSocket();
 
-  const { data: conversations = [], isLoading: conversationsLoading } = useQuery<Message[]>({
+  // Scroll to bottom when new messages arrive
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [selectedConversation]);
+
+  // WebSocket event listeners
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNewMessage = (message: any) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/messages/conversations'] });
+      if (selectedConversation === message.conversationId) {
+        queryClient.invalidateQueries({ queryKey: ['/api/messages', selectedUserId] });
+      }
+      scrollToBottom();
+    };
+
+    const handleTypingStart = (data: any) => {
+      if (data.conversationId === selectedConversation) {
+        setTypingUsers(prev => new Set(prev).add(data.userId));
+      }
+    };
+
+    const handleTypingStop = (data: any) => {
+      if (data.conversationId === selectedConversation) {
+        setTypingUsers(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(data.userId);
+          return newSet;
+        });
+      }
+    };
+
+    socket.on('message:new', handleNewMessage);
+    socket.on('typing:start', handleTypingStart);
+    socket.on('typing:stop', handleTypingStop);
+
+    return () => {
+      socket.off('message:new', handleNewMessage);
+      socket.off('typing:start', handleTypingStart);
+      socket.off('typing:stop', handleTypingStop);
+    };
+  }, [socket, selectedConversation, selectedUserId]);
+
+  const { data: conversations = [], isLoading: conversationsLoading } = useQuery<any[]>({
     queryKey: ['/api/messages/conversations'],
   });
 
-  const { data: messages = [], isLoading: messagesLoading } = useQuery<Message[]>({
-    queryKey: ['/api/messages', selectedConversation],
-    enabled: !!selectedConversation,
+  const { data: messages = [], isLoading: messagesLoading } = useQuery<EnhancedMessage[]>({
+    queryKey: ['/api/messages', selectedUserId],
+    enabled: !!selectedUserId,
+  });
+
+  const { data: businesses = [] } = useQuery<Business[]>({
+    queryKey: ['/api/businesses/my'],
+  });
+
+  const { data: unreadCount = 0 } = useQuery<{ unreadCount: number }>({
+    queryKey: ['/api/messages/unread-count'],
+    refetchInterval: 30000, // Refresh every 30 seconds
   });
 
   const sendMessageMutation = useMutation({
-    mutationFn: async (messageData: { receiverId: string; content: string }) => {
+    mutationFn: async (messageData: { receiverId: string; content: string; messageType?: string }) => {
       return await apiRequest('POST', '/api/messages', messageData);
     },
     onSuccess: () => {
       setMessageInput("");
-      // Invalidate both conversations and messages queries
+      // Stop typing indicator
+      if (socket && selectedConversation) {
+        socket.emit('typing:stop', { conversationId: selectedConversation });
+      }
       queryClient.invalidateQueries({ queryKey: ['/api/messages/conversations'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/messages', selectedConversation] });
-      toast({
-        title: "Message sent",
-        description: "Your message has been delivered successfully.",
-      });
+      queryClient.invalidateQueries({ queryKey: ['/api/messages', selectedUserId] });
+      scrollToBottom();
     },
     onError: (error: any) => {
       toast({
@@ -52,25 +159,268 @@ export default function Messages() {
     },
   });
 
+  const shareBusinessMutation = useMutation({
+    mutationFn: async (data: { receiverId: string; businessId: string }) => {
+      return await apiRequest('POST', '/api/messages/share-business', data);
+    },
+    onSuccess: () => {
+      setShowBusinessDialog(false);
+      toast({
+        title: "Business shared",
+        description: "Business profile shared successfully.",
+      });
+    },
+  });
+
+  const fileUploadMutation = useMutation({
+    mutationFn: async (data: { receiverId: string; fileUrl: string; fileName: string; fileType: string; fileSize: number }) => {
+      return await apiRequest('POST', '/api/messages/upload', data);
+    },
+    onSuccess: () => {
+      toast({
+        title: "File shared",
+        description: "File uploaded and shared successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/messages/conversations'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/messages', selectedUserId] });
+      scrollToBottom();
+    },
+    onError: () => {
+      toast({
+        title: "Upload failed",
+        description: "Failed to upload file. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const markAsReadMutation = useMutation({
+    mutationFn: async (messageId: string) => {
+      return await apiRequest('PUT', `/api/messages/${messageId}/read`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/messages/unread-count'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/messages', selectedUserId] });
+    },
+  });
+
   const sendMessage = () => {
-    if (!messageInput.trim() || !selectedConversation || sendMessageMutation.isPending) return;
+    if (!messageInput.trim() || !selectedUserId || sendMessageMutation.isPending) return;
     
     sendMessageMutation.mutate({
-      receiverId: selectedConversation,
+      receiverId: selectedUserId,
       content: messageInput.trim(),
     });
   };
 
+  const shareBusinessProfile = (businessId: string) => {
+    if (!selectedUserId) return;
+    
+    shareBusinessMutation.mutate({
+      receiverId: selectedUserId,
+      businessId,
+    });
+  };
+
+  const handleTyping = () => {
+    if (!socket || !selectedConversation) return;
+
+    // Send typing start
+    socket.emit('typing:start', { conversationId: selectedConversation });
+
+    // Clear existing timeout and set new one
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    typingTimeoutRef.current = setTimeout(() => {
+      socket.emit('typing:stop', { conversationId: selectedConversation });
+    }, 1000);
+  };
+
+  const handleFileUpload = async () => {
+    if (!selectedUserId) {
+      toast({
+        title: "Error",
+        description: "Please select a conversation first.",
+        variant: "destructive",
+      });
+      return Promise.reject("No conversation selected");
+    }
+
+    const response = await fetch('/api/object-storage/generate-upload-url', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to get upload URL');
+    }
+
+    const data = await response.json();
+    return {
+      method: 'PUT' as const,
+      url: data.uploadUrl,
+    };
+  };
+
+  const handleFileUploadComplete = (result: any) => {
+    if (!selectedUserId || !result.successful || result.successful.length === 0) return;
+    
+    const file = result.successful[0];
+    const fileUrl = file.uploadURL.split('?')[0]; // Remove query params from URL
+    
+    fileUploadMutation.mutate({
+      receiverId: selectedUserId,
+      fileUrl,
+      fileName: file.name,
+      fileType: file.type,
+      fileSize: file.size,
+    });
+  };
+
+  // Mark messages as read when conversation is opened
+  useEffect(() => {
+    if (messages.length > 0 && selectedUserId) {
+      const unreadMessages = messages.filter(
+        msg => msg.receiverId === user?.id && !msg.isRead
+      );
+      
+      unreadMessages.forEach(msg => {
+        markAsReadMutation.mutate(msg.id);
+      });
+    }
+  }, [messages, selectedUserId, user?.id]);
+
+  const selectConversation = (conversation: any) => {
+    const otherUserId = conversation.senderId === user?.id 
+      ? conversation.receiverId 
+      : conversation.senderId;
+    
+    setSelectedUserId(otherUserId);
+    setSelectedConversation([user?.id, otherUserId].sort().join('-'));
+    
+    // Join conversation room via WebSocket
+    if (socket) {
+      socket.emit('join:conversation', [user?.id, otherUserId].sort().join('-'));
+    }
+  };
+
+  const renderMessage = (message: EnhancedMessage) => {
+    const isOwnMessage = message.senderId === user?.id;
+    
+    return (
+      <div
+        key={message.id}
+        className={`flex gap-2 ${isOwnMessage ? 'justify-end' : 'justify-start'} mb-4`}
+      >
+        {!isOwnMessage && (
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={message.user?.avatar} />
+            <AvatarFallback className="text-xs bg-gradient-to-r from-orange-500 to-blue-500 text-white">
+              {message.user?.name?.charAt(0) || 'B'}
+            </AvatarFallback>
+          </Avatar>
+        )}
+        
+        <div className={`max-w-xs lg:max-w-md ${isOwnMessage ? 'order-first' : ''}`}>
+          <div
+            className={`px-4 py-2 rounded-lg ${
+              isOwnMessage
+                ? 'bg-gradient-to-r from-orange-500 to-blue-500 text-white'
+                : 'bg-muted border border-border'
+            }`}
+          >
+            {/* Message type specific rendering */}
+            {message.messageType === 'business_share' && message.sharedBusinessId && (
+              <div className="mb-2 p-3 bg-white/10 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4" />
+                  <span className="font-medium text-sm">Business Shared</span>
+                </div>
+                <p className="text-sm mt-1">{message.networkingContext?.businessName}</p>
+                <p className="text-xs opacity-75">{message.networkingContext?.businessCategory}</p>
+              </div>
+            )}
+            
+            {message.messageType === 'file' && (
+              <div className="mb-2 p-3 bg-white/10 rounded-lg">
+                <div className="flex items-center gap-2">
+                  {message.fileType?.startsWith('image/') ? (
+                    <ImageIcon className="h-4 w-4" />
+                  ) : (
+                    <FileText className="h-4 w-4" />
+                  )}
+                  <span className="font-medium text-sm">{message.fileName}</span>
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    className="h-6 w-6 p-0"
+                    onClick={() => message.fileUrl && window.open(message.fileUrl, '_blank')}
+                    data-testid={`button-download-${message.id}`}
+                  >
+                    <Download className="h-3 w-3" />
+                  </Button>
+                </div>
+                {message.fileType?.startsWith('image/') && message.fileUrl && (
+                  <img 
+                    src={message.fileUrl} 
+                    alt={message.fileName}
+                    className="max-w-full h-auto rounded mt-2"
+                  />
+                )}
+              </div>
+            )}
+            
+            <p className="text-sm">{message.content}</p>
+          </div>
+          
+          <div className={`flex items-center gap-1 mt-1 text-xs text-muted-foreground ${isOwnMessage ? 'justify-end' : ''}`}>
+            <Clock className="h-3 w-3" />
+            <span>
+              {message.createdAt ? new Date(message.createdAt).toLocaleTimeString([], { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+              }) : 'Now'}
+            </span>
+            {isOwnMessage && (
+              <div className="ml-1">
+                {message.isRead ? (
+                  <CheckCircle className="h-3 w-3 text-blue-500" />
+                ) : message.isDelivered ? (
+                  <CheckCircle className="h-3 w-3" />
+                ) : (
+                  <Circle className="h-3 w-3" />
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const getFloridaBusinessPrompts = () => [
+    "Interested in collaborating on Florida tourism initiatives?",
+    "Would you like to explore cross-promotional opportunities?",
+    "Any insights on local Florida business regulations?",
+    "Looking to network with fellow Florida entrepreneurs!",
+    "Interested in joining our local business meetup group?",
+  ];
+
   if (conversationsLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-gradient-to-b from-orange-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
         <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-8">
-          <div className="grid md:grid-cols-3 gap-6 h-[calc(100vh-200px)]">
-            <div className="space-y-4">
+          <div className="grid lg:grid-cols-4 gap-6 h-[calc(100vh-200px)]">
+            <div className="lg:col-span-1 space-y-4">
               {[...Array(5)].map((_, i) => (
                 <div key={i} className="flex items-center space-x-3 p-4">
-                  <Skeleton className="h-10 w-10 rounded-full" />
+                  <Skeleton className="h-12 w-12 rounded-full" />
                   <div className="space-y-2 flex-1">
                     <Skeleton className="h-4 w-3/4" />
                     <Skeleton className="h-3 w-1/2" />
@@ -78,8 +428,8 @@ export default function Messages() {
                 </div>
               ))}
             </div>
-            <div className="md:col-span-2">
-              <Skeleton className="h-full w-full" />
+            <div className="lg:col-span-3">
+              <Skeleton className="h-full w-full rounded-lg" />
             </div>
           </div>
         </div>
@@ -89,62 +439,120 @@ export default function Messages() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
       <EliteNavigationHeader />
 
       <div className="container mx-auto px-4 py-8">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold">Messages</h1>
-          <p className="text-muted-foreground">Connect with other businesses in your community</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold gradient-text-primary">Florida Business Network</h1>
+              <p className="text-muted-foreground flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-orange-500" />
+                Connect and collaborate with local businesses
+              </p>
+            </div>
+            <div className="flex items-center gap-4">
+              <Badge variant="outline" className="hidden sm:flex">
+                <Circle className={`h-2 w-2 mr-2 fill-current ${isConnected ? 'text-green-500' : 'text-red-500'}`} />
+                {isConnected ? 'Connected' : 'Connecting...'}
+              </Badge>
+              {unreadCount.unreadCount > 0 && (
+                <Badge variant="default" className="bg-orange-500">
+                  {unreadCount.unreadCount} unread
+                </Badge>
+              )}
+            </div>
+          </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 h-[calc(100vh-200px)]">
-          {/* Conversations List */}
-          <Card className="md:col-span-1">
-            <CardHeader>
-              <CardTitle className="text-lg">Conversations</CardTitle>
+        <div className="grid lg:grid-cols-4 gap-6 h-[calc(100vh-200px)]">
+          {/* Conversations Sidebar */}
+          <Card className="lg:col-span-1 miami-glass border-orange-200/50">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Users className="h-5 w-5 text-orange-500" />
+                  Conversations
+                </CardTitle>
+                <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                  <Search className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search conversations..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                  data-testid="input-search-conversations"
+                />
+              </div>
             </CardHeader>
             <CardContent className="p-0">
               <ScrollArea className="h-96">
                 {conversations.length > 0 ? (
-                  conversations.map((conversation: Message) => {
-                    const otherUser = conversation.senderId === user?.id 
-                      ? { id: conversation.receiverId || 'unknown' } 
-                      : { id: conversation.senderId || 'unknown' };
-                    
-                    return (
-                      <div
-                        key={otherUser.id}
-                        className={`flex items-center space-x-3 p-4 cursor-pointer hover:bg-muted transition-colors ${
-                          selectedConversation === otherUser.id ? 'bg-muted' : ''
-                        }`}
-                        onClick={() => setSelectedConversation(otherUser.id)}
-                        data-testid={`conversation-${otherUser.id}`}
-                      >
-                        <Avatar>
-                          <AvatarImage src="" alt="User" />
-                          <AvatarFallback>
-                            <i className="fas fa-user"></i>
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium truncate">Business User</p>
-                          <p className="text-sm text-muted-foreground truncate">
-                            {conversation.content}
-                          </p>
+                  conversations
+                    .filter((conversation: any) => 
+                      !searchQuery || 
+                      conversation.businessName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      conversation.content?.toLowerCase().includes(searchQuery.toLowerCase())
+                    )
+                    .map((conversation: any) => {
+                      const otherUserId = conversation.senderId === user?.id 
+                        ? conversation.receiverId 
+                        : conversation.senderId;
+                      const isSelected = selectedUserId === otherUserId;
+                      
+                      return (
+                        <div
+                          key={otherUserId}
+                          className={`flex items-center space-x-3 p-4 cursor-pointer hover:bg-muted/50 transition-colors border-b border-border/50 ${
+                            isSelected ? 'bg-muted border-l-4 border-l-orange-500' : ''
+                          }`}
+                          onClick={() => selectConversation(conversation)}
+                          data-testid={`conversation-${otherUserId}`}
+                        >
+                          <div className="relative">
+                            <Avatar className="h-12 w-12">
+                              <AvatarImage src={conversation.avatar} alt="User" />
+                              <AvatarFallback className="bg-gradient-to-r from-orange-500 to-blue-500 text-white">
+                                {conversation.businessName?.charAt(0) || 'B'}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className={`absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-background ${
+                              conversation.isOnline ? 'bg-green-500' : 'bg-gray-400'
+                            }`} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <p className="font-medium truncate">{conversation.businessName || 'Business User'}</p>
+                              {!conversation.isRead && conversation.receiverId === user?.id && (
+                                <div className="h-2 w-2 bg-orange-500 rounded-full" />
+                              )}
+                            </div>
+                            <p className="text-sm text-muted-foreground truncate">
+                              {conversation.content}
+                            </p>
+                            <div className="flex items-center gap-2 mt-1">
+                              <Clock className="h-3 w-3 text-muted-foreground" />
+                              <span className="text-xs text-muted-foreground">
+                                {conversation.createdAt ? new Date(conversation.createdAt).toLocaleDateString() : 'Recent'}
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                        <div className="text-xs text-muted-foreground">
-                          {conversation.createdAt ? new Date(conversation.createdAt).toLocaleDateString() : 'Unknown date'}
-                        </div>
-                      </div>
-                    );
-                  })
+                      );
+                    })
                 ) : (
-                  <div className="text-center py-8">
-                    <i className="fas fa-comments text-4xl text-muted-foreground mb-4"></i>
-                    <p className="text-muted-foreground">No conversations yet</p>
+                  <div className="text-center py-12">
+                    <div className="mx-auto h-16 w-16 bg-gradient-to-r from-orange-500 to-blue-500 rounded-full flex items-center justify-center mb-4">
+                      <Building2 className="h-8 w-8 text-white" />
+                    </div>
+                    <p className="text-muted-foreground font-medium">No conversations yet</p>
                     <p className="text-sm text-muted-foreground">
-                      Start connecting with businesses in the community
+                      Start networking with Florida businesses
                     </p>
                   </div>
                 )}
@@ -153,109 +561,213 @@ export default function Messages() {
           </Card>
 
           {/* Chat Area */}
-          <Card className="md:col-span-2">
-            {selectedConversation ? (
+          <Card className="lg:col-span-3 miami-glass border-blue-200/50">
+            {selectedConversation && selectedUserId ? (
               <>
-                <CardHeader className="border-b">
-                  <div className="flex items-center space-x-3">
-                    <Avatar>
-                      <AvatarImage src="" alt="User" />
-                      <AvatarFallback>
-                        <i className="fas fa-user"></i>
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <CardTitle className="text-lg">Business User</CardTitle>
-                      <p className="text-sm text-muted-foreground">Online</p>
+                {/* Chat Header */}
+                <CardHeader className="border-b border-border/50">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <Avatar className="h-12 w-12">
+                        <AvatarImage src="" alt="User" />
+                        <AvatarFallback className="bg-gradient-to-r from-orange-500 to-blue-500 text-white">
+                          B
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <CardTitle className="text-lg">Business User</CardTitle>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Circle className={`h-2 w-2 fill-current ${true ? 'text-green-500' : 'text-gray-400'}`} />
+                          <span>{true ? 'Online now' : 'Last seen recently'}</span>
+                          {typingUsers.size > 0 && (
+                            <span className="text-orange-500 italic">typing...</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <Button size="sm" variant="ghost">
+                        <Phone className="h-4 w-4" />
+                      </Button>
+                      <Button size="sm" variant="ghost">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 </CardHeader>
 
-                <CardContent className="p-0">
-                  {/* Messages */}
-                  <ScrollArea className="h-80 p-4">
+                <CardContent className="p-0 flex flex-col">
+                  {/* Messages Area */}
+                  <ScrollArea className="flex-1 h-96 p-4">
                     {messagesLoading ? (
                       <div className="space-y-4">
                         {[...Array(5)].map((_, i) => (
                           <div key={i} className={`flex ${i % 2 === 0 ? 'justify-start' : 'justify-end'}`}>
-                            <Skeleton className="h-12 w-3/4 max-w-xs" />
+                            <Skeleton className="h-16 w-3/4 max-w-xs rounded-lg" />
                           </div>
                         ))}
                       </div>
                     ) : messages.length > 0 ? (
-                      <div className="space-y-4">
-                        {messages.map((message: any) => (
-                          <div
-                            key={message.id}
-                            className={`flex ${
-                              message.senderId === user?.id ? 'justify-end' : 'justify-start'
-                            }`}
-                          >
-                            <div
-                              className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                                message.senderId === user?.id
-                                  ? 'bg-primary text-primary-foreground'
-                                  : 'bg-muted'
-                              }`}
-                            >
-                              <p>{message.content}</p>
-                              <p className={`text-xs mt-1 ${
-                                message.senderId === user?.id
-                                  ? 'text-primary-foreground/70'
-                                  : 'text-muted-foreground'
-                              }`}>
-                                {new Date(message.createdAt).toLocaleTimeString()}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
+                      <div className="space-y-2">
+                        {messages.map(renderMessage)}
+                        <div ref={messagesEndRef} />
                       </div>
                     ) : (
-                      <div className="text-center py-8">
-                        <p className="text-muted-foreground">No messages yet</p>
-                        <p className="text-sm text-muted-foreground">
-                          Start the conversation!
+                      <div className="text-center py-12">
+                        <div className="mx-auto h-16 w-16 bg-gradient-to-r from-orange-500 to-blue-500 rounded-full flex items-center justify-center mb-4">
+                          <Send className="h-8 w-8 text-white" />
+                        </div>
+                        <p className="text-muted-foreground font-medium">Start the conversation!</p>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Send your first message to begin networking
                         </p>
+                        {/* Florida Business Ice Breakers */}
+                        <div className="space-y-2">
+                          <p className="text-xs text-orange-500 font-medium">Florida Business Ice Breakers:</p>
+                          {getFloridaBusinessPrompts().slice(0, 3).map((prompt, index) => (
+                            <button
+                              key={index}
+                              onClick={() => setMessageInput(prompt)}
+                              className="block text-xs text-muted-foreground hover:text-orange-500 transition-colors cursor-pointer p-2 hover:bg-orange-50 rounded"
+                            >
+                              "{prompt}"
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </ScrollArea>
 
-                  {/* Message Input */}
-                  <div className="border-t p-4">
+                  <Separator />
+
+                  {/* Message Input Area */}
+                  <div className="p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Dialog open={showBusinessDialog} onOpenChange={setShowBusinessDialog}>
+                        <DialogTrigger asChild>
+                          <Button size="sm" variant="outline" className="text-xs">
+                            <Share2 className="h-3 w-3 mr-1" />
+                            Share Business
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2">
+                              <Building2 className="h-5 w-5 text-orange-500" />
+                              Share a Florida Business
+                            </DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            {businesses.map((business) => (
+                              <div
+                                key={business.id}
+                                className="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-muted"
+                                onClick={() => shareBusinessProfile(business.id)}
+                              >
+                                <div className="flex items-center gap-3">
+                                  <Avatar>
+                                    <AvatarImage src={business.logoUrl} />
+                                    <AvatarFallback className="bg-gradient-to-r from-orange-500 to-blue-500 text-white">
+                                      {business.name.charAt(0)}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                  <div>
+                                    <p className="font-medium">{business.name}</p>
+                                    <p className="text-sm text-muted-foreground">{business.category}</p>
+                                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                      <MapPin className="h-3 w-3" />
+                                      {business.location}
+                                    </p>
+                                  </div>
+                                </div>
+                                <Button size="sm" className="bg-gradient-to-r from-orange-500 to-blue-500">
+                                  Share
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                      
+                      <ObjectUploader
+                        maxNumberOfFiles={1}
+                        maxFileSize={10485760} // 10MB
+                        onGetUploadParameters={handleFileUpload}
+                        onComplete={handleFileUploadComplete}
+                        buttonClassName="text-xs h-8 px-3"
+                      >
+                        <Paperclip className="h-3 w-3 mr-1" />
+                        File
+                      </ObjectUploader>
+                      
+                      <Button size="sm" variant="outline" className="text-xs">
+                        <Package className="h-3 w-3 mr-1" />
+                        Product
+                      </Button>
+
+                      <Button size="sm" variant="outline" className="text-xs">
+                        <Smile className="h-3 w-3 mr-1" />
+                        Emoji
+                      </Button>
+                    </div>
+                    
                     <div className="flex space-x-2">
                       <Input
+                        placeholder="Type your message about Florida business opportunities..."
                         value={messageInput}
-                        onChange={(e) => setMessageInput(e.target.value)}
-                        placeholder="Type your message..."
+                        onChange={(e) => {
+                          setMessageInput(e.target.value);
+                          handleTyping();
+                        }}
                         onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                        disabled={sendMessageMutation.isPending}
                         className="flex-1"
                         data-testid="input-message"
                       />
                       <Button 
-                        onClick={sendMessage} 
-                        data-testid="button-send-message"
-                        disabled={sendMessageMutation.isPending || !messageInput.trim()}
+                        onClick={sendMessage}
+                        disabled={!messageInput.trim() || sendMessageMutation.isPending}
+                        className="bg-gradient-to-r from-orange-500 to-blue-500 hover:from-orange-600 hover:to-blue-600"
+                        data-testid="button-send"
                       >
-                        {sendMessageMutation.isPending ? (
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
-                        ) : (
-                          <Send className="h-4 w-4" />
-                        )}
+                        <Send className="h-4 w-4" />
                       </Button>
+                    </div>
+                    
+                    <div className="text-xs text-muted-foreground mt-2 text-center flex items-center justify-center gap-2">
+                      <Globe className="h-3 w-3 text-orange-500" />
+                      Connect with fellow Florida entrepreneurs • Share resources • Grow together
                     </div>
                   </div>
                 </CardContent>
               </>
             ) : (
-              <CardContent className="h-full flex items-center justify-center">
+              <div className="flex items-center justify-center h-full">
                 <div className="text-center">
-                  <i className="fas fa-comment-dots text-6xl text-muted-foreground mb-4"></i>
-                  <h3 className="text-xl font-semibold mb-2">Select a conversation</h3>
-                  <p className="text-muted-foreground">
-                    Choose a conversation from the left to start messaging
+                  <div className="mx-auto h-24 w-24 bg-gradient-to-r from-orange-500 to-blue-500 rounded-full flex items-center justify-center mb-6">
+                    <Building2 className="h-12 w-12 text-white" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">Florida Business Network</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Select a conversation to start networking with local businesses
                   </p>
+                  <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <MapPin className="h-4 w-4 text-orange-500" />
+                      <span>Florida Local</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Building2 className="h-4 w-4 text-blue-500" />
+                      <span>Business Network</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Users className="h-4 w-4 text-green-500" />
+                      <span>Community</span>
+                    </div>
+                  </div>
                 </div>
-              </CardContent>
+              </div>
             )}
           </Card>
         </div>

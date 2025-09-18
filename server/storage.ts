@@ -90,7 +90,19 @@ export interface IStorage {
   updateProduct(id: string, product: Partial<InsertProduct>): Promise<Product>;
   getProductById(id: string): Promise<Product | undefined>;
   getProductsByBusiness(businessId: string): Promise<Product[]>;
-  searchProducts(query: string, category?: string): Promise<Product[]>;
+  searchProducts(query: string, options?: {
+    categories?: string[];
+    minPrice?: number;
+    maxPrice?: number;
+    inStock?: boolean;
+    isDigital?: boolean;
+    minRating?: number;
+    tags?: string[];
+    sort?: 'rating_desc' | 'price_asc' | 'price_desc' | 'newest' | 'popular';
+    page?: number;
+    pageSize?: number;
+    includeTotal?: boolean;
+  }): Promise<{ items: Product[]; total: number }>;
   getFeaturedProducts(limit?: number): Promise<Product[]>;
   
   // Post operations
@@ -102,11 +114,18 @@ export interface IStorage {
   unlikePost(userId: string, postId: string): Promise<void>;
   isPostLiked(userId: string, postId: string): Promise<boolean>;
   
-  // Message operations
+  // Enhanced Message operations with file sharing and business networking
   createMessage(message: InsertMessage): Promise<Message>;
   getMessagesBetweenUsers(user1Id: string, user2Id: string): Promise<Message[]>;
   getConversations(userId: string): Promise<any[]>;
-  markMessageAsRead(messageId: string): Promise<void>;
+  getConversationMessages(conversationId: string, offset?: number, limit?: number): Promise<Message[]>;
+  markMessageAsRead(messageId: string, readAt?: Date): Promise<void>;
+  markMessagesAsDelivered(messageIds: string[], deliveredAt?: Date): Promise<void>;
+  getUnreadMessageCount(userId: string): Promise<number>;
+  getLatestMessageInConversation(conversationId: string): Promise<Message | undefined>;
+  searchMessages(userId: string, query: string): Promise<Message[]>;
+  deleteMessage(messageId: string, userId: string): Promise<void>;
+  getMessageById(messageId: string): Promise<Message | undefined>;
   
   // Spotlight operations
   getCurrentSpotlights(): Promise<{ daily: Business[], weekly: Business[], monthly: Business[] }>;
@@ -649,24 +668,105 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(products.createdAt));
   }
 
-  async searchProducts(query: string, category?: string): Promise<Product[]> {
+  async searchProducts(query: string, options?: {
+    categories?: string[];
+    minPrice?: number;
+    maxPrice?: number;
+    inStock?: boolean;
+    isDigital?: boolean;
+    minRating?: number;
+    tags?: string[];
+    sort?: 'rating_desc' | 'price_asc' | 'price_desc' | 'newest' | 'popular';
+    page?: number;
+    pageSize?: number;
+    includeTotal?: boolean;
+  }): Promise<{ items: Product[]; total: number }> {
+    const {
+      categories,
+      minPrice,
+      maxPrice,
+      inStock,
+      isDigital,
+      minRating,
+      tags,
+      sort = 'rating_desc',
+      page = 1,
+      pageSize = 24,
+      includeTotal = false,
+    } = options || {};
+
     const conditions = [
-      or(
-        like(products.name, `%${query}%`),
-        like(products.description, `%${query}%`)
-      ),
-      eq(products.isActive, true)
+      eq(products.isActive, true),
     ];
 
-    if (category) {
-      conditions.push(eq(products.category, category));
+    const q = (query || '').trim();
+    if (q) {
+      conditions.push(
+        or(
+          like(products.name, `%${q}%`),
+          like(products.description, `%${q}%`)
+        )
+      );
     }
 
-    return await db
+    if (categories && categories.length > 0) {
+      conditions.push(inArray(products.category, categories));
+    }
+
+    if (typeof isDigital === 'boolean') {
+      conditions.push(eq(products.isDigital, isDigital));
+    }
+
+    if (inStock) {
+      conditions.push(sql`${products.inventory} > 0`);
+    }
+
+    if (typeof minPrice === 'number') {
+      conditions.push(sql`CAST(${products.price} AS DECIMAL) >= ${minPrice}`);
+    }
+
+    if (typeof maxPrice === 'number') {
+      conditions.push(sql`CAST(${products.price} AS DECIMAL) <= ${maxPrice}`);
+    }
+
+    if (typeof minRating === 'number') {
+      conditions.push(sql`CAST(${products.rating} AS DECIMAL) >= ${minRating}`);
+    }
+
+    if (tags && tags.length > 0) {
+      const tagConds = tags.map(t => sql`${products.tags}::text ILIKE ${`%"${t}"%`}`);
+      conditions.push(or(...tagConds));
+    }
+
+    // Sorting
+    let orderByExpr: any = desc(products.rating);
+    if (sort === 'price_asc') orderByExpr = sql`CAST(${products.price} AS DECIMAL) ASC`;
+    if (sort === 'price_desc') orderByExpr = sql`CAST(${products.price} AS DECIMAL) DESC`;
+    if (sort === 'newest') orderByExpr = desc(products.createdAt);
+    if (sort === 'popular') orderByExpr = desc(products.reviewCount);
+
+    const offset = Math.max(0, (page - 1) * pageSize);
+
+    const queryBase = db
       .select()
       .from(products)
-      .where(and(...conditions))
-      .orderBy(desc(products.rating));
+      .where(and(...conditions));
+
+    const items = await queryBase
+      .orderBy(orderByExpr)
+      .limit(pageSize)
+      .offset(offset);
+
+    let total = 0;
+    if (includeTotal) {
+      const [row] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(products)
+        .where(and(...conditions));
+      total = row?.count || 0;
+    }
+
+    return { items, total };
   }
 
   async getFeaturedProducts(limit = 8): Promise<Product[]> {
