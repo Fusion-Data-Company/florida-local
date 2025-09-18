@@ -474,7 +474,7 @@ async function getPopularItems(type: "business" | "product", limit: number): Pro
     const businesses = await storage.getTrendingBusinesses(limit);
     return businesses.map(b => ({
       id: b.id,
-      score: b.followerCount / 1000,
+      score: (b.followerCount || 0) / 1000,
       reason: "Trending in your area",
       metadata: b,
     }));

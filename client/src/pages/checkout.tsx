@@ -23,8 +23,11 @@ import { ApiCartItem } from "@/lib/types";
 
 // Initialize Stripe - from the blueprint integration (with graceful fallback)
 const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY 
-  ? loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
-  : null;
+  ? loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY).catch((error) => {
+      console.warn("Failed to load Stripe.js:", error);
+      return null;
+    })
+  : Promise.resolve(null);
 
 const checkoutSchema = z.object({
   shippingAddress: z.object({
@@ -454,7 +457,7 @@ export default function Checkout() {
                         <p className="text-muted-foreground">Qty: {item.quantity}</p>
                       </div>
                       <p className="font-medium">
-                        ${(parseFloat(item.product.price) * item.quantity).toFixed(2)}
+                        ${(parseFloat(String(item.product.price)) * item.quantity).toFixed(2)}
                       </p>
                     </div>
                   ))}

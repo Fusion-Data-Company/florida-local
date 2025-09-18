@@ -18,24 +18,41 @@ export interface Business {
   id: string;
   ownerId: string;
   name: string;
+  tagline?: string | null;
   description?: string | null;
-  industry?: string | null;
-  phone?: string | null;
-  email?: string | null;
-  website?: string | null;
+  category?: string | null;
+  location?: string | null;
   address?: string | null;
-  city?: string | null;
-  state?: string | null;
-  zipCode?: string | null;
+  phone?: string | null;
+  website?: string | null;
   logoUrl?: string | null;
   coverImageUrl?: string | null;
+  operatingHours?: any | null; // JSON field
+  socialLinks?: any | null; // JSON field
+  googlePlaceId?: string | null;
   isVerified?: boolean | null;
-  isSpotlighted?: boolean | null;
-  spotlightStartsAt?: Date | null;
-  spotlightEndsAt?: Date | null;
-  followerCount?: number | null;
-  rating?: number | null;
+  isActive?: boolean | null;
+  
+  // Google My Business Integration Fields
+  gmbVerified?: boolean | null;
+  gmbConnected?: boolean | null;
+  gmbAccountId?: string | null;
+  gmbLocationId?: string | null;
+  gmbSyncStatus?: string | null;
+  gmbLastSyncAt?: Date | null;
+  gmbLastErrorAt?: Date | null;
+  gmbLastError?: string | null;
+  gmbDataSources?: any | null; // JSON field
+  
+  // Stripe Connect fields
+  stripeAccountId?: string | null;
+  stripeOnboardingStatus?: string | null;
+  stripeChargesEnabled?: boolean | null;
+  stripePayoutsEnabled?: boolean | null;
+  rating?: string | null; // decimal field from schema
   reviewCount?: number | null;
+  followerCount?: number | null;
+  postCount?: number | null;
   createdAt?: Date | null;
   updatedAt?: Date | null;
 }
@@ -80,21 +97,37 @@ export interface InsertUser {
 export interface InsertBusiness {
   ownerId: string;
   name: string;
+  tagline?: string;
   description?: string;
-  industry?: string;
-  phone?: string;
-  email?: string;
-  website?: string;
+  category?: string;
+  location?: string;
   address?: string;
-  city?: string;
-  state?: string;
-  zipCode?: string;
+  phone?: string;
+  website?: string;
   logoUrl?: string;
   coverImageUrl?: string;
+  operatingHours?: any; // JSON field
+  socialLinks?: any; // JSON field
+  googlePlaceId?: string;
   isVerified?: boolean;
-  isSpotlighted?: boolean;
-  spotlightStartsAt?: Date;
-  spotlightEndsAt?: Date;
+  isActive?: boolean;
+  
+  // Google My Business Integration Fields
+  gmbVerified?: boolean;
+  gmbConnected?: boolean;
+  gmbAccountId?: string;
+  gmbLocationId?: string;
+  gmbSyncStatus?: string;
+  gmbLastSyncAt?: Date;
+  gmbLastErrorAt?: Date;
+  gmbLastError?: string;
+  gmbDataSources?: any; // JSON field
+  
+  // Stripe Connect fields
+  stripeAccountId?: string;
+  stripeOnboardingStatus?: string;
+  stripeChargesEnabled?: boolean;
+  stripePayoutsEnabled?: boolean;
 }
 
 export interface InsertProduct {
@@ -118,22 +151,24 @@ export interface InsertCartItem {
 
 export interface Post {
   id: string;
-  userId: string;
-  businessId?: string | null;
+  businessId: string;
   content: string;
-  imageUrl?: string | null;
+  images?: any | null; // JSON field
+  type?: string | null;
   likeCount?: number | null;
   commentCount?: number | null;
   shareCount?: number | null;
+  isVisible?: boolean | null;
   createdAt?: Date | null;
   updatedAt?: Date | null;
 }
 
 export interface InsertPost {
-  userId: string;
-  businessId?: string;
+  businessId: string;
   content: string;
-  imageUrl?: string;
+  images?: any; // JSON field
+  type?: string;
+  isVisible?: boolean;
 }
 
 // Import zod for schemas
@@ -142,21 +177,37 @@ import { z } from "zod";
 // Zod schemas for form validation
 export const insertBusinessSchema = z.object({
   name: z.string().min(1, "Business name is required"),
+  tagline: z.string().optional(),
   description: z.string().optional(),
-  industry: z.string().optional(),
-  phone: z.string().optional(),
-  email: z.string().email().optional().or(z.literal("")),
-  website: z.string().url().optional().or(z.literal("")),
+  category: z.string().optional(),
+  location: z.string().optional(),
   address: z.string().optional(),
-  city: z.string().optional(),
-  state: z.string().optional(),
-  zipCode: z.string().optional(),
+  phone: z.string().optional(),
+  website: z.string().url().optional().or(z.literal("")),
   logoUrl: z.string().optional(),
   coverImageUrl: z.string().optional(),
+  operatingHours: z.any().optional(), // JSON field
+  socialLinks: z.any().optional(), // JSON field
+  googlePlaceId: z.string().optional(),
   isVerified: z.boolean().optional(),
-  isSpotlighted: z.boolean().optional(),
-  spotlightStartsAt: z.date().optional(),
-  spotlightEndsAt: z.date().optional(),
+  isActive: z.boolean().optional(),
+  
+  // Google My Business Integration Fields
+  gmbVerified: z.boolean().optional(),
+  gmbConnected: z.boolean().optional(),
+  gmbAccountId: z.string().optional(),
+  gmbLocationId: z.string().optional(),
+  gmbSyncStatus: z.string().optional(),
+  gmbLastSyncAt: z.date().optional(),
+  gmbLastErrorAt: z.date().optional(),
+  gmbLastError: z.string().optional(),
+  gmbDataSources: z.any().optional(), // JSON field
+  
+  // Stripe Connect fields
+  stripeAccountId: z.string().optional(),
+  stripeOnboardingStatus: z.string().optional(),
+  stripeChargesEnabled: z.boolean().optional(),
+  stripePayoutsEnabled: z.boolean().optional(),
 });
 
 export const updateBusinessSchema = insertBusinessSchema;
@@ -175,8 +226,9 @@ export const insertProductSchema = z.object({
 });
 
 export const insertPostSchema = z.object({
-  userId: z.string(),
-  businessId: z.string().optional(),
+  businessId: z.string(),
   content: z.string().min(1, "Content is required"),
-  imageUrl: z.string().optional(),
+  images: z.any().optional(), // JSON field
+  type: z.string().optional(),
+  isVisible: z.boolean().optional(),
 });
