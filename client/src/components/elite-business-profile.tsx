@@ -5,7 +5,7 @@ import { Business, Product, Post } from "@shared/schema";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import NavigationHeader from "@/components/navigation-header";
+import EliteNavigationHeader from "@/components/elite-navigation-header";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 import AIBusinessDashboard from "@/components/ai-business-dashboard";
 import { Card, CardContent } from "@/components/ui/card";
@@ -66,7 +66,7 @@ export default function EliteBusinessProfile() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <NavigationHeader />
+        <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-8">
           <Skeleton className="h-80 w-full mb-8" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -92,7 +92,7 @@ export default function EliteBusinessProfile() {
 
   return (
     <div className="min-h-screen bg-background">
-      <NavigationHeader />
+      <EliteNavigationHeader />
 
       {/* MAGIC MCP ELITE HERO SECTION */}
       <div className="relative overflow-hidden">

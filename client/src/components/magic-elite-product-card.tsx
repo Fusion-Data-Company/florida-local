@@ -83,23 +83,38 @@ export default function MagicEliteProductCard({ product, index = 0 }: MagicElite
     },
   });
 
-  // Magic MCP Image Fallback System
+  // Magic MCP Image Fallback System (deterministic)
   const getProductImage = () => {
     if (product.images && product.images.length > 0) {
       return product.images[0];
     }
-    // Elite fallback based on category
+    const id = String(product.id || '');
+    let seed = 0; for (let i=0;i<id.length;i++) seed = ((seed<<5)-seed)+id.charCodeAt(i);
+    const pick = (arr: string[]) => arr[Math.abs(seed) % arr.length];
     const category = product.category?.toLowerCase() || '';
-    if (category.includes('food') || category.includes('restaurant')) {
-      return '/attached_assets/stock_images/fine_dining_food_pre_6c60b0bf.jpg';
-    } else if (category.includes('spa') || category.includes('wellness')) {
-      return '/attached_assets/stock_images/luxury_spa_wellness__78221b18.jpg';
-    } else if (category.includes('photo')) {
-      return '/attached_assets/stock_images/professional_photogr_7ec7b11b.jpg';
-    } else if (category.includes('yoga') || category.includes('fitness')) {
-      return '/attached_assets/stock_images/sunset_yoga_studio_p_c38ab4c1.jpg';
+    if (category.includes('food') || category.includes('restaurant') || category.includes('beverage')) {
+      return pick([
+        '/attached_assets/stock_images/fine_dining_food_pre_6c60b0bf.jpg',
+        '/attached_assets/stock_images/elegant_restaurant_f_cc520cc1.jpg',
+        '/attached_assets/stock_images/elegant_restaurant_f_f8ca8e07.jpg'
+      ]);
     }
-    return '/attached_assets/stock_images/luxury_travel_experi_f2b67257.jpg';
+    if (category.includes('spa') || category.includes('wellness') || category.includes('beauty')) {
+      return pick([
+        '/attached_assets/stock_images/luxury_spa_wellness__78221b18.jpg',
+        '/attached_assets/stock_images/sunset_yoga_studio_p_c38ab4c1.jpg'
+      ]);
+    }
+    if (category.includes('photo') || category.includes('photography')) {
+      return pick([
+        '/attached_assets/stock_images/professional_photogr_7ec7b11b.jpg',
+        '/attached_assets/stock_images/professional_photogr_afdb1a59.jpg'
+      ]);
+    }
+    return pick([
+      '/attached_assets/stock_images/luxury_travel_experi_f2b67257.jpg',
+      '/attached_assets/stock_images/modern_luxury_hotel__f6015919.jpg'
+    ]);
   };
 
   const getBadgeForProduct = () => {

@@ -13,7 +13,8 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import AIBusinessDashboard from "@/components/ai-business-dashboard";
 import MagicEliteProductCard from "@/components/magic-elite-product-card";
-import { UserPlus, UserMinus, MessageCircle, Edit3, Clock, MapPin, Phone, Globe, Star } from "lucide-react";
+import { UserPlus, UserMinus, MessageCircle, Edit3, Clock, MapPin, Phone, Globe, Star, Music2, PlayCircle } from "lucide-react";
+import { getSpotifyTrackId, getYouTubeId } from "@/lib/media";
 import { GMBVerificationBadge, GMBConnectionFlow, GMBReviewsSection, GMBDataAttribution } from "@/components/gmb-integration";
 
 export default function BusinessProfile() {
@@ -36,7 +37,7 @@ export default function BusinessProfile() {
   });
 
   // Check if current user is following this business
-  const { data: followStatus } = useQuery({
+  const { data: followStatus } = useQuery<{ isFollowing: boolean }>({
     queryKey: ['/api/businesses', id, 'following'],
     enabled: isAuthenticated && !!id && user?.id !== business?.ownerId,
   });
@@ -304,26 +305,26 @@ export default function BusinessProfile() {
                   {/* Contact Information */}
                   <div className="space-y-3">
                     <h3 className="font-semibold text-foreground">Contact Information</h3>
-                    {business.phone && (
+                    {business.phone ? (
                       <div className="flex items-center space-x-2">
                         <Phone className="h-4 w-4 text-primary" />
                         <span>{business.phone}</span>
                       </div>
-                    )}
-                    {business.website && (
+                    ) : null}
+                    {business.website ? (
                       <div className="flex items-center space-x-2">
                         <Globe className="h-4 w-4 text-primary" />
                         <a href={business.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
                           Visit Website
                         </a>
                       </div>
-                    )}
-                    {business.address && (
+                    ) : null}
+                    {business.address ? (
                       <div className="flex items-center space-x-2">
                         <MapPin className="h-4 w-4 text-primary" />
                         <span>{business.address}</span>
                       </div>
-                    )}
+                    ) : null}
                   </div>
 
                   {/* Business Hours */}
@@ -334,14 +335,16 @@ export default function BusinessProfile() {
                         Business Hours
                       </h3>
                       <div className="space-y-1 text-sm">
-                        {Object.entries(business.operatingHours as any).map(([day, hours]: [string, any]) => (
-                          <div key={day} className="flex justify-between">
-                            <span className="capitalize">{day}:</span>
-                            <span className={hours?.isClosed ? 'text-muted-foreground' : ''}>
-                              {hours?.isClosed ? 'Closed' : `${hours?.open} - ${hours?.close}`}
-                            </span>
-                          </div>
-                        ))}
+                        {Object.entries(business.operatingHours as any).map(([day, hours]: [string, any]) => {
+                          return (
+                            <div key={day} className="flex justify-between">
+                              <span className="capitalize">{day}:</span>
+                              <span className={hours?.isClosed ? 'text-muted-foreground' : ''}>
+                                {hours?.isClosed ? 'Closed' : `${hours?.open} - ${hours?.close}`}
+                              </span>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -360,6 +363,38 @@ export default function BusinessProfile() {
             <GMBConnectionFlow business={business} isOwner={isOwner} />
           </div>
         )}
+      </div>
+
+      {/* Media Strip: Spotify / YouTube */}
+      <div className="container mx-auto px-4">
+        {(() => {
+          const social = (business as any).socialLinks as any || {};
+          const spotifyId = getSpotifyTrackId(social?.spotifyTrackUrl);
+          const youtubeId = getYouTubeId(social?.youtubeUrl);
+          if (!spotifyId && !youtubeId) return null;
+          return (
+            <div className="grid md:grid-cols-2 gap-6 my-8">
+              {spotifyId && (
+                <div className="rounded-2xl overflow-hidden border">
+                  <div className="flex items-center gap-2 p-3 text-sm font-medium"><Music2 className="h-4 w-4" /> Featured Track</div>
+                  <iframe
+                    src={`https://open.spotify.com/embed/track/${spotifyId}`}
+                    width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
+                    loading="lazy"
+                  />
+                </div>
+              )}
+              {youtubeId && (
+                <div className="rounded-2xl overflow-hidden border">
+                  <div className="flex items-center gap-2 p-3 text-sm font-medium"><PlayCircle className="h-4 w-4" /> Featured Video</div>
+                  <div className="relative w-full" style={{paddingTop:'56.25%'}}>
+                    <iframe className="absolute inset-0 w-full h-full" src={`https://www.youtube.com/embed/${youtubeId}`} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen />
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })()}
       </div>
 
       {/* Content Tabs */}
@@ -502,7 +537,7 @@ export default function BusinessProfile() {
                     <div className="flex items-center justify-between">
                       <span className="text-muted-foreground">Joined:</span>
                       <span className="text-foreground">
-                        {new Date(business.createdAt).toLocaleDateString()}
+                        {business.createdAt ? new Date(business.createdAt).toLocaleDateString() : 'N/A'}
                       </span>
                     </div>
                   </div>

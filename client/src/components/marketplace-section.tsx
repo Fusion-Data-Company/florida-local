@@ -16,7 +16,8 @@ export default function MarketplaceSection() {
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
 
   const { data: featuredProducts = [], isLoading } = useQuery<Product[]>({
-    queryKey: ['/api/products/featured'],
+    queryKey: ['/api/products/featured', 20, 'unique=images'],
+    queryFn: () => fetch(`/api/products/featured?limit=20&unique=images`).then(res => res.json()),
   });
 
   const handleSearch = () => {

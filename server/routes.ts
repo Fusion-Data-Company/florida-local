@@ -76,6 +76,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.rotateSpotlights();
       
       const spotlights = await storage.getCurrentSpotlights();
+      const isEmpty = !spotlights.daily?.length && !spotlights.weekly?.length && !spotlights.monthly?.length;
+      if (isEmpty) {
+        const trending = await storage.getTrendingBusinesses(6);
+        return res.json({
+          daily: trending.slice(0, 3),
+          weekly: trending.slice(0, 5),
+          monthly: trending.slice(0, 1),
+          fallback: true,
+        });
+      }
       res.json(spotlights);
     } catch (error) {
       console.error("Error fetching spotlights:", error);
@@ -1070,14 +1080,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/products/featured', async (req, res) => {
     try {
-      const limit = parseInt(req.query.limit as string) || 8;
-      const products = await storage.getFeaturedProducts(limit);
-      res.json(products);
+      const limitParam = parseInt(req.query.limit as string);
+      const limit = Number.isFinite(limitParam) ? Math.min(Math.max(limitParam, 1), 50) : 20;
+      const unique = (req.query.unique as string) === 'images';
+
+      // Over-fetch to allow dedupe by primary image signature
+      const overFetch = Math.max(limit * 8, 200);
+      const raw = await storage.getFeaturedProducts(overFetch);
+
+      if (!unique) {
+        return res.json(raw.slice(0, limit));
+      }
+
+      // Dedupe featured products by normalized primary image signature
+      const seen = new Set<string>();
+      const out: typeof raw = [];
+      for (const p of raw) {
+        const first = Array.isArray((p as any).images) && (p as any).images[0] ? String((p as any).images[0]) : '';
+        const sig = normalizeImageSignature(first || fallbackSignatureFor(p));
+        if (seen.has(sig)) continue;
+        seen.add(sig);
+        out.push(p);
+        if (out.length >= limit) break;
+      }
+      return res.json(out);
     } catch (error) {
       console.error("Error fetching featured products:", error);
       res.status(500).json({ message: "Failed to fetch featured products" });
     }
   });
+
+  function normalizeImageSignature(url: string): string {
+    try {
+      const u = new URL(url, 'https://placeholder.local');
+      const host = (u.host || '').toLowerCase();
+      const path = u.pathname.replace(/\/original$/, '').toLowerCase();
+      return `${host}${path}`;
+    } catch {
+      return (url || '').toLowerCase().split('?')[0];
+    }
+  }
+  function fallbackSignatureFor(p: any): string {
+    const category = (p.category || 'default').toLowerCase();
+    const id: string = String(p.id || '');
+    let seed = 0;
+    for (let i = 0; i < id.length; i++) seed = ((seed << 5) - seed) + id.charCodeAt(i);
+    const bucket = Math.abs(seed) % 8;
+    return `fallback://${category}/${bucket}`;
+  }
 
   app.get('/api/businesses/:id/products', async (req, res) => {
     try {

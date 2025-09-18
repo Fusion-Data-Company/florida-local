@@ -88,6 +88,10 @@ export async function queueEmail(
 ) {
   const { emailQueue } = await import("../redis");
   
+  if (!emailQueue) {
+    throw new Error("Email queue is not available");
+  }
+  
   await emailQueue.add(
     "send-email",
     {

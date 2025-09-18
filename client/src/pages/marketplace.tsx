@@ -48,7 +48,8 @@ export default function Marketplace() {
   });
 
   const { data: featuredProducts = [] } = useQuery<Product[]>({
-    queryKey: ['/api/products/featured'],
+    queryKey: ['/api/products/featured', 20, 'unique=images'],
+    queryFn: () => fetch(`/api/products/featured?limit=20&unique=images`).then(res => res.json()),
   });
 
   const { data: userBusinesses = [] } = useQuery({

@@ -1637,27 +1637,33 @@ export class DatabaseStorage implements IStorage {
   async getEligibleBusinesses(type: 'daily' | 'weekly' | 'monthly'): Promise<Business[]> {
     const now = new Date();
     let cooldownDays = 1; // Default for daily
-    
     if (type === 'weekly') cooldownDays = 7;
     if (type === 'monthly') cooldownDays = 30;
-    
+
     const cooldownDate = new Date(now);
     cooldownDate.setDate(cooldownDate.getDate() - cooldownDays);
 
-    // Get all active businesses
+    // If no verified businesses exist, relax requirement to active-only (degraded mode for demo)
+    const [verifiedCountRow] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(businesses)
+      .where(eq(businesses.isVerified, true));
+    const requireVerified = (verifiedCountRow?.count || 0) > 0;
+
+    // Get all active (and verified when available) businesses
     const allBusinesses = await db
       .select()
       .from(businesses)
       .where(
         and(
           eq(businesses.isActive, true),
-          eq(businesses.isVerified, true) // Only verified businesses
+          requireVerified ? eq(businesses.isVerified, true) : sql`TRUE`
         )
       );
 
     // Filter out businesses currently featured or recently featured
     const eligibleBusinesses: Business[] = [];
-    
+
     for (const business of allBusinesses) {
       // Check if currently featured in any spotlight
       const currentSpotlight = await db

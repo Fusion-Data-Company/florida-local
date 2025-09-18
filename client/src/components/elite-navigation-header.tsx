@@ -143,7 +143,7 @@ export default function EliteNavigationHeader() {
                       <Button variant="ghost" className="elite-user-avatar-container group">
                         <div className="elite-user-avatar">
                           <Avatar className="w-10 h-10">
-                            <AvatarImage src={user?.profileImageUrl} />
+                            <AvatarImage src={user?.profileImageUrl || undefined} />
                             <AvatarFallback className="elite-avatar-fallback">
                               {user?.firstName?.charAt(0) || 'U'}
                             </AvatarFallback>

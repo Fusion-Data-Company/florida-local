@@ -36,8 +36,11 @@ interface ProductCardProps {
   product: Product;
 }
 
-// Professional Product Image Mapping System
+// Professional Product Image Mapping System (deterministic)
+function hashId(id?: string) { return [...(id||'')].reduce((h,c)=>((h<<5)-h+c.charCodeAt(0))|0,0); }
+function pick<T>(arr: T[], seed: number): T { return arr[Math.abs(seed) % arr.length]; }
 const getCategoryProductImage = (product: Product): string => {
+  const seed = hashId(product.id);
   const category = product.category?.toLowerCase() || '';
   const tags = ((product as any).tags as string[]) || [];
   const name = product.name?.toLowerCase() || '';
@@ -49,7 +52,7 @@ const getCategoryProductImage = (product: Product): string => {
       name.includes('food') || name.includes('drink') || name.includes('coffee') || name.includes('organic') ||
       description.includes('food') || description.includes('beverage') || description.includes('gourmet')) {
     const foodImages = [elegantRestaurant1, elegantRestaurant2, elegantRestaurant3, fineDiningFood, gourmetCubanSandwich];
-    return foodImages[Math.floor(Math.random() * foodImages.length)];
+    return pick(foodImages, seed);
   }
   
   // Health & Beauty Products
@@ -58,7 +61,7 @@ const getCategoryProductImage = (product: Product): string => {
       name.includes('cream') || name.includes('serum') || name.includes('wellness') || name.includes('spa') ||
       description.includes('beauty') || description.includes('wellness') || description.includes('skincare')) {
     const wellnessImages = [luxuryWellnessSpa1, luxuryWellnessSpa2, sunsetYogaStudio, yogaMeditation1];
-    return wellnessImages[Math.floor(Math.random() * wellnessImages.length)];
+    return pick(wellnessImages, seed);
   }
   
   // Art & Crafts Products
@@ -105,7 +108,7 @@ const getCategoryProductImage = (product: Product): string => {
   
   // Premium Default
   const premiumDefaults = [luxuryTravelExperience, modernLuxuryHotel, premiumPhotography, elegantRestaurant1];
-  return premiumDefaults[Math.floor(Math.random() * premiumDefaults.length)];
+  return pick(premiumDefaults, seed);
 };
 
 export default function ProductCard({ product }: ProductCardProps) {
