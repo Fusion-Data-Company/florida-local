@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { z } from "zod";
-import { insertBusinessSchema } from "@shared/types";
+import { insertBusinessSchema } from "@shared/schema";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -21,16 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Store, MapPin, Phone, Globe, Clock } from "lucide-react";
 
 // Create business form schema with validation
-const createBusinessSchema = insertBusinessSchema.omit({ ownerId: true }).extend({
-  name: z.string().min(1, "Business name is required").max(255, "Business name must be less than 255 characters"),
-  tagline: z.string().max(500, "Tagline must be less than 500 characters").optional(),
-  description: z.string().optional(),
-  category: z.string().min(1, "Please select a category"),
-  location: z.string().optional(),
-  address: z.string().optional(),
-  phone: z.string().optional(),
-  website: z.string().url("Please enter a valid website URL").optional().or(z.literal("")),
-});
+const createBusinessSchema = insertBusinessSchema.omit({ ownerId: true });
 
 type CreateBusinessForm = z.infer<typeof createBusinessSchema>;
 
@@ -136,27 +127,29 @@ export default function CreateBusiness() {
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}
-        <div className="flex items-center space-x-4 mb-8">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setLocation('/')}
-            data-testid="button-back-home"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold gradient-text">Create Your Business</h1>
-            <p className="text-muted-foreground">Join Florida's thriving business community</p>
+        <div className="create-business-header flex items-center space-x-4 mb-8 rounded-2xl p-6">
+          <div className="marble-content flex items-center space-x-4 w-full">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setLocation('/')}
+              data-testid="button-back-home"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
+            <div>
+              <h1 className="text-3xl font-bold gradient-text">Create Your Business</h1>
+              <p className="text-muted-foreground">Join Florida's thriving business community</p>
+            </div>
           </div>
         </div>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             {/* Business Basics */}
-            <Card>
-              <CardHeader>
+            <Card className="create-business-basics-card">
+              <CardHeader className="marble-content">
                 <CardTitle className="flex items-center space-x-2">
                   <Store className="h-5 w-5" />
                   <span>Business Basics</span>
@@ -165,7 +158,7 @@ export default function CreateBusiness() {
                   Essential information about your business
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="marble-content space-y-6">
                 <FormField
                   control={form.control}
                   name="name"
@@ -258,8 +251,8 @@ export default function CreateBusiness() {
             </Card>
 
             {/* Location & Contact */}
-            <Card>
-              <CardHeader>
+            <Card className="create-business-location-card">
+              <CardHeader className="marble-content">
                 <CardTitle className="flex items-center space-x-2">
                   <MapPin className="h-5 w-5" />
                   <span>Location & Contact</span>
@@ -268,7 +261,7 @@ export default function CreateBusiness() {
                   Help customers find and contact you
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="marble-content space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
@@ -351,14 +344,14 @@ export default function CreateBusiness() {
             </Card>
 
             {/* Visual Identity */}
-            <Card>
-              <CardHeader>
+            <Card className="create-business-visual-card">
+              <CardHeader className="marble-content">
                 <CardTitle>Visual Identity</CardTitle>
                 <CardDescription>
                   Make your business stand out with great visuals
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="marble-content space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
@@ -406,8 +399,8 @@ export default function CreateBusiness() {
             </Card>
 
             {/* Submit Section */}
-            <Card>
-              <CardContent className="pt-6">
+            <Card className="create-business-submit-card">
+              <CardContent className="marble-content pt-6">
                 <div className="flex flex-col space-y-4">
                   <div className="flex items-center justify-between">
                     <div>

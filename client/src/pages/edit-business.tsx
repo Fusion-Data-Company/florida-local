@@ -277,27 +277,29 @@ export default function EditBusiness() {
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}
-        <div className="flex items-center space-x-4 mb-8">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setLocation(`/business/${id}`)}
-            data-testid="button-back-business-profile"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Profile
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold gradient-text">Edit Business</h1>
-            <p className="text-muted-foreground">Update your business information</p>
+        <div className="edit-business-header flex items-center space-x-4 mb-8 rounded-2xl p-6">
+          <div className="marble-content flex items-center space-x-4 w-full">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setLocation(`/business/${id}`)}
+              data-testid="button-back-business-profile"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Profile
+            </Button>
+            <div>
+              <h1 className="text-3xl font-bold gradient-text">Edit Business</h1>
+              <p className="text-muted-foreground">Update your business information</p>
+            </div>
           </div>
         </div>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             {/* Business Basics */}
-            <Card>
-              <CardHeader>
+            <Card className="edit-business-basics-card">
+              <CardHeader className="marble-content">
                 <CardTitle className="flex items-center space-x-2">
                   <Store className="h-5 w-5" />
                   <span>Business Basics</span>
@@ -306,7 +308,7 @@ export default function EditBusiness() {
                   Essential information about your business
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="marble-content space-y-6">
                 <FormField
                   control={form.control}
                   name="name"
@@ -399,8 +401,8 @@ export default function EditBusiness() {
             </Card>
 
             {/* Location & Contact */}
-            <Card>
-              <CardHeader>
+            <Card className="edit-business-location-card">
+              <CardHeader className="marble-content">
                 <CardTitle className="flex items-center space-x-2">
                   <MapPin className="h-5 w-5" />
                   <span>Location & Contact</span>
@@ -409,7 +411,7 @@ export default function EditBusiness() {
                   Help customers find and contact you
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="marble-content space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
@@ -492,14 +494,14 @@ export default function EditBusiness() {
             </Card>
 
             {/* Visual Identity */}
-            <Card>
-              <CardHeader>
+            <Card className="edit-business-visual-card">
+              <CardHeader className="marble-content">
                 <CardTitle>Visual Identity</CardTitle>
                 <CardDescription>
                   Update your business visuals
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="marble-content space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
@@ -547,8 +549,8 @@ export default function EditBusiness() {
             </Card>
 
             {/* Submit Section */}
-            <Card>
-              <CardContent className="pt-6">
+            <Card className="edit-business-submit-card">
+              <CardContent className="marble-content pt-6">
                 <div className="flex flex-col space-y-4">
                   <div className="flex items-center justify-between">
                     <div>

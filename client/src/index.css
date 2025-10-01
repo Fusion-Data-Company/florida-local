@@ -191,7 +191,17 @@
 .orders-quick-actions,
 .confirmation-success-header,
 .confirmation-card,
-.order-summary-card {
+.order-summary-card,
+.create-business-header,
+.create-business-basics-card,
+.create-business-location-card,
+.create-business-visual-card,
+.create-business-submit-card,
+.edit-business-header,
+.edit-business-basics-card,
+.edit-business-location-card,
+.edit-business-visual-card,
+.edit-business-submit-card {
   position: relative;
 }
 
@@ -786,6 +796,162 @@
   background-size: cover;
   background-position: center;
   opacity: 0.5;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* === BUSINESS FORMS ELITE MARBLE STYLING === */
+
+/* CREATE BUSINESS FORM */
+
+/* Create Business Header - Calacatta Gold Marble */
+.create-business-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Business Basics Card - White Carrara Marble */
+.create-business-basics-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.55;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Location & Contact Card - Calacatta Gold Marble */
+.create-business-location-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.55;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Visual Identity Card - White Carrara Marble */
+.create-business-visual-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.55;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Submit Card - Calacatta Gold Marble */
+.create-business-submit-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* EDIT BUSINESS FORM */
+
+/* Edit Business Header - Calacatta Gold Marble */
+.edit-business-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Business Basics Card - White Carrara Marble */
+.edit-business-basics-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.55;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Location & Contact Card - Calacatta Gold Marble */
+.edit-business-location-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.55;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Visual Identity Card - White Carrara Marble */
+.edit-business-visual-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.55;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Submit Card - Calacatta Gold Marble */
+.edit-business-submit-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
   mix-blend-mode: soft-light;
   pointer-events: none;
   border-radius: inherit;
