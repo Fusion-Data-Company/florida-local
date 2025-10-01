@@ -15,7 +15,7 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="hero-section relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Dramatic Calacatta Gold Marble Background - 60%+ Opacity */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-fixed" 

@@ -99,7 +99,7 @@ export default function MarketplaceSection() {
           
           <div className="lg:w-1/2">
             {/* Premium Search and Filter Bar - ELITE LUXURY TRANSFORMATION */}
-            <div className="premium-search-panel rounded-2xl p-8 transition-all duration-300">
+            <div className="search-panel-container premium-search-panel rounded-2xl p-8 transition-all duration-300">
               <div className="relative z-10">
               <div className="flex flex-col md:flex-row gap-6 mb-6">
                 <div className="flex-1 relative luxury-search-input-wrapper">
@@ -163,7 +163,7 @@ export default function MarketplaceSection() {
 
               {/* Advanced Filters - ELITE LUXURY */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="luxury-filter-section rounded-xl p-5">
+                <div className="filter-section-1 luxury-filter-section rounded-xl p-5">
                   <div className="relative z-10">
                     <label className="luxury-filter-label mb-3 flex items-center text-xs">
                       <DollarSign className="h-4 w-4 mr-2 text-yellow-700" /> Price Range
@@ -188,7 +188,7 @@ export default function MarketplaceSection() {
                     </div>
                   </div>
                 </div>
-                <div className="luxury-filter-section rounded-xl p-5">
+                <div className="filter-section-2 luxury-filter-section rounded-xl p-5">
                   <div className="relative z-10">
                     <label className="luxury-filter-label mb-3 flex items-center text-xs">
                       <Star className="h-4 w-4 mr-2 text-yellow-700" /> Min Rating
@@ -205,7 +205,7 @@ export default function MarketplaceSection() {
                     </Select>
                   </div>
                 </div>
-                <div className="luxury-filter-section rounded-xl p-5">
+                <div className="filter-section-3 luxury-filter-section rounded-xl p-5">
                   <div className="relative z-10">
                     <label className="luxury-filter-label mb-3 flex items-center text-xs">
                       <SortAsc className="h-4 w-4 mr-2 text-yellow-700" /> Sort By
