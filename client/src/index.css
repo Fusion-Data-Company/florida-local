@@ -2447,6 +2447,137 @@ textarea:focus-visible,
   }
 }
 
+/* === MARBLE PSEUDO-ELEMENT OVERLAYS === */
+
+.spotlight-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: soft-light;
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.spotlight-tabs-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: soft-light;
+  opacity: 0.2;
+  pointer-events: none;
+  border-radius: 1rem;
+  z-index: 0;
+}
+
+.spotlight-grid-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: soft-light;
+  opacity: 0.1;
+  pointer-events: none;
+  border-radius: 1.5rem;
+  z-index: 0;
+}
+
+.voting-section-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('@assets/generated_images/Black_Marquina_Marble_Texture_5dc162e8.png');
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: soft-light;
+  opacity: 0.15;
+  pointer-events: none;
+  border-radius: 1.5rem;
+  z-index: 0;
+}
+
+.voting-business-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: soft-light;
+  opacity: 0.2;
+  pointer-events: none;
+  border-radius: 1rem;
+  z-index: 0;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: soft-light;
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.benefit-card-1::before,
+.benefit-card-2::before,
+.benefit-card-3::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: soft-light;
+  opacity: 0.2;
+  pointer-events: none;
+  border-radius: 0.5rem;
+  z-index: 0;
+}
+
+.search-panel-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: soft-light;
+  opacity: 0.2;
+  pointer-events: none;
+  border-radius: 1rem;
+  z-index: 0;
+  animation: marble-shimmer-animation 3s ease-in-out infinite;
+}
+
+.filter-section-1::before,
+.filter-section-2::before,
+.filter-section-3::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: soft-light;
+  opacity: 0.2;
+  pointer-events: none;
+  border-radius: 0.5rem;
+  z-index: 0;
+}
+
 /* === 2. ADVANCED BACKDROP FILTER CLASSES === */
 
 .backdrop-luxury {
@@ -2840,30 +2971,264 @@ textarea:focus-visible,
   -webkit-transform: translateZ(0);
 }
 
-/* Reduced Motion Support */
+/* ===================================================================
+   COMPREHENSIVE REDUCED MOTION ACCESSIBILITY SUPPORT
+   Disables all luxury animations for users who prefer reduced motion
+   while preserving visual styles and usability
+   ================================================================ */
+
 @media (prefers-reduced-motion: reduce) {
+  
+  /* === DISABLE ALL KEYFRAME ANIMATIONS === */
+  
+  /* Miami core animations */
+  .miami-mesh-overlay,
+  .miami-float,
+  .floating-animation,
+  .miami-luxury-float,
+  .magic-float {
+    animation: none !important;
+  }
+  
+  /* Marble and shimmer effects */
   .marble-shimmer::before,
+  .shimmer-effect,
+  .search-panel-container::before {
+    animation: none !important;
+  }
+  
+  /* Gradient animations */
   .gradient-conic-shimmer,
   .gradient-metallic-gold,
   .gradient-metallic-gold::before,
   .gradient-iridescent,
-  .filter-elite-shimmer,
-  .border-animated-gradient,
+  .border-animated-gradient {
+    animation: none !important;
+  }
+  
+  /* Particle systems */
+  .ambient-particles,
+  .ambient-particles::after,
+  .magic-particles,
+  .magic-particle,
+  .particles-bg::before,
+  .particles-glow::after,
+  .particles-drift {
+    animation: none !important;
+  }
+  
+  /* Metallic and shine effects */
+  .metallic::before,
+  .neon-glow {
+    animation: none !important;
+  }
+  
+  /* Mesh and background animations */
+  .mesh-gradient,
+  .hero-enhanced::before,
+  .miami-marketplace-section::before {
+    animation: none !important;
+  }
+  
+  /* Spot and pulse animations */
+  .radial-spot::before,
+  .spot-pulse,
+  .pulse-subtle,
+  .pulse-glow,
+  .premium-pulse,
+  .premium-notification-badge {
+    animation: none !important;
+  }
+  
+  /* Float animations */
   .float-gentle,
   .float-dynamic,
-  .particles-bg::before,
-  .particles-glow::after {
+  .float-dynamic-delay {
     animation: none !important;
-    transition: none !important;
-  }
-
-  .transform-3d-float:hover,
-  .transform-3d-card:hover {
     transform: none !important;
   }
-
+  
+  /* Product card animations */
+  .elite-product-card,
+  .magic-elite-product-card {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  
+  /* Avatar and brand animations */
+  .elite-user-avatar::before,
+  .elite-brand-container::before {
+    animation: none !important;
+  }
+  
+  /* Filter animations */
+  .filter-elite-shimmer {
+    animation: none !important;
+  }
+  
+  /* === DISABLE 3D TRANSFORMS === */
+  
+  .transform-3d-float,
+  .transform-3d-float:hover,
+  .transform-3d-card,
+  .transform-3d-card:hover,
+  .transform-3d-perspective,
+  .transform-depth {
+    transform: none !important;
+    perspective: none !important;
+  }
+  
+  /* 3D hover effects */
+  .magic-hover-lift:hover {
+    transform: none !important;
+  }
+  
+  .elite-product-card:hover,
+  .magic-elite-product-card:hover {
+    transform: none !important;
+  }
+  
+  /* === SIMPLIFY TRANSITIONS === */
+  
+  /* Universal animation and transition reset */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  /* === DISABLE HOVER TRANSFORMS === */
+  
+  /* Lift and scale effects */
+  .miami-hover-lift:hover,
+  .hover-lift:hover,
+  .miami-card-glow:hover,
+  .elite-business-card:hover {
+    transform: none !important;
+  }
+  
+  /* Button hover effects */
+  .btn-miami-primary:hover,
+  .btn-miami-glass:hover,
+  .premium-action-btn:hover,
+  .premium-profile-btn:hover,
+  .btn-press:active {
+    transform: none !important;
+  }
+  
+  /* Navigation hover effects */
+  .premium-filter-tag:hover,
+  .premium-nav-link:hover,
+  .elite-dropdown-item:hover,
+  .elite-mobile-nav-item:hover,
+  .premium-dropdown-item:hover {
+    transform: none !important;
+  }
+  
+  /* Avatar and container hover effects */
+  .elite-logo-container:hover,
+  .elite-logo-container:hover .elite-logo-icon,
+  .elite-user-avatar-container:hover,
+  .premium-avatar:hover,
+  .elite-brand-container:hover {
+    transform: none !important;
+  }
+  
+  /* Premium search container */
+  .premium-search-container:focus-within {
+    transform: none !important;
+  }
+  
+  /* Hamburger menu */
+  .premium-hamburger.open span:nth-child(1),
+  .premium-hamburger.open span:nth-child(3) {
+    transform: none !important;
+  }
+  
+  .premium-hamburger.open span:nth-child(2) {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  
+  /* === KEEP ESSENTIAL TRANSITIONS (INSTANT) === */
+  
+  /* Button and link interactions - instant feedback */
+  button,
+  a,
+  [role="button"],
+  input,
+  select,
+  textarea {
+    transition-duration: 0ms !important;
+  }
+  
+  /* Focus states remain for accessibility */
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [role="button"]:focus-visible {
+    transition-duration: 0ms !important;
+  }
+  
+  /* === DISABLE FILTER TRANSITIONS === */
+  
   .filter-luxury-glow,
-  .filter-premium-depth {
+  .filter-luxury-glow:hover,
+  .filter-premium-depth,
+  .filter-premium-depth:hover {
+    transition: none !important;
+    filter: none !important;
+  }
+  
+  /* === DISABLE MOBILE MENU ANIMATIONS === */
+  
+  .premium-mobile-menu,
+  .premium-mobile-overlay {
     transition: none !important;
   }
+  
+  /* === DISABLE GRADIENT TEXT ANIMATIONS === */
+  
+  .miami-gradient-text,
+  .gradient-text {
+    animation: none !important;
+    background-size: 100% 100% !important;
+  }
+  
+  /* === PRESERVE VISUAL STYLES (NO MOTION) === */
+  
+  /* Keep colors, layouts, and marble textures */
+  .marble-carrara,
+  .marble-marquina,
+  .marble-calacatta {
+    /* Marble textures remain visible, only shimmer is disabled */
+  }
+  
+  /* Keep glass effects without motion */
+  .miami-glass,
+  .glass-panel,
+  .magic-glass-elite,
+  .premium-nav-glass,
+  .elite-glass-header,
+  .elite-glass-dropdown {
+    /* Glass blur and transparency remain, only animations disabled */
+  }
+  
+  /* Keep shadows without glow animations */
+  /* Shadows are static and don't animate, so they remain as-is */
+  
+  /* === ACCESSIBILITY NOTES === */
+  /*
+   * This media query ensures:
+   * 1. All decorative animations are disabled
+   * 2. 3D transforms are removed to prevent motion sickness
+   * 3. Transitions are instant (0ms) for immediate feedback
+   * 4. Visual styles (colors, textures, layouts) are preserved
+   * 5. Interactive elements remain fully functional
+   * 6. Focus indicators and accessibility features are maintained
+   */
 }

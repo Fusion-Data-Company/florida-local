@@ -53,9 +53,12 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       <EliteNavigationHeader />
       
-      {/* Welcome Hero for Authenticated Users */}
-      <section className="relative py-20 bg-gradient-to-r from-primary/10 to-secondary/10">
-        <div className="container mx-auto px-4 lg:px-8 text-center">
+      {/* Welcome Hero for Authenticated Users - ELITE LUXURY */}
+      <section className="relative py-20 overflow-hidden hero-section">
+        {/* Floating Gradient Orbs - Limited to 2 for performance */}
+        <div className="absolute top-0 left-10 w-96 h-96 gradient-iridescent float-dynamic rounded-full opacity-[0.08] blur-3xl will-change-transform"></div>
+        <div className="absolute bottom-0 right-10 w-80 h-80 gradient-iridescent float-gentle rounded-full opacity-[0.08] blur-3xl will-change-transform"></div>
+        <div className="container mx-auto px-4 lg:px-8 text-center relative z-10">
           {!hasBusinesses ? (
             <>
               <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6 gradient-text">
@@ -86,29 +89,29 @@ export default function Home() {
                 </Button>
               </div>
 
-              {/* Benefits Section */}
+              {/* Benefits Section - ELITE LUXURY */}
               <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                <Card>
-                  <CardContent className="p-6 text-center">
-                    <Users className="h-12 w-12 text-primary mx-auto mb-4" />
+                <Card className="relative backdrop-luxury transform-3d-float border-animated-gradient transition-all duration-300 benefit-card-1">
+                  <CardContent className="relative z-10 p-6 text-center">
+                    <Users className="h-12 w-12 text-primary mx-auto mb-4 gradient-metallic-gold filter-premium-depth p-3 rounded-full" />
                     <h3 className="font-semibold mb-2">Connect with Customers</h3>
                     <p className="text-sm text-muted-foreground">
                       Build relationships and grow your customer base in Florida's local community
                     </p>
                   </CardContent>
                 </Card>
-                <Card>
-                  <CardContent className="p-6 text-center">
-                    <TrendingUp className="h-12 w-12 text-secondary mx-auto mb-4" />
+                <Card className="relative backdrop-luxury transform-3d-float border-animated-gradient transition-all duration-300 benefit-card-2">
+                  <CardContent className="relative z-10 p-6 text-center">
+                    <TrendingUp className="h-12 w-12 text-secondary mx-auto mb-4 gradient-metallic-gold filter-premium-depth p-3 rounded-full" />
                     <h3 className="font-semibold mb-2">Boost Your Sales</h3>
                     <p className="text-sm text-muted-foreground">
                       Showcase products, run promotions, and drive more revenue through our marketplace
                     </p>
                   </CardContent>
                 </Card>
-                <Card>
-                  <CardContent className="p-6 text-center">
-                    <Star className="h-12 w-12 text-accent mx-auto mb-4" />
+                <Card className="relative backdrop-luxury transform-3d-float border-animated-gradient transition-all duration-300 benefit-card-3">
+                  <CardContent className="relative z-10 p-6 text-center">
+                    <Star className="h-12 w-12 text-accent mx-auto mb-4 gradient-metallic-gold filter-premium-depth p-3 rounded-full" />
                     <h3 className="font-semibold mb-2">Build Your Brand</h3>
                     <p className="text-sm text-muted-foreground">
                       Create a professional presence and get featured in our business spotlight

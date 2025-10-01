@@ -82,19 +82,20 @@ export default function SpotlightShowcase() {
   };
 
   return (
-    <section className="py-20 relative overflow-hidden">
-      {/* Ambient Background */}
-      <div className="absolute inset-0 glass-panel"></div>
-      <div className="absolute inset-0 ambient-particles opacity-20"></div>
+    <section className="py-20 relative overflow-hidden spotlight-section">
+      {/* Floating Gradient Orbs - Limited to 2 for performance */}
+      <div className="absolute top-10 right-20 w-96 h-96 gradient-iridescent float-dynamic rounded-full opacity-[0.08] blur-3xl will-change-transform"></div>
+      <div className="absolute bottom-10 left-20 w-80 h-80 gradient-iridescent float-gentle rounded-full opacity-[0.08] blur-3xl will-change-transform"></div>
       
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
-        {/* Section Header */}
+        {/* Section Header - ELITE LUXURY */}
         <div className="text-center mb-16">
           <div className="relative inline-block mb-6">
-            <h2 className="text-4xl md:text-5xl font-serif font-bold gradient-text text-luxury">
+            <div className="absolute inset-0 gradient-conic-shimmer p-1 rounded-2xl opacity-[0.1] pointer-events-none"></div>
+            <h2 className="relative text-4xl md:text-5xl font-serif font-bold gradient-text text-luxury filter-luxury-glow bg-background px-8 py-4 rounded-xl">
               Community Spotlight
             </h2>
-            <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-px bg-gradient-to-r from-transparent via-primary to-transparent"></div>
+            <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-px bg-gradient-to-r from-transparent via-primary to-transparent float-gentle"></div>
           </div>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             Celebrating the businesses that make Florida communities thrive. 
@@ -128,15 +129,15 @@ export default function SpotlightShowcase() {
           </div>
         </div>
 
-        {/* Spotlight Tabs */}
+        {/* Spotlight Tabs - ELITE LUXURY */}
         <div className="flex justify-center mb-8">
-          <div className="glass-panel rounded-2xl p-2 card-rim-light">
-            <div className="flex space-x-1">
+          <div className="relative backdrop-ultra rounded-2xl p-2 card-rim-light transform-3d-card spotlight-tabs-container">
+            <div className="flex space-x-1 relative z-10">
               <Button
                 variant={activeTab === 'daily' ? 'default' : 'ghost'}
                 onClick={() => setActiveTab('daily')}
                 className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 group relative ${
-                  activeTab === 'daily' ? 'metallic shadow-sm' : 'hover:bg-background/50'
+                  activeTab === 'daily' ? 'gradient-metallic-gold shadow-lg' : 'hover:bg-background/50'
                 }`}
                 data-testid="tab-daily-spotlight"
               >
@@ -148,7 +149,7 @@ export default function SpotlightShowcase() {
                 variant={activeTab === 'weekly' ? 'default' : 'ghost'}
                 onClick={() => setActiveTab('weekly')}
                 className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 group relative ${
-                  activeTab === 'weekly' ? 'metallic shadow-sm' : 'hover:bg-background/50'
+                  activeTab === 'weekly' ? 'gradient-metallic-gold shadow-lg' : 'hover:bg-background/50'
                 }`}
                 data-testid="tab-weekly-spotlight"
               >
@@ -160,7 +161,7 @@ export default function SpotlightShowcase() {
                 variant={activeTab === 'monthly' ? 'default' : 'ghost'}
                 onClick={() => setActiveTab('monthly')}
                 className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 group relative ${
-                  activeTab === 'monthly' ? 'metallic shadow-sm' : 'hover:bg-background/50'
+                  activeTab === 'monthly' ? 'gradient-metallic-gold shadow-lg' : 'hover:bg-background/50'
                 }`}
                 data-testid="tab-monthly-spotlight"
               >
@@ -179,33 +180,35 @@ export default function SpotlightShowcase() {
           </Badge>
         </div>
 
-        {/* Spotlight Grid */}
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
+        {/* Spotlight Grid - ELITE LUXURY */}
+        <div className="relative rounded-3xl p-8 mb-16 spotlight-grid-container">
+          <div className="relative z-10 grid md:grid-cols-3 gap-8">
           {isLoading ? (
             // Loading skeletons with luxury styling
             [...Array(activeTab === 'daily' ? 3 : activeTab === 'weekly' ? 5 : 1)].map((_, i) => (
-              <div key={i} className="glass-panel rounded-2xl overflow-hidden card-rim-light">
-                <Skeleton className="h-48 w-full bg-gradient-to-br from-primary/10 to-accent/10" />
+              <div key={i} className="glass-panel rounded-2xl overflow-hidden card-rim-light transform-3d-float">
+                <Skeleton className="h-48 w-full gradient-iridescent" />
                 <div className="p-6 space-y-3">
-                  <Skeleton className="h-6 w-3/4 bg-gradient-to-r from-primary/20 to-secondary/20" />
-                  <Skeleton className="h-4 w-full bg-gradient-to-r from-secondary/15 to-accent/15" />
-                  <Skeleton className="h-4 w-2/3 bg-gradient-to-r from-accent/15 to-primary/15" />
+                  <Skeleton className="h-6 w-3/4 gradient-iridescent" />
+                  <Skeleton className="h-4 w-full gradient-iridescent" />
+                  <Skeleton className="h-4 w-2/3 gradient-iridescent" />
                   <div className="flex justify-between">
-                    <Skeleton className="h-8 w-16 bg-gradient-to-r from-primary/20 to-accent/20" />
-                    <Skeleton className="h-8 w-16 bg-gradient-to-r from-secondary/20 to-primary/20" />
-                    <Skeleton className="h-8 w-16 bg-gradient-to-r from-accent/20 to-secondary/20" />
+                    <Skeleton className="h-8 w-16 gradient-iridescent" />
+                    <Skeleton className="h-8 w-16 gradient-iridescent" />
+                    <Skeleton className="h-8 w-16 gradient-iridescent" />
                   </div>
                 </div>
               </div>
             ))
           ) : activeBusinesses.length > 0 ? (
             activeBusinesses.map((business: Business, index: number) => (
-              <BusinessCard 
-                key={business.id} 
-                business={business} 
-                spotlightType={activeTab}
-                spotlightPosition={index + 1}
-              />
+              <div key={business.id} className="transform-3d-float">
+                <BusinessCard 
+                  business={business} 
+                  spotlightType={activeTab}
+                  spotlightPosition={index + 1}
+                />
+              </div>
             ))
           ) : (
             <div className="col-span-full text-center py-16">
@@ -219,14 +222,16 @@ export default function SpotlightShowcase() {
               </p>
             </div>
           )}
+          </div>
         </div>
 
-        {/* Monthly Voting Interface */}
+        {/* Monthly Voting Interface - ELITE LUXURY */}
         {showVoting && activeTab === 'monthly' && (
-          <div className="mt-16 glass-panel rounded-3xl p-8 card-rim-light">
+          <div className="mt-16 relative backdrop-elite rounded-3xl p-8 card-rim-light voting-section-container">
+            <div className="relative z-10">
             <div className="text-center mb-8">
               <div className="relative inline-block mb-6">
-                <h3 className="text-3xl font-bold flex items-center justify-center gap-3 gradient-text text-luxury font-serif">
+                <h3 className="text-3xl font-bold flex items-center justify-center gap-3 gradient-text text-luxury font-serif filter-luxury-glow">
                   <Heart className="w-8 h-8 text-accent" />
                   Vote for Monthly Spotlight
                 </h3>
@@ -243,8 +248,9 @@ export default function SpotlightShowcase() {
                 return (
                   <div 
                     key={business.id} 
-                    className="miami-glass rounded-2xl p-6 miami-hover-lift miami-card-glow transition-all duration-300"
+                    className="relative transform-3d-card float-dynamic rounded-2xl p-6 miami-hover-lift miami-card-glow transition-all duration-300 voting-business-card"
                   >
+                    <div className="relative z-10">
                     <div className="flex items-center space-x-4 mb-4">
                       {business.logoUrl ? (
                         <div className="relative">
@@ -273,7 +279,7 @@ export default function SpotlightShowcase() {
                     </p>
 
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-sm glass-panel px-3 py-1 rounded-lg border-border/20">
+                      <div className="flex items-center gap-2 text-sm glass-panel px-3 py-1 rounded-lg border-border/20 filter-luxury-glow">
                         <Heart className="w-4 h-4 text-accent" />
                         <span className="text-slate-900 font-medium">{voteCount} votes</span>
                       </div>
@@ -282,7 +288,7 @@ export default function SpotlightShowcase() {
                         onClick={() => handleVote(business.id)}
                         disabled={voteMutation.isPending}
                         size="sm"
-                        className="flex items-center gap-2 metallic hover-lift btn-press group"
+                        className="flex items-center gap-2 gradient-metallic-gold border-animated-gradient hover-lift btn-press group shadow-lg"
                         data-testid={`button-vote-${business.id}`}
                       >
                         {voteMutation.isPending ? (
@@ -294,25 +300,26 @@ export default function SpotlightShowcase() {
                           <>
                             <Heart className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
                             <span className="relative z-10">Vote</span>
-                            <div className="absolute inset-0 bg-gradient-to-r from-accent/20 to-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md"></div>
+                            <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md"></div>
                           </>
                         )}
                       </Button>
                     </div>
+                    </div>
                   </div>
                 );
               })}
-            </div>
-
-            {eligibleBusinesses?.length === 0 && (
-              <div className="text-center py-12">
-                <div className="relative inline-block mb-6">
-                  <Heart className="w-16 h-16 text-muted-foreground mx-auto" />
-                  <div className="absolute inset-0 text-muted-foreground opacity-20 blur-lg"></div>
+              {eligibleBusinesses?.length === 0 && (
+                <div className="col-span-full text-center py-12">
+                  <div className="relative inline-block mb-6">
+                    <Heart className="w-16 h-16 text-muted-foreground mx-auto" />
+                    <div className="absolute inset-0 text-muted-foreground opacity-20 blur-lg"></div>
+                  </div>
+                  <p className="text-muted-foreground text-lg">No businesses are currently eligible for voting.</p>
                 </div>
-                <p className="text-muted-foreground text-lg">No businesses are currently eligible for voting.</p>
-              </div>
-            )}
+              )}
+            </div>
+            </div>
           </div>
         )}
       </div>
