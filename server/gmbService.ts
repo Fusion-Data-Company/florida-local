@@ -78,8 +78,32 @@ export class GMBService {
       );
     }
 
-    // Use a secure encryption key for token storage
-    this.encryptionKey = process.env.GMB_ENCRYPTION_KEY || crypto.randomBytes(32).toString('hex');
+    // Validate and set encryption key
+    if (!process.env.GMB_ENCRYPTION_KEY) {
+      // Only require encryption key in production if GMB is actually configured
+      if (process.env.NODE_ENV === 'production' && GMB_CLIENT_ID && GMB_CLIENT_SECRET) {
+        throw new Error(
+          'GMB_ENCRYPTION_KEY must be set in production when GMB is fully configured (both GMB_CLIENT_ID and GMB_CLIENT_SECRET present).\n' +
+          'Generate a secure key with: node -e "console.log(require(\'crypto\').randomBytes(32).toString(\'hex\'))"\n' +
+          'Example: GMB_ENCRYPTION_KEY=a1b2c3d4e5f6789012345678901234567890123456789012345678901234abcd'
+        );
+      }
+      // In development, generate a temporary key with warning
+      this.encryptionKey = crypto.randomBytes(32).toString('hex');
+      console.warn('⚠️  Using temporary encryption key. Set GMB_ENCRYPTION_KEY environment variable for persistent token encryption.');
+    } else {
+      // Validate encryption key format: must be exactly 64 hex characters (32 bytes)
+      const key = process.env.GMB_ENCRYPTION_KEY;
+      if (!/^[0-9a-fA-F]{64}$/.test(key)) {
+        throw new Error(
+          'GMB_ENCRYPTION_KEY must be exactly 64 hexadecimal characters (32 bytes).\n' +
+          'Current key length: ' + key.length + ' characters\n' +
+          'Generate a valid key with: node -e "console.log(require(\'crypto\').randomBytes(32).toString(\'hex\'))"\n' +
+          'Example: GMB_ENCRYPTION_KEY=a1b2c3d4e5f6789012345678901234567890123456789012345678901234abcd'
+        );
+      }
+      this.encryptionKey = key;
+    }
   }
 
   /**
@@ -176,7 +200,7 @@ export class GMBService {
       return this.getValidAccessToken(businessId); // Recursive call with new token
     }
 
-    return this.decryptToken(tokenRecord.accessToken);
+    return await this.decryptToken(tokenRecord.accessToken, businessId);
   }
 
   /**
@@ -190,7 +214,7 @@ export class GMBService {
         throw new Error('No token record found');
       }
 
-      const refreshToken = this.decryptToken(tokenRecord.refreshToken);
+      const refreshToken = await this.decryptToken(tokenRecord.refreshToken, businessId);
       
       this.oauth2Client.setCredentials({
         refresh_token: refreshToken
@@ -696,23 +720,197 @@ export class GMBService {
   }
 
   /**
-   * Encrypt token for secure storage
+   * Encrypt token for secure storage using AES-256-GCM (authenticated encryption)
+   * Format: v2:iv:ciphertext:authTag (all hex-encoded)
    */
   private encryptToken(token: string): string {
-    const cipher = crypto.createCipher('aes-256-cbc', this.encryptionKey);
+    // Generate a random initialization vector (12 bytes is standard for GCM)
+    const iv = crypto.randomBytes(12);
+    
+    // Create cipher with key (must be 32 bytes for aes-256)
+    const keyBuffer = Buffer.from(this.encryptionKey, 'hex');
+    const cipher = crypto.createCipheriv('aes-256-gcm', keyBuffer, iv);
+    
+    // Encrypt the token
     let encrypted = cipher.update(token, 'utf8', 'hex');
     encrypted += cipher.final('hex');
-    return encrypted;
+    
+    // Get the authentication tag (16 bytes)
+    const authTag = cipher.getAuthTag();
+    
+    // Return versioned format: v2:iv:ciphertext:authTag
+    return `v2:${iv.toString('hex')}:${encrypted}:${authTag.toString('hex')}`;
   }
 
   /**
-   * Decrypt token from storage
+   * Decrypt token from storage with backward compatibility
+   * Supports v2 (AES-256-GCM), legacy CBC (iv:ciphertext), and oldest password-based formats
+   * Automatically migrates legacy tokens to v2 format
    */
-  private decryptToken(encryptedToken: string): string {
-    const decipher = crypto.createDecipher('aes-256-cbc', this.encryptionKey);
-    let decrypted = decipher.update(encryptedToken, 'hex', 'utf8');
+  private async decryptToken(encryptedToken: string, businessId?: string): Promise<string> {
+    // Check if this is a v2 token (GCM with auth tag)
+    if (encryptedToken.startsWith('v2:')) {
+      return this.decryptTokenV2(encryptedToken);
+    }
+    
+    // Check if this is a legacy token with IV (CBC format: iv:ciphertext)
+    if (encryptedToken.includes(':')) {
+      const parts = encryptedToken.split(':');
+      if (parts.length === 2) {
+        // Attempt legacy CBC decryption
+        const decrypted = this.decryptTokenLegacyCBC(encryptedToken);
+        
+        // If we have a businessId, migrate the token to v2 format
+        if (businessId && decrypted) {
+          try {
+            const reencrypted = this.encryptToken(decrypted);
+            
+            // Update the token in database with new encrypted value
+            const tokenRecord = await storage.getGmbToken(businessId);
+            if (tokenRecord) {
+              // Check if this is the access token or refresh token being decrypted
+              const isAccessToken = tokenRecord.accessToken === encryptedToken;
+              const isRefreshToken = tokenRecord.refreshToken === encryptedToken;
+              
+              if (isAccessToken) {
+                await storage.updateGmbToken(businessId, {
+                  accessToken: reencrypted,
+                  updatedAt: new Date()
+                });
+                console.info(`✓ Migrated access token from legacy CBC to v2 format for business ${businessId}`);
+              } else if (isRefreshToken) {
+                await storage.updateGmbToken(businessId, {
+                  refreshToken: reencrypted,
+                  updatedAt: new Date()
+                });
+                console.info(`✓ Migrated refresh token from legacy CBC to v2 format for business ${businessId}`);
+              }
+            }
+          } catch (migrationError) {
+            console.error('Failed to migrate CBC token to v2 format:', migrationError);
+            // Continue with decrypted value even if migration fails
+          }
+        }
+        
+        return decrypted;
+      }
+    }
+    
+    // This must be the oldest legacy format (single hex string, no colons, password-based KDF)
+    return await this.decryptTokenLegacyPassword(encryptedToken, businessId);
+  }
+
+  /**
+   * Decrypt v2 token using AES-256-GCM
+   */
+  private decryptTokenV2(encryptedToken: string): string {
+    // Parse format: v2:iv:ciphertext:authTag
+    const parts = encryptedToken.split(':');
+    
+    if (parts.length !== 4 || parts[0] !== 'v2') {
+      throw new Error('Invalid v2 token format');
+    }
+    
+    const iv = Buffer.from(parts[1], 'hex');
+    const encryptedData = parts[2];
+    const authTag = Buffer.from(parts[3], 'hex');
+    
+    // Create decipher with key (must be 32 bytes for aes-256)
+    const keyBuffer = Buffer.from(this.encryptionKey, 'hex');
+    const decipher = crypto.createDecipheriv('aes-256-gcm', keyBuffer, iv);
+    
+    // Set the authentication tag
+    decipher.setAuthTag(authTag);
+    
+    // Decrypt the token
+    let decrypted = decipher.update(encryptedData, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
+    
     return decrypted;
+  }
+
+  /**
+   * Decrypt legacy CBC token using AES-256-CBC with explicit IV (for backward compatibility)
+   * Format: iv:ciphertext
+   */
+  private decryptTokenLegacyCBC(encryptedToken: string): string {
+    // Parse format: iv:ciphertext
+    const parts = encryptedToken.split(':');
+    
+    if (parts.length !== 2) {
+      throw new Error('Invalid legacy CBC token format');
+    }
+    
+    const iv = Buffer.from(parts[0], 'hex');
+    const encryptedData = parts[1];
+    
+    // Create decipher with key (must be 32 bytes for aes-256)
+    const keyBuffer = Buffer.from(this.encryptionKey, 'hex');
+    const decipher = crypto.createDecipheriv('aes-256-cbc', keyBuffer, iv);
+    
+    // Decrypt the token
+    let decrypted = decipher.update(encryptedData, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    
+    return decrypted;
+  }
+
+  /**
+   * Decrypt oldest legacy token using password-based KDF (for backward compatibility)
+   * Format: single hex string (no IV, no colons)
+   * Uses OpenSSL-compatible password-based key derivation
+   */
+  private async decryptTokenLegacyPassword(encryptedToken: string, businessId?: string): Promise<string> {
+    try {
+      // Validate it's a hex string
+      if (!/^[0-9a-fA-F]+$/.test(encryptedToken)) {
+        throw new Error('Invalid token format: not a valid hex string');
+      }
+      
+      // Use createDecipher which implements OpenSSL's EVP_BytesToKey for password-based KDF
+      // This is the oldest format that derives key and IV from the password
+      const decipher = crypto.createDecipher('aes-256-cbc', this.encryptionKey);
+      
+      // Decrypt the token
+      let decrypted = decipher.update(encryptedToken, 'hex', 'utf8');
+      decrypted += decipher.final('utf8');
+      
+      // If we have a businessId, migrate the token to v2 format
+      if (businessId && decrypted) {
+        try {
+          const reencrypted = this.encryptToken(decrypted);
+          
+          // Update the token in database with new encrypted value
+          const tokenRecord = await storage.getGmbToken(businessId);
+          if (tokenRecord) {
+            // Check if this is the access token or refresh token being decrypted
+            const isAccessToken = tokenRecord.accessToken === encryptedToken;
+            const isRefreshToken = tokenRecord.refreshToken === encryptedToken;
+            
+            if (isAccessToken) {
+              await storage.updateGmbToken(businessId, {
+                accessToken: reencrypted,
+                updatedAt: new Date()
+              });
+              console.info(`✓ Migrated access token from oldest password-based format to v2 for business ${businessId}`);
+            } else if (isRefreshToken) {
+              await storage.updateGmbToken(businessId, {
+                refreshToken: reencrypted,
+                updatedAt: new Date()
+              });
+              console.info(`✓ Migrated refresh token from oldest password-based format to v2 for business ${businessId}`);
+            }
+          }
+        } catch (migrationError) {
+          console.error('Failed to migrate password-based token to v2 format:', migrationError);
+          // Continue with decrypted value even if migration fails
+        }
+      }
+      
+      return decrypted;
+    } catch (error: any) {
+      throw new Error('Failed to decrypt token: invalid format or encryption key');
+    }
   }
 
   /**
