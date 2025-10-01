@@ -70,17 +70,19 @@ export default function HeroSection() {
         {/* Luxury CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-5 justify-center items-center mb-20">
           <Button 
-            className="btn-luxury-hero-primary px-10 py-6 text-lg font-bold rounded-xl shadow-2xl"
+            variant="metallic-primary"
+            size="xl"
             onClick={() => window.location.href = '/api/login'}
             data-testid="button-join-community"
           >
-            <span className="relative z-10">Join the Community</span>
+            Join the Community
           </Button>
           <Button 
-            className="btn-luxury-hero-secondary px-10 py-6 text-lg font-bold rounded-xl shadow-xl"
+            variant="glass-secondary"
+            size="xl"
             data-testid="button-explore-businesses"
           >
-            <span className="relative z-10">Explore Businesses</span>
+            Explore Businesses
           </Button>
         </div>
 
@@ -141,12 +143,14 @@ export default function HeroSection() {
 
                 {/* Luxury Search Button */}
                 <Button 
-                  className="btn-luxury-hero-primary px-10 py-5 rounded-xl shadow-xl group font-bold"
+                  variant="metallic-primary"
+                  size="lg"
+                  className="px-10 py-5 rounded-xl font-bold"
                   onClick={handleSearch}
                   data-testid="button-search-hero"
                 >
-                  <Search className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform duration-300" />
-                  <span className="relative z-10">Search</span>
+                  <Search className="h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
+                  Search
                 </Button>
               </div>
               

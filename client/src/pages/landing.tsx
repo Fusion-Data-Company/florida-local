@@ -4,6 +4,7 @@ import SpotlightShowcase from "@/components/spotlight-showcase";
 import MarketplaceSection from "@/components/marketplace-section";
 import SocialFeed from "@/components/social-feed";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
+import { Button } from "@/components/ui/button";
 import { Store, ShoppingCart, Users } from "lucide-react";
 
 export default function Landing() {
@@ -54,16 +55,22 @@ export default function Landing() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button 
+              <Button 
+                variant="glass-secondary"
+                size="lg"
                 onClick={() => window.location.href = '/api/login'} 
-                className="btn-miami-glass text-primary miami-hover-lift px-8 py-4 rounded-lg text-lg font-semibold"
+                className="px-8 py-4 text-lg font-semibold"
                 data-testid="button-create-profile"
               >
                 Create Your Business Profile
-              </button>
-              <button className="border-2 border-white text-white hover:bg-white hover:text-primary px-8 py-4 rounded-lg text-lg font-semibold transition-all transform hover:scale-105">
+              </Button>
+              <Button 
+                variant="outline-refined"
+                size="lg"
+                className="border-2 border-white text-white hover:bg-white/20 px-8 py-4 text-lg font-semibold"
+              >
                 See Pricing Plans
-              </button>
+              </Button>
             </div>
           </div>
         </div>
