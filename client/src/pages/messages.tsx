@@ -67,8 +67,9 @@ export default function Messages() {
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout>();
+  const previousConversationRef = useRef<string | null>(null);
   
-  const { socket, isConnected } = useWebSocket();
+  const { socket, connected } = useWebSocket();
 
   // Scroll to bottom when new messages arrive
   const scrollToBottom = () => {
@@ -300,12 +301,20 @@ export default function Messages() {
       ? conversation.receiverId 
       : conversation.senderId;
     
-    setSelectedUserId(otherUserId);
-    setSelectedConversation([user?.id, otherUserId].sort().join('-'));
+    const newConversationId = [user?.id, otherUserId].sort().join('-');
     
-    // Join conversation room via WebSocket
+    // Leave previous conversation room if switching
+    if (socket && previousConversationRef.current && previousConversationRef.current !== newConversationId) {
+      socket.emit('leave:conversation', previousConversationRef.current);
+    }
+    
+    setSelectedUserId(otherUserId);
+    setSelectedConversation(newConversationId);
+    
+    // Join new conversation room via WebSocket
     if (socket) {
-      socket.emit('join:conversation', [user?.id, otherUserId].sort().join('-'));
+      socket.emit('join:conversation', newConversationId);
+      previousConversationRef.current = newConversationId;
     }
   };
 
@@ -368,7 +377,7 @@ export default function Messages() {
                 {message.fileType?.startsWith('image/') && message.fileUrl && (
                   <img 
                     src={message.fileUrl} 
-                    alt={message.fileName}
+                    alt={message.fileName || 'File attachment'}
                     className="max-w-full h-auto rounded mt-2"
                   />
                 )}
@@ -454,10 +463,10 @@ export default function Messages() {
             </div>
             <div className="flex items-center gap-4">
               <Badge variant="outline" className="hidden sm:flex">
-                <Circle className={`h-2 w-2 mr-2 fill-current ${isConnected ? 'text-green-500' : 'text-red-500'}`} />
-                {isConnected ? 'Connected' : 'Connecting...'}
+                <Circle className={`h-2 w-2 mr-2 fill-current ${connected ? 'text-green-500' : 'text-red-500'}`} />
+                {connected ? 'Connected' : 'Connecting...'}
               </Badge>
-              {unreadCount.unreadCount > 0 && (
+              {typeof unreadCount === 'object' && unreadCount.unreadCount > 0 && (
                 <Badge variant="default" className="bg-orange-500">
                   {unreadCount.unreadCount} unread
                 </Badge>
@@ -667,7 +676,7 @@ export default function Messages() {
                               >
                                 <div className="flex items-center gap-3">
                                   <Avatar>
-                                    <AvatarImage src={business.logoUrl} />
+                                    <AvatarImage src={business.logoUrl || undefined} />
                                     <AvatarFallback className="bg-gradient-to-r from-orange-500 to-blue-500 text-white">
                                       {business.name.charAt(0)}
                                     </AvatarFallback>

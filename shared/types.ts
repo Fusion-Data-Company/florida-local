@@ -171,6 +171,47 @@ export interface InsertPost {
   isVisible?: boolean;
 }
 
+export interface Message {
+  id: string;
+  senderId: string;
+  receiverId: string;
+  senderBusinessId?: string | null;
+  receiverBusinessId?: string | null;
+  content: string;
+  messageType?: string | null;
+  fileUrl?: string | null;
+  fileName?: string | null;
+  fileType?: string | null;
+  fileSize?: number | null;
+  sharedBusinessId?: string | null;
+  sharedProductId?: string | null;
+  isRead?: boolean | null;
+  readAt?: Date | null;
+  isDelivered?: boolean | null;
+  deliveredAt?: Date | null;
+  conversationId: string;
+  networkingContext?: any | null;
+  createdAt?: Date | null;
+  updatedAt?: Date | null;
+}
+
+export interface InsertMessage {
+  senderId: string;
+  receiverId: string;
+  senderBusinessId?: string | null;
+  receiverBusinessId?: string | null;
+  content: string;
+  messageType?: string;
+  fileUrl?: string | null;
+  fileName?: string | null;
+  fileType?: string | null;
+  fileSize?: number | null;
+  sharedBusinessId?: string | null;
+  sharedProductId?: string | null;
+  conversationId: string;
+  networkingContext?: any;
+}
+
 // Import zod for schemas
 import { z } from "zod";
 

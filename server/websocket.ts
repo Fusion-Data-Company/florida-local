@@ -4,6 +4,8 @@ import { Server as HTTPServer } from "http";
 import { redis, redisSubscriber } from "./redis";
 import { logger, trackEvent } from "./monitoring";
 import { storage } from "./storage";
+import { getSession } from "./replitAuth";
+import passport from "passport";
 
 export let io: SocketIOServer;
 
@@ -12,7 +14,12 @@ interface AuthenticatedSocket extends SocketIOServer {
   businessId?: string;
 }
 
-export function initWebSocket(httpServer: HTTPServer) {
+// Wrap session middleware for Socket.IO
+function wrap(middleware: any) {
+  return (socket: any, next: any) => middleware(socket.request, {}, next);
+}
+
+export async function initWebSocket(httpServer: HTTPServer) {
   io = new SocketIOServer(httpServer, {
     cors: {
       origin: process.env.NODE_ENV === 'production'
@@ -23,32 +30,64 @@ export function initWebSocket(httpServer: HTTPServer) {
     transports: ["websocket", "polling"],
   });
 
-  // Use Redis adapter for scaling across multiple servers
-  if (redis.status === "ready") {
-    io.adapter(createAdapter(redis, redisSubscriber));
-    logger.info("✅ Socket.IO using Redis adapter");
-  }
+  // Get session middleware and wrap it for Socket.IO
+  const sessionMiddleware = await getSession();
+  io.use(wrap(sessionMiddleware));
+  io.use(wrap(passport.initialize()));
+  io.use(wrap(passport.session()));
 
-  // Authentication middleware
+  // Handle late Redis availability - attach adapter when Redis becomes ready
+  const attachRedisAdapter = () => {
+    if (redis.status === "ready" && redisSubscriber.status === "ready") {
+      try {
+        io.adapter(createAdapter(redis, redisSubscriber));
+        logger.info("✅ Socket.IO using Redis adapter");
+      } catch (error) {
+        logger.error("Failed to attach Redis adapter", { error });
+      }
+    }
+  };
+
+  // Try to attach adapter immediately if Redis is already ready
+  attachRedisAdapter();
+
+  // Listen for Redis ready events to attach adapter later if needed
+  redis.on("ready", () => {
+    logger.info("Redis became ready, attempting to attach adapter");
+    attachRedisAdapter();
+  });
+
+  // CRITICAL SECURITY FIX: Verify session and extract userId from verified session
   io.use(async (socket: any, next) => {
     try {
-      const token = socket.handshake.auth.token;
-      const userId = socket.handshake.auth.userId;
-      
-      if (!userId) {
+      // Get the request object which has session and user data from passport
+      const req = socket.request;
+
+      // Check if user is authenticated via session
+      if (!req.user || !req.isAuthenticated || !req.isAuthenticated()) {
+        logger.warn("WebSocket connection rejected: Not authenticated");
         return next(new Error("Authentication required"));
       }
 
-      // Verify user exists
-      const user = await storage.getUserById(userId);
-      if (!user) {
-        return next(new Error("Invalid user"));
+      // Extract userId from verified session (NOT from client)
+      const userId = req.user.claims?.sub;
+      if (!userId) {
+        logger.warn("WebSocket connection rejected: No user ID in session");
+        return next(new Error("Invalid session"));
       }
 
-      // Attach user info to socket
+      // Verify user exists in database
+      const user = await storage.getUserById(userId);
+      if (!user) {
+        logger.warn("WebSocket connection rejected: User not found", { userId });
+        return next(new Error("User not found"));
+      }
+
+      // Attach verified user info to socket
       socket.userId = userId;
       socket.user = user;
 
+      logger.info("WebSocket authentication successful", { userId, socketId: socket.id });
       next();
     } catch (error) {
       logger.error("Socket authentication error", { error });
@@ -90,14 +129,44 @@ export function initWebSocket(httpServer: HTTPServer) {
         if (hasAccess) {
           socket.join(`conversation:${conversationId}`);
           
+          logger.info("User joined conversation", { 
+            userId: socket.userId, 
+            conversationId 
+          });
+          
           // Notify others in conversation
           socket.to(`conversation:${conversationId}`).emit("user:joined", {
             userId: socket.userId,
             conversationId,
           });
+        } else {
+          logger.warn("User denied access to conversation", { 
+            userId: socket.userId, 
+            conversationId 
+          });
         }
       } catch (error) {
         logger.error("Error joining conversation", { error, conversationId });
+      }
+    });
+
+    // Handle leaving conversation rooms
+    socket.on("leave:conversation", async (conversationId: string) => {
+      try {
+        socket.leave(`conversation:${conversationId}`);
+        
+        logger.info("User left conversation", { 
+          userId: socket.userId, 
+          conversationId 
+        });
+        
+        // Notify others in conversation
+        socket.to(`conversation:${conversationId}`).emit("user:left", {
+          userId: socket.userId,
+          conversationId,
+        });
+      } catch (error) {
+        logger.error("Error leaving conversation", { error, conversationId });
       }
     });
 
@@ -160,6 +229,19 @@ export function initWebSocket(httpServer: HTTPServer) {
       });
     });
   });
+
+  // Graceful shutdown handlers
+  const gracefulShutdown = async () => {
+    logger.info("WebSocket server shutting down gracefully...");
+    
+    // Close all connections
+    io.close(() => {
+      logger.info("✅ WebSocket server closed");
+    });
+  };
+
+  process.on("SIGTERM", gracefulShutdown);
+  process.on("SIGINT", gracefulShutdown);
 
   logger.info("✅ WebSocket server initialized");
 }

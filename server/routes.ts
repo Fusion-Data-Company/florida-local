@@ -2756,7 +2756,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Handle the event
       if (event.type.startsWith('account.')) {
-        await handleConnectWebhook(event, event.account as string);
+        await handleConnectWebhook(event, storage);
       }
 
       res.json({ received: true });

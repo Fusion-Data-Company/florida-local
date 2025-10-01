@@ -942,11 +942,108 @@ export class DatabaseStorage implements IStorage {
     return conversations;
   }
 
-  async markMessageAsRead(messageId: string): Promise<void> {
+  async markMessageAsRead(messageId: string, readAt?: Date): Promise<void> {
     await db
       .update(messages)
-      .set({ isRead: true })
+      .set({ 
+        isRead: true,
+        readAt: readAt || new Date(),
+        updatedAt: new Date(),
+      })
       .where(eq(messages.id, messageId));
+  }
+
+  async getConversationMessages(conversationId: string, offset?: number, limit?: number): Promise<Message[]> {
+    const query = db
+      .select()
+      .from(messages)
+      .where(eq(messages.conversationId, conversationId))
+      .orderBy(desc(messages.createdAt));
+    
+    if (limit !== undefined) {
+      query.limit(limit);
+    }
+    
+    if (offset !== undefined) {
+      query.offset(offset);
+    }
+    
+    return await query;
+  }
+
+  async markMessagesAsDelivered(messageIds: string[], deliveredAt?: Date): Promise<void> {
+    if (messageIds.length === 0) return;
+    
+    await db
+      .update(messages)
+      .set({ 
+        isDelivered: true,
+        deliveredAt: deliveredAt || new Date(),
+        updatedAt: new Date(),
+      })
+      .where(inArray(messages.id, messageIds));
+  }
+
+  async getUnreadMessageCount(userId: string): Promise<number> {
+    const [result] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(messages)
+      .where(
+        and(
+          eq(messages.receiverId, userId),
+          eq(messages.isRead, false)
+        )
+      );
+    
+    return result?.count || 0;
+  }
+
+  async getLatestMessageInConversation(conversationId: string): Promise<Message | undefined> {
+    const [message] = await db
+      .select()
+      .from(messages)
+      .where(eq(messages.conversationId, conversationId))
+      .orderBy(desc(messages.createdAt))
+      .limit(1);
+    
+    return message;
+  }
+
+  async searchMessages(userId: string, query: string): Promise<Message[]> {
+    return await db
+      .select()
+      .from(messages)
+      .where(
+        and(
+          or(
+            eq(messages.senderId, userId),
+            eq(messages.receiverId, userId)
+          ),
+          like(messages.content, `%${query}%`)
+        )
+      )
+      .orderBy(desc(messages.createdAt))
+      .limit(50);
+  }
+
+  async deleteMessage(messageId: string, userId: string): Promise<void> {
+    await db
+      .delete(messages)
+      .where(
+        and(
+          eq(messages.id, messageId),
+          eq(messages.senderId, userId)
+        )
+      );
+  }
+
+  async getMessageById(messageId: string): Promise<Message | undefined> {
+    const [message] = await db
+      .select()
+      .from(messages)
+      .where(eq(messages.id, messageId));
+    
+    return message;
   }
 
   async getCurrentSpotlights(): Promise<{ daily: Business[], weekly: Business[], monthly: Business[] }> {
