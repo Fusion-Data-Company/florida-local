@@ -158,7 +158,7 @@ export default function BusinessProfile() {
         <div className="container mx-auto px-4">
           <div className="relative -mt-20 z-10">
             <div 
-              className="elite-business-card p-8 rounded-3xl overflow-hidden relative group magic-shadow-luxury"
+              className="business-profile-header elite-business-card p-8 rounded-3xl overflow-hidden relative group magic-shadow-luxury"
               style={{
                 background: `
                   linear-gradient(145deg, 
@@ -175,7 +175,7 @@ export default function BusinessProfile() {
                 `
               }}
             >
-              <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-6 marble-content">
                 {/* Logo */}
                 <div className="w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center flex-shrink-0">
                   {business.logoUrl ? (
@@ -294,13 +294,13 @@ export default function BusinessProfile() {
 
               {/* Description */}
               {business.description && (
-                <div className="mt-6 pt-6 border-t border-border">
+                <div className="mt-6 pt-6 border-t border-border marble-content">
                   <p className="text-foreground leading-relaxed">{business.description}</p>
                 </div>
               )}
 
               {/* Contact Info & Hours */}
-              <div className="mt-6 pt-6 border-t border-border">
+              <div className="mt-6 pt-6 border-t border-border marble-content">
                 <div className="grid md:grid-cols-2 gap-6">
                   {/* Contact Information */}
                   <div className="space-y-3">
@@ -373,9 +373,9 @@ export default function BusinessProfile() {
           const youtubeId = getYouTubeId(social?.youtubeUrl);
           if (!spotifyId && !youtubeId) return null;
           return (
-            <div className="grid md:grid-cols-2 gap-6 my-8">
+            <div className="grid md:grid-cols-2 gap-6 my-8 business-profile-media rounded-2xl p-6">
               {spotifyId && (
-                <div className="rounded-2xl overflow-hidden border">
+                <div className="rounded-2xl overflow-hidden border marble-content">
                   <div className="flex items-center gap-2 p-3 text-sm font-medium"><Music2 className="h-4 w-4" /> Featured Track</div>
                   <iframe
                     src={`https://open.spotify.com/embed/track/${spotifyId}`}
@@ -385,7 +385,7 @@ export default function BusinessProfile() {
                 </div>
               )}
               {youtubeId && (
-                <div className="rounded-2xl overflow-hidden border">
+                <div className="rounded-2xl overflow-hidden border marble-content">
                   <div className="flex items-center gap-2 p-3 text-sm font-medium"><PlayCircle className="h-4 w-4" /> Featured Video</div>
                   <div className="relative w-full" style={{paddingTop:'56.25%'}}>
                     <iframe className="absolute inset-0 w-full h-full" src={`https://www.youtube.com/embed/${youtubeId}`} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen />
@@ -399,10 +399,10 @@ export default function BusinessProfile() {
 
       {/* Content Tabs */}
       <div className="container mx-auto px-4 py-8">
-        <div className="flex space-x-1 mb-8 overflow-x-auto">
+        <div className="business-profile-tabs flex space-x-1 mb-8 overflow-x-auto rounded-2xl p-4">
           <Button 
             variant={activeTab === 'posts' ? 'default' : 'outline'} 
-            className="whitespace-nowrap" 
+            className="whitespace-nowrap marble-content" 
             onClick={() => setActiveTab('posts')}
             data-testid="tab-posts"
           >
@@ -411,7 +411,7 @@ export default function BusinessProfile() {
           {isOwner && (
             <Button 
               variant={activeTab === 'analytics' ? 'default' : 'outline'} 
-              className="whitespace-nowrap btn-miami-glass" 
+              className="whitespace-nowrap btn-miami-glass marble-content" 
               onClick={() => setActiveTab('analytics')}
               data-testid="tab-analytics"
             >
@@ -420,7 +420,7 @@ export default function BusinessProfile() {
           )}
           <Button 
             variant={activeTab === 'products' ? 'default' : 'outline'} 
-            className="whitespace-nowrap" 
+            className="whitespace-nowrap marble-content" 
             onClick={() => setActiveTab('products')}
             data-testid="tab-products"
           >
@@ -428,7 +428,7 @@ export default function BusinessProfile() {
           </Button>
           <Button 
             variant={activeTab === 'reviews' ? 'default' : 'outline'} 
-            className="whitespace-nowrap" 
+            className="whitespace-nowrap marble-content" 
             onClick={() => setActiveTab('reviews')}
             data-testid="tab-reviews"
           >
@@ -436,7 +436,7 @@ export default function BusinessProfile() {
           </Button>
           <Button 
             variant={activeTab === 'about' ? 'default' : 'outline'} 
-            className="whitespace-nowrap" 
+            className="whitespace-nowrap marble-content" 
             onClick={() => setActiveTab('about')}
             data-testid="tab-about"
           >
@@ -449,8 +449,8 @@ export default function BusinessProfile() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {posts.length > 0 ? (
               posts.map((post: any) => (
-                <Card key={post.id} className="hover-lift">
-                  <CardContent className="p-4">
+                <Card key={post.id} className="business-profile-post-card hover-lift">
+                  <CardContent className="p-4 marble-content">
                     <p className="text-foreground mb-3">{post.content}</p>
                     <div className="flex items-center justify-between text-sm text-muted-foreground">
                       <span>{new Date(post.createdAt).toLocaleDateString()}</span>
@@ -508,8 +508,8 @@ export default function BusinessProfile() {
 
         {activeTab === 'about' && (
           <div className="max-w-4xl">
-            <Card>
-              <CardContent className="p-6">
+            <Card className="business-profile-about-card">
+              <CardContent className="p-6 marble-content">
                 <h3 className="text-xl font-semibold mb-4">About {business.name}</h3>
                 
                 {business.description ? (

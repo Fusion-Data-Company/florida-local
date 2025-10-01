@@ -149,7 +149,13 @@
 .marketplace-search-panel,
 .marketplace-product-grid,
 .product-card-luxury,
-.marketplace-dialog {
+.marketplace-dialog,
+.business-profile-header,
+.business-profile-tabs,
+.business-profile-post-card,
+.business-profile-about-card,
+.business-profile-stats,
+.business-profile-media {
   position: relative;
 }
 
@@ -239,9 +245,107 @@
   border-radius: inherit;
 }
 
+/* === BUSINESS PROFILE ELITE MARBLE STYLING === */
+
+/* Business Profile Header Card - Calacatta Gold Marble */
+.business-profile-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Business Profile Tabs Container - White Carrara Marble */
+.business-profile-tabs::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.5;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Business Profile Post Cards - White Carrara Marble */
+.business-profile-post-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.business-profile-post-card:hover::before {
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+/* Business Profile About Card - Calacatta Gold Marble */
+.business-profile-about-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Business Profile Stats Display - White Carrara Marble */
+.business-profile-stats::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.5;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Business Profile Media Section - Calacatta Gold Marble */
+.business-profile-media::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
 /* Accessibility: Reduced Motion Support */
 @media (prefers-reduced-motion: reduce) {
-  .product-card-luxury:hover::before {
+  .product-card-luxury:hover::before,
+  .business-profile-post-card:hover::before {
     transition: none;
   }
 }
