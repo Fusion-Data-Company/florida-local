@@ -6767,3 +6767,604 @@ textarea:focus-visible,
     animation: none;
   }
 }
+
+/* ========================================
+   PHASE 4 TASK 11: REFINED VISUAL EFFECTS
+   ======================================== */
+
+/* === CUSTOM LUXURY SCROLLBAR === */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  margin: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, 
+    rgba(212, 175, 55, 0.6) 0%,
+    rgba(255, 215, 0, 0.5) 50%,
+    rgba(184, 134, 11, 0.6) 100%
+  );
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, 
+    rgba(212, 175, 55, 0.8) 0%,
+    rgba(255, 215, 0, 0.7) 50%,
+    rgba(184, 134, 11, 0.8) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 4px 12px rgba(212, 175, 55, 0.3),
+    0 2px 6px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(135deg, 
+    rgba(212, 175, 55, 1) 0%,
+    rgba(255, 215, 0, 0.9) 50%,
+    rgba(184, 134, 11, 1) 100%
+  );
+}
+
+::-webkit-scrollbar-corner {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Firefox Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212, 175, 55, 0.6) rgba(255, 255, 255, 0.15);
+}
+
+/* === GLOBAL FOCUS STATES WITH GOLDEN GLOW === */
+*:focus-visible {
+  outline: none;
+  box-shadow: 
+    0 0 0 3px rgba(212, 175, 55, 0.4),
+    0 0 0 5px rgba(212, 175, 55, 0.2),
+    0 0 20px rgba(255, 215, 0, 0.3);
+  transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:focus-visible {
+  outline: none;
+  box-shadow: 
+    0 0 0 3px rgba(212, 175, 55, 0.5),
+    0 0 0 6px rgba(212, 175, 55, 0.2),
+    0 0 25px rgba(255, 215, 0, 0.35),
+    0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhanced focus for interactive cards */
+.business-card-luxury:focus-visible,
+.product-card:focus-visible,
+[role="article"]:focus-visible {
+  box-shadow: 
+    0 0 0 3px rgba(212, 175, 55, 0.6),
+    0 0 0 6px rgba(212, 175, 55, 0.25),
+    0 0 30px rgba(255, 215, 0, 0.4),
+    0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* === DEPTH SYSTEM - ELEVATION LEVELS === */
+
+/* Elevation Level 1: Base cards and panels */
+.elevation-1 {
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.elevation-1:hover {
+  box-shadow: 
+    0 4px 8px rgba(0, 0, 0, 0.08),
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    0 0 12px rgba(212, 175, 55, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+/* Elevation Level 2: Interactive cards */
+.elevation-2 {
+  box-shadow: 
+    0 4px 8px rgba(0, 0, 0, 0.08),
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    0 0 8px rgba(212, 175, 55, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.elevation-2:hover {
+  box-shadow: 
+    0 8px 16px rgba(0, 0, 0, 0.1),
+    0 4px 8px rgba(0, 0, 0, 0.08),
+    0 0 20px rgba(212, 175, 55, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+/* Elevation Level 3: Prominent elements */
+.elevation-3 {
+  box-shadow: 
+    0 8px 16px rgba(0, 0, 0, 0.1),
+    0 4px 8px rgba(0, 0, 0, 0.08),
+    0 0 15px rgba(212, 175, 55, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.elevation-3:hover {
+  box-shadow: 
+    0 16px 32px rgba(0, 0, 0, 0.12),
+    0 8px 16px rgba(0, 0, 0, 0.1),
+    0 0 30px rgba(212, 175, 55, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+/* Elevation Level 4: Modals, dropdowns, floating elements */
+.elevation-4 {
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.15),
+    0 10px 20px rgba(0, 0, 0, 0.12),
+    0 0 25px rgba(212, 175, 55, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+/* Inset depth for containers */
+.elevation-inset {
+  box-shadow: 
+    inset 0 2px 6px rgba(0, 0, 0, 0.08),
+    inset 0 1px 3px rgba(0, 0, 0, 0.06),
+    0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* === GRADIENT OVERLAY UTILITIES === */
+
+/* Subtle gradient overlay for sections */
+.gradient-overlay-subtle {
+  position: relative;
+}
+
+.gradient-overlay-subtle::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, 
+    rgba(212, 175, 55, 0.03) 0%,
+    transparent 50%,
+    rgba(184, 134, 11, 0.03) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Gradient border effect */
+.gradient-border {
+  position: relative;
+  border: 2px solid transparent;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)),
+    linear-gradient(135deg, 
+      rgba(212, 175, 55, 0.4) 0%,
+      rgba(255, 215, 0, 0.3) 50%,
+      rgba(184, 134, 11, 0.4) 100%
+    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+/* Gradient mask for images */
+.gradient-mask-bottom {
+  position: relative;
+}
+
+.gradient-mask-bottom::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
+  pointer-events: none;
+}
+
+/* Text gradient utilities */
+.text-gradient-gold {
+  background: linear-gradient(135deg, 
+    #d4af37 0%,
+    #ffd700 50%,
+    #cd7f32 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+.text-gradient-luxury {
+  background: linear-gradient(135deg, 
+    #2d2d2d 0%,
+    #d4af37 50%,
+    #2d2d2d 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+/* === GLASS MORPHISM ENHANCEMENT === */
+
+/* Enhanced glass panel with optimal blur */
+.glass-premium {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.glass-luxury {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  box-shadow: 
+    0 6px 24px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.glass-subtle {
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(12px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* Glass with marble texture overlay */
+.glass-marble {
+  position: relative;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(18px) saturate(180%);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  box-shadow: 
+    0 8px 28px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.glass-marble::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: soft-light;
+  opacity: 0.3;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* === REFINED TRANSITION UTILITIES === */
+
+/* Premium easing transitions */
+.transition-luxury {
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.transition-luxury-fast {
+  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.transition-luxury-slow {
+  transition: all 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Smooth hover lift effect */
+.hover-lift {
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+}
+
+.hover-lift-subtle {
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift-subtle:hover {
+  transform: translateY(-2px);
+}
+
+/* Smooth scale effect */
+.hover-scale {
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-scale-subtle {
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-scale-subtle:hover {
+  transform: scale(1.02);
+}
+
+/* === LUXURY LOADING & SKELETON ANIMATIONS === */
+
+/* Elegant pulse animation */
+@keyframes luxury-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.animate-luxury-pulse {
+  animation: luxury-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Shimmer effect for loading states */
+@keyframes luxury-shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(212, 175, 55, 0.15) 20%,
+    rgba(255, 215, 0, 0.2) 40%,
+    rgba(212, 175, 55, 0.15) 60%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 1000px 100%;
+  animation: luxury-shimmer 2.5s infinite linear;
+}
+
+/* Gradient progress animation */
+@keyframes luxury-progress {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-luxury-progress {
+  background: linear-gradient(
+    90deg,
+    #d4af37 0%,
+    #ffd700 25%,
+    #f4e5c3 50%,
+    #cd7f32 75%,
+    #d4af37 100%
+  );
+  background-size: 200% 100%;
+  animation: luxury-progress 3s ease-in-out infinite;
+}
+
+/* Elegant fade in animation */
+@keyframes luxury-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-luxury-fade-in {
+  animation: luxury-fade-in 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Staggered list animation */
+.stagger-item {
+  animation: luxury-fade-in 400ms cubic-bezier(0.4, 0, 0.2, 1) backwards;
+}
+
+.stagger-item:nth-child(1) { animation-delay: 0ms; }
+.stagger-item:nth-child(2) { animation-delay: 80ms; }
+.stagger-item:nth-child(3) { animation-delay: 160ms; }
+.stagger-item:nth-child(4) { animation-delay: 240ms; }
+.stagger-item:nth-child(5) { animation-delay: 320ms; }
+.stagger-item:nth-child(6) { animation-delay: 400ms; }
+.stagger-item:nth-child(7) { animation-delay: 480ms; }
+.stagger-item:nth-child(8) { animation-delay: 560ms; }
+.stagger-item:nth-child(9) { animation-delay: 640ms; }
+.stagger-item:nth-child(10) { animation-delay: 720ms; }
+
+/* === MODAL & DIALOG SPECIFIC EFFECTS === */
+
+/* Modal backdrop with blur */
+.modal-backdrop-luxury {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Modal content with marble and elevation */
+.modal-content-luxury {
+  position: relative;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(24px) saturate(200%);
+  border: 2px solid transparent;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)),
+    linear-gradient(135deg, 
+      rgba(212, 175, 55, 0.4) 0%,
+      rgba(255, 215, 0, 0.35) 50%,
+      rgba(184, 134, 11, 0.4) 100%
+    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.25),
+    0 10px 20px rgba(0, 0, 0, 0.15),
+    0 0 40px rgba(212, 175, 55, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border-radius: 1rem;
+}
+
+.modal-content-luxury::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: soft-light;
+  opacity: 0.4;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* === TOOLTIP SPECIFIC EFFECTS === */
+
+.tooltip-luxury {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  box-shadow: 
+    0 8px 16px rgba(0, 0, 0, 0.12),
+    0 4px 8px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  position: relative;
+}
+
+.tooltip-luxury::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: soft-light;
+  opacity: 0.25;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* === PROGRESS BAR LUXURY === */
+
+.progress-luxury {
+  position: relative;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 100px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.progress-luxury-bar {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    #d4af37 0%,
+    #ffd700 25%,
+    #f4e5c3 50%,
+    #cd7f32 75%,
+    #d4af37 100%
+  );
+  background-size: 200% 100%;
+  animation: luxury-progress 3s ease-in-out infinite;
+  border-radius: 100px;
+  box-shadow: 
+    0 2px 6px rgba(212, 175, 55, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  transition: width 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* === ACCESSIBILITY: REDUCED MOTION === */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .animate-luxury-pulse,
+  .animate-shimmer,
+  .animate-luxury-progress,
+  .animate-luxury-fade-in,
+  .stagger-item,
+  .miami-float,
+  .miami-mesh,
+  .hover-lift,
+  .hover-lift-subtle,
+  .hover-scale,
+  .hover-scale-subtle {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .hover-lift:hover,
+  .hover-lift-subtle:hover,
+  .hover-scale:hover,
+  .hover-scale-subtle:hover {
+    transform: none !important;
+  }
+}
+
+/* === PAGE TRANSITION EFFECTS === */
+
+.page-transition {
+  animation: luxury-fade-in 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* === ENHANCED CARD INTERACTIONS === */
+
+.card-interactive {
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.card-interactive:hover {
+  transform: translateY(-4px);
+}
+
+.card-interactive:active {
+  transform: translateY(-2px);
+  transition-duration: 150ms;
+}
