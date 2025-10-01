@@ -11,6 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { ObjectUploader } from "@/components/ObjectUploader";
+import { X } from "lucide-react";
 
 type Product = {
   id: string;
@@ -246,6 +248,106 @@ function ProductForm({
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   isLoading: boolean;
 }) {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [publicPathMap, setPublicPathMap] = useState<Map<string, string>>(new Map());
+
+  const saveImage = useMutation({
+    mutationFn: async ({ productId, imageUrl }: { productId: string; imageUrl: string }) => {
+      return await apiRequest("POST", `/api/products/${productId}/images`, { imageUrl });
+    },
+    onSuccess: () => {
+      toast({ title: "Image uploaded successfully" });
+      if (product?.businessId) {
+        queryClient.invalidateQueries({ queryKey: ["/api/businesses", product.businessId, "products"] });
+      }
+      queryClient.invalidateQueries({ queryKey: ["/api/businesses/my"] });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Failed to save image", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const deleteImage = useMutation({
+    mutationFn: async ({ productId, imageUrl }: { productId: string; imageUrl: string }) => {
+      return await apiRequest("DELETE", `/api/products/${productId}/images`, { imageUrl });
+    },
+    onSuccess: () => {
+      toast({ title: "Image deleted successfully" });
+      if (product?.businessId) {
+        queryClient.invalidateQueries({ queryKey: ["/api/businesses", product.businessId, "products"] });
+      }
+      queryClient.invalidateQueries({ queryKey: ["/api/businesses/my"] });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Failed to delete image", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const handleImageUpload = async (file: any): Promise<{ method: "PUT"; url: string }> => {
+    if (!product?.id) return { method: "PUT" as const, url: "" };
+
+    setUploadingImage(true);
+
+    try {
+      const response: any = await apiRequest("POST", `/api/products/${product.id}/images/upload-url`, {
+        filename: file.name,
+      });
+
+      setPublicPathMap((prev) => {
+        const newMap = new Map(prev);
+        newMap.set(file.id, response.publicPath);
+        return newMap;
+      });
+
+      return {
+        method: "PUT",
+        url: response.url,
+      };
+    } catch (error: any) {
+      toast({ 
+        title: "Failed to get upload URL", 
+        description: error.message, 
+        variant: "destructive" 
+      });
+      setUploadingImage(false);
+      throw error;
+    }
+  };
+
+  const handleUploadComplete = async (result: any) => {
+    if (!product?.id) return;
+
+    setUploadingImage(false);
+    
+    const uploadedFiles = result.successful || [];
+    
+    try {
+      for (const file of uploadedFiles) {
+        const publicPath = publicPathMap.get(file.id);
+        
+        if (publicPath) {
+          await saveImage.mutateAsync({ productId: product.id, imageUrl: publicPath });
+        } else {
+          toast({ 
+            title: "Failed to save image", 
+            description: "Could not retrieve image path", 
+            variant: "destructive" 
+          });
+        }
+      }
+    } catch (error: any) {
+      toast({ 
+        title: "Error saving images", 
+        description: error.message, 
+        variant: "destructive" 
+      });
+    } finally {
+      setPublicPathMap(new Map());
+    }
+  };
+
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div>
@@ -255,6 +357,7 @@ function ProductForm({
           name="name" 
           defaultValue={product?.name || ""} 
           required 
+          data-testid="input-product-name"
         />
       </div>
       
@@ -265,8 +368,55 @@ function ProductForm({
           name="description" 
           defaultValue={product?.description || ""} 
           rows={3}
+          data-testid="textarea-product-description"
         />
       </div>
+
+      {/* Product Images Section - Only show for existing products */}
+      {product?.id && (
+        <div className="space-y-3">
+          <Label>Product Images ({product.images?.length || 0}/5)</Label>
+          
+          {/* Current Images */}
+          {product.images && product.images.length > 0 && (
+            <div className="grid grid-cols-3 gap-3">
+              {product.images.map((imageUrl, index) => (
+                <div key={index} className="relative group" data-testid={`image-thumbnail-${index}`}>
+                  <img 
+                    src={imageUrl} 
+                    alt={`Product ${index + 1}`}
+                    className="w-full h-32 object-cover rounded-lg border"
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => deleteImage.mutate({ productId: product.id, imageUrl })}
+                    disabled={deleteImage.isPending}
+                    data-testid={`button-delete-image-${index}`}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Upload Button */}
+          {(!product.images || product.images.length < 5) && (
+            <ObjectUploader
+              maxNumberOfFiles={1}
+              maxFileSize={10485760}
+              onGetUploadParameters={handleImageUpload}
+              onComplete={handleUploadComplete}
+              buttonClassName="w-full"
+            >
+              {uploadingImage ? "Uploading..." : "Upload Product Image"}
+            </ObjectUploader>
+          )}
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-4">
         <div>

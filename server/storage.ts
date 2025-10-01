@@ -88,6 +88,7 @@ export interface IStorage {
   // Product operations
   createProduct(product: InsertProduct): Promise<Product>;
   updateProduct(id: string, product: Partial<InsertProduct>): Promise<Product>;
+  updateProductImages(productId: string, images: string[]): Promise<Product>;
   getProductById(id: string): Promise<Product | undefined>;
   getProductsByBusiness(businessId: string): Promise<Product[]>;
   searchProducts(query: string, options?: {
@@ -648,6 +649,18 @@ export class DatabaseStorage implements IStorage {
         updatedAt: new Date(),
       })
       .where(eq(products.id, id))
+      .returning();
+    return product;
+  }
+
+  async updateProductImages(productId: string, images: string[]): Promise<Product> {
+    const [product] = await db
+      .update(products)
+      .set({
+        images,
+        updatedAt: new Date(),
+      })
+      .where(eq(products.id, productId))
       .returning();
     return product;
   }

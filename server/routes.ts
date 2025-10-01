@@ -1194,6 +1194,125 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Product Image Upload Routes
+  app.post('/api/products/:productId/images/upload-url', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { productId } = req.params;
+      const { filename } = req.body;
+
+      if (!filename) {
+        return res.status(400).json({ message: "Filename is required" });
+      }
+
+      // Get product and verify ownership through business
+      const product = await storage.getProductById(productId);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      const business = await storage.getBusinessById(product.businessId);
+      if (!business || business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized to upload images for this product" });
+      }
+
+      // Validate file extension
+      const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
+      const fileExtension = filename.toLowerCase().substring(filename.lastIndexOf('.'));
+      if (!allowedExtensions.includes(fileExtension)) {
+        return res.status(400).json({ message: "Invalid file type. Allowed: JPEG, PNG, WebP" });
+      }
+
+      // Generate presigned URL
+      const objectStorageService = new ObjectStorageService();
+      const { uploadUrl, publicPath } = await objectStorageService.getProductImageUploadURL(
+        business.id,
+        productId,
+        filename
+      );
+
+      res.json({
+        method: "PUT",
+        url: uploadUrl,
+        publicPath,
+      });
+    } catch (error: any) {
+      console.error("Error generating upload URL:", error);
+      res.status(500).json({ message: error.message || "Failed to generate upload URL" });
+    }
+  });
+
+  app.post('/api/products/:productId/images', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { productId } = req.params;
+      const { imageUrl } = req.body;
+
+      if (!imageUrl) {
+        return res.status(400).json({ message: "Image URL is required" });
+      }
+
+      // Get product and verify ownership through business
+      const product = await storage.getProductById(productId);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      const business = await storage.getBusinessById(product.businessId);
+      if (!business || business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized to modify this product" });
+      }
+
+      // Check if we already have 5 images
+      const currentImages = (product.images as string[]) || [];
+      if (currentImages.length >= 5) {
+        return res.status(400).json({ message: "Maximum of 5 images allowed per product" });
+      }
+
+      // Add new image URL to the array
+      const updatedImages = [...currentImages, imageUrl];
+      const updatedProduct = await storage.updateProductImages(productId, updatedImages);
+
+      res.json(updatedProduct);
+    } catch (error: any) {
+      console.error("Error saving product image:", error);
+      res.status(500).json({ message: error.message || "Failed to save product image" });
+    }
+  });
+
+  app.delete('/api/products/:productId/images', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { productId } = req.params;
+      const { imageUrl } = req.body;
+
+      if (!imageUrl) {
+        return res.status(400).json({ message: "Image URL is required" });
+      }
+
+      // Get product and verify ownership through business
+      const product = await storage.getProductById(productId);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      const business = await storage.getBusinessById(product.businessId);
+      if (!business || business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized to modify this product" });
+      }
+
+      // Remove image URL from the array
+      const currentImages = (product.images as string[]) || [];
+      const updatedImages = currentImages.filter((img: string) => img !== imageUrl);
+      const updatedProduct = await storage.updateProductImages(productId, updatedImages);
+
+      res.json(updatedProduct);
+    } catch (error: any) {
+      console.error("Error deleting product image:", error);
+      res.status(500).json({ message: error.message || "Failed to delete product image" });
+    }
+  });
+
   // Post routes (SECURITY: Rate limited)
   app.post('/api/posts', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
     try {
