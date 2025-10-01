@@ -47,11 +47,11 @@ export default function EliteNavigationHeader() {
     <>
       {/* ELITE MARKETING FIRM HEADER */}
       <header className="elite-glass-header sticky top-0 z-50 w-full">
-        <div className="container mx-auto px-8">
-          <div className="flex h-16 items-center justify-between">
+        <div className="container mx-auto px-8 relative z-10">
+          <div className="flex h-16 items-center justify-between relative z-10">
             
             {/* ELITE LOGO */}
-            <Link href="/" className="elite-logo-container group" data-testid="brand-logo">
+            <Link href="/" className="elite-logo-container group relative z-10" data-testid="brand-logo">
               <div className="flex items-center space-x-3">
                 <div className="elite-logo-icon">
                   <TreePine className="h-8 w-8 text-cyan-600 group-hover:text-cyan-500 transition-colors duration-300" />
@@ -67,7 +67,7 @@ export default function EliteNavigationHeader() {
 
             {/* ELITE NAVIGATION - SINGLE CLEAN MENU */}
             {isAuthenticated && (
-              <nav className="hidden lg:flex items-center space-x-2">
+              <nav className="hidden lg:flex items-center space-x-2 relative z-10">
                 {navigationItems.map((item) => (
                   <Link 
                     key={item.href}
@@ -137,7 +137,7 @@ export default function EliteNavigationHeader() {
             )}
 
             {/* ELITE USER MENU */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 relative z-10">
               {isAuthenticated ? (
                 <>
                   <CartIcon />
@@ -205,10 +205,10 @@ export default function EliteNavigationHeader() {
         {isMobileMenuOpen && (
           <>
             <div 
-              className="lg:hidden elite-glass-mobile-menu"
+              className="lg:hidden elite-glass-mobile-menu relative z-10"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              <nav className="container mx-auto px-8 py-6 space-y-2">
+              <nav className="container mx-auto px-8 py-6 space-y-2 relative z-10">
                 {navigationItems.map((item) => (
                   <Link 
                     key={item.href}
