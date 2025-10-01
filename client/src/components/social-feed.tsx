@@ -3,7 +3,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Post, insertPostSchema } from "@shared/types";
+import { Post, Business, insertPostSchema } from "@shared/types";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -17,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Image as ImageIcon, MessageSquare, TrendingUp } from "lucide-react";
 
-const createPostSchema = insertPostSchema.omit({ id: true }).extend({
+const createPostSchema = insertPostSchema.extend({
   content: z.string().min(1, "Post content is required").max(2000, "Post content must be less than 2000 characters"),
   type: z.enum(["update", "achievement", "partnership", "product"]).default("update"),
 });
@@ -33,7 +33,7 @@ export default function SocialFeed() {
     queryKey: ['/api/posts'],
   });
 
-  const { data: userBusinesses = [] } = useQuery({
+  const { data: userBusinesses = [] } = useQuery<Business[]>({
     queryKey: ['/api/businesses/my'],
     enabled: isAuthenticated,
   });
@@ -82,14 +82,14 @@ export default function SocialFeed() {
   };
 
   return (
-    <section className="py-20 bg-muted">
+    <section className="elite-feed-section py-20">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 gradient-text">
+            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 miami-gradient-text">
               Community Activity
             </h2>
-            <p className="text-xl text-muted-foreground leading-relaxed">
+            <p className="text-xl text-muted-foreground leading-relaxed miami-body-text">
               Stay connected with what's happening in your local business community. 
               See updates, celebrate successes, and discover opportunities.
             </p>
@@ -97,19 +97,23 @@ export default function SocialFeed() {
 
           {/* Create Post Section */}
           {isAuthenticated && userBusinesses.length > 0 && (
-            <Card className="mb-8">
-              <CardContent className="p-6">
+            <div className="elite-create-post-card mb-8">
+              <div className="elite-post-marble-overlay"></div>
+              <div className="relative z-10 p-6">
                 <div className="flex items-center space-x-4">
-                  <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
-                    <span className="text-primary-foreground font-semibold">
-                      {user?.firstName?.[0] || 'U'}
-                    </span>
+                  <div className="elite-post-avatar-frame">
+                    <div className="w-10 h-10 bg-gradient-to-br from-primary via-accent to-secondary rounded-full flex items-center justify-center relative overflow-hidden">
+                      <span className="text-primary-foreground font-semibold relative z-10">
+                        {user?.firstName?.[0] || 'U'}
+                      </span>
+                      <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+                    </div>
                   </div>
                   <Dialog open={isCreatePostOpen} onOpenChange={setIsCreatePostOpen}>
                     <DialogTrigger asChild>
                       <Button 
-                        variant="outline" 
-                        className="flex-1 justify-start text-muted-foreground"
+                        variant="outline"
+                        className="elite-create-post-input flex-1 justify-start"
                         data-testid="button-create-post"
                       >
                         <Plus className="h-4 w-4 mr-2" />
@@ -135,7 +139,7 @@ export default function SocialFeed() {
                                     </SelectTrigger>
                                   </FormControl>
                                   <SelectContent>
-                                    {userBusinesses.map((business: any) => (
+                                    {userBusinesses.map((business) => (
                                       <SelectItem key={business.id} value={business.id}>
                                         {business.name}
                                       </SelectItem>
@@ -217,33 +221,36 @@ export default function SocialFeed() {
                     </DialogContent>
                   </Dialog>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           )}
 
           {/* Activity Feed */}
-          <div className="space-y-6">
+          <div className="elite-feed-container space-y-6">
             {isLoading ? (
               // Loading skeletons
               [...Array(3)].map((_, i) => (
-                <div key={i} className="bg-card rounded-xl border border-border shadow-lg p-6">
-                  <div className="flex items-start space-x-4 mb-4">
-                    <Skeleton className="h-12 w-12 rounded-full" />
-                    <div className="flex-1 space-y-2">
-                      <Skeleton className="h-4 w-1/4" />
-                      <Skeleton className="h-3 w-1/6" />
-                      <Skeleton className="h-4 w-full" />
-                      <Skeleton className="h-4 w-3/4" />
+                <div key={i} className="elite-post-card elite-post-skeleton">
+                  <div className="elite-post-marble-overlay"></div>
+                  <div className="relative z-10">
+                    <div className="flex items-start space-x-4 mb-4">
+                      <Skeleton className="h-12 w-12 rounded-full" />
+                      <div className="flex-1 space-y-2">
+                        <Skeleton className="h-4 w-1/4" />
+                        <Skeleton className="h-3 w-1/6" />
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-3/4" />
+                      </div>
                     </div>
-                  </div>
-                  <Skeleton className="h-48 w-full mb-4" />
-                  <div className="flex items-center justify-between">
-                    <div className="flex space-x-6">
-                      <Skeleton className="h-4 w-12" />
-                      <Skeleton className="h-4 w-12" />
-                      <Skeleton className="h-4 w-12" />
+                    <Skeleton className="h-48 w-full mb-4 rounded-lg" />
+                    <div className="flex items-center justify-between pt-4 border-t elite-post-divider">
+                      <div className="flex space-x-6">
+                        <Skeleton className="h-4 w-12" />
+                        <Skeleton className="h-4 w-12" />
+                        <Skeleton className="h-4 w-12" />
+                      </div>
+                      <Skeleton className="h-4 w-8" />
                     </div>
-                    <Skeleton className="h-4 w-8" />
                   </div>
                 </div>
               ))

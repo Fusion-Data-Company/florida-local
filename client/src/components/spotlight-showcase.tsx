@@ -92,7 +92,7 @@ export default function SpotlightShowcase() {
         <div className="text-center mb-16">
           <div className="relative inline-block mb-6">
             <div className="absolute inset-0 gradient-conic-shimmer p-1 rounded-2xl opacity-[0.1] pointer-events-none"></div>
-            <h2 className="relative text-4xl md:text-5xl font-serif font-bold gradient-text text-luxury filter-luxury-glow bg-background px-8 py-4 rounded-xl">
+            <h2 className="relative spotlight-section-title bg-background px-8 py-4 rounded-xl">
               Community Spotlight
             </h2>
             <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-px bg-gradient-to-r from-transparent via-primary to-transparent float-gentle"></div>
@@ -131,13 +131,13 @@ export default function SpotlightShowcase() {
 
         {/* Spotlight Tabs - ELITE LUXURY */}
         <div className="flex justify-center mb-8">
-          <div className="relative backdrop-ultra rounded-2xl p-2 card-rim-light transform-3d-card spotlight-tabs-container">
+          <div className="relative rounded-2xl p-2 card-rim-light transform-3d-card spotlight-tabs-container">
             <div className="flex space-x-1 relative z-10">
               <Button
                 variant={activeTab === 'daily' ? 'default' : 'ghost'}
                 onClick={() => setActiveTab('daily')}
                 className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 group relative ${
-                  activeTab === 'daily' ? 'gradient-metallic-gold shadow-lg' : 'hover:bg-background/50'
+                  activeTab === 'daily' ? 'spotlight-active-tab' : 'hover:bg-background/50'
                 }`}
                 data-testid="tab-daily-spotlight"
               >
@@ -149,7 +149,7 @@ export default function SpotlightShowcase() {
                 variant={activeTab === 'weekly' ? 'default' : 'ghost'}
                 onClick={() => setActiveTab('weekly')}
                 className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 group relative ${
-                  activeTab === 'weekly' ? 'gradient-metallic-gold shadow-lg' : 'hover:bg-background/50'
+                  activeTab === 'weekly' ? 'spotlight-active-tab' : 'hover:bg-background/50'
                 }`}
                 data-testid="tab-weekly-spotlight"
               >
@@ -161,7 +161,7 @@ export default function SpotlightShowcase() {
                 variant={activeTab === 'monthly' ? 'default' : 'ghost'}
                 onClick={() => setActiveTab('monthly')}
                 className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 group relative ${
-                  activeTab === 'monthly' ? 'gradient-metallic-gold shadow-lg' : 'hover:bg-background/50'
+                  activeTab === 'monthly' ? 'spotlight-active-tab' : 'hover:bg-background/50'
                 }`}
                 data-testid="tab-monthly-spotlight"
               >
@@ -211,15 +211,16 @@ export default function SpotlightShowcase() {
               </div>
             ))
           ) : (
-            <div className="col-span-full text-center py-16">
-              <div className="relative inline-block mb-6">
-                <i className="fas fa-star text-6xl gradient-text-gold"></i>
-                <div className="absolute inset-0 gradient-text-gold opacity-20 blur-lg"></div>
+            <div className="col-span-full spotlight-empty-state">
+              <div className="relative z-10 text-center">
+                <div className="relative inline-block mb-6">
+                  <i className="fas fa-star text-6xl spotlight-empty-icon"></i>
+                </div>
+                <h3 className="text-2xl font-bold mb-4 spotlight-empty-title">No spotlight businesses yet</h3>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  Check back soon to see featured businesses in this category.
+                </p>
               </div>
-              <h3 className="text-2xl font-bold mb-4 gradient-text-gold text-luxury font-serif">No spotlight businesses yet</h3>
-              <p className="text-muted-foreground max-w-md mx-auto">
-                Check back soon to see featured businesses in this category.
-              </p>
             </div>
           )}
           </div>
@@ -279,16 +280,16 @@ export default function SpotlightShowcase() {
                     </p>
 
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-sm glass-panel px-3 py-1 rounded-lg border-border/20 filter-luxury-glow">
+                      <div className="flex items-center gap-2 text-sm vote-counter-badge px-3 py-2 rounded-lg">
                         <Heart className="w-4 h-4 text-accent" />
-                        <span className="text-slate-900 font-medium">{voteCount} votes</span>
+                        <span className="text-slate-900 font-bold">{voteCount} votes</span>
                       </div>
                       
                       <Button
                         onClick={() => handleVote(business.id)}
                         disabled={voteMutation.isPending}
                         size="sm"
-                        className="flex items-center gap-2 gradient-metallic-gold border-animated-gradient hover-lift btn-press group shadow-lg"
+                        className="flex items-center gap-2 btn-vote-metallic hover-lift group px-4 py-2 rounded-lg"
                         data-testid={`button-vote-${business.id}`}
                       >
                         {voteMutation.isPending ? (
@@ -300,7 +301,6 @@ export default function SpotlightShowcase() {
                           <>
                             <Heart className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
                             <span className="relative z-10">Vote</span>
-                            <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md"></div>
                           </>
                         )}
                       </Button>
@@ -310,12 +310,13 @@ export default function SpotlightShowcase() {
                 );
               })}
               {eligibleBusinesses?.length === 0 && (
-                <div className="col-span-full text-center py-12">
-                  <div className="relative inline-block mb-6">
-                    <Heart className="w-16 h-16 text-muted-foreground mx-auto" />
-                    <div className="absolute inset-0 text-muted-foreground opacity-20 blur-lg"></div>
+                <div className="col-span-full spotlight-empty-state">
+                  <div className="relative z-10 text-center">
+                    <div className="relative inline-block mb-6">
+                      <Heart className="w-16 h-16 spotlight-empty-icon mx-auto" />
+                    </div>
+                    <p className="text-muted-foreground text-lg font-medium">No businesses are currently eligible for voting.</p>
                   </div>
-                  <p className="text-muted-foreground text-lg">No businesses are currently eligible for voting.</p>
                 </div>
               )}
             </div>

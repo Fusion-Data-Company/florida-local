@@ -502,6 +502,333 @@
   position: relative;
 }
 
+/* === PREMIUM BUSINESS CARD LUXURY CLASSES === */
+
+/* Business Card Container with Marble & Metallic Border */
+.business-card-luxury {
+  position: relative;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.92) 100%);
+  backdrop-filter: blur(30px) saturate(200%);
+  border: 2px solid transparent;
+  background-image: 
+    linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.92) 100%),
+    linear-gradient(135deg, 
+      rgba(212, 175, 55, 0.4) 0%,
+      rgba(255, 215, 0, 0.35) 25%,
+      rgba(184, 134, 11, 0.4) 50%,
+      rgba(205, 127, 50, 0.35) 75%,
+      rgba(212, 175, 55, 0.4) 100%
+    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.08),
+    0 10px 20px rgba(0, 0, 0, 0.06),
+    0 4px 8px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+  transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Marble Texture Overlay for Business Card */
+.business-card-luxury::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: soft-light;
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced Hover State for Business Card */
+.business-card-luxury:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 32px 64px rgba(0, 0, 0, 0.12),
+    0 16px 32px rgba(0, 0, 0, 0.08),
+    0 8px 16px rgba(0, 0, 0, 0.06),
+    0 0 40px rgba(212, 175, 55, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+}
+
+.business-card-luxury:hover::before {
+  opacity: 0.45;
+}
+
+/* Business Card Content Wrapper */
+.business-card-content {
+  position: relative;
+  z-index: 2;
+}
+
+/* Business Card Featured Image Container */
+.business-card-image-wrapper {
+  position: relative;
+  height: 16rem;
+  overflow: hidden;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+}
+
+/* Metallic Border Frame for Image */
+.business-card-image-frame {
+  position: absolute;
+  inset: 0.75rem;
+  border: 1.5px solid transparent;
+  border-radius: 0.75rem;
+  background-image: linear-gradient(135deg, 
+    rgba(212, 175, 55, 0.6) 0%,
+    rgba(255, 215, 0, 0.5) 25%,
+    rgba(255, 255, 255, 0.7) 50%,
+    rgba(184, 134, 11, 0.5) 75%,
+    rgba(212, 175, 55, 0.6) 100%
+  );
+  background-origin: border-box;
+  background-clip: border-box;
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) padding-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 500ms cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.business-card-luxury:hover .business-card-image-frame {
+  opacity: 1;
+}
+
+/* Luxury Badge Container */
+.luxury-badge-container {
+  position: relative;
+  padding: 0.5rem 0.875rem;
+  border-radius: 0.875rem;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1.5px solid transparent;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)),
+    linear-gradient(135deg, 
+      rgba(212, 175, 55, 0.5) 0%,
+      rgba(255, 215, 0, 0.4) 50%,
+      rgba(212, 175, 55, 0.5) 100%
+    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: 
+    0 8px 16px rgba(0, 0, 0, 0.12),
+    0 4px 8px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.luxury-badge-container:hover {
+  transform: scale(1.05);
+  box-shadow: 
+    0 12px 24px rgba(0, 0, 0, 0.15),
+    0 6px 12px rgba(0, 0, 0, 0.1),
+    0 0 20px rgba(212, 175, 55, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+/* Business Name with Metallic Gradient */
+.business-name-luxury {
+  font-family: var(--font-serif);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+  background: linear-gradient(135deg, 
+    #2d2d2d 0%,
+    #1a1a1a 30%,
+    #d4af37 50%,
+    #1a1a1a 70%,
+    #2d2d2d 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.business-card-luxury:hover .business-name-luxury {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15))
+          drop-shadow(0 0 12px rgba(212, 175, 55, 0.3));
+}
+
+/* Glass Morphism Info Badge */
+.info-badge-glass {
+  position: relative;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 0.875rem;
+  padding: 0.75rem 1rem;
+  box-shadow: 
+    0 4px 8px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.info-badge-glass:hover {
+  background: rgba(255, 255, 255, 0.65);
+  border-color: rgba(212, 175, 55, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 16px rgba(0, 0, 0, 0.1),
+    0 0 20px rgba(212, 175, 55, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* Stats Display with Glass Effect */
+.stat-card-glass {
+  position: relative;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1.5px solid rgba(212, 175, 55, 0.2);
+  box-shadow: 
+    0 6px 12px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stat-card-glass:hover {
+  transform: translateY(-4px) scale(1.03);
+  background: rgba(255, 255, 255, 0.75);
+  border-color: rgba(212, 175, 55, 0.35);
+  box-shadow: 
+    0 12px 24px rgba(0, 0, 0, 0.1),
+    0 0 25px rgba(212, 175, 55, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+.stat-card-glass::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, 
+    rgba(212, 175, 55, 0.08) 0%,
+    transparent 50%,
+    rgba(184, 134, 11, 0.08) 100%
+  );
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.stat-card-glass:hover::after {
+  opacity: 1;
+}
+
+/* Metallic Action Button */
+.btn-luxury-action {
+  position: relative;
+  background: linear-gradient(135deg, 
+    #d4af37 0%,
+    #ffd700 25%,
+    #f4e5c3 50%,
+    #cd7f32 75%,
+    #b8860b 100%
+  );
+  color: rgba(0, 0, 0, 0.9);
+  font-weight: 700;
+  letter-spacing: 0.015em;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 1rem;
+  padding: 1rem 2rem;
+  box-shadow: 
+    0 8px 16px rgba(212, 175, 55, 0.3),
+    0 4px 8px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.btn-luxury-action::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(0, 0, 0, 0.05) 100%
+  );
+  opacity: 1;
+  transition: opacity 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.btn-luxury-action:hover {
+  transform: translateY(-3px);
+  box-shadow: 
+    0 16px 32px rgba(212, 175, 55, 0.4),
+    0 8px 16px rgba(0, 0, 0, 0.15),
+    0 0 40px rgba(255, 215, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.btn-luxury-action:active {
+  transform: translateY(-1px);
+}
+
+/* Glass Secondary Button */
+.btn-glass-secondary {
+  position: relative;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 2px solid rgba(212, 175, 55, 0.35);
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 
+    0 6px 12px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-glass-secondary:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(212, 175, 55, 0.5);
+  box-shadow: 
+    0 12px 24px rgba(0, 0, 0, 0.12),
+    0 0 30px rgba(212, 175, 55, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.btn-glass-secondary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, 
+    rgba(212, 175, 55, 0.15) 0%,
+    rgba(255, 215, 0, 0.1) 50%,
+    rgba(184, 134, 11, 0.15) 100%
+  );
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.btn-glass-secondary:hover::after {
+  opacity: 1;
+}
+
 /* === LUXURY HERO SECTION ELITE CLASSES === */
 
 /* Luxury Hero Headline with Metallic Gold Gradient */
@@ -3363,6 +3690,27 @@ textarea:focus-visible,
   z-index: 0;
 }
 
+/* SPOTLIGHT TAB CONTAINER - Enhanced Glass Morphism with Marble */
+.spotlight-tabs-container {
+  position: relative;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 2px solid transparent;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.75)),
+    linear-gradient(135deg, 
+      rgba(212, 175, 55, 0.3) 0%,
+      rgba(255, 215, 0, 0.25) 50%,
+      rgba(212, 175, 55, 0.3) 100%
+    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    0 4px 16px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
 .spotlight-tabs-container::before {
   content: '';
   position: absolute;
@@ -3371,10 +3719,79 @@ textarea:focus-visible,
   background-size: cover;
   background-position: center;
   mix-blend-mode: soft-light;
-  opacity: 0.5;
+  opacity: 0.45;
   pointer-events: none;
   border-radius: 1rem;
   z-index: 0;
+}
+
+/* SPOTLIGHT ACTIVE TAB - Marble with Metallic Golden Underline */
+.spotlight-active-tab {
+  position: relative;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1.5px solid rgba(212, 175, 55, 0.4);
+  box-shadow: 
+    0 8px 16px rgba(212, 175, 55, 0.25),
+    0 4px 8px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.spotlight-active-tab::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: soft-light;
+  opacity: 0.65;
+  pointer-events: none;
+  border-radius: 0.75rem;
+  z-index: 0;
+}
+
+.spotlight-active-tab::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 85%;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    rgba(212, 175, 55, 0.4) 15%,
+    rgba(255, 215, 0, 1) 50%,
+    rgba(212, 175, 55, 0.4) 85%,
+    transparent 100%
+  );
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
+}
+
+/* SPOTLIGHT GRID CONTAINER - Enhanced Marble Background */
+.spotlight-grid-container {
+  position: relative;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 2px solid transparent;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)),
+    linear-gradient(135deg, 
+      rgba(212, 175, 55, 0.25) 0%,
+      rgba(255, 215, 0, 0.2) 25%,
+      rgba(184, 134, 11, 0.25) 50%,
+      rgba(205, 127, 50, 0.2) 75%,
+      rgba(212, 175, 55, 0.25) 100%
+    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.08),
+    0 10px 20px rgba(0, 0, 0, 0.06),
+    0 0 40px rgba(212, 175, 55, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .spotlight-grid-container::before {
@@ -3385,24 +3802,68 @@ textarea:focus-visible,
   background-size: cover;
   background-position: center;
   mix-blend-mode: soft-light;
-  opacity: 0.5;
+  opacity: 0.65;
   pointer-events: none;
   border-radius: 1.5rem;
   z-index: 0;
+}
+
+/* VOTING SECTION CONTAINER - Enhanced Luxury Backdrop */
+.voting-section-container {
+  position: relative;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 2px solid transparent;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)),
+    linear-gradient(135deg, 
+      rgba(212, 175, 55, 0.3) 0%,
+      rgba(255, 215, 0, 0.25) 50%,
+      rgba(212, 175, 55, 0.3) 100%
+    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.1),
+    0 10px 20px rgba(0, 0, 0, 0.06),
+    0 0 40px rgba(212, 175, 55, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .voting-section-container::before {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: url('@assets/generated_images/Black_Marquina_Marble_Texture_5dc162e8.png');
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
   background-size: cover;
   background-position: center;
   mix-blend-mode: soft-light;
-  opacity: 0.5;
+  opacity: 0.65;
   pointer-events: none;
   border-radius: 1.5rem;
   z-index: 0;
+}
+
+/* VOTING BUSINESS CARD - Enhanced Glass Morphism */
+.voting-business-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1.5px solid transparent;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)),
+    linear-gradient(135deg, 
+      rgba(212, 175, 55, 0.35) 0%,
+      rgba(255, 215, 0, 0.3) 50%,
+      rgba(212, 175, 55, 0.35) 100%
+    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: 
+    0 8px 16px rgba(0, 0, 0, 0.08),
+    0 4px 8px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .voting-business-card::before {
@@ -3417,6 +3878,172 @@ textarea:focus-visible,
   pointer-events: none;
   border-radius: 1rem;
   z-index: 0;
+}
+
+.voting-business-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 16px 32px rgba(0, 0, 0, 0.12),
+    0 8px 16px rgba(0, 0, 0, 0.08),
+    0 0 40px rgba(212, 175, 55, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+/* SPOTLIGHT SECTION TITLE - Large Bold Luxury Typography */
+.spotlight-section-title {
+  font-family: var(--font-serif);
+  font-weight: 800;
+  font-size: 3.5rem;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  background: linear-gradient(135deg, 
+    #2d2d2d 0%,
+    #d4af37 20%,
+    #ffd700 40%,
+    #d4af37 60%,
+    #2d2d2d 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15))
+          drop-shadow(0 0 20px rgba(212, 175, 55, 0.3));
+  transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (max-width: 768px) {
+  .spotlight-section-title {
+    font-size: 2.5rem;
+  }
+}
+
+/* VOTE COUNTER BADGE - Glass Morphism */
+.vote-counter-badge {
+  position: relative;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1.5px solid transparent;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)),
+    linear-gradient(135deg, 
+      rgba(212, 175, 55, 0.4) 0%,
+      rgba(255, 215, 0, 0.3) 50%,
+      rgba(212, 175, 55, 0.4) 100%
+    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: 
+    0 6px 12px rgba(0, 0, 0, 0.08),
+    0 3px 6px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.vote-counter-badge:hover {
+  transform: scale(1.05);
+  box-shadow: 
+    0 10px 20px rgba(0, 0, 0, 0.12),
+    0 5px 10px rgba(0, 0, 0, 0.08),
+    0 0 25px rgba(212, 175, 55, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+/* METALLIC VOTE BUTTON */
+.btn-vote-metallic {
+  position: relative;
+  background: linear-gradient(135deg, 
+    #d4af37 0%,
+    #ffd700 25%,
+    #f4e5c3 50%,
+    #cd7f32 75%,
+    #b8860b 100%
+  );
+  color: rgba(0, 0, 0, 0.9);
+  font-weight: 700;
+  border: 1.5px solid transparent;
+  background-image: 
+    linear-gradient(135deg, #d4af37 0%, #ffd700 25%, #f4e5c3 50%, #cd7f32 75%, #b8860b 100%),
+    linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.5) 0%,
+      rgba(212, 175, 55, 0.5) 50%,
+      rgba(255, 255, 255, 0.5) 100%
+    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: 
+    0 8px 16px rgba(212, 175, 55, 0.3),
+    0 4px 8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-vote-metallic:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 
+    0 12px 24px rgba(212, 175, 55, 0.4),
+    0 6px 12px rgba(0, 0, 0, 0.15),
+    0 0 30px rgba(212, 175, 55, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+}
+
+.btn-vote-metallic:active {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 
+    0 6px 12px rgba(212, 175, 55, 0.35),
+    0 3px 6px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+}
+
+/* SPOTLIGHT EMPTY STATE */
+.spotlight-empty-state {
+  position: relative;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px) saturate(180%);
+  border-radius: 1.5rem;
+  padding: 3rem;
+  border: 1.5px solid rgba(212, 175, 55, 0.2);
+  box-shadow: 
+    0 10px 20px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.spotlight-empty-state::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: soft-light;
+  opacity: 0.5;
+  pointer-events: none;
+  border-radius: 1.5rem;
+  z-index: 0;
+}
+
+.spotlight-empty-icon {
+  filter: drop-shadow(0 4px 8px rgba(212, 175, 55, 0.3));
+  background: linear-gradient(135deg, #d4af37 0%, #ffd700 50%, #cd7f32 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.spotlight-empty-title {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  background: linear-gradient(135deg, 
+    #d4af37 0%,
+    #ffd700 50%,
+    #cd7f32 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .hero-section::before {
@@ -4526,4 +5153,445 @@ textarea:focus-visible,
    * 5. Interactive elements remain fully functional
    * 6. Focus indicators and accessibility features are maintained
    */
+}
+
+/* ====================================== */
+/* === ELITE SOCIAL FEED LUXURY STYLES === */
+/* ====================================== */
+
+/* Feed Section Container */
+.elite-feed-section {
+  position: relative;
+  background: rgba(var(--muted), 0.3);
+}
+
+.elite-feed-container {
+  position: relative;
+}
+
+/* Elite Post Card */
+.elite-post-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px) saturate(180%);
+  border-radius: 12px;
+  padding: 1.75rem;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.08),
+    0 2px 6px rgba(0, 0, 0, 0.04),
+    0 0 0 1px rgba(212, 175, 55, 0.15);
+  overflow: hidden;
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1.5px solid transparent;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.92)),
+                    linear-gradient(135deg, 
+                      rgba(212, 175, 55, 0.25) 0%,
+                      rgba(184, 134, 11, 0.25) 50%,
+                      rgba(205, 127, 50, 0.25) 100%
+                    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+.elite-post-card:hover {
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.12),
+    0 4px 12px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(212, 175, 55, 0.25);
+  border-color: rgba(212, 175, 55, 0.3);
+}
+
+/* Marble Texture Overlay */
+.elite-post-marble-overlay {
+  position: absolute;
+  inset: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.52;
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: soft-light;
+}
+
+/* Avatar Container & Frame */
+.elite-post-avatar-container {
+  position: relative;
+}
+
+.elite-post-avatar-frame {
+  padding: 3px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, 
+    rgba(212, 175, 55, 0.4) 0%,
+    rgba(184, 134, 11, 0.4) 50%,
+    rgba(205, 127, 50, 0.4) 100%
+  );
+  box-shadow: 
+    0 2px 8px rgba(212, 175, 55, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.4);
+}
+
+/* User/Author Info */
+.elite-post-author {
+  color: hsl(220, 15%, 15%);
+  letter-spacing: -0.01em;
+  background: linear-gradient(135deg, 
+    hsl(220, 15%, 15%) 0%,
+    hsl(220, 15%, 25%) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.elite-post-timestamp {
+  color: hsl(220, 10%, 50%);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* Post Content Typography */
+.elite-post-content {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.7;
+  color: hsl(220, 15%, 20%);
+  letter-spacing: -0.005em;
+}
+
+.elite-post-content p {
+  margin: 0;
+}
+
+/* Post Action Button */
+.elite-post-action-btn {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 8px;
+  color: hsl(220, 10%, 45%);
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.elite-post-action-btn:hover {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(212, 175, 55, 0.4);
+  color: hsl(220, 15%, 20%);
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.15);
+}
+
+/* Post Image Gallery */
+.elite-post-gallery {
+  display: grid;
+  gap: 0.5rem;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.elite-post-gallery-single {
+  grid-template-columns: 1fr;
+}
+
+.elite-post-gallery-double {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.elite-post-gallery-multiple {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 768px) {
+  .elite-post-gallery-multiple {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.elite-post-image-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1.5px solid rgba(212, 175, 55, 0.15);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.elite-post-image-frame:hover {
+  border-color: rgba(212, 175, 55, 0.3);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.elite-post-image {
+  aspect-ratio: 16 / 9;
+  position: relative;
+  overflow: hidden;
+}
+
+.elite-post-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Post Divider */
+.elite-post-divider {
+  border-color: rgba(212, 175, 55, 0.15);
+  border-width: 1px;
+}
+
+/* Interaction Buttons (Like, Comment, Share) */
+.elite-post-interaction-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(12px) saturate(150%);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: hsl(220, 10%, 50%);
+  cursor: pointer;
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.elite-post-interaction-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(212, 175, 55, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 
+    0 4px 12px rgba(212, 175, 55, 0.15),
+    0 2px 6px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.elite-post-interaction-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.elite-post-interaction-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.elite-post-interaction-active {
+  background: linear-gradient(135deg, 
+    rgba(255, 119, 198, 0.15) 0%,
+    rgba(255, 119, 198, 0.1) 100%
+  );
+  border-color: rgba(255, 119, 198, 0.3);
+  color: hsl(320, 85%, 55%);
+}
+
+.elite-post-interaction-active .elite-post-icon {
+  color: hsl(320, 85%, 55%);
+  filter: drop-shadow(0 0 8px rgba(255, 119, 198, 0.4));
+}
+
+.elite-post-icon {
+  font-size: 1rem;
+  background: linear-gradient(135deg, 
+    rgba(212, 175, 55, 0.8) 0%,
+    rgba(184, 134, 11, 0.8) 50%,
+    rgba(205, 127, 50, 0.8) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: all 300ms ease;
+}
+
+.elite-post-interaction-btn:hover .elite-post-icon {
+  filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.3));
+}
+
+.elite-post-count {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: hsl(220, 15%, 30%);
+  padding: 0.125rem 0.5rem;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  border-radius: 6px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Save Button */
+.elite-post-save-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  border-radius: 8px;
+  color: hsl(220, 10%, 50%);
+  cursor: pointer;
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.elite-post-save-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(212, 175, 55, 0.3);
+  color: hsl(220, 15%, 20%);
+  transform: translateY(-1px);
+  box-shadow: 
+    0 4px 12px rgba(212, 175, 55, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.elite-post-save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.elite-post-save-active {
+  background: linear-gradient(135deg, 
+    rgba(212, 175, 55, 0.2) 0%,
+    rgba(184, 134, 11, 0.15) 100%
+  );
+  border-color: rgba(212, 175, 55, 0.4);
+  color: hsl(45, 95%, 40%);
+}
+
+.elite-post-save-active i {
+  color: hsl(45, 95%, 40%);
+  filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.4));
+}
+
+/* Create Post Card */
+.elite-create-post-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px) saturate(180%);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.08),
+    0 2px 6px rgba(0, 0, 0, 0.04),
+    0 0 0 1px rgba(212, 175, 55, 0.15);
+  border: 1.5px solid transparent;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.92)),
+                    linear-gradient(135deg, 
+                      rgba(212, 175, 55, 0.25) 0%,
+                      rgba(184, 134, 11, 0.25) 50%,
+                      rgba(205, 127, 50, 0.25) 100%
+                    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.elite-create-post-card:hover {
+  box-shadow: 
+    0 6px 16px rgba(0, 0, 0, 0.1),
+    0 3px 8px rgba(0, 0, 0, 0.05),
+    0 0 0 1px rgba(212, 175, 55, 0.2);
+}
+
+/* Create Post Input */
+.elite-create-post-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(212, 175, 55, 0.2);
+  border-radius: 10px;
+  color: hsl(220, 10%, 50%);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.elite-create-post-input:hover {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(212, 175, 55, 0.35);
+  color: hsl(220, 15%, 30%);
+  box-shadow: 
+    0 4px 12px rgba(212, 175, 55, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.elite-create-post-input:focus {
+  outline: none;
+  border-color: rgba(212, 175, 55, 0.5);
+  box-shadow: 
+    0 0 0 3px rgba(212, 175, 55, 0.1),
+    0 4px 12px rgba(212, 175, 55, 0.15);
+}
+
+/* Skeleton Loading States */
+.elite-post-skeleton {
+  animation: elite-skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes elite-skeleton-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .elite-post-card {
+    padding: 1.25rem;
+    border-radius: 10px;
+  }
+  
+  .elite-post-interaction-btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+  
+  .elite-post-icon {
+    font-size: 0.875rem;
+  }
+  
+  .elite-post-count {
+    font-size: 0.8125rem;
+    padding: 0.125rem 0.375rem;
+  }
+}
+
+/* Accessibility: Reduce Motion */
+@media (prefers-reduced-motion: reduce) {
+  .elite-post-card,
+  .elite-post-interaction-btn,
+  .elite-post-save-btn,
+  .elite-post-image-frame,
+  .elite-create-post-card,
+  .elite-create-post-input {
+    transition: none;
+  }
+  
+  .elite-post-skeleton {
+    animation: none;
+  }
 }
