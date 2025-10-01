@@ -144,7 +144,12 @@
 .benefit-card-1,
 .benefit-card-2,
 .benefit-card-3,
-.search-panel-container {
+.search-panel-container,
+.marketplace-hero,
+.marketplace-search-panel,
+.marketplace-product-grid,
+.product-card-luxury,
+.marketplace-dialog {
   position: relative;
 }
 
@@ -152,6 +157,93 @@
 .marble-content {
   position: relative;
   z-index: 1;
+}
+
+/* === MARKETPLACE ELITE MARBLE STYLING === */
+
+/* Marketplace Hero Section - White Carrara Marble */
+.marketplace-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+/* Marketplace Search & Filter Panel - Calacatta Gold Marble */
+.marketplace-search-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.5;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Marketplace Product Grid Container - White Carrara Marble */
+.marketplace-product-grid::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.5;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+/* Individual Product Cards - Calacatta Gold Marble */
+.product-card-luxury::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.product-card-luxury:hover::before {
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+/* Marketplace Dialog/Modal - Black Marquina Marble */
+.marketplace-dialog::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Black_Marquina_Marble_Texture_5dc162e8.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Accessibility: Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .product-card-luxury:hover::before {
+    transition: none;
+  }
 }
 
 /* === CONSOLIDATED GLASS MORPHISM SYSTEM === */

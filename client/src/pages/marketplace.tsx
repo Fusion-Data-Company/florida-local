@@ -127,8 +127,8 @@ export default function Marketplace() {
       <EliteNavigationHeader />
 
       {/* Miami Elite Marketplace Header */}
-      <section className="py-12 bg-gradient-to-r from-primary/10 to-secondary/10 miami-marketplace-hero">
-        <div className="container mx-auto px-4 lg:px-8">
+      <section className="py-12 bg-gradient-to-r from-primary/10 to-secondary/10 miami-marketplace-hero marketplace-hero">
+        <div className="container mx-auto px-4 lg:px-8 marble-content">
           <div className="text-center mb-8">
             <div className="flex flex-col items-center justify-between gap-4 md:flex-row md:text-left">
               <div className="flex-1">
@@ -153,15 +153,16 @@ export default function Marketplace() {
                       Add Product
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-2xl">
-                    <DialogHeader>
-                      <DialogTitle className="flex items-center gap-2">
-                        <Package className="h-5 w-5" />
-                        Add New Product
-                      </DialogTitle>
-                    </DialogHeader>
-                    <Form {...form}>
-                      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  <DialogContent className="sm:max-w-2xl marketplace-dialog">
+                    <div className="marble-content">
+                      <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                          <Package className="h-5 w-5" />
+                          Add New Product
+                        </DialogTitle>
+                      </DialogHeader>
+                      <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                         <FormField
                           control={form.control}
                           name="businessId"
@@ -294,8 +295,9 @@ export default function Marketplace() {
                             </Button>
                           </div>
                         </div>
-                      </form>
-                    </Form>
+                        </form>
+                      </Form>
+                    </div>
                   </DialogContent>
                 </Dialog>
               )}
@@ -304,8 +306,8 @@ export default function Marketplace() {
 
           {/* Search and Filter */}
           <div className="max-w-4xl mx-auto">
-            <div className="bg-card border border-border rounded-xl p-6 shadow-lg">
-              <div className="flex flex-col md:flex-row gap-4 mb-4">
+            <div className="bg-card border border-border rounded-xl p-6 shadow-lg marketplace-search-panel">
+              <div className="flex flex-col md:flex-row gap-4 mb-4 marble-content">
                 <div className="flex-1">
                   <Input
                     type="search"
@@ -354,8 +356,8 @@ export default function Marketplace() {
 
       {/* Featured Products */}
       {!searchQuery && !selectedCategory && (
-        <section className="py-16">
-          <div className="container mx-auto px-4 lg:px-8">
+        <section className="py-16 marketplace-product-grid">
+          <div className="container mx-auto px-4 lg:px-8 marble-content">
             <h2 className="text-3xl font-bold mb-8 text-center">Featured Products</h2>
             
             {isLoading ? (
@@ -380,8 +382,8 @@ export default function Marketplace() {
       )}
 
       {/* Search Results */}
-      <section className="py-16">
-        <div className="container mx-auto px-4 lg:px-8">
+      <section className="py-16 marketplace-product-grid">
+        <div className="container mx-auto px-4 lg:px-8 marble-content">
           {(searchQuery || selectedCategory) && (
             <div className="mb-8">
               <h2 className="text-2xl font-bold">
