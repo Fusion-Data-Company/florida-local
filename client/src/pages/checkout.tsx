@@ -243,8 +243,8 @@ export default function Checkout() {
     <div className="min-h-screen bg-background">
       <EliteNavigationHeader />
 
-      <div className="container mx-auto px-4 py-8 lg:px-8">
-        <div className="mb-8">
+      <div className="checkout-container container mx-auto px-4 py-8 lg:px-8">
+        <div className="marble-content mb-8">
           <Button variant="ghost" asChild className="mb-4" data-testid="button-back-to-cart">
             <Link href="/cart">
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -254,18 +254,18 @@ export default function Checkout() {
           <h1 className="text-3xl font-serif font-bold" data-testid="text-checkout-title">Checkout</h1>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="marble-content grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Checkout Form */}
           <div className="lg:col-span-2">
             {!clientSecret ? (
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   {/* Customer Information */}
-                  <Card>
-                    <CardHeader>
+                  <Card className="checkout-form-card">
+                    <CardHeader className="marble-content">
                       <CardTitle>Contact Information</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="marble-content space-y-4">
                       <FormField
                         control={form.control}
                         name="customerEmail"
@@ -296,11 +296,11 @@ export default function Checkout() {
                   </Card>
 
                   {/* Shipping Address */}
-                  <Card>
-                    <CardHeader>
+                  <Card className="checkout-form-card">
+                    <CardHeader className="marble-content">
                       <CardTitle>Shipping Address</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="marble-content space-y-4">
                       <FormField
                         control={form.control}
                         name="shippingAddress.fullName"
@@ -385,11 +385,11 @@ export default function Checkout() {
                   </Card>
 
                   {/* Order Notes */}
-                  <Card>
-                    <CardHeader>
+                  <Card className="checkout-form-card">
+                    <CardHeader className="marble-content">
                       <CardTitle>Order Notes (Optional)</CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="marble-content">
                       <FormField
                         control={form.control}
                         name="notes"
@@ -428,11 +428,11 @@ export default function Checkout() {
                 </form>
               </Form>
             ) : (
-              <Card>
-                <CardHeader>
+              <Card className="checkout-payment-card">
+                <CardHeader className="marble-content">
                   <CardTitle>Complete Your Payment</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="marble-content">
                   <Elements stripe={stripePromise} options={{ clientSecret }}>
                     <CheckoutForm clientSecret={clientSecret} orderId={orderId} />
                   </Elements>
@@ -443,11 +443,11 @@ export default function Checkout() {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <Card className="sticky top-4">
-              <CardHeader>
+            <Card className="checkout-summary sticky top-4">
+              <CardHeader className="marble-content">
                 <CardTitle>Order Summary</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="marble-content space-y-4">
                 {/* Cart Items */}
                 <div className="space-y-3">
                   {cartItems.map((item) => (

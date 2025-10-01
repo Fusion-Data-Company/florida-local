@@ -155,7 +155,15 @@
 .business-profile-post-card,
 .business-profile-about-card,
 .business-profile-stats,
-.business-profile-media {
+.business-profile-media,
+.cart-container,
+.cart-item-card,
+.cart-summary,
+.cart-empty-state,
+.checkout-container,
+.checkout-form-card,
+.checkout-payment-card,
+.checkout-summary {
   position: relative;
 }
 
@@ -342,10 +350,138 @@
   border-radius: inherit;
 }
 
+/* === CART PAGE ELITE MARBLE STYLING === */
+
+/* Cart Page Main Container - White Carrara Marble */
+.cart-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+/* Cart Item Cards - Calacatta Gold Marble */
+.cart-item-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.cart-item-card:hover::before {
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+/* Cart Summary Panel - Calacatta Gold Marble */
+.cart-summary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.7;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Cart Empty State - White Carrara Marble */
+.cart-empty-state::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.5;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* === CHECKOUT PAGE ELITE MARBLE STYLING === */
+
+/* Checkout Page Main Container - White Carrara Marble */
+.checkout-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+/* Checkout Form Cards - Calacatta Gold Marble */
+.checkout-form-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Checkout Payment Card - Black Marquina Marble (Premium) */
+.checkout-payment-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Black_Marquina_Marble_Texture_5dc162e8.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Checkout Order Summary - Calacatta Gold Marble */
+.checkout-summary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.7;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
 /* Accessibility: Reduced Motion Support */
 @media (prefers-reduced-motion: reduce) {
   .product-card-luxury:hover::before,
-  .business-profile-post-card:hover::before {
+  .business-profile-post-card:hover::before,
+  .cart-item-card:hover::before {
     transition: none;
   }
 }
