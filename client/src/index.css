@@ -216,35 +216,38 @@
   z-index: 1;
 }
 
-/* === MARBLE OVERLAY OPACITY STRATEGY === */
+/* === MARBLE OVERLAY HIGH VISIBILITY STRATEGY === */
 /*
- * All marble texture overlays maintain consistent visibility within the 50-70% opacity range
- * to ensure WCAG AA accessibility compliance and prominent marble visibility.
+ * All marble texture overlays use HIGHLY VISIBLE opacity in the 80-90% range
+ * with multiply blend mode for PROMINENT marble texture display.
  *
- * OPACITY DISTRIBUTION GUIDE:
+ * OPACITY DISTRIBUTION GUIDE (HIGH VISIBILITY):
  * 
- * 1. Navigation & Header Elements: 0.5-0.55 (50-55%)
- *    - Subtle effect prioritizing text readability and UX
+ * 1. Navigation & Header Elements: 0.8 (80%)
+ *    - VISIBLE marble effect while maintaining text readability
  *    - Examples: .nav-marble-header, .nav-marble-mobile-menu, .nav-marble-mobile-bottom
  *
- * 2. Content Sections & Cards: 0.55-0.65 (55-65%)
- *    - Balanced visibility maintaining readability
+ * 2. Content Sections & Cards: 0.85 (85%)
+ *    - PROMINENT marble visibility for luxury aesthetic
  *    - Examples: Business profiles, product cards, form cards, messages
  *
- * 3. Feature & Accent Sections: 0.6-0.7 (60-70%)
- *    - Prominent marble texture for visual interest
+ * 3. Feature & Accent Sections: 0.9 (90%)
+ *    - MAXIMUM marble texture visibility for visual impact
  *    - Examples: Hero sections, confirmation headers, summary panels, footer
  *
- * 4. Forms & Input Areas: 0.5-0.55 (50-55%)
- *    - Readability priority for user input
+ * 4. Forms & Input Areas: 0.8 (80%)
+ *    - VISIBLE marble maintaining input clarity
  *    - Examples: Checkboxes, filter sections, dropdown triggers
  *
+ * BLEND MODE:
+ * - Using mix-blend-mode: multiply (NOT soft-light) for PROMINENT marble visibility
+ * - multiply makes the marble texture clearly visible against white backgrounds
+ *
  * ACCESSIBILITY NOTES:
- * - No opacity values below 0.5 (50%) to ensure visible marble texture
- * - No opacity values above 0.7 (70%) to maintain text contrast
- * - All text maintains WCAG AA contrast compliance (4.5:1 for normal text)
- * - Navigation uses lower opacity (50-55%) for optimal UX
- * - Hover states may increase opacity by 0.1 for interactive feedback
+ * - Opacity range: 80-90% for OBVIOUS marble texture
+ * - Text maintains WCAG AA contrast compliance through proper foreground colors
+ * - Marble is PROMINENTLY VISIBLE - no subtle effects
+ * - Hover states may maintain or slightly adjust opacity for interactive feedback
  */
 
 /* === MARKETPLACE ELITE MARBLE STYLING === */
@@ -258,8 +261,8 @@
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.6;
-  mix-blend-mode: soft-light;
+  opacity: 0.85;
+  mix-blend-mode: multiply;
   pointer-events: none;
 }
 
@@ -272,8 +275,8 @@
   background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.5;
-  mix-blend-mode: soft-light;
+  opacity: 0.8;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -287,8 +290,8 @@
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.5;
-  mix-blend-mode: soft-light;
+  opacity: 0.8;
+  mix-blend-mode: multiply;
   pointer-events: none;
 }
 
@@ -301,14 +304,14 @@
   background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.6;
-  mix-blend-mode: soft-light;
+  opacity: 0.85;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
 
 .product-card-luxury:hover::before {
-  opacity: 0.7;
+  opacity: 0.9;
   transition: opacity 0.3s ease;
 }
 
@@ -321,8 +324,8 @@
   background-image: url('@assets/generated_images/Black_Marquina_Marble_Texture_5dc162e8.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.6;
-  mix-blend-mode: soft-light;
+  opacity: 0.85;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -338,8 +341,8 @@
   background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.6;
-  mix-blend-mode: soft-light;
+  opacity: 0.85;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -353,8 +356,8 @@
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.5;
-  mix-blend-mode: soft-light;
+  opacity: 0.8;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -368,14 +371,14 @@
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.6;
-  mix-blend-mode: soft-light;
+  opacity: 0.85;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
 
 .business-profile-post-card:hover::before {
-  opacity: 0.7;
+  opacity: 0.9;
   transition: opacity 0.3s ease;
 }
 
@@ -388,8 +391,8 @@
   background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.6;
-  mix-blend-mode: soft-light;
+  opacity: 0.85;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -403,8 +406,8 @@
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.5;
-  mix-blend-mode: soft-light;
+  opacity: 0.8;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -418,8 +421,8 @@
   background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.6;
-  mix-blend-mode: soft-light;
+  opacity: 0.85;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -435,8 +438,8 @@
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.6;
-  mix-blend-mode: soft-light;
+  opacity: 0.85;
+  mix-blend-mode: multiply;
   pointer-events: none;
 }
 
@@ -449,14 +452,14 @@
   background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.6;
-  mix-blend-mode: soft-light;
+  opacity: 0.85;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
 
 .cart-item-card:hover::before {
-  opacity: 0.7;
+  opacity: 0.9;
   transition: opacity 0.3s ease;
 }
 
@@ -469,8 +472,8 @@
   background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.7;
-  mix-blend-mode: soft-light;
+  opacity: 0.9;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -484,8 +487,8 @@
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.5;
-  mix-blend-mode: soft-light;
+  opacity: 0.8;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -501,8 +504,8 @@
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.6;
-  mix-blend-mode: soft-light;
+  opacity: 0.85;
+  mix-blend-mode: multiply;
   pointer-events: none;
 }
 
@@ -515,8 +518,8 @@
   background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.6;
-  mix-blend-mode: soft-light;
+  opacity: 0.85;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -530,8 +533,8 @@
   background-image: url('@assets/generated_images/Black_Marquina_Marble_Texture_5dc162e8.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.6;
-  mix-blend-mode: soft-light;
+  opacity: 0.85;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -545,8 +548,8 @@
   background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.7;
-  mix-blend-mode: soft-light;
+  opacity: 0.9;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -562,8 +565,8 @@
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.6;
-  mix-blend-mode: soft-light;
+  opacity: 0.85;
+  mix-blend-mode: multiply;
   pointer-events: none;
 }
 
@@ -576,8 +579,8 @@
   background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.6;
-  mix-blend-mode: soft-light;
+  opacity: 0.85;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -591,13 +594,13 @@
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.5;
-  mix-blend-mode: soft-light;
+  opacity: 0.8;
+  mix-blend-mode: multiply;
   pointer-events: none;
 }
 
 .messages-conversation-item:hover::before {
-  opacity: 0.6;
+  opacity: 0.85;
   transition: opacity 0.3s ease;
 }
 
@@ -610,8 +613,8 @@
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.6;
-  mix-blend-mode: soft-light;
+  opacity: 0.85;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -628,8 +631,8 @@
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.6;
-  mix-blend-mode: soft-light;
+  opacity: 0.85;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -646,8 +649,8 @@
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.5;
-  mix-blend-mode: soft-light;
+  opacity: 0.8;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -664,7 +667,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.6;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -679,7 +682,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.55;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -694,7 +697,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.5;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -709,7 +712,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.5;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -724,7 +727,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.55;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -739,7 +742,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.6;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -754,7 +757,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.6;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -769,7 +772,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.5;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -784,7 +787,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.5;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -799,7 +802,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.55;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -817,7 +820,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.5;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -832,7 +835,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.5;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -851,7 +854,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.6;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -866,7 +869,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.55;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -881,7 +884,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.55;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -896,7 +899,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.55;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -911,7 +914,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.6;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -928,7 +931,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.6;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -943,7 +946,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.55;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -958,7 +961,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.55;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -973,7 +976,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.55;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -988,7 +991,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.6;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -1015,7 +1018,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.6;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -1030,7 +1033,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.55;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -1050,7 +1053,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.5;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -1065,7 +1068,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.6;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -1080,7 +1083,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.65;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -1095,7 +1098,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.55;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -1110,7 +1113,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.6;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -1130,7 +1133,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.5;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
 }
 
@@ -1144,7 +1147,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.52;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -1159,7 +1162,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.5;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -1174,7 +1177,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.6;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
 }
 
@@ -1188,7 +1191,7 @@
   background-size: cover;
   background-position: center;
   opacity: 0.65;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -1459,7 +1462,7 @@
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   opacity: 0.3;
   pointer-events: none;
 }
@@ -1640,7 +1643,7 @@
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   opacity: 0;
   transition: opacity 350ms cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
@@ -2595,7 +2598,7 @@ textarea:focus-visible {
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   opacity: 0.5;
   pointer-events: none;
   z-index: 0;
@@ -2793,7 +2796,7 @@ textarea:focus-visible {
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   opacity: 0.55;
   pointer-events: none;
   z-index: 0;
@@ -3199,7 +3202,7 @@ textarea:focus-visible {
   background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
   background-size: cover;
   background-position: center;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   opacity: 0.35;
   pointer-events: none;
   transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
@@ -3323,7 +3326,7 @@ textarea:focus-visible {
   background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
   background-size: cover;
   background-position: center;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   opacity: 0.3;
   pointer-events: none;
   z-index: 0;
@@ -3345,7 +3348,7 @@ textarea:focus-visible {
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   opacity: 0.3;
   pointer-events: none;
   border-radius: inherit;
@@ -3475,7 +3478,7 @@ textarea:focus-visible {
   background-size: cover;
   background-position: center;
   opacity: 0.55;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   pointer-events: none;
   z-index: 1;
 }
@@ -5937,7 +5940,7 @@ textarea:focus-visible,
   background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
   background-size: cover;
   background-position: center;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   opacity: 0.6;
   pointer-events: none;
   z-index: 0;
@@ -5971,7 +5974,7 @@ textarea:focus-visible,
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   opacity: 0.45;
   pointer-events: none;
   border-radius: 1rem;
@@ -5997,7 +6000,7 @@ textarea:focus-visible,
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   opacity: 0.65;
   pointer-events: none;
   border-radius: 0.75rem;
@@ -6054,7 +6057,7 @@ textarea:focus-visible,
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   opacity: 0.65;
   pointer-events: none;
   border-radius: 1.5rem;
@@ -6090,7 +6093,7 @@ textarea:focus-visible,
   background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
   background-size: cover;
   background-position: center;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   opacity: 0.65;
   pointer-events: none;
   border-radius: 1.5rem;
@@ -6126,7 +6129,7 @@ textarea:focus-visible,
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   opacity: 0.6;
   pointer-events: none;
   border-radius: 1rem;
@@ -6270,7 +6273,7 @@ textarea:focus-visible,
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   opacity: 0.5;
   pointer-events: none;
   border-radius: 1.5rem;
@@ -6306,7 +6309,7 @@ textarea:focus-visible,
   background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
   background-size: cover;
   background-position: center;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   opacity: 0.6;
   pointer-events: none;
   z-index: 0;
@@ -6321,7 +6324,7 @@ textarea:focus-visible,
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   opacity: 0.6;
   pointer-events: none;
   border-radius: 0.5rem;
@@ -6335,7 +6338,7 @@ textarea:focus-visible,
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   opacity: 0.6;
   pointer-events: none;
   border-radius: 1rem;
@@ -6352,7 +6355,7 @@ textarea:focus-visible,
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   opacity: 0.6;
   pointer-events: none;
   border-radius: 0.5rem;
@@ -6383,7 +6386,7 @@ textarea:focus-visible,
 }
 
 .blend-soft-light {
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
 }
 
 .blend-multiply {
@@ -6880,7 +6883,7 @@ textarea:focus-visible,
     background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
     background-size: cover;
     background-position: center;
-    mix-blend-mode: soft-light;
+    mix-blend-mode: multiply;
     opacity: 0.65;
     pointer-events: none;
     z-index: 0;
@@ -6966,7 +6969,7 @@ textarea:focus-visible,
     background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
     background-size: cover;
     background-position: center;
-    mix-blend-mode: soft-light;
+    mix-blend-mode: multiply;
     opacity: 0.5;
     pointer-events: none;
   }
@@ -7081,7 +7084,7 @@ textarea:focus-visible,
     background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
     background-size: cover;
     background-position: center;
-    mix-blend-mode: soft-light;
+    mix-blend-mode: multiply;
     opacity: 0.5;
     pointer-events: none;
     border-radius: inherit;
@@ -7126,7 +7129,7 @@ textarea:focus-visible,
     background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
     background-size: cover;
     background-position: center;
-    mix-blend-mode: soft-light;
+    mix-blend-mode: multiply;
     opacity: 0.5;
     pointer-events: none;
     border-radius: inherit;
@@ -7198,7 +7201,7 @@ textarea:focus-visible,
     background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
     background-size: cover;
     background-position: center;
-    mix-blend-mode: soft-light;
+    mix-blend-mode: multiply;
     opacity: 0.5;
     pointer-events: none;
   }
@@ -7464,7 +7467,7 @@ textarea:focus-visible,
   opacity: 0.52;
   pointer-events: none;
   z-index: 1;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
 }
 
 /* Avatar Container & Frame */
@@ -8954,7 +8957,7 @@ select:focus-visible,
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   opacity: 0.5;
   pointer-events: none;
   z-index: 0;
@@ -9146,7 +9149,7 @@ select:focus-visible,
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   opacity: 0.5;
   pointer-events: none;
   z-index: 0;
@@ -9173,7 +9176,7 @@ select:focus-visible,
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
   background-size: cover;
   background-position: center;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: multiply;
   opacity: 0.5;
   pointer-events: none;
   z-index: 0;
