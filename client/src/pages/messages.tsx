@@ -329,7 +329,7 @@ export default function Messages() {
         {!isOwnMessage && (
           <Avatar className="h-8 w-8">
             <AvatarImage src={message.user?.avatar} />
-            <AvatarFallback className="text-xs bg-gradient-to-r from-orange-500 to-blue-500 text-white">
+            <AvatarFallback className="text-xs bg-gradient-to-r from-orange-700 to-blue-700 text-white">
               {message.user?.name?.charAt(0) || 'B'}
             </AvatarFallback>
           </Avatar>
@@ -339,13 +339,13 @@ export default function Messages() {
           <div
             className={`px-4 py-2 rounded-lg ${
               isOwnMessage
-                ? 'bg-gradient-to-r from-orange-500 to-blue-500 text-white'
-                : 'bg-muted border border-border'
+                ? 'bg-gradient-to-r from-orange-700 to-blue-700 text-white messages-bubble-sent'
+                : 'bg-muted border border-border messages-bubble-received'
             }`}
           >
             {/* Message type specific rendering */}
             {message.messageType === 'business_share' && message.sharedBusinessId && (
-              <div className="mb-2 p-3 bg-white/10 rounded-lg">
+              <div className="mb-2 p-3 bg-white/10 rounded-lg relative z-10">
                 <div className="flex items-center gap-2">
                   <Building2 className="h-4 w-4" />
                   <span className="font-medium text-sm">Business Shared</span>
@@ -356,8 +356,8 @@ export default function Messages() {
             )}
             
             {message.messageType === 'file' && (
-              <div className="mb-2 p-3 bg-white/10 rounded-lg">
-                <div className="flex items-center gap-2">
+              <div className="mb-2 p-3 bg-white/10 rounded-lg relative z-10">
+                <div className="flex items-center gap-2 relative z-10">
                   {message.fileType?.startsWith('image/') ? (
                     <ImageIcon className="h-4 w-4" />
                   ) : (
@@ -384,7 +384,7 @@ export default function Messages() {
               </div>
             )}
             
-            <p className="text-sm">{message.content}</p>
+            <p className="text-sm relative z-10">{message.content}</p>
           </div>
           
           <div className={`flex items-center gap-1 mt-1 text-xs text-muted-foreground ${isOwnMessage ? 'justify-end' : ''}`}>
@@ -451,8 +451,8 @@ export default function Messages() {
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
       <EliteNavigationHeader />
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-6">
+      <div className="container mx-auto px-4 py-8 messages-container">
+        <div className="mb-6 relative z-10">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold gradient-text-primary">Florida Business Network</h1>
@@ -475,10 +475,10 @@ export default function Messages() {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-4 gap-6 h-[calc(100vh-200px)]">
+        <div className="grid lg:grid-cols-4 gap-6 h-[calc(100vh-200px)] relative z-10">
           {/* Conversations Sidebar */}
-          <Card className="lg:col-span-1 miami-glass border-orange-200/50">
-            <CardHeader className="pb-3">
+          <Card className="lg:col-span-1 miami-glass border-orange-200/50 messages-conversation-list">
+            <CardHeader className="pb-3 relative z-10">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Users className="h-5 w-5 text-orange-500" />
@@ -499,7 +499,7 @@ export default function Messages() {
                 />
               </div>
             </CardHeader>
-            <CardContent className="p-0">
+            <CardContent className="p-0 relative z-10">
               <ScrollArea className="h-96">
                 {conversations.length > 0 ? (
                   conversations
@@ -517,16 +517,16 @@ export default function Messages() {
                       return (
                         <div
                           key={otherUserId}
-                          className={`flex items-center space-x-3 p-4 cursor-pointer hover:bg-muted/50 transition-colors border-b border-border/50 ${
+                          className={`messages-conversation-item flex items-center space-x-3 p-4 cursor-pointer hover:bg-muted/50 transition-colors border-b border-border/50 ${
                             isSelected ? 'bg-muted border-l-4 border-l-orange-500' : ''
                           }`}
                           onClick={() => selectConversation(conversation)}
                           data-testid={`conversation-${otherUserId}`}
                         >
-                          <div className="relative">
+                          <div className="relative z-10">
                             <Avatar className="h-12 w-12">
                               <AvatarImage src={conversation.avatar} alt="User" />
-                              <AvatarFallback className="bg-gradient-to-r from-orange-500 to-blue-500 text-white">
+                              <AvatarFallback className="bg-gradient-to-r from-orange-700 to-blue-700 text-white">
                                 {conversation.businessName?.charAt(0) || 'B'}
                               </AvatarFallback>
                             </Avatar>
@@ -534,7 +534,7 @@ export default function Messages() {
                               conversation.isOnline ? 'bg-green-500' : 'bg-gray-400'
                             }`} />
                           </div>
-                          <div className="flex-1 min-w-0">
+                          <div className="flex-1 min-w-0 relative z-10">
                             <div className="flex items-center justify-between">
                               <p className="font-medium truncate">{conversation.businessName || 'Business User'}</p>
                               {!conversation.isRead && conversation.receiverId === user?.id && (
@@ -555,12 +555,12 @@ export default function Messages() {
                       );
                     })
                 ) : (
-                  <div className="text-center py-12">
-                    <div className="mx-auto h-16 w-16 bg-gradient-to-r from-orange-500 to-blue-500 rounded-full flex items-center justify-center mb-4">
+                  <div className="text-center py-12 messages-empty-state">
+                    <div className="mx-auto h-16 w-16 bg-gradient-to-r from-orange-700 to-blue-700 rounded-full flex items-center justify-center mb-4 relative z-10">
                       <Building2 className="h-8 w-8 text-white" />
                     </div>
-                    <p className="text-muted-foreground font-medium">No conversations yet</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground font-medium relative z-10">No conversations yet</p>
+                    <p className="text-sm text-muted-foreground relative z-10">
                       Start networking with Florida businesses
                     </p>
                   </div>
@@ -570,16 +570,16 @@ export default function Messages() {
           </Card>
 
           {/* Chat Area */}
-          <Card className="lg:col-span-3 miami-glass border-blue-200/50">
+          <Card className="lg:col-span-3 miami-glass border-blue-200/50 messages-chat-view">
             {selectedConversation && selectedUserId ? (
               <>
                 {/* Chat Header */}
-                <CardHeader className="border-b border-border/50">
+                <CardHeader className="border-b border-border/50 relative z-10">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <Avatar className="h-12 w-12">
                         <AvatarImage src="" alt="User" />
-                        <AvatarFallback className="bg-gradient-to-r from-orange-500 to-blue-500 text-white">
+                        <AvatarFallback className="bg-gradient-to-r from-orange-700 to-blue-700 text-white">
                           B
                         </AvatarFallback>
                       </Avatar>
@@ -606,7 +606,7 @@ export default function Messages() {
                   </div>
                 </CardHeader>
 
-                <CardContent className="p-0 flex flex-col">
+                <CardContent className="p-0 flex flex-col relative z-10">
                   {/* Messages Area */}
                   <ScrollArea className="flex-1 h-96 p-4">
                     {messagesLoading ? (
@@ -623,16 +623,16 @@ export default function Messages() {
                         <div ref={messagesEndRef} />
                       </div>
                     ) : (
-                      <div className="text-center py-12">
-                        <div className="mx-auto h-16 w-16 bg-gradient-to-r from-orange-500 to-blue-500 rounded-full flex items-center justify-center mb-4">
+                      <div className="text-center py-12 messages-empty-state">
+                        <div className="mx-auto h-16 w-16 bg-gradient-to-r from-orange-700 to-blue-700 rounded-full flex items-center justify-center mb-4 relative z-10">
                           <Send className="h-8 w-8 text-white" />
                         </div>
-                        <p className="text-muted-foreground font-medium">Start the conversation!</p>
-                        <p className="text-sm text-muted-foreground mb-4">
+                        <p className="text-muted-foreground font-medium relative z-10">Start the conversation!</p>
+                        <p className="text-sm text-muted-foreground mb-4 relative z-10">
                           Send your first message to begin networking
                         </p>
                         {/* Florida Business Ice Breakers */}
-                        <div className="space-y-2">
+                        <div className="space-y-2 relative z-10">
                           <p className="text-xs text-orange-500 font-medium">Florida Business Ice Breakers:</p>
                           {getFloridaBusinessPrompts().slice(0, 3).map((prompt, index) => (
                             <button
@@ -651,8 +651,8 @@ export default function Messages() {
                   <Separator />
 
                   {/* Message Input Area */}
-                  <div className="p-4">
-                    <div className="flex items-center gap-2 mb-3">
+                  <div className="p-4 messages-compose-area">
+                    <div className="flex items-center gap-2 mb-3 relative z-10">
                       <Dialog open={showBusinessDialog} onOpenChange={setShowBusinessDialog}>
                         <DialogTrigger asChild>
                           <Button size="sm" variant="outline" className="text-xs">
@@ -677,7 +677,7 @@ export default function Messages() {
                                 <div className="flex items-center gap-3">
                                   <Avatar>
                                     <AvatarImage src={business.logoUrl || undefined} />
-                                    <AvatarFallback className="bg-gradient-to-r from-orange-500 to-blue-500 text-white">
+                                    <AvatarFallback className="bg-gradient-to-r from-orange-700 to-blue-700 text-white">
                                       {business.name.charAt(0)}
                                     </AvatarFallback>
                                   </Avatar>
@@ -690,7 +690,7 @@ export default function Messages() {
                                     </p>
                                   </div>
                                 </div>
-                                <Button size="sm" className="bg-gradient-to-r from-orange-500 to-blue-500">
+                                <Button size="sm" className="bg-gradient-to-r from-orange-700 to-blue-700">
                                   Share
                                 </Button>
                               </div>
@@ -721,7 +721,7 @@ export default function Messages() {
                       </Button>
                     </div>
                     
-                    <div className="flex space-x-2">
+                    <div className="flex space-x-2 relative z-10">
                       <Input
                         placeholder="Type your message about Florida business opportunities..."
                         value={messageInput}
@@ -737,14 +737,14 @@ export default function Messages() {
                       <Button 
                         onClick={sendMessage}
                         disabled={!messageInput.trim() || sendMessageMutation.isPending}
-                        className="bg-gradient-to-r from-orange-500 to-blue-500 hover:from-orange-600 hover:to-blue-600"
+                        className="bg-gradient-to-r from-orange-700 to-blue-700 hover:from-orange-600 hover:to-blue-600"
                         data-testid="button-send"
                       >
                         <Send className="h-4 w-4" />
                       </Button>
                     </div>
                     
-                    <div className="text-xs text-muted-foreground mt-2 text-center flex items-center justify-center gap-2">
+                    <div className="text-xs text-muted-foreground mt-2 text-center flex items-center justify-center gap-2 relative z-10">
                       <Globe className="h-3 w-3 text-orange-500" />
                       Connect with fellow Florida entrepreneurs • Share resources • Grow together
                     </div>
@@ -752,9 +752,9 @@ export default function Messages() {
                 </CardContent>
               </>
             ) : (
-              <div className="flex items-center justify-center h-full">
-                <div className="text-center">
-                  <div className="mx-auto h-24 w-24 bg-gradient-to-r from-orange-500 to-blue-500 rounded-full flex items-center justify-center mb-6">
+              <div className="flex items-center justify-center h-full messages-empty-state">
+                <div className="text-center relative z-10">
+                  <div className="mx-auto h-24 w-24 bg-gradient-to-r from-orange-700 to-blue-700 rounded-full flex items-center justify-center mb-6">
                     <Building2 className="h-12 w-12 text-white" />
                   </div>
                   <h3 className="text-xl font-semibold mb-2">Florida Business Network</h3>

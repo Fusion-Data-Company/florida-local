@@ -163,7 +163,15 @@
 .checkout-container,
 .checkout-form-card,
 .checkout-payment-card,
-.checkout-summary {
+.checkout-summary,
+.messages-container,
+.messages-conversation-list,
+.messages-conversation-item,
+.messages-chat-view,
+.messages-bubble-sent,
+.messages-bubble-received,
+.messages-compose-area,
+.messages-empty-state {
   position: relative;
 }
 
@@ -477,11 +485,113 @@
   border-radius: inherit;
 }
 
+/* === MESSAGES PAGE ELITE MARBLE STYLING === */
+
+/* Messages Page Main Container - White Carrara Marble */
+.messages-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+/* Messages Conversation List/Sidebar - Calacatta Gold Marble */
+.messages-conversation-list::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Individual Conversation Items - White Carrara Marble */
+.messages-conversation-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.5;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+.messages-conversation-item:hover::before {
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+
+/* Messages Chat View/Active Conversation - White Carrara Marble */
+.messages-chat-view::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Sent Message Bubbles - Marble removed for WCAG AA contrast compliance */
+/* .messages-bubble-sent::before removed to ensure text readability */
+
+/* Received Message Bubbles - White Carrara Marble */
+.messages-bubble-received::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Message Compose/Input Area - Marble removed for WCAG AA contrast compliance */
+/* .messages-compose-area::before removed to ensure input text readability */
+
+/* Messages Empty State - White Carrara Marble */
+.messages-empty-state::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.5;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
 /* Accessibility: Reduced Motion Support */
 @media (prefers-reduced-motion: reduce) {
   .product-card-luxury:hover::before,
   .business-profile-post-card:hover::before,
-  .cart-item-card:hover::before {
+  .cart-item-card:hover::before,
+  .messages-conversation-item:hover::before {
     transition: none;
   }
 }
