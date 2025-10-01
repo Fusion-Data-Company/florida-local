@@ -184,7 +184,14 @@
 .vendor-payout-schedule,
 .vendor-payout-form,
 .vendor-payouts-table,
-.vendor-transactions-table {
+.vendor-transactions-table,
+.orders-page-header,
+.order-card-luxury,
+.orders-empty-state,
+.orders-quick-actions,
+.confirmation-success-header,
+.confirmation-card,
+.order-summary-card {
   position: relative;
 }
 
@@ -793,6 +800,121 @@
     transition: none;
   }
 }
+
+/* === ORDERS & ORDER CONFIRMATION ELITE MARBLE STYLING === */
+
+/* Orders Page Header - Calacatta Gold Marble */
+.orders-page-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Individual Order Cards - White Carrara Marble */
+.order-card-luxury::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.55;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.order-card-luxury:hover::before {
+  opacity: 0.65;
+  transition: opacity 0.3s ease;
+}
+
+/* Orders Empty State - White Carrara Marble */
+.orders-empty-state::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.5;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Orders Quick Actions - Calacatta Gold Marble */
+.orders-quick-actions::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Order Confirmation Success Header - Calacatta Gold Marble */
+.confirmation-success-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.65;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Confirmation Cards (Next Steps, Order Items, Shipping) - White Carrara Marble */
+.confirmation-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.55;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Order Summary Card (Sidebar) - Calacatta Gold Marble */
+.order-summary-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Accessibility Note: Status badges maintain high contrast
+   All text maintains WCAG AA compliance with reduced marble opacity */
 
 /* === CONSOLIDATED GLASS MORPHISM SYSTEM === */
 /* Three standardized variants for consistent glass effects across the app */

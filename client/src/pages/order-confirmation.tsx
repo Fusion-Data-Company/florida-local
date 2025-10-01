@@ -70,9 +70,10 @@ export default function OrderConfirmation() {
 
   const completeOrderMutation = useMutation({
     mutationFn: async (data: { orderId: string; paymentIntentId: string }) => {
-      return await apiRequest('POST', `/api/orders/${data.orderId}/complete`, {
+      const res = await apiRequest('POST', `/api/orders/${data.orderId}/complete`, {
         paymentIntentId: data.paymentIntentId,
       });
+      return await res.json();
     },
     onSuccess: (response) => {
       setOrder(response.order);
@@ -154,39 +155,41 @@ export default function OrderConfirmation() {
 
       <div className="container mx-auto px-4 py-8 lg:px-8">
         {/* Success Header */}
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-4">
-            <div className="bg-green-100 dark:bg-green-900 rounded-full p-4">
-              <CheckCircle className="h-12 w-12 text-green-600 dark:text-green-400" />
+        <div className="confirmation-success-header relative text-center mb-8 p-8 rounded-2xl">
+          <div className="relative z-10">
+            <div className="flex justify-center mb-4">
+              <div className="bg-green-100 dark:bg-green-900 rounded-full p-4">
+                <CheckCircle className="h-12 w-12 text-green-600 dark:text-green-400" />
+              </div>
             </div>
+            <h1 className="text-3xl font-serif font-bold mb-2" data-testid="text-order-success">
+              Order Confirmed!
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              Thank you for your purchase. Your order has been successfully placed.
+            </p>
+            {order && (
+              <div className="mt-4">
+                <Badge variant="secondary" className="text-sm">
+                  Order #{order.id.slice(-8).toUpperCase()}
+                </Badge>
+              </div>
+            )}
           </div>
-          <h1 className="text-3xl font-serif font-bold mb-2" data-testid="text-order-success">
-            Order Confirmed!
-          </h1>
-          <p className="text-lg text-muted-foreground">
-            Thank you for your purchase. Your order has been successfully placed.
-          </p>
-          {order && (
-            <div className="mt-4">
-              <Badge variant="secondary" className="text-sm">
-                Order #{order.id.slice(-8).toUpperCase()}
-              </Badge>
-            </div>
-          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Order Details */}
           <div className="lg:col-span-2 space-y-6">
             {/* Next Steps */}
-            <Card>
-              <CardHeader>
+            <Card className="confirmation-card relative">
+              <CardHeader className="relative z-10">
                 <CardTitle className="flex items-center gap-2">
                   <Package className="h-5 w-5" />
                   What happens next?
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="relative z-10 space-y-4">
                 <div className="flex items-start gap-3">
                   <div className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mt-0.5">
                     1
@@ -225,11 +228,11 @@ export default function OrderConfirmation() {
 
             {/* Order Items (if available) */}
             {order && (
-              <Card>
-                <CardHeader>
+              <Card className="confirmation-card relative">
+                <CardHeader className="relative z-10">
                   <CardTitle>Order Items</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="relative z-10">
                   <div className="space-y-4">
                     {order.orderItems.map((item) => (
                       <div key={item.id} className="flex gap-4" data-testid={`order-item-${item.productId}`}>
@@ -262,11 +265,11 @@ export default function OrderConfirmation() {
 
             {/* Customer Information */}
             {order && (
-              <Card>
-                <CardHeader>
+              <Card className="confirmation-card relative">
+                <CardHeader className="relative z-10">
                   <CardTitle>Shipping Information</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="relative z-10">
                   <div className="space-y-2">
                     <p><strong>Email:</strong> {order.customerEmail}</p>
                     {order.customerPhone && (
@@ -295,11 +298,11 @@ export default function OrderConfirmation() {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <Card className="sticky top-4">
-              <CardHeader>
+            <Card className="order-summary-card relative sticky top-4">
+              <CardHeader className="relative z-10">
                 <CardTitle>Order Summary</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="relative z-10">
                 {order ? (
                   <div className="space-y-3">
                     <div className="flex justify-between">

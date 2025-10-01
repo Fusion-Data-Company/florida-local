@@ -93,13 +93,15 @@ export default function Orders() {
       <EliteNavigationHeader />
 
       <div className="container mx-auto px-4 py-8 lg:px-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-serif font-bold mb-2" data-testid="text-orders-title">
-            Your Orders
-          </h1>
-          <p className="text-muted-foreground">
-            Track and manage your order history
-          </p>
+        <div className="orders-page-header relative mb-8 p-6 rounded-2xl">
+          <div className="relative z-10">
+            <h1 className="text-3xl font-serif font-bold mb-2" data-testid="text-orders-title">
+              Your Orders
+            </h1>
+            <p className="text-muted-foreground">
+              Track and manage your order history
+            </p>
+          </div>
         </div>
 
         {isLoading ? (
@@ -123,25 +125,27 @@ export default function Orders() {
             ))}
           </div>
         ) : orders.length === 0 ? (
-          <div className="text-center py-12">
-            <Package className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
-            <h2 className="text-xl font-semibold mb-4" data-testid="text-no-orders">
-              No orders yet
-            </h2>
-            <p className="text-muted-foreground mb-6">
-              When you place your first order, it will appear here
-            </p>
-            <Button asChild>
-              <Link href="/marketplace" data-testid="link-marketplace">
-                Start Shopping
-              </Link>
-            </Button>
+          <div className="orders-empty-state relative text-center py-12 px-6 rounded-2xl">
+            <div className="relative z-10">
+              <Package className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
+              <h2 className="text-xl font-semibold mb-4" data-testid="text-no-orders">
+                No orders yet
+              </h2>
+              <p className="text-muted-foreground mb-6">
+                When you place your first order, it will appear here
+              </p>
+              <Button asChild>
+                <Link href="/marketplace" data-testid="link-marketplace">
+                  Start Shopping
+                </Link>
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="space-y-4">
             {orders.map((order) => (
-              <Card key={order.id} className="hover:shadow-md transition-shadow" data-testid={`order-card-${order.id}`}>
-                <CardHeader className="pb-4">
+              <Card key={order.id} className="order-card-luxury relative hover:shadow-md transition-shadow" data-testid={`order-card-${order.id}`}>
+                <CardHeader className="relative z-10 pb-4">
                   <div className="flex justify-between items-start">
                     <div>
                       <CardTitle className="text-lg" data-testid={`text-order-id-${order.id}`}>
@@ -159,7 +163,7 @@ export default function Orders() {
                     </Badge>
                   </div>
                 </CardHeader>
-                <CardContent className="pt-0">
+                <CardContent className="relative z-10 pt-0">
                   <div className="flex justify-between items-center mb-4">
                     <div>
                       <p className="text-sm text-muted-foreground">
@@ -203,19 +207,21 @@ export default function Orders() {
         )}
 
         {/* Quick Actions */}
-        <div className="mt-12 text-center">
-          <h3 className="text-lg font-semibold mb-4">Need help with an order?</h3>
-          <div className="flex justify-center gap-4">
-            <Button variant="outline" asChild>
-              <Link href="/marketplace">
-                Continue Shopping
-              </Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link href="/messages">
-                Contact Support
-              </Link>
-            </Button>
+        <div className="orders-quick-actions relative mt-12 text-center p-8 rounded-2xl">
+          <div className="relative z-10">
+            <h3 className="text-lg font-semibold mb-4">Need help with an order?</h3>
+            <div className="flex justify-center gap-4">
+              <Button variant="outline" asChild>
+                <Link href="/marketplace">
+                  Continue Shopping
+                </Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/messages">
+                  Contact Support
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
