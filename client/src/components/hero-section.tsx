@@ -16,15 +16,6 @@ export default function HeroSection() {
 
   return (
     <section className="hero-section relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Dramatic Calacatta Gold Marble Background - 60%+ Opacity */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-fixed" 
-        style={{
-          backgroundImage: `url('/@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png')`,
-          opacity: 0.65
-        }}
-      />
-      
       {/* Luxury Depth Layers */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-amber-50/20" />
       <div className="absolute inset-0 bg-gradient-to-br from-amber-100/10 via-transparent to-amber-200/10" />
