@@ -280,6 +280,364 @@
   transform: translateY(-2px);
 }
 
+/* === LUXURY ELITE BUTTON SYSTEM === */
+
+/* Metallic Base Class - Gold/Bronze Gradient Background */
+.metallic {
+  position: relative;
+  background: linear-gradient(135deg, 
+    #d4af37 0%,     /* Rich Gold */
+    #ffd700 20%,    /* Bright Gold */
+    #f4e5c3 40%,    /* Champagne */
+    #cd7f32 60%,    /* Bronze */
+    #b8860b 80%,    /* Dark Goldenrod */
+    #8b4513 100%    /* Saddle Brown */
+  );
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 4px 12px rgba(212, 175, 55, 0.4),
+    0 2px 6px rgba(0, 0, 0, 0.15),
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.metallic::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(0, 0, 0, 0.05) 100%
+  );
+  opacity: 1;
+  transition: opacity 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.metallic:hover {
+  transform: translateY(-3px);
+  box-shadow: 
+    0 8px 24px rgba(212, 175, 55, 0.5),
+    0 4px 12px rgba(212, 175, 55, 0.3),
+    0 2px 6px rgba(0, 0, 0, 0.2),
+    0 0 30px rgba(255, 215, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Luxury Hero Primary CTA Button */
+.btn-luxury-hero-primary {
+  position: relative;
+  background: linear-gradient(135deg, 
+    #d4af37 0%,
+    #ffd700 25%,
+    #f4e5c3 50%,
+    #cd7f32 75%,
+    #b8860b 100%
+  );
+  color: white;
+  font-weight: 700;
+  font-size: 1.125rem;
+  letter-spacing: 0.02em;
+  padding: 1rem 2.5rem;
+  border-radius: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 
+    0 8px 20px rgba(212, 175, 55, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    0 2px 6px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.btn-luxury-hero-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(0, 0, 0, 0.05) 100%
+  );
+  opacity: 1;
+  transition: opacity 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.btn-luxury-hero-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 
+    0 12px 32px rgba(212, 175, 55, 0.5),
+    0 6px 16px rgba(212, 175, 55, 0.35),
+    0 3px 8px rgba(0, 0, 0, 0.2),
+    0 0 40px rgba(255, 215, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.btn-luxury-hero-primary:active {
+  transform: translateY(-1px);
+}
+
+/* Luxury Hero Secondary CTA Button */
+.btn-luxury-hero-secondary {
+  position: relative;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(16px) saturate(180%);
+  color: var(--foreground);
+  font-weight: 700;
+  font-size: 1.125rem;
+  letter-spacing: 0.02em;
+  padding: 1rem 2.5rem;
+  border-radius: 1rem;
+  border: 2px solid transparent;
+  box-shadow: 
+    0 6px 16px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.btn-luxury-hero-secondary::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(135deg, 
+    rgba(212, 175, 55, 0.6) 0%,
+    rgba(255, 215, 0, 0.5) 50%,
+    rgba(184, 134, 11, 0.6) 100%
+  );
+  border-radius: inherit;
+  opacity: 0.5;
+  z-index: -1;
+  transition: opacity 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-luxury-hero-secondary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: soft-light;
+  opacity: 0;
+  transition: opacity 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.btn-luxury-hero-secondary:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 
+    0 10px 24px rgba(0, 0, 0, 0.12),
+    0 0 30px rgba(212, 175, 55, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.btn-luxury-hero-secondary:hover::before {
+  opacity: 1;
+}
+
+.btn-luxury-hero-secondary:hover::after {
+  opacity: 0.3;
+}
+
+/* Luxury Submit Button (for forms) */
+.btn-luxury-submit {
+  position: relative;
+  background: linear-gradient(135deg, 
+    #d4af37 0%,
+    #ffd700 50%,
+    #cd7f32 100%
+  );
+  color: white;
+  font-weight: 700;
+  padding: 0.875rem 2rem;
+  border-radius: 0.875rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 6px 16px rgba(212, 175, 55, 0.4),
+    0 3px 8px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-luxury-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 10px 24px rgba(212, 175, 55, 0.5),
+    0 5px 12px rgba(212, 175, 55, 0.3),
+    0 0 25px rgba(255, 215, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+/* Glass Action Button (secondary actions) */
+.btn-glass-action {
+  position: relative;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(16px) saturate(180%);
+  color: var(--foreground);
+  font-weight: 600;
+  padding: 0.875rem 2rem;
+  border-radius: 0.875rem;
+  border: 2px solid transparent;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-glass-action::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(135deg, 
+    rgba(212, 175, 55, 0.5) 0%,
+    rgba(255, 215, 0, 0.4) 50%,
+    rgba(184, 134, 11, 0.5) 100%
+  );
+  border-radius: inherit;
+  opacity: 0.4;
+  z-index: -1;
+  transition: opacity 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-glass-action:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 
+    0 8px 20px rgba(0, 0, 0, 0.12),
+    0 0 25px rgba(212, 175, 55, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+.btn-glass-action:hover::before {
+  opacity: 0.8;
+}
+
+/* Outline Luxury Button (tertiary) */
+.btn-outline-luxury {
+  position: relative;
+  background: transparent;
+  color: var(--foreground);
+  font-weight: 600;
+  padding: 0.875rem 2rem;
+  border-radius: 0.875rem;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-outline-luxury::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(135deg, 
+    rgba(212, 175, 55, 0.8) 0%,
+    rgba(255, 215, 0, 0.7) 50%,
+    rgba(184, 134, 11, 0.8) 100%
+  );
+  border-radius: inherit;
+  opacity: 0.6;
+  z-index: -1;
+  transition: opacity 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-outline-luxury:hover {
+  transform: translateY(-2px);
+  background: rgba(212, 175, 55, 0.1);
+  box-shadow: 
+    0 6px 16px rgba(212, 175, 55, 0.2),
+    0 0 20px rgba(212, 175, 55, 0.15);
+}
+
+.btn-outline-luxury:hover::before {
+  opacity: 1;
+}
+
+/* Icon Button Luxury */
+.btn-icon-luxury {
+  position: relative;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: var(--foreground);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-icon-luxury:hover {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(212, 175, 55, 0.5);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.12),
+    0 0 20px rgba(212, 175, 55, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+.btn-icon-luxury:active {
+  transform: scale(1.05);
+}
+
+/* Danger Luxury Button */
+.btn-danger-luxury {
+  position: relative;
+  background: linear-gradient(135deg, 
+    rgba(239, 68, 68, 1) 0%,
+    rgba(248, 113, 113, 1) 50%,
+    rgba(251, 146, 60, 1) 100%
+  );
+  color: white;
+  font-weight: 700;
+  padding: 0.875rem 2rem;
+  border-radius: 0.875rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 6px 16px rgba(239, 68, 68, 0.4),
+    0 3px 8px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-danger-luxury::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.2) 0%,
+    transparent 100%
+  );
+  opacity: 0;
+  transition: opacity 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.btn-danger-luxury:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 10px 24px rgba(239, 68, 68, 0.5),
+    0 5px 12px rgba(239, 68, 68, 0.3),
+    0 0 30px rgba(251, 146, 60, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.btn-danger-luxury:hover::before {
+  opacity: 1;
+}
+
 /* Magic MCP Typography */
 .miami-heading {
   font-family: var(--font-serif);
@@ -5592,6 +5950,820 @@ textarea:focus-visible,
   }
   
   .elite-post-skeleton {
+    animation: none;
+  }
+}
+
+/* === LUXURY FORM INPUT SYSTEM === */
+
+/* Base Luxury Input - Text, Email, Password, Number, etc. */
+.luxury-input {
+  position: relative;
+  flex: 1;
+  min-height: 2.75rem;
+  width: 100%;
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1.5px solid transparent;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
+    linear-gradient(135deg, 
+      rgba(212, 175, 55, 0.3) 0%,
+      rgba(255, 215, 0, 0.25) 50%,
+      rgba(184, 134, 11, 0.3) 100%
+    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  padding: 0.75rem 1rem;
+  font-size: 0.9375rem;
+  color: hsl(220, 15%, 20%);
+  font-weight: 500;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.02);
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+}
+
+.luxury-input::placeholder {
+  color: hsl(220, 10%, 55%);
+  opacity: 0.7;
+  font-style: italic;
+  font-weight: 400;
+}
+
+.luxury-input:hover {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)),
+    linear-gradient(135deg, 
+      rgba(212, 175, 55, 0.4) 0%,
+      rgba(255, 215, 0, 0.35) 50%,
+      rgba(184, 134, 11, 0.4) 100%
+    );
+  box-shadow: 
+    0 4px 12px rgba(212, 175, 55, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.luxury-input:focus {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)),
+    linear-gradient(135deg, 
+      rgba(212, 175, 55, 0.6) 0%,
+      rgba(255, 215, 0, 0.5) 50%,
+      rgba(184, 134, 11, 0.6) 100%
+    );
+  box-shadow: 
+    0 0 0 3px rgba(212, 175, 55, 0.15),
+    0 0 20px rgba(255, 215, 0, 0.3),
+    0 6px 16px rgba(212, 175, 55, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.luxury-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),
+    linear-gradient(135deg, 
+      rgba(0, 0, 0, 0.05) 0%,
+      rgba(0, 0, 0, 0.03) 100%
+    );
+}
+
+/* File Input Specific Styling */
+.luxury-input[type="file"] {
+  padding: 0.625rem 1rem;
+  cursor: pointer;
+}
+
+.luxury-input[type="file"]::file-selector-button {
+  background: linear-gradient(135deg, 
+    rgba(212, 175, 55, 0.2) 0%,
+    rgba(255, 215, 0, 0.15) 100%
+  );
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  margin-right: 1rem;
+  color: hsl(220, 15%, 20%);
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.luxury-input[type="file"]::file-selector-button:hover {
+  background: linear-gradient(135deg, 
+    rgba(212, 175, 55, 0.3) 0%,
+    rgba(255, 215, 0, 0.25) 100%
+  );
+  border-color: rgba(212, 175, 55, 0.5);
+}
+
+/* Luxury Textarea */
+.luxury-textarea {
+  position: relative;
+  min-height: 5rem;
+  width: 100%;
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1.5px solid transparent;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
+    linear-gradient(135deg, 
+      rgba(212, 175, 55, 0.3) 0%,
+      rgba(255, 215, 0, 0.25) 50%,
+      rgba(184, 134, 11, 0.3) 100%
+    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  padding: 0.875rem 1rem;
+  font-size: 0.9375rem;
+  color: hsl(220, 15%, 20%);
+  font-weight: 500;
+  line-height: 1.6;
+  resize: vertical;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.02);
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+}
+
+.luxury-textarea::placeholder {
+  color: hsl(220, 10%, 55%);
+  opacity: 0.7;
+  font-style: italic;
+  font-weight: 400;
+}
+
+.luxury-textarea:hover {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)),
+    linear-gradient(135deg, 
+      rgba(212, 175, 55, 0.4) 0%,
+      rgba(255, 215, 0, 0.35) 50%,
+      rgba(184, 134, 11, 0.4) 100%
+    );
+  box-shadow: 
+    0 4px 12px rgba(212, 175, 55, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.luxury-textarea:focus {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)),
+    linear-gradient(135deg, 
+      rgba(212, 175, 55, 0.6) 0%,
+      rgba(255, 215, 0, 0.5) 50%,
+      rgba(184, 134, 11, 0.6) 100%
+    );
+  box-shadow: 
+    0 0 0 3px rgba(212, 175, 55, 0.15),
+    0 0 20px rgba(255, 215, 0, 0.3),
+    0 6px 16px rgba(212, 175, 55, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.luxury-textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),
+    linear-gradient(135deg, 
+      rgba(0, 0, 0, 0.05) 0%,
+      rgba(0, 0, 0, 0.03) 100%
+    );
+}
+
+/* Luxury Textarea Scrollbar */
+.luxury-textarea::-webkit-scrollbar {
+  width: 8px;
+}
+
+.luxury-textarea::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 0.5rem;
+}
+
+.luxury-textarea::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, 
+    rgba(212, 175, 55, 0.4) 0%,
+    rgba(184, 134, 11, 0.4) 100%
+  );
+  border-radius: 0.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.luxury-textarea::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, 
+    rgba(212, 175, 55, 0.6) 0%,
+    rgba(184, 134, 11, 0.6) 100%
+  );
+}
+
+/* Luxury Select Dropdown Trigger */
+.luxury-select-trigger {
+  display: flex;
+  min-height: 2.75rem;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1.5px solid transparent;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
+    linear-gradient(135deg, 
+      rgba(212, 175, 55, 0.3) 0%,
+      rgba(255, 215, 0, 0.25) 50%,
+      rgba(184, 134, 11, 0.3) 100%
+    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  padding: 0.75rem 1rem;
+  font-size: 0.9375rem;
+  color: hsl(220, 15%, 20%);
+  font-weight: 500;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.02);
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  cursor: pointer;
+}
+
+.luxury-select-trigger[data-placeholder] {
+  color: hsl(220, 10%, 55%);
+  opacity: 0.8;
+  font-style: italic;
+  font-weight: 400;
+}
+
+.luxury-select-trigger:hover {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)),
+    linear-gradient(135deg, 
+      rgba(212, 175, 55, 0.4) 0%,
+      rgba(255, 215, 0, 0.35) 50%,
+      rgba(184, 134, 11, 0.4) 100%
+    );
+  box-shadow: 
+    0 4px 12px rgba(212, 175, 55, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.luxury-select-trigger:focus {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)),
+    linear-gradient(135deg, 
+      rgba(212, 175, 55, 0.6) 0%,
+      rgba(255, 215, 0, 0.5) 50%,
+      rgba(184, 134, 11, 0.6) 100%
+    );
+  box-shadow: 
+    0 0 0 3px rgba(212, 175, 55, 0.15),
+    0 0 20px rgba(255, 215, 0, 0.3),
+    0 6px 16px rgba(212, 175, 55, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.luxury-select-trigger[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),
+    linear-gradient(135deg, 
+      rgba(0, 0, 0, 0.05) 0%,
+      rgba(0, 0, 0, 0.03) 100%
+    );
+}
+
+/* Luxury Select Dropdown Content */
+.luxury-select-content {
+  position: relative;
+  z-index: 50;
+  max-height: var(--radix-select-content-available-height);
+  min-width: 8rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(24px) saturate(200%);
+  border: 1.5px solid rgba(212, 175, 55, 0.3);
+  color: hsl(220, 15%, 20%);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.12),
+    0 10px 20px rgba(0, 0, 0, 0.08),
+    0 0 30px rgba(212, 175, 55, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  animation: luxury-select-in 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.luxury-select-content[data-state=closed] {
+  animation: luxury-select-out 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes luxury-select-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes luxury-select-out {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateY(-8px);
+  }
+}
+
+/* Luxury Select Items */
+.luxury-select-item {
+  position: relative;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  border-radius: 0.5rem;
+  padding: 0.625rem 2rem 0.625rem 2rem;
+  font-size: 0.875rem;
+  outline: none;
+  cursor: pointer;
+  user-select: none;
+  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.luxury-select-item:hover,
+.luxury-select-item[data-highlighted] {
+  background: linear-gradient(135deg, 
+    rgba(212, 175, 55, 0.12) 0%,
+    rgba(255, 215, 0, 0.08) 100%
+  );
+  color: hsl(220, 15%, 15%);
+}
+
+.luxury-select-item[data-state=checked] {
+  background: linear-gradient(135deg, 
+    rgba(212, 175, 55, 0.2) 0%,
+    rgba(255, 215, 0, 0.15) 100%
+  );
+  color: hsl(220, 15%, 15%);
+  font-weight: 600;
+}
+
+.luxury-select-item[data-disabled] {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+/* Luxury Checkbox */
+.luxury-checkbox {
+  position: relative;
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 0.375rem;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px) saturate(180%);
+  border: 1.5px solid transparent;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
+    linear-gradient(135deg, 
+      rgba(212, 175, 55, 0.4) 0%,
+      rgba(184, 134, 11, 0.4) 100%
+    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  outline: none;
+}
+
+.luxury-checkbox:hover {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)),
+    linear-gradient(135deg, 
+      rgba(212, 175, 55, 0.5) 0%,
+      rgba(184, 134, 11, 0.5) 100%
+    );
+  box-shadow: 
+    0 4px 10px rgba(212, 175, 55, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.luxury-checkbox:focus-visible {
+  box-shadow: 
+    0 0 0 3px rgba(212, 175, 55, 0.2),
+    0 4px 10px rgba(212, 175, 55, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.luxury-checkbox[data-state=checked] {
+  background: linear-gradient(135deg, 
+    #d4af37 0%,
+    #ffd700 50%,
+    #cd7f32 100%
+  );
+  border-color: rgba(255, 255, 255, 0.3);
+  color: white;
+  box-shadow: 
+    0 6px 16px rgba(212, 175, 55, 0.4),
+    0 2px 6px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.luxury-checkbox[data-state=checked]:hover {
+  box-shadow: 
+    0 8px 20px rgba(212, 175, 55, 0.5),
+    0 4px 10px rgba(0, 0, 0, 0.15),
+    0 0 20px rgba(255, 215, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.luxury-checkbox[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Luxury Radio Button */
+.luxury-radio {
+  position: relative;
+  flex-shrink: 0;
+  aspect-ratio: 1;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px) saturate(180%);
+  border: 1.5px solid transparent;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
+    linear-gradient(135deg, 
+      rgba(212, 175, 55, 0.4) 0%,
+      rgba(184, 134, 11, 0.4) 100%
+    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  outline: none;
+}
+
+.luxury-radio:hover {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)),
+    linear-gradient(135deg, 
+      rgba(212, 175, 55, 0.5) 0%,
+      rgba(184, 134, 11, 0.5) 100%
+    );
+  box-shadow: 
+    0 4px 10px rgba(212, 175, 55, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.luxury-radio:focus-visible {
+  box-shadow: 
+    0 0 0 3px rgba(212, 175, 55, 0.2),
+    0 4px 10px rgba(212, 175, 55, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.luxury-radio[data-state=checked] {
+  background: linear-gradient(135deg, 
+    #d4af37 0%,
+    #ffd700 50%,
+    #cd7f32 100%
+  );
+  border-color: rgba(255, 255, 255, 0.3);
+  color: white;
+  box-shadow: 
+    0 6px 16px rgba(212, 175, 55, 0.4),
+    0 2px 6px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.luxury-radio[data-state=checked]:hover {
+  box-shadow: 
+    0 8px 20px rgba(212, 175, 55, 0.5),
+    0 4px 10px rgba(0, 0, 0, 0.15),
+    0 0 20px rgba(255, 215, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.luxury-radio[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Luxury Label */
+.luxury-label {
+  display: inline-block;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: hsl(220, 15%, 25%);
+  letter-spacing: 0.01em;
+  margin-bottom: 0.375rem;
+  cursor: pointer;
+  user-select: none;
+  transition: color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.luxury-label:has(+ *:focus),
+.luxury-label:hover {
+  color: hsl(220, 15%, 15%);
+}
+
+.luxury-label[disabled],
+.luxury-label.peer-disabled\:cursor-not-allowed {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Required Field Indicator */
+.luxury-label-required::after {
+  content: '*';
+  margin-left: 0.25rem;
+  background: linear-gradient(135deg, 
+    #d4af37 0%,
+    #cd7f32 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+/* Form Label Error State */
+.luxury-label-error {
+  color: hsl(0, 70%, 45%);
+  font-weight: 600;
+}
+
+/* Form Description/Helper Text */
+.luxury-form-description {
+  font-size: 0.875rem;
+  color: hsl(220, 10%, 50%);
+  font-weight: 400;
+  line-height: 1.5;
+  margin-top: 0.375rem;
+}
+
+/* Form Error/Validation Message */
+.luxury-form-message {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+  padding: 0.625rem 1rem;
+  border-radius: 0.625rem;
+  background: linear-gradient(135deg, 
+    rgba(239, 68, 68, 0.08) 0%,
+    rgba(251, 146, 60, 0.08) 100%
+  );
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: hsl(0, 70%, 45%);
+  box-shadow: 
+    0 2px 6px rgba(239, 68, 68, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  animation: luxury-message-in 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes luxury-message-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Form Success Message */
+.luxury-form-success {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+  padding: 0.625rem 1rem;
+  border-radius: 0.625rem;
+  background: linear-gradient(135deg, 
+    rgba(212, 175, 55, 0.08) 0%,
+    rgba(34, 197, 94, 0.08) 100%
+  );
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  color: hsl(142, 70%, 35%);
+  box-shadow: 
+    0 2px 6px rgba(34, 197, 94, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  animation: luxury-message-in 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Form Warning Message */
+.luxury-form-warning {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+  padding: 0.625rem 1rem;
+  border-radius: 0.625rem;
+  background: linear-gradient(135deg, 
+    rgba(251, 191, 36, 0.08) 0%,
+    rgba(245, 158, 11, 0.08) 100%
+  );
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  color: hsl(45, 90%, 35%);
+  box-shadow: 
+    0 2px 6px rgba(251, 191, 36, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  animation: luxury-message-in 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Input Error State */
+.luxury-input-error,
+.luxury-textarea-error,
+.luxury-select-trigger-error {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
+    linear-gradient(135deg, 
+      rgba(239, 68, 68, 0.3) 0%,
+      rgba(251, 146, 60, 0.25) 50%,
+      rgba(239, 68, 68, 0.3) 100%
+    );
+}
+
+.luxury-input-error:focus,
+.luxury-textarea-error:focus,
+.luxury-select-trigger-error:focus {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)),
+    linear-gradient(135deg, 
+      rgba(239, 68, 68, 0.5) 0%,
+      rgba(251, 146, 60, 0.4) 50%,
+      rgba(239, 68, 68, 0.5) 100%
+    );
+  box-shadow: 
+    0 0 0 3px rgba(239, 68, 68, 0.15),
+    0 0 20px rgba(251, 146, 60, 0.2),
+    0 6px 16px rgba(239, 68, 68, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+/* Input Success State */
+.luxury-input-success,
+.luxury-textarea-success,
+.luxury-select-trigger-success {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
+    linear-gradient(135deg, 
+      rgba(212, 175, 55, 0.3) 0%,
+      rgba(34, 197, 94, 0.25) 50%,
+      rgba(212, 175, 55, 0.3) 100%
+    );
+}
+
+.luxury-input-success:focus,
+.luxury-textarea-success:focus,
+.luxury-select-trigger-success:focus {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)),
+    linear-gradient(135deg, 
+      rgba(212, 175, 55, 0.5) 0%,
+      rgba(34, 197, 94, 0.4) 50%,
+      rgba(212, 175, 55, 0.5) 100%
+    );
+  box-shadow: 
+    0 0 0 3px rgba(212, 175, 55, 0.15),
+    0 0 20px rgba(34, 197, 94, 0.2),
+    0 6px 16px rgba(212, 175, 55, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+/* Search Input Special Styling */
+.luxury-search-input {
+  padding-left: 2.75rem;
+}
+
+.luxury-search-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.luxury-search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: hsl(220, 10%, 45%);
+  pointer-events: none;
+  transition: color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.luxury-search-input:focus + .luxury-search-icon {
+  color: hsl(45, 80%, 50%);
+}
+
+.luxury-search-clear {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: rgba(212, 175, 55, 0.15);
+  color: hsl(220, 15%, 40%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.luxury-search-input:not(:placeholder-shown) ~ .luxury-search-clear {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.luxury-search-clear:hover {
+  background: rgba(212, 175, 55, 0.25);
+  color: hsl(220, 15%, 20%);
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* Form Group with Luxury Spacing */
+.luxury-form-group {
+  margin-bottom: 1.5rem;
+}
+
+/* Responsive Adjustments for Forms */
+@media (max-width: 768px) {
+  .luxury-input,
+  .luxury-textarea,
+  .luxury-select-trigger {
+    font-size: 1rem;
+    padding: 0.875rem 1rem;
+  }
+  
+  .luxury-label {
+    font-size: 0.875rem;
+  }
+  
+  .luxury-form-description,
+  .luxury-form-message,
+  .luxury-form-success,
+  .luxury-form-warning {
+    font-size: 0.8125rem;
+  }
+}
+
+/* Accessibility: Reduce Motion for Forms */
+@media (prefers-reduced-motion: reduce) {
+  .luxury-input,
+  .luxury-textarea,
+  .luxury-select-trigger,
+  .luxury-select-content,
+  .luxury-checkbox,
+  .luxury-radio,
+  .luxury-label,
+  .luxury-form-message,
+  .luxury-form-success,
+  .luxury-form-warning,
+  .luxury-search-clear {
+    transition: none;
     animation: none;
   }
 }

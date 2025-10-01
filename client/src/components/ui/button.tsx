@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 relative overflow-hidden",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-350 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 relative overflow-hidden",
   {
     variants: {
       variant: {
@@ -19,7 +19,24 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         
-        // Luxury variants
+        // === LUXURY ELITE VARIANTS ===
+        
+        // Primary Metallic Button - Full gold/bronze gradient with multi-layer shadows
+        "metallic-primary": "bg-gradient-to-br from-[#d4af37] via-[#ffd700] via-[#f4e5c3] via-[#cd7f32] to-[#b8860b] text-white font-bold tracking-wide border-2 border-white/30 shadow-[0_4px_12px_rgba(212,175,55,0.4),0_2px_6px_rgba(0,0,0,0.15),0_1px_3px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.6)] transition-all duration-350 ease-out hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(212,175,55,0.5),0_4px_12px_rgba(212,175,55,0.3),0_2px_6px_rgba(0,0,0,0.2),0_0_30px_rgba(255,215,0,0.3),inset_0_1px_0_rgba(255,255,255,0.8)] before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/30 before:via-white/10 before:to-white/30 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-350 active:translate-y-0",
+        
+        // Secondary Glass Button - Glass morphism with metallic gradient border
+        "glass-secondary": "bg-white/40 backdrop-blur-xl border-2 border-transparent bg-origin-border bg-clip-padding text-slate-900 font-semibold shadow-[0_4px_12px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.8)] transition-all duration-350 ease-out before:absolute before:inset-0 before:rounded-[inherit] before:p-[2px] before:bg-gradient-to-br before:from-[#d4af37] before:via-[#ffd700] before:to-[#cd7f32] before:-z-10 before:opacity-50 hover:bg-white/60 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12),0_0_25px_rgba(212,175,55,0.25),inset_0_1px_0_rgba(255,255,255,0.9)] hover:-translate-y-1 hover:before:opacity-100 after:absolute after:inset-0 after:bg-[url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png')] after:bg-cover after:mix-blend-soft-light after:opacity-0 hover:after:opacity-30 after:pointer-events-none after:transition-opacity after:duration-350",
+        
+        // Outline Refined - Transparent with metallic border, fills on hover
+        "outline-refined": "bg-transparent border-2 border-transparent bg-origin-border text-slate-800 font-semibold shadow-[0_2px_6px_rgba(0,0,0,0.06)] transition-all duration-350 ease-out before:absolute before:inset-0 before:rounded-[inherit] before:p-[2px] before:bg-gradient-to-br before:from-[#d4af37] before:via-[#ffd700] before:to-[#cd7f32] before:-z-10 before:opacity-70 hover:bg-gradient-to-br hover:from-[#d4af37]/10 hover:via-[#ffd700]/10 hover:to-[#cd7f32]/10 hover:shadow-[0_6px_16px_rgba(212,175,55,0.2),0_0_20px_rgba(212,175,55,0.15)] hover:-translate-y-1 hover:before:opacity-100",
+        
+        // Icon Glass - Small glass morphism for icon buttons
+        "icon-glass": "rounded-full bg-white/30 backdrop-blur-lg border border-white/40 text-slate-700 shadow-[0_2px_8px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.6)] transition-all duration-350 ease-out hover:bg-white/50 hover:border-[#d4af37]/40 hover:text-slate-900 hover:shadow-[0_4px_16px_rgba(0,0,0,0.12),0_0_20px_rgba(212,175,55,0.2),inset_0_1px_0_rgba(255,255,255,0.8)] hover:scale-110 active:scale-105",
+        
+        // Danger Luxury - Red/amber with luxury treatment
+        "danger-luxury": "bg-gradient-to-br from-red-500 via-red-400 to-amber-500 text-white font-bold border-2 border-white/30 shadow-[0_4px_12px_rgba(239,68,68,0.4),0_2px_6px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.5)] transition-all duration-350 ease-out hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(239,68,68,0.5),0_4px_12px_rgba(239,68,68,0.3),0_0_30px_rgba(251,146,60,0.3),inset_0_1px_0_rgba(255,255,255,0.7)] before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/20 before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-350",
+        
+        // Original luxury variants (kept for compatibility)
         lux: "bg-gradient-to-br from-primary via-accent to-secondary text-primary-foreground font-semibold shadow-lg hover:shadow-xl hover:shadow-primary/25 hover:scale-105 transform transition-all duration-300 ease-out before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/20 before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300",
         
         glass: "glass-panel backdrop-blur-md bg-slate-50/80 border border-slate-200 text-slate-900 hover:bg-slate-100/80 hover:border-slate-300 hover:shadow-lg hover:shadow-primary/20 transform hover:scale-105 transition-all duration-300 ease-out",
@@ -35,6 +52,8 @@ const buttonVariants = cva(
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
         icon: "h-10 w-10",
+        "icon-sm": "h-8 w-8",
+        "icon-lg": "h-12 w-12",
         xl: "h-14 rounded-lg px-12 text-lg"
       },
     },
