@@ -46,7 +46,7 @@ export default function EliteNavigationHeader() {
   return (
     <>
       {/* ELITE MARKETING FIRM HEADER */}
-      <header className="elite-glass-header sticky top-0 z-50 w-full">
+      <header className="elite-glass-header nav-marble-header sticky top-0 z-50 w-full">
         <div className="container mx-auto px-8 relative z-10">
           <div className="flex h-16 items-center justify-between relative z-10">
             
@@ -206,7 +206,7 @@ export default function EliteNavigationHeader() {
         {isMobileMenuOpen && (
           <>
             <div 
-              className="lg:hidden elite-glass-mobile-menu relative z-10"
+              className="lg:hidden elite-glass-mobile-menu nav-marble-mobile-menu relative z-10"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               <nav className="container mx-auto px-8 py-6 space-y-2 relative z-10">

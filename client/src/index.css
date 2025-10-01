@@ -201,7 +201,12 @@
 .edit-business-basics-card,
 .edit-business-location-card,
 .edit-business-visual-card,
-.edit-business-submit-card {
+.edit-business-submit-card,
+.nav-marble-header,
+.nav-marble-mobile-menu,
+.nav-marble-mobile-bottom,
+.footer-marble-section,
+.footer-marble-newsletter {
   position: relative;
 }
 
@@ -1081,6 +1086,87 @@
 
 /* Accessibility Note: Status badges maintain high contrast
    All text maintains WCAG AA compliance with reduced marble opacity */
+
+/* === NAVIGATION & FOOTER ELITE MARBLE STYLING === */
+
+/* Main Navigation Header - White Carrara Marble (SUBTLE 50% opacity for readability) */
+.nav-marble-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.5;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+/* Mobile Dropdown Menu - White Carrara Marble (SUBTLE 52% opacity) */
+.nav-marble-mobile-menu::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.52;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Mobile Bottom Navigation - Calacatta Gold Marble (SUBTLE 50% opacity) */
+.nav-marble-mobile-bottom::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.5;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Footer Main Section - White Carrara Marble (60% opacity for footer prominence) */
+.footer-marble-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+/* Footer Newsletter Section - Calacatta Gold Marble (65% opacity for emphasis) */
+.footer-marble-newsletter::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.65;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Navigation & Footer Accessibility:
+   - Navigation uses 50-55% opacity to maintain excellent readability
+   - Footer uses 60-65% opacity for more visual interest (less critical UX)
+   - All interactive elements maintain WCAG AA contrast compliance
+   - Existing hover states and animations preserved via z-index layering */
 
 /* === CONSOLIDATED GLASS MORPHISM SYSTEM === */
 /* Three standardized variants for consistent glass effects across the app */

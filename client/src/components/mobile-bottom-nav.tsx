@@ -37,7 +37,7 @@ export default function MobileBottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 premium-mobile-nav glass-panel border-t border-border/30 backdrop-blur-xl md:hidden z-40">
+    <nav className="fixed bottom-0 left-0 right-0 premium-mobile-nav nav-marble-mobile-bottom glass-panel border-t border-border/30 backdrop-blur-xl md:hidden z-40">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent"></div>
       <div className="flex items-center justify-around py-3">
         {navItems.map((item) => {

@@ -5,7 +5,7 @@ export default function LuxuryFooter() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative mt-20 glass-panel border-t border-border/20 backdrop-blur-lg">
+    <footer className="relative mt-20 glass-panel footer-marble-section border-t border-border/20 backdrop-blur-lg">
       {/* Gradient Top Border */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent"></div>
       
@@ -194,7 +194,7 @@ export default function LuxuryFooter() {
         </div>
 
         {/* Newsletter Signup */}
-        <div className="mb-12 p-8 glass-panel rounded-2xl card-rim-light">
+        <div className="mb-12 p-8 glass-panel footer-marble-newsletter rounded-2xl card-rim-light">
           <div className="text-center max-w-2xl mx-auto">
             <h3 className="text-2xl font-bold gradient-text text-luxury font-serif mb-4">
               Stay Connected with Florida's Elite
