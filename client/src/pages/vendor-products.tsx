@@ -127,93 +127,100 @@ export default function VendorProductsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Vendor Products</h1>
+      <div className="vendor-products-header flex items-center justify-between mb-6 rounded-2xl p-6 relative">
+        <h1 className="text-3xl font-bold marble-content" data-testid="heading-vendor-products">Vendor Products</h1>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button disabled={!selectedBusiness}>Add Product</Button>
+            <Button disabled={!selectedBusiness} className="marble-content" data-testid="button-add-product">Add Product</Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>{editingProduct ? "Edit Product" : "Create Product"}</DialogTitle>
-            </DialogHeader>
-            <ProductForm 
-              product={editingProduct} 
-              onSubmit={handleSubmit}
-              isLoading={createProduct.isPending || updateProduct.isPending}
-            />
+          <DialogContent className="max-w-2xl vendor-product-dialog">
+            <div className="marble-content">
+              <DialogHeader>
+                <DialogTitle>{editingProduct ? "Edit Product" : "Create Product"}</DialogTitle>
+              </DialogHeader>
+              <ProductForm 
+                product={editingProduct} 
+                onSubmit={handleSubmit}
+                isLoading={createProduct.isPending || updateProduct.isPending}
+              />
+            </div>
           </DialogContent>
         </Dialog>
       </div>
 
       {/* Business Selection */}
-      <div className="mb-6">
-        <Label htmlFor="business-select">Select Business</Label>
-        <Select value={selectedBusiness} onValueChange={setSelectedBusiness}>
-          <SelectTrigger className="w-full max-w-md">
-            <SelectValue placeholder="Choose a business" />
-          </SelectTrigger>
-          <SelectContent>
-            {businesses.map((business) => (
-              <SelectItem key={business.id} value={business.id}>
-                {business.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <div className="vendor-business-selection mb-6 rounded-2xl p-6 relative">
+        <div className="marble-content">
+          <Label htmlFor="business-select">Select Business</Label>
+          <Select value={selectedBusiness} onValueChange={setSelectedBusiness}>
+            <SelectTrigger className="w-full max-w-md" id="business-select" data-testid="select-business">
+              <SelectValue placeholder="Choose a business" />
+            </SelectTrigger>
+            <SelectContent>
+              {businesses.map((business) => (
+                <SelectItem key={business.id} value={business.id}>
+                  {business.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Products Grid */}
       {selectedBusiness && (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {isLoading ? (
-            <div>Loading products...</div>
-          ) : products.length === 0 ? (
-            <div className="col-span-full text-muted-foreground">No products yet. Create your first product!</div>
-          ) : (
-            products.map((product) => (
-              <Card key={product.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span className="truncate">{product.name}</span>
-                    <Badge variant={product.isActive ? "default" : "secondary"}>
-                      {product.isActive ? "Active" : "Inactive"}
-                    </Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold">${parseFloat(product.price).toFixed(2)}</span>
-                      {product.originalPrice && parseFloat(product.originalPrice) > parseFloat(product.price) && (
-                        <span className="text-sm text-muted-foreground line-through">
-                          ${parseFloat(product.originalPrice).toFixed(2)}
-                        </span>
+        <div className="vendor-products-grid grid md:grid-cols-2 lg:grid-cols-3 gap-6 relative rounded-2xl p-6">
+          <div className="marble-content col-span-full grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {isLoading ? (
+              <div data-testid="loading-products">Loading products...</div>
+            ) : products.length === 0 ? (
+              <div className="col-span-full text-muted-foreground" data-testid="empty-products">No products yet. Create your first product!</div>
+            ) : (
+              products.map((product) => (
+                <Card key={product.id} className="vendor-product-card hover:shadow-lg transition-shadow relative" data-testid={`card-product-${product.id}`}>
+                  <CardHeader className="marble-content">
+                    <CardTitle className="flex items-center justify-between">
+                      <span className="truncate" data-testid={`text-product-name-${product.id}`}>{product.name}</span>
+                      <Badge variant={product.isActive ? "default" : "secondary"} data-testid={`badge-product-status-${product.id}`}>
+                        {product.isActive ? "Active" : "Inactive"}
+                      </Badge>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="marble-content">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="font-semibold" data-testid={`text-product-price-${product.id}`}>${parseFloat(product.price).toFixed(2)}</span>
+                        {product.originalPrice && parseFloat(product.originalPrice) > parseFloat(product.price) && (
+                          <span className="text-sm text-muted-foreground line-through" data-testid={`text-original-price-${product.id}`}>
+                            ${parseFloat(product.originalPrice).toFixed(2)}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-sm text-muted-foreground" data-testid={`text-product-stock-${product.id}`}>
+                        Stock: {product.inventory ?? "Unlimited"}
+                      </div>
+                      {product.category && (
+                        <Badge variant="outline" className="text-xs" data-testid={`badge-product-category-${product.id}`}>{product.category}</Badge>
                       )}
+                      <div className="flex gap-2 mt-4">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => {
+                            setEditingProduct(product);
+                            setShowCreateDialog(true);
+                          }}
+                          data-testid={`button-edit-product-${product.id}`}
+                        >
+                          Edit
+                        </Button>
+                      </div>
                     </div>
-                    <div className="text-sm text-muted-foreground">
-                      Stock: {product.inventory ?? "Unlimited"}
-                    </div>
-                    {product.category && (
-                      <Badge variant="outline" className="text-xs">{product.category}</Badge>
-                    )}
-                    <div className="flex gap-2 mt-4">
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => {
-                          setEditingProduct(product);
-                          setShowCreateDialog(true);
-                        }}
-                      >
-                        Edit
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
-          )}
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
         </div>
       )}
 
@@ -224,15 +231,17 @@ export default function VendorProductsPage() {
           setShowCreateDialog(false);
         }
       }}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Edit Product</DialogTitle>
-          </DialogHeader>
-          <ProductForm 
-            product={editingProduct} 
-            onSubmit={handleSubmit}
-            isLoading={updateProduct.isPending}
-          />
+        <DialogContent className="max-w-2xl vendor-product-dialog">
+          <div className="marble-content">
+            <DialogHeader>
+              <DialogTitle>Edit Product</DialogTitle>
+            </DialogHeader>
+            <ProductForm 
+              product={editingProduct} 
+              onSubmit={handleSubmit}
+              isLoading={updateProduct.isPending}
+            />
+          </div>
         </DialogContent>
       </Dialog>
     </div>

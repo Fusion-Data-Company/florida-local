@@ -411,27 +411,27 @@ export default function VendorPayoutsPage() {
   return (
     <div className="container mx-auto px-4 py-8 space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+      <div className="vendor-payouts-header flex items-center justify-between rounded-2xl p-6 relative">
+        <div className="marble-content">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-2" data-testid="heading-vendor-payouts">
             Vendor Payouts
           </h1>
           <p className="text-muted-foreground">
             Manage your Stripe Connect payouts and transactions
           </p>
         </div>
-        <Wallet className="h-12 w-12 text-cyan-600" />
+        <Wallet className="h-12 w-12 text-cyan-600 marble-content" />
       </div>
 
       {/* Business Selection */}
-      <Card className="miami-glass border-white/30">
-        <CardHeader>
+      <Card className="vendor-business-selection miami-glass border-white/30 relative">
+        <CardHeader className="marble-content">
           <CardTitle className="flex items-center gap-2">
             <DollarSign className="h-5 w-5" />
             Select Business
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="marble-content">
           <Select value={selectedBusiness} onValueChange={setSelectedBusiness}>
             <SelectTrigger className="w-full max-w-md bg-white/80 border-white/30" data-testid="select-business">
               <SelectValue placeholder="Choose a business" />
@@ -451,14 +451,14 @@ export default function VendorPayoutsPage() {
         <>
           {/* Stripe Onboarding Section */}
           {statusLoading ? (
-            <Card className="miami-glass">
-              <CardContent className="pt-6">
+            <Card className="vendor-stripe-status miami-glass relative">
+              <CardContent className="pt-6 marble-content">
                 <Skeleton className="h-24 w-full" />
               </CardContent>
             </Card>
           ) : !hasStripeAccount || (statusError && (statusError as any).message?.includes('No Stripe Connect account')) ? (
-            <Card className="miami-glass border-cyan-300 miami-card-glow">
-              <CardHeader>
+            <Card className="vendor-stripe-status miami-glass border-cyan-300 miami-card-glow relative">
+              <CardHeader className="marble-content">
                 <CardTitle className="flex items-center gap-2">
                   <AlertCircle className="h-6 w-6 text-cyan-600" />
                   Set Up Stripe Payouts
@@ -467,12 +467,12 @@ export default function VendorPayoutsPage() {
                   Connect your bank account to receive payouts from customer orders
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="marble-content">
                 <Button
                   onClick={() => createConnectAccount.mutate()}
                   disabled={createConnectAccount.isPending}
                   className="btn-miami-primary gap-2"
-                  data-testid="setup-payouts"
+                  data-testid="button-setup-payouts"
                 >
                   {createConnectAccount.isPending ? (
                     <>
@@ -489,8 +489,8 @@ export default function VendorPayoutsPage() {
               </CardContent>
             </Card>
           ) : !isOnboarded ? (
-            <Card className="miami-glass border-yellow-300">
-              <CardHeader>
+            <Card className="vendor-stripe-status miami-glass border-yellow-300 relative">
+              <CardHeader className="marble-content">
                 <CardTitle className="flex items-center gap-2">
                   <Clock className="h-6 w-6 text-yellow-600" />
                   Complete Stripe Onboarding
@@ -499,9 +499,9 @@ export default function VendorPayoutsPage() {
                   Finish setting up your account to start receiving payouts
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 marble-content">
                 {stripeStatus?.requirements && (
-                  <Alert>
+                  <Alert data-testid="alert-requirements">
                     <AlertCircle className="h-4 w-4" />
                     <AlertTitle>Required Information</AlertTitle>
                     <AlertDescription>
@@ -522,7 +522,7 @@ export default function VendorPayoutsPage() {
                   onClick={() => resumeOnboarding.mutate()}
                   disabled={resumeOnboarding.isPending}
                   className="btn-miami-primary gap-2"
-                  data-testid="resume-onboarding"
+                  data-testid="button-resume-onboarding"
                 >
                   {resumeOnboarding.isPending ? (
                     <>
@@ -539,8 +539,8 @@ export default function VendorPayoutsPage() {
               </CardContent>
             </Card>
           ) : (
-            <Card className="miami-glass border-green-300">
-              <CardContent className="pt-6">
+            <Card className="vendor-stripe-status miami-glass border-green-300 relative">
+              <CardContent className="pt-6 marble-content">
                 <div className="flex items-center gap-3">
                   <CheckCircle2 className="h-8 w-8 text-green-600" />
                   <div>
@@ -552,7 +552,7 @@ export default function VendorPayoutsPage() {
                   </div>
                   <Badge 
                     className="ml-auto bg-green-100 text-green-800 border-green-300"
-                    data-testid="account-status-active"
+                    data-testid="badge-account-status"
                   >
                     Active
                   </Badge>
@@ -563,20 +563,20 @@ export default function VendorPayoutsPage() {
 
           {/* Balance Summary Card */}
           {isOnboarded && (
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="vendor-balance-cards grid md:grid-cols-2 gap-6">
               <Card className="miami-glass border-cyan-300 miami-card-glow relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-blue-500/10" />
-                <CardHeader className="relative">
+                <CardHeader className="relative marble-content">
                   <CardTitle className="flex items-center gap-2 text-cyan-700">
                     <TrendingUp className="h-5 w-5" />
                     Available Balance
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="relative">
+                <CardContent className="relative marble-content">
                   {balanceLoading ? (
                     <Skeleton className="h-16 w-48" />
                   ) : (
-                    <div className="text-5xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent" data-testid="available-balance">
+                    <div className="text-5xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent" data-testid="text-available-balance">
                       {formatCurrency(availableBalance?.amount || 0)}
                     </div>
                   )}
@@ -585,17 +585,17 @@ export default function VendorPayoutsPage() {
 
               <Card className="miami-glass border-purple-300 relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10" />
-                <CardHeader className="relative">
+                <CardHeader className="relative marble-content">
                   <CardTitle className="flex items-center gap-2 text-purple-700">
                     <Clock className="h-5 w-5" />
                     Pending Balance
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="relative">
+                <CardContent className="relative marble-content">
                   {balanceLoading ? (
                     <Skeleton className="h-16 w-48" />
                   ) : (
-                    <div className="text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent" data-testid="pending-balance">
+                    <div className="text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent" data-testid="text-pending-balance">
                       {formatCurrency(pendingBalance?.amount || 0)}
                     </div>
                   )}
@@ -606,16 +606,16 @@ export default function VendorPayoutsPage() {
 
           {/* Payout Schedule & Manual Payout */}
           {isOnboarded && (
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="vendor-payout-settings grid md:grid-cols-2 gap-6">
               {/* Payout Schedule */}
-              <Card className="miami-glass">
-                <CardHeader>
+              <Card className="vendor-payout-schedule miami-glass relative">
+                <CardHeader className="marble-content">
                   <CardTitle className="flex items-center gap-2">
                     <Calendar className="h-5 w-5" />
                     Payout Schedule
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 marble-content">
                   <div>
                     <Label htmlFor="payout-schedule">Schedule Interval</Label>
                     <Select
@@ -654,14 +654,14 @@ export default function VendorPayoutsPage() {
 
               {/* Manual Payout Form */}
               {canRequestPayout && (
-                <Card className="miami-glass border-blue-300">
-                  <CardHeader>
+                <Card className="vendor-payout-form miami-glass border-blue-300 relative">
+                  <CardHeader className="marble-content">
                     <CardTitle className="flex items-center gap-2">
                       <Send className="h-5 w-5" />
                       Request Payout
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="marble-content">
                     <Form {...payoutForm}>
                       <form onSubmit={payoutForm.handleSubmit((values) => createPayout.mutate(values))} className="space-y-4">
                         <FormField
@@ -677,7 +677,7 @@ export default function VendorPayoutsPage() {
                                   min="1"
                                   placeholder="100.00"
                                   className="bg-white/80 border-white/30"
-                                  data-testid="payout-amount"
+                                  data-testid="input-payout-amount"
                                   {...field}
                                 />
                               </FormControl>
@@ -699,7 +699,7 @@ export default function VendorPayoutsPage() {
                                   type="text"
                                   placeholder="Weekly payout"
                                   className="bg-white/80 border-white/30"
-                                  data-testid="payout-description"
+                                  data-testid="input-payout-description"
                                   {...field}
                                 />
                               </FormControl>
@@ -711,7 +711,7 @@ export default function VendorPayoutsPage() {
                           type="submit"
                           disabled={!payoutForm.formState.isValid || createPayout.isPending}
                           className="btn-miami-primary w-full gap-2"
-                          data-testid="request-payout"
+                          data-testid="button-request-payout"
                         >
                           {createPayout.isPending ? (
                             <>
@@ -735,31 +735,32 @@ export default function VendorPayoutsPage() {
 
           {/* Payouts History */}
           {isOnboarded && (
-            <Card className="miami-glass">
-              <CardHeader>
+            <Card className="vendor-payouts-table miami-glass relative">
+              <CardHeader className="marble-content">
                 <CardTitle>Payouts History</CardTitle>
                 <CardDescription>View all your payout transactions</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="marble-content">
                 {payoutsLoading ? (
-                  <div className="space-y-3">
+                  <div className="space-y-3" data-testid="loading-payouts">
                     {[...Array(5)].map((_, i) => (
                       <Skeleton key={i} className="h-12 w-full" />
                     ))}
                   </div>
                 ) : payoutsData?.data && payoutsData.data.length > 0 ? (
-                  <MagicDataTable
-                    data={payoutsData.data}
-                    columns={payoutColumns}
-                    searchable={true}
-                    sortable={true}
-                    paginated={true}
-                    pageSize={10}
-                    emptyMessage="No payouts yet"
-                    data-testid="table-payouts"
-                  />
+                  <div data-testid="table-payouts">
+                    <MagicDataTable
+                      data={payoutsData.data}
+                      columns={payoutColumns}
+                      searchable={true}
+                      sortable={true}
+                      paginated={true}
+                      pageSize={10}
+                      emptyMessage="No payouts yet"
+                    />
+                  </div>
                 ) : (
-                  <Alert>
+                  <Alert data-testid="alert-no-payouts">
                     <AlertCircle className="h-4 w-4" />
                     <AlertTitle>No Payouts Yet</AlertTitle>
                     <AlertDescription>
@@ -773,31 +774,32 @@ export default function VendorPayoutsPage() {
 
           {/* Transactions History */}
           {isOnboarded && (
-            <Card className="miami-glass">
-              <CardHeader>
+            <Card className="vendor-transactions-table miami-glass relative">
+              <CardHeader className="marble-content">
                 <CardTitle>Transaction History</CardTitle>
                 <CardDescription>All balance transactions including charges, refunds, and fees</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="marble-content">
                 {transactionsLoading ? (
-                  <div className="space-y-3">
+                  <div className="space-y-3" data-testid="loading-transactions">
                     {[...Array(5)].map((_, i) => (
                       <Skeleton key={i} className="h-12 w-full" />
                     ))}
                   </div>
                 ) : transactionsData?.data && transactionsData.data.length > 0 ? (
-                  <MagicDataTable
-                    data={transactionsData.data}
-                    columns={transactionColumns}
-                    searchable={true}
-                    sortable={true}
-                    paginated={true}
-                    pageSize={10}
-                    emptyMessage="No transactions yet"
-                    data-testid="table-transactions"
-                  />
+                  <div data-testid="table-transactions">
+                    <MagicDataTable
+                      data={transactionsData.data}
+                      columns={transactionColumns}
+                      searchable={true}
+                      sortable={true}
+                      paginated={true}
+                      pageSize={10}
+                      emptyMessage="No transactions yet"
+                    />
+                  </div>
                 ) : (
-                  <Alert>
+                  <Alert data-testid="alert-no-transactions">
                     <AlertCircle className="h-4 w-4" />
                     <AlertTitle>No Transactions Yet</AlertTitle>
                     <AlertDescription>

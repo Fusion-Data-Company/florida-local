@@ -171,7 +171,20 @@
 .messages-bubble-sent,
 .messages-bubble-received,
 .messages-compose-area,
-.messages-empty-state {
+.messages-empty-state,
+.vendor-products-header,
+.vendor-business-selection,
+.vendor-products-grid,
+.vendor-product-card,
+.vendor-product-dialog,
+.vendor-payouts-header,
+.vendor-stripe-status,
+.vendor-balance-cards,
+.vendor-payout-settings,
+.vendor-payout-schedule,
+.vendor-payout-form,
+.vendor-payouts-table,
+.vendor-transactions-table {
   position: relative;
 }
 
@@ -578,6 +591,191 @@
   inset: 0;
   z-index: 0;
   background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.5;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* === VENDOR PORTAL LUXURY MARBLE STYLING === */
+
+/* Vendor Products Page Header - White Carrara Marble */
+.vendor-products-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Vendor Business Selection - Calacatta Gold Marble */
+.vendor-business-selection::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.55;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Vendor Products Grid - White Carrara Marble */
+.vendor-products-grid::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.5;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Individual Product Cards - Calacatta Gold Marble */
+.vendor-product-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.5;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Product Form Dialog - White Carrara Marble */
+.vendor-product-dialog::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.55;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Vendor Payouts Page Header - Calacatta Gold Marble */
+.vendor-payouts-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Stripe Status Card - White Carrara Marble */
+.vendor-stripe-status::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Balance Cards Container - Black Marquina Marble */
+.vendor-balance-cards::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Black_Marquina_Marble_Texture_5dc162e8.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.5;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Payout Settings Container - White Carrara Marble */
+.vendor-payout-settings::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.5;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Payout Schedule Card - Calacatta Gold Marble */
+.vendor-payout-schedule::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.55;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Payout Form - Marble removed for WCAG AA contrast compliance */
+/* .vendor-payout-form::before removed to ensure form text readability */
+
+/* Payouts Table - White Carrara Marble */
+.vendor-payouts-table::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.5;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Transactions Table - Calacatta Gold Marble */
+.vendor-transactions-table::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
   background-size: cover;
   background-position: center;
   opacity: 0.5;
