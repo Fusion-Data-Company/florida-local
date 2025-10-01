@@ -353,6 +353,26 @@ export const gmbReviews = pgTable("gmb_reviews", {
   uniqueIndex("idx_unique_gmb_review").on(table.businessId, table.gmbReviewId)
 ]);
 
+// API Keys for secure external integrations
+export const apiKeys = pgTable("api_keys", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  keyHash: varchar("key_hash", { length: 64 }).notNull().unique(), // SHA-256 hash of the API key
+  name: varchar("name", { length: 255 }).notNull(),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  permissions: jsonb("permissions").notNull().default([]), // Array of permission strings
+  rateLimit: jsonb("rate_limit"), // { requests: number, window: number }
+  isActive: boolean("is_active").default(true),
+  lastUsedAt: timestamp("last_used_at"),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_api_keys_key_hash").on(table.keyHash),
+  index("idx_api_keys_business_id").on(table.businessId),
+  index("idx_api_keys_user_id").on(table.userId)
+]);
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   businesses: many(businesses),
@@ -555,6 +575,17 @@ export const gmbReviewsRelations = relations(gmbReviews, ({ one }) => ({
   }),
 }));
 
+export const apiKeysRelations = relations(apiKeys, ({ one }) => ({
+  business: one(businesses, {
+    fields: [apiKeys.businessId],
+    references: [businesses.id],
+  }),
+  user: one(users, {
+    fields: [apiKeys.userId],
+    references: [users.id],
+  }),
+}));
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -654,6 +685,12 @@ export const insertGmbReviewSchema = createInsertSchema(gmbReviews).omit({
   lastSyncedAt: true,
 });
 
+export const insertApiKeySchema = createInsertSchema(apiKeys).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -689,3 +726,7 @@ export type GmbSyncHistory = typeof gmbSyncHistory.$inferSelect;
 export type InsertGmbSyncHistory = z.infer<typeof insertGmbSyncHistorySchema>;
 export type GmbReview = typeof gmbReviews.$inferSelect;
 export type InsertGmbReview = z.infer<typeof insertGmbReviewSchema>;
+
+// API Key Types
+export type ApiKey = typeof apiKeys.$inferSelect;
+export type InsertApiKey = z.infer<typeof insertApiKeySchema>;

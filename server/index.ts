@@ -12,29 +12,57 @@ const app = express();
 initSentry(app);
 initPostHog();
 
-// Security headers
-app.use(helmet({
+// CRITICAL: Validate REPLIT_DOMAINS in production
+const isProduction = process.env.NODE_ENV === 'production';
+if (isProduction && !process.env.REPLIT_DOMAINS) {
+  logger.error('CRITICAL: REPLIT_DOMAINS environment variable is not set in production. This is required for CORS security.');
+  throw new Error('REPLIT_DOMAINS must be set in production environment. Cannot start server without proper CORS configuration.');
+}
+
+// SECURITY: Split Helmet configuration for development vs production
+// Production: Strict CSP without unsafe-inline for scripts
+// Development: Allow unsafe-inline for Vite hot module replacement
+const helmetConfig = isProduction ? {
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "https:", "blob:"],
-      scriptSrc: ["'self'", "'unsafe-inline'"], // Vite needs inline scripts in dev
+      scriptSrc: ["'self'"], // PRODUCTION: No unsafe-inline
       connectSrc: ["'self'", "wss:", "ws:"],
       objectSrc: ["'none'"],
       mediaSrc: ["'self'"],
       frameSrc: ["'none'"],
     },
   },
-  crossOriginEmbedderPolicy: false, // Allow embedding for Replit
-}));
+  crossOriginEmbedderPolicy: false,
+} : {
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https:", "blob:"],
+      scriptSrc: ["'self'", "'unsafe-inline'"], // DEVELOPMENT: Allow unsafe-inline for Vite
+      connectSrc: ["'self'", "wss:", "ws:"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      frameSrc: ["'none'"],
+    },
+  },
+  crossOriginEmbedderPolicy: false,
+};
 
-// CORS configuration
+app.use(helmet(helmetConfig));
+
+// SECURITY: CORS configuration with production validation
+const corsOrigins = isProduction 
+  ? process.env.REPLIT_DOMAINS!.split(',').map(d => `https://${d.trim()}`)
+  : true; // Allow all origins in development
+
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? (process.env.REPLIT_DOMAINS || '').split(',').map(d => `https://${d.trim()}`)
-    : true, // Allow all origins in development
+  origin: corsOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],

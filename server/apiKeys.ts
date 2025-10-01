@@ -2,22 +2,14 @@ import crypto from "crypto";
 import { redis, cache } from "./redis";
 import { logger } from "./monitoring";
 import { Request, Response, NextFunction } from "express";
+import { storage } from "./storage";
+import type { ApiKey } from "@shared/schema";
 
-interface ApiKey {
-  id: string;
-  key: string;
-  name: string;
-  businessId: string;
-  userId: string;
-  permissions: string[];
+interface ApiKeyWithRateLimit extends Omit<ApiKey, 'rateLimit'> {
   rateLimit?: {
     requests: number;
-    window: number; // in seconds
+    window: number;
   };
-  lastUsed?: Date;
-  createdAt: Date;
-  expiresAt?: Date;
-  isActive: boolean;
 }
 
 // Generate a secure API key
@@ -43,20 +35,18 @@ export async function createApiKey(
   const key = generateApiKey();
   const hashedKey = hashApiKey(key);
   
-  const apiKey: ApiKey = {
-    id: crypto.randomUUID(),
-    key: hashedKey,
+  const apiKeyData = {
+    keyHash: hashedKey,
     name,
     businessId,
     userId,
-    permissions,
-    createdAt: new Date(),
+    permissions: permissions as any,
     expiresAt: expiresInDays ? new Date(Date.now() + expiresInDays * 24 * 60 * 60 * 1000) : undefined,
     isActive: true,
   };
 
-  // Store in database (you would implement this in storage.ts)
-  // await storage.createApiKey(apiKey);
+  // Store in database
+  const apiKey = await storage.createApiKey(apiKeyData);
   
   // Cache for quick lookup
   await cache.set(`apikey:${hashedKey}`, apiKey, 3600); // 1 hour cache
@@ -76,14 +66,20 @@ export async function validateApiKey(key: string): Promise<ApiKey | null> {
   const hashedKey = hashApiKey(key);
   
   // Check cache first
-  let apiKey = await cache.get<ApiKey>(`apikey:${hashedKey}`);
+  let apiKey: ApiKey | null = await cache.get<ApiKey>(`apikey:${hashedKey}`);
   
   if (!apiKey) {
-    // Fetch from database (you would implement this in storage.ts)
-    // apiKey = await storage.getApiKeyByHash(hashedKey);
+    // Fetch from database
+    const dbKey = await storage.getApiKeyByHash(hashedKey);
     
-    // For now, return null
-    return null;
+    if (!dbKey) {
+      return null;
+    }
+    
+    apiKey = dbKey;
+    
+    // Cache it for future lookups
+    await cache.set(`apikey:${hashedKey}`, apiKey, 3600); // 1 hour cache
   }
   
   // Check if expired
@@ -108,7 +104,7 @@ export async function validateApiKey(key: string): Promise<ApiKey | null> {
 
 // Update last used timestamp
 async function updateLastUsed(keyId: string): Promise<void> {
-  // await storage.updateApiKeyLastUsed(keyId);
+  await storage.updateApiKeyLastUsed(keyId);
 }
 
 // API Key authentication middleware
@@ -126,33 +122,38 @@ export function apiKeyAuth(requiredPermissions: string[] = []) {
       return res.status(401).json({ error: "Invalid API key" });
     }
     
-    // Check permissions
+    // Check permissions - handle jsonb permissions field
+    const permissions = Array.isArray(validatedKey.permissions) 
+      ? validatedKey.permissions as string[]
+      : [];
+    
     const hasAllPermissions = requiredPermissions.every(perm => 
-      validatedKey.permissions.includes(perm)
+      permissions.includes(perm)
     );
     
     if (!hasAllPermissions) {
       return res.status(403).json({ 
         error: "Insufficient permissions",
         required: requiredPermissions,
-        provided: validatedKey.permissions,
+        provided: permissions,
       });
     }
     
-    // Check rate limit if defined
-    if (validatedKey.rateLimit) {
+    // Check rate limit if defined - handle jsonb rateLimit field
+    const rateLimit = validatedKey.rateLimit as { requests: number; window: number } | null;
+    if (rateLimit && typeof rateLimit === 'object' && 'requests' in rateLimit && 'window' in rateLimit) {
       const rateLimitKey = `ratelimit:apikey:${validatedKey.id}`;
       const current = await redis.incr(rateLimitKey);
       
       if (current === 1) {
-        await redis.expire(rateLimitKey, validatedKey.rateLimit.window);
+        await redis.expire(rateLimitKey, rateLimit.window);
       }
       
-      if (current > validatedKey.rateLimit.requests) {
+      if (current > rateLimit.requests) {
         return res.status(429).json({ 
           error: "Rate limit exceeded",
-          limit: validatedKey.rateLimit.requests,
-          window: validatedKey.rateLimit.window,
+          limit: rateLimit.requests,
+          window: rateLimit.window,
         });
       }
     }

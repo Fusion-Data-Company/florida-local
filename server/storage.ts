@@ -18,6 +18,7 @@ import {
   gmbTokens,
   gmbSyncHistory,
   gmbReviews,
+  apiKeys,
   type User,
   type UpsertUser,
   type Business,
@@ -50,6 +51,8 @@ import {
   type InsertGmbSyncHistory,
   type GmbReview,
   type InsertGmbReview,
+  type ApiKey,
+  type InsertApiKey,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, sql, and, or, like, inArray } from "drizzle-orm";
@@ -226,6 +229,11 @@ export interface IStorage {
     recentSyncActivity: any[];
     errorRates: any;
   }>;
+
+  // API Key operations
+  createApiKey(apiKeyData: InsertApiKey): Promise<ApiKey>;
+  getApiKeyByHash(keyHash: string): Promise<ApiKey | undefined>;
+  updateApiKeyLastUsed(keyId: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -721,12 +729,13 @@ export class DatabaseStorage implements IStorage {
 
     const q = (query || '').trim();
     if (q) {
-      conditions.push(
-        or(
-          like(products.name, `%${q}%`),
-          like(products.description, `%${q}%`)
-        )
+      const searchCondition = or(
+        like(products.name, `%${q}%`),
+        like(products.description, `%${q}%`)
       );
+      if (searchCondition) {
+        conditions.push(searchCondition);
+      }
     }
 
     if (categories && categories.length > 0) {
@@ -755,7 +764,10 @@ export class DatabaseStorage implements IStorage {
 
     if (tags && tags.length > 0) {
       const tagConds = tags.map(t => sql`${products.tags}::text ILIKE ${`%"${t}"%`}`);
-      conditions.push(or(...tagConds));
+      const tagCondition = or(...tagConds);
+      if (tagCondition) {
+        conditions.push(tagCondition);
+      }
     }
 
     // Sorting
@@ -2139,6 +2151,33 @@ export class DatabaseStorage implements IStorage {
           sql`${spotlights.endDate} <= ${now}`
         )
       );
+  }
+
+  async createApiKey(apiKeyData: InsertApiKey): Promise<ApiKey> {
+    const [apiKey] = await db
+      .insert(apiKeys)
+      .values(apiKeyData)
+      .returning();
+    return apiKey;
+  }
+
+  async getApiKeyByHash(keyHash: string): Promise<ApiKey | undefined> {
+    const [apiKey] = await db
+      .select()
+      .from(apiKeys)
+      .where(eq(apiKeys.keyHash, keyHash))
+      .limit(1);
+    return apiKey;
+  }
+
+  async updateApiKeyLastUsed(keyId: string): Promise<void> {
+    await db
+      .update(apiKeys)
+      .set({
+        lastUsedAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(eq(apiKeys.id, keyId));
   }
 }
 
