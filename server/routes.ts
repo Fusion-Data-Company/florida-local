@@ -17,6 +17,9 @@ import { gmbService } from "./gmbService";
 import { businessVerificationService } from "./businessVerificationService";
 import { dataSyncService } from "./dataSyncService";
 
+// Stripe Connect Services
+import * as stripeConnect from "./stripeConnect";
+
 // Initialize Stripe optionally; if key missing, endpoints will short-circuit
 const stripeKey = process.env.STRIPE_SECRET_KEY;
 const stripe = stripeKey
@@ -552,6 +555,332 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // =================== END GMB INTEGRATION ROUTES ===================
+
+  // =================== STRIPE CONNECT VENDOR PAYOUT ROUTES ===================
+
+  // Get Stripe Connect account status for a business
+  app.get('/api/businesses/:id/stripe/status', isAuthenticated, async (req: any, res) => {
+    try {
+      if (!stripe) {
+        return res.status(501).json({ message: "Stripe Connect is not configured" });
+      }
+
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized to view Stripe status for this business" });
+      }
+
+      if (!business.stripeAccountId) {
+        return res.status(404).json({ message: "No Stripe Connect account found for this business" });
+      }
+
+      // Get account details
+      const account = await stripeConnect.getConnectAccount(business.stripeAccountId);
+      if (!account) {
+        return res.status(404).json({ message: "Stripe account not found" });
+      }
+
+      const onboardingComplete = stripeConnect.isAccountOnboarded(account);
+
+      res.json({
+        accountId: account.id,
+        chargesEnabled: account.charges_enabled,
+        payoutsEnabled: account.payouts_enabled,
+        onboardingComplete,
+        requirements: account.requirements,
+        payoutSchedule: account.settings?.payouts?.schedule,
+      });
+    } catch (error: any) {
+      console.error("Error fetching Stripe status:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch Stripe status" });
+    }
+  });
+
+  // Get account balance for a business
+  app.get('/api/businesses/:id/stripe/balance', isAuthenticated, async (req: any, res) => {
+    try {
+      if (!stripe) {
+        return res.status(501).json({ message: "Stripe Connect is not configured" });
+      }
+
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized to view balance for this business" });
+      }
+
+      if (!business.stripeAccountId) {
+        return res.status(404).json({ message: "No Stripe Connect account found for this business" });
+      }
+
+      // Get balance
+      const balance = await stripeConnect.getAccountBalance(business.stripeAccountId);
+      if (!balance) {
+        return res.status(404).json({ message: "Failed to retrieve balance" });
+      }
+
+      res.json({
+        available: balance.available,
+        pending: balance.pending,
+      });
+    } catch (error: any) {
+      console.error("Error fetching Stripe balance:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch Stripe balance" });
+    }
+  });
+
+  // List payouts for a business
+  app.get('/api/businesses/:id/stripe/payouts', isAuthenticated, async (req: any, res) => {
+    try {
+      if (!stripe) {
+        return res.status(501).json({ message: "Stripe Connect is not configured" });
+      }
+
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      const limit = parseInt(req.query.limit as string) || 10;
+
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized to view payouts for this business" });
+      }
+
+      if (!business.stripeAccountId) {
+        return res.status(404).json({ message: "No Stripe Connect account found for this business" });
+      }
+
+      // List payouts
+      const result = await stripeConnect.listPayouts(business.stripeAccountId, limit);
+      if (!result) {
+        return res.status(404).json({ message: "Failed to retrieve payouts" });
+      }
+
+      res.json(result);
+    } catch (error: any) {
+      console.error("Error fetching Stripe payouts:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch Stripe payouts" });
+    }
+  });
+
+  // List balance transactions for a business
+  app.get('/api/businesses/:id/stripe/transactions', isAuthenticated, async (req: any, res) => {
+    try {
+      if (!stripe) {
+        return res.status(501).json({ message: "Stripe Connect is not configured" });
+      }
+
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const startingAfter = req.query.startingAfter as string | undefined;
+
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized to view transactions for this business" });
+      }
+
+      if (!business.stripeAccountId) {
+        return res.status(404).json({ message: "No Stripe Connect account found for this business" });
+      }
+
+      // List transactions
+      const result = await stripeConnect.listBalanceTransactions(business.stripeAccountId, {
+        limit,
+        startingAfter,
+      });
+      if (!result) {
+        return res.status(404).json({ message: "Failed to retrieve transactions" });
+      }
+
+      res.json(result);
+    } catch (error: any) {
+      console.error("Error fetching Stripe transactions:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch Stripe transactions" });
+    }
+  });
+
+  // Create a manual payout for a business
+  app.post('/api/businesses/:id/stripe/payouts', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      if (!stripe) {
+        return res.status(501).json({ message: "Stripe Connect is not configured" });
+      }
+
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      const { amount, description } = req.body;
+
+      // Validate amount
+      if (!amount || typeof amount !== 'number' || amount < 100) {
+        return res.status(400).json({ message: "Amount must be at least $1.00 (100 cents)" });
+      }
+
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized to create payouts for this business" });
+      }
+
+      if (!business.stripeAccountId) {
+        return res.status(404).json({ message: "No Stripe Connect account found for this business" });
+      }
+
+      // Check available balance
+      const balance = await stripeConnect.getAccountBalance(business.stripeAccountId);
+      if (!balance) {
+        return res.status(400).json({ message: "Failed to retrieve account balance" });
+      }
+
+      const availableBalance = balance.available.find(b => b.currency === 'usd');
+      if (!availableBalance || availableBalance.amount < amount) {
+        return res.status(400).json({ 
+          message: "Insufficient balance for payout",
+          available: availableBalance?.amount || 0,
+          requested: amount,
+        });
+      }
+
+      // Create payout
+      const payout = await stripeConnect.createPayout(
+        business.stripeAccountId,
+        amount,
+        'usd',
+        description
+      );
+
+      if (!payout) {
+        return res.status(400).json({ message: "Failed to create payout" });
+      }
+
+      res.json(payout);
+    } catch (error: any) {
+      console.error("Error creating Stripe payout:", error);
+      res.status(500).json({ message: error.message || "Failed to create Stripe payout" });
+    }
+  });
+
+  // Update payout settings for a business
+  app.post('/api/businesses/:id/stripe/payout-settings', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      if (!stripe) {
+        return res.status(501).json({ message: "Stripe Connect is not configured" });
+      }
+
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      const { interval, delayDays } = req.body;
+
+      // Validate interval
+      const validIntervals = ['daily', 'weekly', 'monthly', 'manual'];
+      if (!interval || !validIntervals.includes(interval)) {
+        return res.status(400).json({ 
+          message: "Invalid interval. Must be one of: daily, weekly, monthly, manual" 
+        });
+      }
+
+      // Validate delayDays if provided
+      if (delayDays !== undefined && (typeof delayDays !== 'number' || delayDays < 0)) {
+        return res.status(400).json({ message: "Delay days must be a non-negative number" });
+      }
+
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized to update payout settings for this business" });
+      }
+
+      if (!business.stripeAccountId) {
+        return res.status(404).json({ message: "No Stripe Connect account found for this business" });
+      }
+
+      // Update payout settings
+      const updatedAccount = await stripeConnect.updatePayoutSettings(
+        business.stripeAccountId,
+        { interval, delayDays }
+      );
+
+      if (!updatedAccount) {
+        return res.status(400).json({ message: "Failed to update payout settings" });
+      }
+
+      res.json({
+        accountId: updatedAccount.id,
+        payoutSchedule: updatedAccount.settings?.payouts?.schedule,
+      });
+    } catch (error: any) {
+      console.error("Error updating Stripe payout settings:", error);
+      res.status(500).json({ message: error.message || "Failed to update Stripe payout settings" });
+    }
+  });
+
+  // Stripe Connect webhook endpoint
+  app.post('/api/stripe/connect/webhook', async (req, res) => {
+    try {
+      if (!stripe) {
+        return res.status(501).json({ message: "Stripe Connect is not configured" });
+      }
+
+      const sig = req.headers['stripe-signature'] as string;
+      const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+      if (!webhookSecret) {
+        console.error("STRIPE_WEBHOOK_SECRET not configured");
+        return res.status(500).json({ message: "Webhook secret not configured" });
+      }
+
+      let event: Stripe.Event;
+
+      try {
+        event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+      } catch (err: any) {
+        console.error("Webhook signature verification failed:", err.message);
+        return res.status(400).json({ message: `Webhook Error: ${err.message}` });
+      }
+
+      // Handle the event
+      await stripeConnect.handleConnectWebhook(event, storage);
+
+      res.json({ received: true });
+    } catch (error: any) {
+      console.error("Error processing Stripe webhook:", error);
+      res.status(500).json({ message: error.message || "Failed to process webhook" });
+    }
+  });
+
+  // =================== END STRIPE CONNECT ROUTES ===================
 
   app.get('/api/businesses/:id/following', isAuthenticated, async (req: any, res) => {
     try {

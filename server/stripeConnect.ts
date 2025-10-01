@@ -2,6 +2,7 @@ import Stripe from "stripe";
 import { logger, trackEvent } from "./monitoring";
 import { cache } from "./redis";
 import { emailQueue } from "./redis";
+import type { IStorage } from "./storage";
 
 // Initialize Stripe
 const stripe = process.env.STRIPE_SECRET_KEY 
@@ -64,15 +65,17 @@ export async function createConnectAccount(data: ConnectAccountData): Promise<St
     });
 
     // Queue welcome email
-    await emailQueue.add("send-email", {
-      to: data.email,
-      subject: "Welcome to Florida Elite Payments",
-      template: "stripeConnectWelcome",
-      data: {
-        businessName: data.businessName,
-        accountId: account.id,
-      },
-    });
+    if (emailQueue) {
+      await emailQueue.add("send-email", {
+        to: data.email,
+        subject: "Welcome to Florida Elite Payments",
+        template: "stripeConnectWelcome",
+        data: {
+          businessName: data.businessName,
+          accountId: account.id,
+        },
+      });
+    }
 
     logger.info("Stripe Connect account created", {
       businessId: data.businessId,
@@ -298,7 +301,7 @@ export async function getAccountBalance(accountId: string): Promise<Stripe.Balan
 export async function listPayouts(
   accountId: string,
   limit: number = 10
-): Promise<Stripe.Payout[] | null> {
+): Promise<{ data: Stripe.Payout[], hasMore: boolean } | null> {
   if (!stripe) {
     logger.error("Stripe not configured");
     return null;
@@ -311,9 +314,92 @@ export async function listPayouts(
       stripeAccount: accountId,
     });
 
-    return payouts.data;
+    return {
+      data: payouts.data,
+      hasMore: payouts.has_more,
+    };
   } catch (error) {
     logger.error("Failed to list payouts", { error, accountId });
+    throw error;
+  }
+}
+
+// List balance transactions for a Connect account
+export async function listBalanceTransactions(
+  accountId: string,
+  params?: { limit?: number; startingAfter?: string }
+): Promise<{ data: Stripe.BalanceTransaction[], hasMore: boolean } | null> {
+  if (!stripe) {
+    logger.error("Stripe not configured");
+    return null;
+  }
+
+  try {
+    const transactions = await stripe.balanceTransactions.list({
+      limit: params?.limit || 10,
+      starting_after: params?.startingAfter,
+    }, {
+      stripeAccount: accountId,
+    });
+
+    logger.info("Retrieved balance transactions", {
+      accountId,
+      count: transactions.data.length,
+    });
+
+    return {
+      data: transactions.data,
+      hasMore: transactions.has_more,
+    };
+  } catch (error) {
+    logger.error("Failed to list balance transactions", { error, accountId });
+    throw error;
+  }
+}
+
+// Update payout settings for a Connect account
+export async function updatePayoutSettings(
+  accountId: string,
+  settings: {
+    interval: 'daily' | 'weekly' | 'monthly' | 'manual';
+    delayDays?: number;
+  }
+): Promise<Stripe.Account | null> {
+  if (!stripe) {
+    logger.error("Stripe not configured");
+    return null;
+  }
+
+  try {
+    const updateData: any = {
+      settings: {
+        payouts: {
+          schedule: {
+            interval: settings.interval,
+          },
+        },
+      },
+    };
+
+    // Only set delay_days if not manual
+    if (settings.interval !== 'manual' && settings.delayDays !== undefined) {
+      updateData.settings.payouts.schedule.delay_days = settings.delayDays;
+    }
+
+    const account = await stripe.accounts.update(accountId, updateData);
+
+    logger.info("Updated payout settings", {
+      accountId,
+      interval: settings.interval,
+      delayDays: settings.delayDays,
+    });
+
+    // Clear cache
+    await cache.delete(`stripe:account:full:${accountId}`);
+
+    return account;
+  } catch (error) {
+    logger.error("Failed to update payout settings", { error, accountId, settings });
     throw error;
   }
 }
@@ -321,69 +407,97 @@ export async function listPayouts(
 // Handle Connect webhooks
 export async function handleConnectWebhook(
   event: Stripe.Event,
-  accountId?: string
+  storage: IStorage
 ): Promise<void> {
-  switch (event.type) {
-    case "account.updated":
-      const account = event.data.object as Stripe.Account;
-      
-      // Clear cache
-      await cache.delete(`stripe:account:full:${account.id}`);
-      
-      // Check if onboarding completed
-      if (isAccountOnboarded(account)) {
-        // Queue notification email
-        await emailQueue.add("send-email", {
-          to: account.email || "",
-          subject: "Your Florida Elite account is ready!",
-          template: "stripeConnectOnboarded",
-          data: {
-            businessName: account.business_profile?.name,
-          },
+  try {
+    switch (event.type) {
+      case "account.updated":
+        const account = event.data.object as Stripe.Account;
+        
+        // Clear cache
+        await cache.delete(`stripe:account:full:${account.id}`);
+        
+        // Get business ID from account metadata
+        const businessId = account.metadata?.businessId;
+        if (businessId) {
+          // Update business Stripe fields
+          await storage.updateBusinessStripeFields(businessId, {
+            stripeAccountId: account.id,
+            stripeOnboardingComplete: isAccountOnboarded(account),
+            stripePayoutsEnabled: account.payouts_enabled || false,
+          });
+
+          logger.info("Updated business Stripe fields", {
+            businessId,
+            accountId: account.id,
+            onboardingComplete: isAccountOnboarded(account),
+            payoutsEnabled: account.payouts_enabled,
+          });
+        }
+        
+        // Check if onboarding completed
+        if (isAccountOnboarded(account)) {
+          // Queue notification email
+          if (emailQueue) {
+            await emailQueue.add("send-email", {
+              to: account.email || "",
+              subject: "Your Florida Elite account is ready!",
+              template: "stripeConnectOnboarded",
+              data: {
+                businessName: account.business_profile?.name,
+              },
+            });
+          }
+        }
+        break;
+
+      case "payout.paid":
+        const payout = event.data.object as Stripe.Payout;
+        logger.info("Payout completed", {
+          payoutId: payout.id,
+          amount: payout.amount,
+          account: event.account,
+        });
+        break;
+
+      case "payout.failed":
+        const failedPayout = event.data.object as Stripe.Payout;
+        logger.error("Payout failed", {
+          payoutId: failedPayout.id,
+          failure: failedPayout.failure_message,
+          account: event.account,
         });
         
-        // Update business record
-        // await storage.updateBusinessStripeStatus(account.metadata.businessId, "active");
-      }
-      break;
+        // Queue failure notification
+        if (event.account && emailQueue) {
+          await emailQueue.add("send-email", {
+            to: event.account,
+            subject: "Payout failed - Action required",
+            template: "payoutFailed",
+            data: {
+              amount: failedPayout.amount,
+              reason: failedPayout.failure_message,
+            },
+          });
+        }
+        break;
 
-    case "payout.paid":
-      const payout = event.data.object as Stripe.Payout;
-      logger.info("Payout completed", {
-        payoutId: payout.id,
-        amount: payout.amount,
-        accountId,
-      });
-      break;
-
-    case "payout.failed":
-      const failedPayout = event.data.object as Stripe.Payout;
-      logger.error("Payout failed", {
-        payoutId: failedPayout.id,
-        failure: failedPayout.failure_message,
-        accountId,
-      });
-      
-      // Queue failure notification
-      await emailQueue.add("send-email", {
-        to: event.account || "",
-        subject: "Payout failed - Action required",
-        template: "payoutFailed",
-        data: {
-          amount: failedPayout.amount,
-          reason: failedPayout.failure_message,
-        },
-      });
-      break;
-
-    case "capability.updated":
-      const capability = event.data.object as Stripe.Capability;
-      logger.info("Capability updated", {
-        capability: capability.id,
-        status: capability.status,
-        accountId,
-      });
-      break;
+      case "capability.updated":
+        const capability = event.data.object as Stripe.Capability;
+        logger.info("Capability updated", {
+          capability: capability.id,
+          status: capability.status,
+          account: event.account,
+        });
+        break;
+    }
+  } catch (error) {
+    logger.error("Error handling Connect webhook", { 
+      error, 
+      eventType: event.type,
+      eventId: event.id 
+    });
+    throw error;
   }
 }
 

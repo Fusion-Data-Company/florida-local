@@ -211,6 +211,13 @@ export interface IStorage {
     gmbDataSources?: any;
   }): Promise<void>;
 
+  // Stripe Connect operations
+  updateBusinessStripeFields(businessId: string, fields: {
+    stripeAccountId?: string;
+    stripeOnboardingComplete?: boolean;
+    stripePayoutsEnabled?: boolean;
+  }): Promise<void>;
+
   // GMB Integration Statistics
   getGMBIntegrationStats(): Promise<{
     totalConnectedBusinesses: number;
@@ -1329,6 +1336,26 @@ export class DatabaseStorage implements IStorage {
         updatedAt: new Date(),
       })
       .where(eq(businesses.id, businessId));
+  }
+
+  // Stripe Connect operations
+  async updateBusinessStripeFields(businessId: string, fields: {
+    stripeAccountId?: string;
+    stripeOnboardingComplete?: boolean;
+    stripePayoutsEnabled?: boolean;
+  }): Promise<void> {
+    try {
+      await db
+        .update(businesses)
+        .set({
+          ...fields,
+          updatedAt: new Date(),
+        })
+        .where(eq(businesses.id, businessId));
+    } catch (error) {
+      console.error("Error updating business Stripe fields:", error);
+      throw error;
+    }
   }
 
   // GMB Integration Statistics

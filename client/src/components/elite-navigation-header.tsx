@@ -112,6 +112,11 @@ export default function EliteNavigationHeader() {
                             📦 <span>Manage Products</span>
                           </Link>
                         </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href="/vendor/payouts" className="elite-dropdown-item">
+                            💰 <span>Payouts & Billing</span>
+                          </Link>
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator className="elite-dropdown-separator" />
                         <DropdownMenuItem asChild>
                           <Link href="/create-business" className="elite-dropdown-item">
@@ -229,6 +234,9 @@ export default function EliteNavigationHeader() {
                       </Link>
                       <Link href="/vendor/products" className="elite-mobile-nav-item">
                         📦 <span>Manage Products</span>
+                      </Link>
+                      <Link href="/vendor/payouts" className="elite-mobile-nav-item">
+                        💰 <span>Payouts & Billing</span>
                       </Link>
                     </>
                   ) : (
