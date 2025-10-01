@@ -99,33 +99,33 @@ export default function MarketplaceSection() {
           
           <div className="lg:w-1/2">
             {/* Premium Search and Filter Bar - ELITE LUXURY TRANSFORMATION */}
-            <div className="premium-search-panel relative backdrop-ultra border-animated-gradient rounded-2xl p-8 miami-card-glow transform-3d-float transition-all duration-300 search-panel-container">
+            <div className="premium-search-panel rounded-2xl p-8 transition-all duration-300">
               <div className="relative z-10">
               <div className="flex flex-col md:flex-row gap-6 mb-6">
-                <div className="flex-1 relative group">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors duration-300" />
+                <div className="flex-1 relative luxury-search-input-wrapper">
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 luxury-search-icon z-10" />
                   <Input 
                     type="search" 
                     placeholder="Search premium products..." 
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-12 pr-4 py-4 backdrop-luxury filter-luxury-glow transform-depth border-border/30 hover:border-primary/50 focus:border-primary/70 transition-all duration-300"
+                    className="luxury-search-input pl-12 pr-4 py-6 text-base rounded-xl"
                     data-testid="input-marketplace-search"
                   />
-                  <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                 </div>
-                <div className="relative group">
-                  <Layers className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground group-hover:text-secondary transition-colors duration-300" />
-                  <div className="pl-12 pr-4 py-4 min-w-[240px] backdrop-luxury border border-border/30 rounded-md">
-                    <div className="flex flex-wrap gap-2">
+                <div className="relative">
+                  <Layers className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 luxury-search-icon z-10" />
+                  <div className="luxury-category-pills pl-12 pr-4 py-4 min-w-[240px] rounded-xl">
+                    <div className="flex flex-wrap gap-2 relative z-10">
                       {['Food & Beverage','Fashion','Home & Garden','Health & Beauty'].map(c => (
                         <button
                           key={c}
                           type="button"
                           onClick={() => toggleArrayValue(categories, c, setCategories)}
-                          className={`px-2 py-1 rounded-md text-sm border transform-3d-card float-gentle filter-premium-depth transition-all duration-300 ${categories.includes(c) ? 'gradient-metallic-gold border-primary text-white shadow-lg' : 'bg-background/80 border-border text-foreground hover:border-secondary'}`}
+                          className={`px-3 py-1.5 rounded-lg text-sm relative z-10 ${categories.includes(c) ? 'luxury-filter-pill luxury-filter-pill-active' : 'luxury-filter-pill'}`}
                         >
-                          {categories.includes(c) && <Check className="inline h-3 w-3 mr-1" />} {c}
+                          {categories.includes(c) && <Check className="inline h-3 w-3 mr-1" />} 
+                          <span className="relative z-10">{c}</span>
                         </button>
                       ))}
                     </div>
@@ -133,89 +133,116 @@ export default function MarketplaceSection() {
                 </div>
                 <Button 
                   onClick={handleSearch} 
-                  className="px-8 py-4 gradient-metallic-gold border-animated-gradient miami-hover-lift group font-semibold transform-3d-float shadow-lg"
+                  className="px-8 py-6 gradient-metallic-gold border-animated-gradient group font-semibold shadow-lg rounded-xl"
                   data-testid="button-marketplace-search"
                 >
-                  <Search className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform duration-300" />
+                  <Search className="h-5 w-5 mr-3" />
                   <span className="relative z-10">Search</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md"></div>
                 </Button>
               </div>
               
               {/* Premium Filter Tags - ELITE LUXURY */}
-              <div className="flex flex-wrap gap-3 justify-center">
-                <Badge className="gradient-iridescent float-gentle transform-3d-card filter-elite-shimmer hover-lift group cursor-pointer transition-all duration-300 shadow-lg" data-testid="filter-local-made">
-                  <Award className="h-3 w-3 mr-1 group-hover:scale-110 transition-transform duration-300" />
+              <div className="flex flex-wrap gap-3 justify-center mb-8">
+                <span className="luxury-badge-pill px-4 py-2 rounded-full text-sm font-semibold cursor-pointer" data-testid="filter-local-made">
+                  <Award className="inline h-3.5 w-3.5 mr-1.5" />
                   <span className="relative z-10 text-white">Local Made</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
-                </Badge>
-                <Badge className="gradient-iridescent float-gentle transform-3d-card filter-elite-shimmer hover-lift group cursor-pointer transition-all duration-300 shadow-lg" data-testid="filter-eco-friendly">
-                  <Heart className="h-3 w-3 mr-1 group-hover:scale-110 transition-transform duration-300" />
+                </span>
+                <span className="luxury-badge-pill px-4 py-2 rounded-full text-sm font-semibold cursor-pointer" data-testid="filter-eco-friendly">
+                  <Heart className="inline h-3.5 w-3.5 mr-1.5" />
                   <span className="relative z-10 text-white">Eco-Friendly</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
-                </Badge>
-                <Badge className="gradient-iridescent float-gentle transform-3d-card filter-elite-shimmer hover-lift group cursor-pointer transition-all duration-300 shadow-lg" data-testid="filter-small-batch">
-                  <Star className="h-3 w-3 mr-1 group-hover:scale-110 transition-transform duration-300" />
+                </span>
+                <span className="luxury-badge-pill px-4 py-2 rounded-full text-sm font-semibold cursor-pointer" data-testid="filter-small-batch">
+                  <Star className="inline h-3.5 w-3.5 mr-1.5" />
                   <span className="relative z-10 text-white">Small Batch</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
-                </Badge>
-                <Badge className="gradient-iridescent float-gentle transform-3d-card filter-elite-shimmer hover-lift group cursor-pointer transition-all duration-300 shadow-lg" data-testid="filter-free-shipping">
-                  <Truck className="h-3 w-3 mr-1 group-hover:scale-110 transition-transform duration-300" />
+                </span>
+                <span className="luxury-badge-pill px-4 py-2 rounded-full text-sm font-semibold cursor-pointer" data-testid="filter-free-shipping">
+                  <Truck className="inline h-3.5 w-3.5 mr-1.5" />
                   <span className="relative z-10 text-white">Free Shipping</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
-                </Badge>
+                </span>
               </div>
 
               {/* Advanced Filters - ELITE LUXURY */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 transform-3d-float">
-                <div className="relative rounded-lg p-4 filter-section-1">
-                  <div className="relative">
-                    <label className="text-sm font-medium mb-2 flex items-center"><DollarSign className="h-4 w-4 mr-2" /> Price Range</label>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="luxury-filter-section rounded-xl p-5">
+                  <div className="relative z-10">
+                    <label className="luxury-filter-label mb-3 flex items-center text-xs">
+                      <DollarSign className="h-4 w-4 mr-2 text-yellow-700" /> Price Range
+                    </label>
                     <div className="flex gap-2">
-                      <Input type="number" min={0} placeholder="Min" value={minPrice} onChange={(e)=>setMinPrice(e.target.value)} className="filter-luxury-glow backdrop-luxury" />
-                      <Input type="number" min={0} placeholder="Max" value={maxPrice} onChange={(e)=>setMaxPrice(e.target.value)} className="filter-luxury-glow backdrop-luxury" />
+                      <Input 
+                        type="number" 
+                        min={0} 
+                        placeholder="Min" 
+                        value={minPrice} 
+                        onChange={(e)=>setMinPrice(e.target.value)} 
+                        className="luxury-price-input text-sm py-2.5 rounded-lg relative z-10" 
+                      />
+                      <Input 
+                        type="number" 
+                        min={0} 
+                        placeholder="Max" 
+                        value={maxPrice} 
+                        onChange={(e)=>setMaxPrice(e.target.value)} 
+                        className="luxury-price-input text-sm py-2.5 rounded-lg relative z-10" 
+                      />
                     </div>
                   </div>
                 </div>
-                <div className="relative rounded-lg p-4 filter-section-2">
-                  <div className="relative">
-                    <label className="text-sm font-medium mb-2 flex items-center"><Star className="h-4 w-4 mr-2" /> Min Rating</label>
+                <div className="luxury-filter-section rounded-xl p-5">
+                  <div className="relative z-10">
+                    <label className="luxury-filter-label mb-3 flex items-center text-xs">
+                      <Star className="h-4 w-4 mr-2 text-yellow-700" /> Min Rating
+                    </label>
                     <Select value={minRating} onValueChange={setMinRating}>
-                      <SelectTrigger className="backdrop-luxury border-animated-gradient">
+                      <SelectTrigger className="luxury-dropdown-trigger rounded-lg py-2.5">
                         <SelectValue placeholder="Any" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="luxury-dropdown-content rounded-xl">
                         {["3","3.5","4","4.5"].map(r => (
-                          <SelectItem key={r} value={r}>{r}+</SelectItem>
+                          <SelectItem key={r} value={r} className="luxury-dropdown-item">{r}+</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
-                <div className="relative rounded-lg p-4 filter-section-3">
-                  <div className="relative">
-                    <label className="text-sm font-medium mb-2 flex items-center"><SortAsc className="h-4 w-4 mr-2" /> Sort</label>
+                <div className="luxury-filter-section rounded-xl p-5">
+                  <div className="relative z-10">
+                    <label className="luxury-filter-label mb-3 flex items-center text-xs">
+                      <SortAsc className="h-4 w-4 mr-2 text-yellow-700" /> Sort By
+                    </label>
                     <Select value={sort} onValueChange={(v)=>setSort(v as any)}>
-                      <SelectTrigger className="backdrop-luxury border-animated-gradient">
+                      <SelectTrigger className="luxury-dropdown-trigger rounded-lg py-2.5">
                         <SelectValue placeholder="Sort" />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="rating_desc">Top Rated</SelectItem>
-                        <SelectItem value="price_asc">Price: Low to High</SelectItem>
-                        <SelectItem value="price_desc">Price: High to Low</SelectItem>
-                        <SelectItem value="newest">Newest</SelectItem>
-                        <SelectItem value="popular">Most Reviewed</SelectItem>
+                      <SelectContent className="luxury-dropdown-content rounded-xl">
+                        <SelectItem value="rating_desc" className="luxury-dropdown-item">Top Rated</SelectItem>
+                        <SelectItem value="price_asc" className="luxury-dropdown-item">Price: Low to High</SelectItem>
+                        <SelectItem value="price_desc" className="luxury-dropdown-item">Price: High to Low</SelectItem>
+                        <SelectItem value="newest" className="luxury-dropdown-item">Newest</SelectItem>
+                        <SelectItem value="popular" className="luxury-dropdown-item">Most Reviewed</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
               </div>
-                <div className="flex items-center gap-6 mt-4">
-                  <label className="flex items-center gap-2 text-sm cursor-pointer">
-                    <input type="checkbox" checked={inStock} onChange={(e)=>setInStock(e.target.checked)} /> In Stock
+                <div className="flex items-center gap-8 mt-6 relative z-10">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      checked={inStock} 
+                      onChange={(e)=>setInStock(e.target.checked)} 
+                      className="luxury-checkbox" 
+                    />
+                    <span className="luxury-checkbox-label text-sm">In Stock</span>
                   </label>
-                  <label className="flex items-center gap-2 text-sm cursor-pointer">
-                    <input type="checkbox" checked={isDigital} onChange={(e)=>setIsDigital(e.target.checked)} /> Digital Only
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      checked={isDigital} 
+                      onChange={(e)=>setIsDigital(e.target.checked)} 
+                      className="luxury-checkbox" 
+                    />
+                    <span className="luxury-checkbox-label text-sm">Digital Only</span>
                   </label>
                 </div>
               </div>

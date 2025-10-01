@@ -12,9 +12,6 @@ import {
   Star, 
   Loader2, 
   ShoppingCart, 
-  Crown, 
-  Sparkles, 
-  Zap,
   Eye,
   TrendingUp
 } from "lucide-react";
@@ -32,7 +29,6 @@ export default function MagicEliteProductCard({ product, index = 0 }: MagicElite
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
 
-  // Magic MCP Mouse Tracking for Ambient Effects
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (cardRef.current) {
@@ -83,10 +79,9 @@ export default function MagicEliteProductCard({ product, index = 0 }: MagicElite
     },
   });
 
-  // Magic MCP Image Fallback System (deterministic)
   const getProductImage = () => {
-    if (product.images && product.images.length > 0) {
-      return product.images[0];
+    if (product.imageUrl) {
+      return product.imageUrl;
     }
     const id = String(product.id || '');
     let seed = 0; for (let i=0;i<id.length;i++) seed = ((seed<<5)-seed)+id.charCodeAt(i);
@@ -120,13 +115,13 @@ export default function MagicEliteProductCard({ product, index = 0 }: MagicElite
   const getBadgeForProduct = () => {
     if (product.tags && Array.isArray(product.tags)) {
       if (product.tags.includes('premium')) {
-        return <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white border-none">Premium</Badge>;
+        return <Badge className="luxury-product-badge badge-premium">Premium</Badge>;
       }
       if (product.tags.includes('local-made')) {
-        return <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white border-none">Local Made</Badge>;
+        return <Badge className="luxury-product-badge badge-local">Local Made</Badge>;
       }
       if (product.tags.includes('eco-friendly')) {
-        return <Badge className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-none">Eco-Friendly</Badge>;
+        return <Badge className="luxury-product-badge badge-eco">Eco-Friendly</Badge>;
       }
     }
     return null;
@@ -135,57 +130,45 @@ export default function MagicEliteProductCard({ product, index = 0 }: MagicElite
   return (
     <div
       ref={cardRef}
-      className="magic-elite-product-card group relative"
+      className="relative group"
       style={{
         animationDelay: `${index * 150}ms`
       }}
     >
-      {/* Magic MCP Dynamic Ambient Glow */}
+      {/* Magic Dynamic Ambient Glow */}
       <div 
-        className="absolute -inset-6 opacity-0 group-hover:opacity-100 transition-all duration-700 pointer-events-none"
+        className="absolute -inset-4 opacity-0 group-hover:opacity-100 transition-all duration-700 pointer-events-none blur-xl"
         style={{
           background: `
             radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, 
-              rgba(25, 182, 246, 0.3) 0%, 
-              rgba(255, 152, 67, 0.2) 30%, 
-              rgba(147, 51, 234, 0.1) 60%, 
+              rgba(212, 175, 55, 0.3) 0%, 
+              rgba(205, 127, 50, 0.2) 30%, 
+              rgba(184, 134, 11, 0.1) 60%, 
               transparent 100%)
-          `,
-          filter: 'blur(20px)'
+          `
         }}
       />
 
-      <Card 
-        className="relative overflow-hidden rounded-3xl border-2 border-white/30 backdrop-blur-xl magic-hover-lift"
-        style={{
-          background: `
-            linear-gradient(145deg, 
-              rgba(255,255,255,0.95) 0%, 
-              rgba(255,255,255,0.85) 100%)
-          `,
-          boxShadow: `
-            0 25px 50px rgba(0,0,0,0.1),
-            0 0 30px rgba(25, 182, 246, 0.1),
-            inset 0 1px 0 rgba(255,255,255,0.9)
-          `
-        }}
-      >
-        {/* Magic MCP Interactive Shimmer */}
+      <Card className="luxury-product-card">
+        {/* Marble Texture Overlay */}
+        <div className="luxury-marble-overlay" />
+        
+        {/* Interactive Shimmer */}
         <div 
-          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
           style={{
             background: `
               linear-gradient(135deg, 
                 transparent 0%, 
-                rgba(255,255,255,0.1) 50%, 
+                rgba(255,255,255,0.15) 50%, 
                 transparent 100%)
             `,
-            transform: `translate(${mousePosition.x * 0.1}px, ${mousePosition.y * 0.1}px)`
+            transform: `translate(${mousePosition.x * 0.08}px, ${mousePosition.y * 0.08}px)`
           }}
         />
 
-        {/* Magic MCP Elite Product Image */}
-        <div className="relative h-64 overflow-hidden">
+        {/* Product Image Container */}
+        <div className="luxury-product-image-container">
           <img
             src={getProductImage()}
             alt={product.name}
@@ -195,153 +178,142 @@ export default function MagicEliteProductCard({ product, index = 0 }: MagicElite
             }}
           />
 
-          {/* Magic MCP Image Overlay Effects */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+          {/* Elegant Image Overlay */}
+          <div className="luxury-image-gradient" />
+          
+          {/* Interactive Mouse Overlay */}
           <div 
             className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
             style={{
               background: `
                 radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, 
-                  rgba(25, 182, 246, 0.2) 0%, 
+                  rgba(212, 175, 55, 0.2) 0%, 
                   transparent 50%)
               `
             }}
           />
 
-          {/* Magic MCP Floating Elements */}
-          <div className="absolute top-4 left-4">
+          {/* Product Badge */}
+          <div className="absolute top-3 left-3 z-20">
             {getBadgeForProduct()}
           </div>
 
-          {/* Magic MCP Price Badge */}
-          <div className="absolute top-4 right-4">
-            <div className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-bold shadow-xl backdrop-blur-sm">
-              <div className="flex items-center gap-1">
-                <Crown className="h-4 w-4" />
-                <span>${parseFloat(product.price || "0").toFixed(2)}</span>
-              </div>
+          {/* Price Badge */}
+          <div className="absolute top-3 right-3 z-20">
+            <div className="luxury-price-badge">
+              <span className="font-bold">${Number(product.price).toFixed(2)}</span>
             </div>
           </div>
 
-          {/* Magic MCP Wishlist Button */}
-          <div className="absolute bottom-4 right-4">
+          {/* Wishlist Button */}
+          <div className="absolute bottom-3 right-3 z-20">
             <Button
               size="sm"
               variant="ghost"
-              className="w-12 h-12 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white/90 shadow-lg group/heart"
+              className="luxury-wishlist-btn"
             >
-              <Heart className="h-5 w-5 text-slate-600 group-hover/heart:text-red-500 group-hover/heart:fill-current transition-all duration-300" />
+              <Heart className="h-4 w-4 text-slate-600 group-hover:text-rose-500 group-hover:fill-current transition-all duration-300" />
             </Button>
-          </div>
-
-          {/* Magic MCP View Count */}
-          <div className="absolute bottom-4 left-4">
-            <div className="flex items-center gap-1 px-3 py-1 rounded-lg bg-black/20 backdrop-blur-sm text-white text-sm">
-              <Eye className="h-3 w-3" />
-              <span>{Math.floor(Math.random() * 500) + 100}</span>
-            </div>
           </div>
         </div>
 
         <CardContent className="p-6 relative">
-          {/* Magic MCP Content Background */}
+          {/* Content Background Gradient */}
           <div 
-            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
             style={{
               background: `
                 linear-gradient(135deg, 
-                  rgba(25, 182, 246, 0.03) 0%, 
-                  rgba(255, 152, 67, 0.02) 100%)
+                  rgba(212, 175, 55, 0.03) 0%, 
+                  rgba(205, 127, 50, 0.02) 100%)
               `
             }}
           />
 
           <div className="relative z-10">
-            {/* Magic MCP Product Title */}
-            <h3 className="font-bold text-xl mb-3 miami-heading bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+            {/* Product Name */}
+            <h3 className="luxury-product-name font-serif mb-3 line-clamp-2">
               {product.name}
             </h3>
 
-            {/* Magic MCP Description */}
+            {/* Product Description */}
             {product.description && (
-              <p className="text-slate-600 mb-4 miami-body-text line-clamp-2 leading-relaxed">
+              <p className="luxury-product-description mb-4 line-clamp-2">
                 {product.description}
               </p>
             )}
 
-            {/* Magic MCP Pricing Section */}
+            {/* Pricing & Trending Section */}
             <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <span className="text-3xl font-black miami-accent-text">
-                  ${parseFloat(product.price || "0").toFixed(2)}
+              <div className="flex items-baseline gap-2">
+                <span className="luxury-product-price font-serif">
+                  ${Number(product.price).toFixed(2)}
                 </span>
-                {product.originalPrice && parseFloat(product.originalPrice) > parseFloat(product.price) && (
-                  <span className="text-lg text-slate-400 line-through">
-                    ${parseFloat(product.originalPrice).toFixed(2)}
+                {product.compareAtPrice && Number(product.compareAtPrice) > Number(product.price) && (
+                  <span className="luxury-original-price">
+                    ${Number(product.compareAtPrice).toFixed(2)}
                   </span>
                 )}
               </div>
               
-              {/* Magic MCP Trending Indicator */}
-              <div className="flex items-center gap-1 px-3 py-1 rounded-lg bg-gradient-to-r from-green-100 to-emerald-100 border border-green-200">
-                <TrendingUp className="h-4 w-4 text-green-600" />
-                <span className="text-sm font-medium text-green-700">Trending</span>
+              {/* Trending Indicator */}
+              <div className="luxury-trending-badge">
+                <TrendingUp className="h-3 w-3 text-emerald-600" />
+                <span className="text-xs font-semibold text-emerald-700">Trending</span>
               </div>
             </div>
 
-            {/* Magic MCP Rating Display */}
-            <div className="mb-6">
-              <div className="flex items-center justify-center gap-2 p-3 rounded-xl magic-glass-elite border border-white/20">
-                <Star className="h-5 w-5 text-yellow-500 fill-current" />
-                <span className="font-bold text-lg text-slate-900">
-                  {product.rating || "4.8"}
-                </span>
-                <span className="text-slate-600">
-                  ({product.reviewCount || Math.floor(Math.random() * 50) + 10} reviews)
-                </span>
-              </div>
+            {/* Rating Display */}
+            <div className="luxury-rating-container mb-5">
+              <Star className="h-4 w-4 text-amber-400 fill-current" />
+              <span className="luxury-rating-score">
+                4.8
+              </span>
+              <span className="luxury-rating-count">
+                ({Math.floor(Math.random() * 50) + 10} reviews)
+              </span>
             </div>
 
-            {/* Magic MCP Action Buttons */}
+            {/* Action Buttons */}
             <div className="flex gap-3">
               <Button
                 onClick={() => addToCartMutation.mutate()}
                 disabled={addToCartMutation.isPending}
-                className="flex-1 btn-miami-primary miami-hover-lift font-semibold py-3 relative overflow-hidden group/cart"
+                className="luxury-add-to-cart-btn flex-1"
               >
-                {/* Magic MCP Button Glow */}
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 to-blue-400/20 opacity-0 group-hover/cart:opacity-100 transition-opacity duration-300" />
-                
-                <div className="relative z-10 flex items-center justify-center gap-2">
+                <span className="relative z-10 flex items-center justify-center gap-2">
                   {addToCartMutation.isPending ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      Adding...
+                    </>
                   ) : (
-                    <ShoppingCart className="h-5 w-5" />
+                    <>
+                      <ShoppingCart className="h-5 w-5" />
+                      Add to Cart
+                    </>
                   )}
-                  <span>Add to Cart</span>
-                </div>
-
-                {/* Magic MCP Success Shimmer */}
-                <div className="absolute top-0 -left-full w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 group-hover/cart:left-full transition-all duration-1000" />
+                </span>
+                
+                {/* Button Shimmer Effect */}
+                <div className="luxury-button-shimmer" />
               </Button>
 
               <Button
                 variant="outline"
-                className="px-4 py-3 rounded-xl border-2 border-white/30 bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all duration-300 group/view"
+                className="luxury-view-details-btn"
               >
-                <div className="relative z-10">
-                  <Eye className="h-5 w-5 text-slate-700 group-hover/view:text-cyan-600 transition-colors duration-300" />
-                </div>
+                <Eye className="h-5 w-5" />
               </Button>
             </div>
 
-            {/* Magic MCP Product Tags */}
-            {product.tags && Array.isArray(product.tags) && (
+            {/* Product Tags */}
+            {product.tags && Array.isArray(product.tags) && product.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-4">
                 {product.tags.slice(0, 3).map((tag: string, tagIndex) => (
                   <Badge 
                     key={tagIndex}
-                    className="text-xs px-2 py-1 rounded-lg bg-gradient-to-r from-slate-100 to-slate-50 text-slate-700 border border-slate-200 hover:from-cyan-50 hover:to-blue-50 hover:border-cyan-200 transition-all duration-300"
+                    className="luxury-tag-badge"
                   >
                     {tag}
                   </Badge>
@@ -351,13 +323,13 @@ export default function MagicEliteProductCard({ product, index = 0 }: MagicElite
           </div>
         </CardContent>
 
-        {/* Magic MCP Particle Effects */}
+        {/* Particle Effects */}
         {isHovered && (
-          <div className="absolute inset-0 pointer-events-none">
-            {[...Array(8)].map((_, i) => (
+          <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-xl">
+            {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="absolute w-1 h-1 bg-cyan-400/60 rounded-full animate-ping"
+                className="absolute w-1 h-1 bg-amber-400/60 rounded-full animate-ping"
                 style={{
                   left: `${20 + Math.random() * 60}%`,
                   top: `${20 + Math.random() * 60}%`,
@@ -373,7 +345,6 @@ export default function MagicEliteProductCard({ product, index = 0 }: MagicElite
   );
 }
 
-// Magic MCP Enhanced Product Grid
 export function MagicEliteProductGrid({ products }: { products: Product[] }) {
   return (
     <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">

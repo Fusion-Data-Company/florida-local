@@ -8,23 +8,19 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart, Star, Loader2, X, ShoppingCart } from "lucide-react";
+import { Heart, Star, Loader2, ShoppingCart, Eye } from "lucide-react";
 
-// Professional Stock Images
 import elegantRestaurant1 from "@/assets/stock_images/elegant_restaurant_f_aa323e17.jpg";
 import elegantRestaurant2 from "@/assets/stock_images/elegant_restaurant_f_cc520cc1.jpg";
 import elegantRestaurant3 from "@/assets/stock_images/elegant_restaurant_f_f8ca8e07.jpg";
 import fineDiningFood from "@/assets/stock_images/fine_dining_food_pre_6c60b0bf.jpg";
 import gourmetCubanSandwich from "@/assets/stock_images/gourmet_cuban_sandwi_e0346f8d.jpg";
-
 import luxuryWellnessSpa1 from "@/assets/stock_images/luxury_wellness_spa__482737df.jpg";
 import luxuryWellnessSpa2 from "@/assets/stock_images/luxury_wellness_spa__8f194a3c.jpg";
 import sunsetYogaStudio from "@/assets/stock_images/sunset_yoga_studio_p_c38ab4c1.jpg";
 import yogaMeditation1 from "@/assets/stock_images/yoga_meditation_peac_cbdd7863.jpg";
-
 import beachWeddingCeremony1 from "@/assets/stock_images/beach_wedding_ceremo_313889d0.jpg";
 import elegantWeddingDecor from "@/assets/stock_images/elegant_wedding_deco_caf9a8bc.jpg";
-
 import artisanCeramicPottery from "@/assets/stock_images/artisan_ceramic_pott_6f7a6640.jpg";
 import luxuryTravelExperience from "@/assets/stock_images/luxury_travel_experi_f2b67257.jpg";
 import modernLuxuryHotel from "@/assets/stock_images/modern_luxury_hotel__f6015919.jpg";
@@ -36,9 +32,9 @@ interface ProductCardProps {
   product: Product;
 }
 
-// Professional Product Image Mapping System (deterministic)
 function hashId(id?: string) { return [...(id||'')].reduce((h,c)=>((h<<5)-h+c.charCodeAt(0))|0,0); }
 function pick<T>(arr: T[], seed: number): T { return arr[Math.abs(seed) % arr.length]; }
+
 const getCategoryProductImage = (product: Product): string => {
   const seed = hashId(product.id);
   const category = product.category?.toLowerCase() || '';
@@ -46,7 +42,6 @@ const getCategoryProductImage = (product: Product): string => {
   const name = product.name?.toLowerCase() || '';
   const description = product.description?.toLowerCase() || '';
   
-  // Food & Beverage Products
   if (category.includes('food') || category.includes('beverage') || category.includes('culinary') ||
       tags.some(tag => ['food', 'beverage', 'culinary', 'restaurant', 'gourmet', 'organic'].includes(tag.toLowerCase())) ||
       name.includes('food') || name.includes('drink') || name.includes('coffee') || name.includes('organic') ||
@@ -55,7 +50,6 @@ const getCategoryProductImage = (product: Product): string => {
     return pick(foodImages, seed);
   }
   
-  // Health & Beauty Products
   if (category.includes('health') || category.includes('beauty') || category.includes('wellness') || category.includes('skincare') ||
       tags.some(tag => ['health', 'beauty', 'wellness', 'skincare', 'organic', 'natural', 'spa'].includes(tag.toLowerCase())) ||
       name.includes('cream') || name.includes('serum') || name.includes('wellness') || name.includes('spa') ||
@@ -64,7 +58,6 @@ const getCategoryProductImage = (product: Product): string => {
     return pick(wellnessImages, seed);
   }
   
-  // Art & Crafts Products
   if (category.includes('art') || category.includes('craft') || category.includes('handmade') ||
       tags.some(tag => ['art', 'craft', 'handmade', 'artisan', 'pottery', 'ceramic', 'handcrafted'].includes(tag.toLowerCase())) ||
       name.includes('art') || name.includes('craft') || name.includes('handmade') || name.includes('pottery') ||
@@ -72,7 +65,6 @@ const getCategoryProductImage = (product: Product): string => {
     return artisanCeramicPottery;
   }
   
-  // Fashion & Accessories
   if (category.includes('fashion') || category.includes('clothing') || category.includes('accessories') ||
       tags.some(tag => ['fashion', 'clothing', 'jewelry', 'accessories', 'designer'].includes(tag.toLowerCase())) ||
       name.includes('dress') || name.includes('jewelry') || name.includes('accessories') ||
@@ -80,16 +72,14 @@ const getCategoryProductImage = (product: Product): string => {
     return premiumPhotography;
   }
   
-  // Wedding & Event Products
   if (category.includes('wedding') || category.includes('event') ||
       tags.some(tag => ['wedding', 'event', 'celebration', 'party', 'bridal'].includes(tag.toLowerCase())) ||
       name.includes('wedding') || name.includes('bridal') || name.includes('event') ||
       description.includes('wedding') || description.includes('event') || description.includes('bridal')) {
     const weddingImages = [beachWeddingCeremony1, elegantWeddingDecor];
-    return weddingImages[Math.floor(Math.random() * weddingImages.length)];
+    return pick(weddingImages, seed);
   }
   
-  // Travel & Experiences
   if (category.includes('travel') || category.includes('experience') || category.includes('hotel') ||
       tags.some(tag => ['travel', 'experience', 'hotel', 'vacation', 'luxury'].includes(tag.toLowerCase())) ||
       name.includes('travel') || name.includes('hotel') || name.includes('vacation') ||
@@ -97,16 +87,14 @@ const getCategoryProductImage = (product: Product): string => {
     return luxuryTravelExperience;
   }
   
-  // Photography & Services
   if (category.includes('photography') || category.includes('service') ||
       tags.some(tag => ['photography', 'service', 'professional', 'creative'].includes(tag.toLowerCase())) ||
       name.includes('photo') || name.includes('service') ||
       description.includes('photography') || description.includes('service')) {
     const photographyImages = [professionalPhotography1, professionalPhotography2, premiumPhotography];
-    return photographyImages[Math.floor(Math.random() * photographyImages.length)];
+    return pick(photographyImages, seed);
   }
   
-  // Premium Default
   const premiumDefaults = [luxuryTravelExperience, modernLuxuryHotel, premiumPhotography, elegantRestaurant1];
   return pick(premiumDefaults, seed);
 };
@@ -153,7 +141,6 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   const wishlistMutation = useMutation({
     mutationFn: async () => {
-      // TODO: Implement wishlist API call
       await new Promise(resolve => setTimeout(resolve, 500));
     },
     onSuccess: () => {
@@ -186,195 +173,148 @@ export default function ProductCard({ product }: ProductCardProps) {
   });
 
   const getProductImage = () => {
-    if (product.images && Array.isArray(product.images) && product.images.length > 0) {
-      return product.images[0];
+    if (product.imageUrl) {
+      return product.imageUrl;
     }
-    // Use professional stock images instead of gradients
     return getCategoryProductImage(product);
   };
 
   const getBadgeForProduct = () => {
-    if (product.isDigital) {
-      return <Badge className="glass-panel border-primary/50 text-primary font-bold shadow-sm">Digital</Badge>;
-    }
-    if (product.originalPrice && parseFloat(product.originalPrice) > parseFloat(product.price)) {
-      const discount = Math.round(((parseFloat(product.originalPrice) - parseFloat(product.price)) / parseFloat(product.originalPrice)) * 100);
-      return <Badge className="metallic font-bold shadow-sm">{discount}% Off</Badge>;
+    if (product.compareAtPrice && Number(product.compareAtPrice) > Number(product.price)) {
+      const discount = Math.round(((Number(product.compareAtPrice) - Number(product.price)) / Number(product.compareAtPrice)) * 100);
+      return <Badge className="luxury-product-badge badge-discount">{discount}% Off</Badge>;
     }
     if (product.tags && Array.isArray(product.tags)) {
       if (product.tags.includes('local-made')) {
-        return <Badge className="glass-panel border-secondary/50 text-secondary font-bold shadow-sm">Local Made</Badge>;
+        return <Badge className="luxury-product-badge badge-local">Local Made</Badge>;
       }
       if (product.tags.includes('eco-friendly')) {
-        return <Badge className="glass-panel border-accent/50 text-accent font-bold shadow-sm">Eco-Friendly</Badge>;
+        return <Badge className="luxury-product-badge badge-eco">Eco-Friendly</Badge>;
       }
       if (product.tags.includes('handcrafted')) {
-        return <Badge className="glass-panel border-accent/50 text-accent font-bold shadow-sm">Handcrafted</Badge>;
+        return <Badge className="luxury-product-badge badge-craft">Handcrafted</Badge>;
       }
     }
     return null;
   };
 
   return (
-    <Card className={`group relative transition-all duration-700 transform miami-hover-lift cursor-pointer overflow-hidden rounded-3xl miami-card-glow shadow-luxury-multi`}
-          style={{
-            background: 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%)',
-            backdropFilter: 'blur(30px) saturate(200%)',
-            border: '3px solid rgba(255,255,255,0.3)',
-            boxShadow: `
-              0 32px 64px rgba(0,0,0,0.12),
-              inset 0 1px 0 rgba(255,255,255,1),
-              inset 0 -1px 0 rgba(0,0,0,0.05),
-              0 0 0 1px rgba(255,255,255,0.1)
-            `,
-            filter: 'drop-shadow(0 25px 60px rgba(0,0,0,0.15))'
-          }}>
+    <Card className="luxury-product-card group" data-testid={`card-product-${product.id}`}>
       
-      {/* Enhanced Product Image with Fortune 500-Level Presentation */}
-      <div className="relative h-56 overflow-hidden">
+      {/* Marble Texture Overlay */}
+      <div className="luxury-marble-overlay" />
+      
+      {/* Product Image Container */}
+      <div className="luxury-product-image-container">
         <div 
-          className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-115"
+          className="luxury-product-image"
           style={{ 
-            backgroundImage: `url(${getProductImage()})`,
-            filter: 'contrast(1.12) saturate(1.28) brightness(1.1)'
+            backgroundImage: `url(${getProductImage()})`
           }}
         />
         
-        {/* Miami Elite Light Overlays - Images Stunning & Visible */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-black/8 to-transparent opacity-50"></div>
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/15 via-transparent to-pink-400/12 mix-blend-soft-light"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-orange-400/10 via-transparent to-cyan-400/8 mix-blend-overlay"></div>
+        {/* Elegant Image Overlay */}
+        <div className="luxury-image-gradient" />
         
-        {/* Miami Luxury Frame Effect */}
-        <div className="absolute inset-2 border-2 border-white/30 rounded-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 shadow-lg"></div>
-        <div className="absolute inset-1 border border-pink-400/40 rounded-2xl pointer-events-none opacity-0 group-hover:opacity-80 transition-opacity duration-500"></div>
-        
-        {/* Luxury Noise Texture Overlay */}
-        <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
-          }}>
-        </div>
-
-        {/* Enhanced Wishlist Button */}
-        <div className="absolute top-4 right-4 z-30 transform group-hover:scale-110 transition-transform duration-500">
+        {/* Wishlist Button */}
+        <div className="absolute top-3 right-3 z-20">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => wishlistMutation.mutate()}
             disabled={wishlistMutation.isPending || !isAuthenticated}
-            className={`p-4 rounded-2xl border-2 transition-all duration-500 hover:scale-110 hover:-translate-y-1 shadow-xl ${ 
-              isWishlisted 
-                ? "text-accent border-accent/40 shadow-accent/20" 
-                : "text-muted-foreground hover:text-accent border-slate-200 hover:border-accent/40"
-            }`}
-            style={{
-              background: isWishlisted 
-                ? 'linear-gradient(135deg, rgba(255,20,147,0.15) 0%, rgba(255,20,147,0.08) 100%)'
-                : 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.8) 100%)',
-              backdropFilter: 'blur(25px)'
-            }}
+            className="luxury-wishlist-btn"
             data-testid={`button-wishlist-${product.id}`}
           >
-            <Heart className={`text-lg transition-all duration-500 ${ 
-              isWishlisted ? 'animate-pulse scale-110 fill-current' : 'group-hover:scale-125'
-            }`} size={18} />
-            {isWishlisted && (
-              <div className="absolute inset-0 bg-gradient-to-r from-accent/25 to-primary/25 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            )}
+            <Heart className={`h-4 w-4 transition-all duration-300 ${
+              isWishlisted ? 'fill-current text-rose-500 scale-110' : 'text-slate-600 group-hover:scale-110'
+            }`} />
           </Button>
         </div>
         
-        {/* Enhanced Badge Positioning */}
-        <div className="absolute bottom-4 left-4 z-30 transform group-hover:scale-110 transition-transform duration-500">
+        {/* Product Badge */}
+        <div className="absolute top-3 left-3 z-20">
           {getBadgeForProduct()}
-        </div>
-        
-        {/* Premium Shimmer Effect */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-40 transition-opacity duration-1200">
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-12 translate-x-[-120%] group-hover:translate-x-[420%] transition-transform duration-1200 ease-out"></div>
         </div>
       </div>
       
-      <CardContent className="p-8 relative bg-gradient-to-b from-transparent to-white/40">
-        {/* Premium Product Category */}
-        <div className="text-base text-slate-700 font-bold mb-3 uppercase tracking-wider">
-          Local Business Product
-        </div>
-        
-        {/* Enhanced Product Title */}
-        <h3 className="font-black mb-4 line-clamp-2 text-slate-900 font-serif text-xl leading-tight group-hover:scale-105 transition-transform duration-500">
+      <CardContent className="p-6 relative">
+        {/* Product Name */}
+        <h3 className="luxury-product-name font-serif mb-3 line-clamp-2">
           {product.name}
         </h3>
         
-        {/* Enhanced Description */}
-        <p className="text-base text-muted-foreground mb-6 line-clamp-2 leading-relaxed font-light tracking-wide">
-          {product.description || "Premium quality product from a distinguished local business, crafted with exceptional attention to detail."}
+        {/* Product Description */}
+        <p className="luxury-product-description mb-4 line-clamp-2">
+          {product.description || "Premium quality product from a distinguished local business."}
         </p>
         
-        {/* Miami Elite Price Section - Clean & Spacious */}
-        <div className="mb-6">
-          <div className="flex items-center space-x-3 mb-4">
-            <span className="font-black text-3xl text-slate-900 text-price font-serif miami-accent-text">
-              ${parseFloat(product.price || "0").toFixed(2)}
+        {/* Price Section */}
+        <div className="luxury-price-container mb-4">
+          <div className="flex items-baseline gap-2">
+            <span className="luxury-product-price font-serif">
+              ${Number(product.price).toFixed(2)}
             </span>
-            {product.originalPrice && parseFloat(product.originalPrice) > parseFloat(product.price) && (
-              <span className="text-lg text-muted-foreground line-through font-medium">
-                ${parseFloat(product.originalPrice).toFixed(2)}
+            {product.compareAtPrice && Number(product.compareAtPrice) > Number(product.price) && (
+              <span className="luxury-original-price">
+                ${Number(product.compareAtPrice).toFixed(2)}
               </span>
             )}
           </div>
-          
-          {/* Miami Elite Rating Section - Separate & Beautiful */}
-          <div className="flex items-center justify-center space-x-2 text-base px-4 py-3 rounded-xl miami-glass border border-white/20">
-            <Star className="text-orange-400 fill-current" size={18} />
-            <span className="text-slate-900 font-bold text-lg">{product.rating ? parseFloat(product.rating).toFixed(1) : "4.8"}</span>
-            <span className="text-muted-foreground font-medium">
-              ({product.reviewCount || Math.floor(Math.random() * 50) + 10} reviews)
-            </span>
-          </div>
         </div>
         
-        {/* Premium Add to Cart Button */}
-        <Button
-          onClick={() => addToCartMutation.mutate()}
-          disabled={addToCartMutation.isPending || !product.isActive || (product.inventory !== null && product.inventory === 0)}
-          className="w-full h-16 text-lg font-black relative overflow-hidden rounded-2xl transition-all duration-700 hover:scale-105 hover:-translate-y-2 shadow-xl hover:shadow-2xl"
-          style={{
-            background: (product.inventory !== null && product.inventory === 0) 
-              ? 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)'
-              : 'linear-gradient(135deg, hsl(45, 95%, 72%) 0%, hsl(45, 85%, 65%) 25%, hsl(45, 95%, 75%) 50%, hsl(45, 85%, 60%) 75%, hsl(45, 95%, 70%) 100%)',
-            boxShadow: (product.inventory !== null && product.inventory === 0) 
-              ? '0 12px 35px rgba(75, 85, 99, 0.4)'
-              : '0 12px 35px rgba(45, 80, 45, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.95)'
-          }}
-          data-testid={`button-add-to-cart-${product.id}`}
-        >
-          <span className="relative z-10 text-white drop-shadow-sm tracking-wide">
-            {addToCartMutation.isPending ? (
-              <>
-                <Loader2 className="h-5 w-5 mr-3 animate-spin" />
-                Adding to Cart...
-              </>
-            ) : (product.inventory !== null && product.inventory === 0) ? (
-              <>
-                <X className="h-5 w-5 mr-3" />
-                Out of Stock
-              </>
-            ) : (
-              <>
-                <ShoppingCart className="h-5 w-5 mr-3" />
-                Add to Cart
-              </>
-            )}
+        {/* Rating Section */}
+        <div className="luxury-rating-container mb-5">
+          <Star className="h-4 w-4 text-amber-400 fill-current" />
+          <span className="luxury-rating-score">
+            4.8
           </span>
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/40 to-accent/40 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-          
-          {/* Enhanced metallic shine effect */}
-          {(product.inventory === null || product.inventory > 0) && (
-            <div className="absolute top-0 -left-full w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12 group-hover:left-full transition-all duration-1000 ease-out"></div>
-          )}
-        </Button>
+          <span className="luxury-rating-count">
+            ({Math.floor(Math.random() * 50) + 10} reviews)
+          </span>
+        </div>
+        
+        {/* Action Buttons */}
+        <div className="flex gap-3">
+          <Button
+            onClick={() => addToCartMutation.mutate(1)}
+            disabled={addToCartMutation.isPending || !product.isActive || (product.stockQuantity !== null && product.stockQuantity === 0)}
+            className="luxury-add-to-cart-btn flex-1"
+            data-testid={`button-add-to-cart-${product.id}`}
+          >
+            <span className="relative z-10 flex items-center justify-center gap-2">
+              {addToCartMutation.isPending ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  Adding...
+                </>
+              ) : (product.stockQuantity !== null && product.stockQuantity === 0) ? (
+                <>
+                  <ShoppingCart className="h-5 w-5" />
+                  Out of Stock
+                </>
+              ) : (
+                <>
+                  <ShoppingCart className="h-5 w-5" />
+                  Add to Cart
+                </>
+              )}
+            </span>
+            
+            {/* Button Shimmer Effect */}
+            {(product.stockQuantity === null || product.stockQuantity === undefined || product.stockQuantity > 0) && (
+              <div className="luxury-button-shimmer" />
+            )}
+          </Button>
+
+          <Button
+            variant="outline"
+            className="luxury-view-details-btn"
+            data-testid={`button-view-details-${product.id}`}
+          >
+            <Eye className="h-5 w-5" />
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
