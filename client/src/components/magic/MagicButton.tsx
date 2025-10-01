@@ -72,15 +72,15 @@ export default function MagicButton({
     onClick?.(event);
   };
 
-  // Variant styles
+  // Variant styles - aligned with Button component system
   const variantStyles = {
-    primary: "btn-miami-primary",
-    secondary: "btn-miami-glass",
+    primary: "bg-gradient-to-r from-primary to-accent text-white hover:from-accent hover:to-secondary shadow-lg hover:shadow-xl transition-all",
+    secondary: "bg-white/30 backdrop-blur-lg border-2 border-white/40 text-foreground hover:bg-white/50 shadow-md hover:shadow-lg transition-all",
     ghost: "hover:bg-white/20 text-slate-700 hover:text-slate-900",
-    destructive: "bg-red-500 hover:bg-red-600 text-white shadow-lg hover:shadow-red-500/25",
+    destructive: "bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-lg hover:shadow-red-500/25",
     luxury: "bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 text-white shadow-2xl hover:shadow-purple-500/25",
-    glass: "miami-glass border border-white/30 backdrop-blur-md text-slate-900 hover:bg-white/20",
-    metallic: "metallic text-primary-foreground font-semibold shadow-lg hover:shadow-xl hover:shadow-secondary/30"
+    glass: "bg-white/25 backdrop-blur-xl border border-white/30 text-slate-900 hover:bg-white/35 shadow-md hover:shadow-lg transition-all",
+    metallic: "bg-gradient-to-br from-amber-500 via-yellow-500 to-orange-500 text-white font-semibold shadow-lg hover:shadow-xl hover:shadow-amber-500/30 border-2 border-white/30"
   };
 
   // Size styles

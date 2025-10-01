@@ -137,20 +137,46 @@
   66% { transform: translate(20px, -10px) rotate(-1deg); }
 }
 
-/* Magic MCP Glass Effects */
-.miami-glass {
+/* === CONSOLIDATED GLASS MORPHISM SYSTEM === */
+/* Three standardized variants for consistent glass effects across the app */
+
+/* Subtle Glass - Light, minimal blur for secondary UI elements */
+.glass-subtle {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* Elevated Glass - Medium blur for cards and primary UI elements */
+.glass-elevated {
   background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(20px) saturate(200%);
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    0 8px 24px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+/* Intense Glass - Strong blur for hero sections and major UI elements */
+.glass-intense {
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(30px) saturate(220%);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 
+    0 16px 48px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+/* Legacy glass classes - kept for backwards compatibility */
+.miami-glass {
+  @apply glass-elevated;
 }
 
 .glass-panel {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  @apply glass-subtle;
 }
 
 /* Magic MCP Hover Effects */
@@ -190,6 +216,133 @@
     0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -2px rgba(0, 0, 0, 0.05),
     0 0 40px rgba(25, 182, 246, 0.2);
+}
+
+/* === PREMIUM MICRO-INTERACTIONS === */
+
+/* Enhanced Card Hover with Scale */
+.card-hover-scale {
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover-scale:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 
+    0 12px 28px rgba(0, 0, 0, 0.12),
+    0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Smooth Entrance Animations */
+.fade-in {
+  animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Staggered List Animations */
+.stagger-children > * {
+  animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
+.stagger-children > *:nth-child(7) { animation-delay: 0.35s; }
+.stagger-children > *:nth-child(8) { animation-delay: 0.4s; }
+
+/* Button Ripple Base */
+.button-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.button-ripple::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: inherit;
+  transform: scale(0);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.button-ripple:active::after {
+  animation: ripple 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+/* Smooth Page Transitions */
+.page-transition-enter {
+  animation: pageEnter 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Enhanced Loading States */
+.loading-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Success Pulse Animation */
+.success-pulse {
+  animation: successPulse 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes successPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }
 
 /* Magic MCP Button Styles */

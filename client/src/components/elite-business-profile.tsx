@@ -245,27 +245,27 @@ export default function EliteBusinessProfile() {
                   {/* Elite Action Buttons */}
                   <div className="flex flex-wrap gap-4">
                     {!isOwner && isAuthenticated && (
-                      <Button className="btn-miami-primary miami-hover-lift px-6 py-3 font-semibold">
+                      <Button variant="metallic-primary" size="lg" className="miami-hover-lift font-semibold">
                         <UserPlus className="h-5 w-5 mr-2" />
                         Follow Business
                       </Button>
                     )}
                     
                     {!isOwner && isAuthenticated && (
-                      <Button className="btn-miami-glass miami-hover-lift px-6 py-3 font-semibold">
+                      <Button variant="glass-secondary" size="lg" className="miami-hover-lift font-semibold">
                         <MessageCircle className="h-5 w-5 mr-2" />
                         Send Message
                       </Button>
                     )}
 
                     {isOwner && (
-                      <Button className="btn-miami-primary miami-hover-lift px-6 py-3 font-semibold">
+                      <Button variant="metallic-primary" size="lg" className="miami-hover-lift font-semibold">
                         <Edit3 className="h-5 w-5 mr-2" />
                         Edit Profile
                       </Button>
                     )}
 
-                    <Button className="btn-miami-glass miami-hover-lift px-6 py-3 font-semibold">
+                    <Button variant="glass-secondary" size="lg" className="miami-hover-lift font-semibold">
                       <Share2 className="h-5 w-5 mr-2" />
                       Share
                     </Button>

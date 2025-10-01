@@ -144,8 +144,9 @@ export default function Marketplace() {
                 <Dialog open={isCreateProductOpen} onOpenChange={setIsCreateProductOpen}>
                   <DialogTrigger asChild>
                     <Button 
+                      variant="metallic-primary"
                       size="lg"
-                      className="whitespace-nowrap btn-miami-primary miami-hover-lift px-6 py-3"
+                      className="whitespace-nowrap miami-hover-lift"
                       data-testid="button-add-product"
                     >
                       <Plus className="h-5 w-5 mr-2" />

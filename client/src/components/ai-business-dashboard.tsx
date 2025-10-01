@@ -137,9 +137,9 @@ export default function AIBusinessDashboard({ businessId }: { businessId: string
             Live Data
           </Badge>
           <Button
-            variant={realTimeUpdates ? "default" : "outline"}
+            variant={realTimeUpdates ? "metallic-primary" : "glass-secondary"}
             onClick={() => setRealTimeUpdates(!realTimeUpdates)}
-            className="btn-miami-glass"
+            size="sm"
           >
             <Brain className="h-4 w-4 mr-2" />
             {realTimeUpdates ? 'Real-time ON' : 'Real-time OFF'}
