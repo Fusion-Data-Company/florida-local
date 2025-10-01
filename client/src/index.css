@@ -822,6 +822,686 @@
   color: var(--muted-foreground);
 }
 
+/* === PERFECT TYPOGRAPHY SYSTEM === */
+
+/* H1 - Hero Headlines (3xl-4xl) */
+.typography-h1 {
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 5vw, 3.75rem); /* 40px - 60px */
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+}
+
+/* H2 - Section Headings (2xl-3xl) */
+.typography-h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(1.875rem, 4vw, 3rem); /* 30px - 48px */
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  color: var(--foreground);
+}
+
+/* H3 - Subsection Headings (xl-2xl) */
+.typography-h3 {
+  font-family: var(--font-serif);
+  font-size: clamp(1.5rem, 3vw, 2.25rem); /* 24px - 36px */
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+}
+
+/* H4 - Card Headings (lg-xl) */
+.typography-h4 {
+  font-family: var(--font-serif);
+  font-size: clamp(1.25rem, 2.5vw, 1.875rem); /* 20px - 30px */
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.005em;
+  color: var(--foreground);
+}
+
+/* H5 - Small Headings */
+.typography-h5 {
+  font-family: var(--font-sans);
+  font-size: clamp(1.125rem, 2vw, 1.5rem); /* 18px - 24px */
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0em;
+  color: var(--foreground);
+}
+
+/* Body Large - Feature Text */
+.typography-body-lg {
+  font-family: var(--font-sans);
+  font-size: clamp(1.125rem, 1.5vw, 1.25rem); /* 18px - 20px */
+  font-weight: 400;
+  line-height: 1.7;
+  letter-spacing: 0em;
+  color: var(--muted-foreground);
+}
+
+/* Body - Standard Text */
+.typography-body {
+  font-family: var(--font-sans);
+  font-size: 1rem; /* 16px */
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: 0em;
+  color: var(--muted-foreground);
+}
+
+/* Body Small - Secondary Text */
+.typography-body-sm {
+  font-family: var(--font-sans);
+  font-size: 0.875rem; /* 14px */
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  color: var(--muted-foreground);
+}
+
+/* Caption - Metadata Text */
+.typography-caption {
+  font-family: var(--font-sans);
+  font-size: 0.75rem; /* 12px */
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+}
+
+/* Label - Form Labels */
+.typography-label {
+  font-family: var(--font-sans);
+  font-size: 0.875rem; /* 14px */
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  color: var(--foreground);
+}
+
+/* === LUXURY HERO TYPOGRAPHY === */
+
+.luxury-hero-headline {
+  font-family: var(--font-serif);
+  font-size: clamp(3rem, 8vw, 6rem); /* 48px - 96px */
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, 
+    #d4af37 0%,
+    #ffd700 25%,
+    #f4e5c3 50%,
+    #cd7f32 75%,
+    #b8860b 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 4px 8px rgba(212, 175, 55, 0.3));
+}
+
+.luxury-hero-subheadline {
+  font-family: var(--font-sans);
+  font-size: clamp(1.125rem, 2.5vw, 1.5rem); /* 18px - 24px */
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0em;
+  color: var(--muted-foreground);
+  max-width: 48rem;
+}
+
+/* === BUSINESS CARD TYPOGRAPHY === */
+
+.business-name-luxury {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  background: linear-gradient(135deg, 
+    var(--foreground) 0%,
+    rgba(212, 175, 55, 1) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* === MOBILE TYPOGRAPHY ADJUSTMENTS === */
+
+@media (max-width: 768px) {
+  .typography-h1 {
+    font-size: clamp(2rem, 8vw, 2.5rem); /* 32px - 40px on mobile */
+    line-height: 1.15;
+  }
+  
+  .typography-h2 {
+    font-size: clamp(1.75rem, 6vw, 1.875rem); /* 28px - 30px on mobile */
+    line-height: 1.25;
+  }
+  
+  .luxury-hero-headline {
+    font-size: clamp(2.5rem, 12vw, 3.5rem); /* 40px - 56px on mobile */
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+  }
+  
+  .luxury-hero-subheadline {
+    font-size: clamp(1rem, 4vw, 1.125rem); /* 16px - 18px on mobile */
+    line-height: 1.65;
+  }
+}
+
+/* === PERFECT SPACING SYSTEM === */
+
+/* Section Padding - Standardized Vertical Rhythm */
+.section-padding {
+  padding-top: 5rem; /* 80px */
+  padding-bottom: 5rem; /* 80px */
+}
+
+.section-padding-lg {
+  padding-top: 7rem; /* 112px */
+  padding-bottom: 7rem; /* 112px */
+}
+
+.section-padding-sm {
+  padding-top: 3.5rem; /* 56px */
+  padding-bottom: 3.5rem; /* 56px */
+}
+
+/* Card Padding - Luxury Breathing Room */
+.card-padding {
+  padding: 2rem; /* 32px */
+}
+
+.card-padding-lg {
+  padding: 2.5rem; /* 40px */
+}
+
+.card-padding-sm {
+  padding: 1.5rem; /* 24px */
+}
+
+/* Grid Gaps - Consistent Spacing */
+.grid-gap-cards {
+  gap: 2rem; /* 32px - for card grids */
+}
+
+.grid-gap-items {
+  gap: 1.5rem; /* 24px - for item grids */
+}
+
+.grid-gap-lists {
+  gap: 1rem; /* 16px - for list items */
+}
+
+.grid-gap-inline {
+  gap: 0.5rem; /* 8px - for inline elements */
+}
+
+/* Content Spacing - Standardized Margins */
+.content-spacing-xl {
+  margin-bottom: 3rem; /* 48px */
+}
+
+.content-spacing-lg {
+  margin-bottom: 2rem; /* 32px */
+}
+
+.content-spacing {
+  margin-bottom: 1.5rem; /* 24px */
+}
+
+.content-spacing-sm {
+  margin-bottom: 1rem; /* 16px */
+}
+
+.content-spacing-xs {
+  margin-bottom: 0.5rem; /* 8px */
+}
+
+/* Container Max Width - Content Optimization */
+.container-narrow {
+  max-width: 48rem; /* 768px */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.container-content {
+  max-width: 64rem; /* 1024px */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.container-wide {
+  max-width: 80rem; /* 1280px */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Mobile Spacing Adjustments */
+@media (max-width: 768px) {
+  .section-padding {
+    padding-top: 3rem; /* 48px */
+    padding-bottom: 3rem; /* 48px */
+  }
+  
+  .section-padding-lg {
+    padding-top: 4rem; /* 64px */
+    padding-bottom: 4rem; /* 64px */
+  }
+  
+  .section-padding-sm {
+    padding-top: 2rem; /* 32px */
+    padding-bottom: 2rem; /* 32px */
+  }
+  
+  .card-padding {
+    padding: 1.5rem; /* 24px */
+  }
+  
+  .card-padding-lg {
+    padding: 2rem; /* 32px */
+  }
+  
+  .card-padding-sm {
+    padding: 1rem; /* 16px */
+  }
+  
+  .grid-gap-cards {
+    gap: 1.5rem; /* 24px */
+  }
+  
+  .grid-gap-items {
+    gap: 1rem; /* 16px */
+  }
+}
+
+/* === PERFECT PROPORTIONS & SCALE === */
+
+/* Icon Sizes - Standardized Scale */
+.icon-xs {
+  width: 1rem; /* 16px */
+  height: 1rem;
+}
+
+.icon-sm {
+  width: 1.25rem; /* 20px */
+  height: 1.25rem;
+}
+
+.icon-base {
+  width: 1.5rem; /* 24px */
+  height: 1.5rem;
+}
+
+.icon-lg {
+  width: 2rem; /* 32px */
+  height: 2rem;
+}
+
+.icon-xl {
+  width: 2.5rem; /* 40px */
+  height: 2.5rem;
+}
+
+/* Touch Targets - Mobile Accessibility (min 44px) */
+.touch-target {
+  min-width: 2.75rem; /* 44px */
+  min-height: 2.75rem; /* 44px */
+}
+
+.touch-target-lg {
+  min-width: 3.5rem; /* 56px */
+  min-height: 3.5rem; /* 56px */
+}
+
+/* === BORDER RADIUS SYSTEM === */
+
+.radius-sm {
+  border-radius: 0.5rem; /* 8px */
+}
+
+.radius-base {
+  border-radius: 0.75rem; /* 12px */
+}
+
+.radius-lg {
+  border-radius: 1rem; /* 16px */
+}
+
+.radius-xl {
+  border-radius: 1.5rem; /* 24px */
+}
+
+/* === TRANSITION TIMING SYSTEM === */
+
+.transition-fast {
+  transition-duration: 250ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.transition-base {
+  transition-duration: 350ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.transition-slow {
+  transition-duration: 500ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* === PERFECT COLOR HARMONY SYSTEM === */
+
+/* Metallic Gradient - Consistent Gold to Bronze */
+.gradient-metallic {
+  background: linear-gradient(135deg, 
+    #d4af37 0%,     /* Rich Gold */
+    #ffd700 25%,    /* Bright Gold */
+    #f4e5c3 50%,    /* Champagne */
+    #cd7f32 75%,    /* Bronze */
+    #b8860b 100%    /* Dark Goldenrod */
+  );
+}
+
+/* Glass Effects - Standardized Opacity Levels */
+.glass-opacity-subtle {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.glass-opacity-elevated {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.glass-opacity-intense {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* Marble Overlay Opacity */
+.marble-opacity-body {
+  opacity: 0.55; /* 50-60% for body sections */
+}
+
+.marble-opacity-hero {
+  opacity: 0.68; /* 65-70% for hero sections */
+}
+
+/* Shadow Colors - Golden Glow System */
+.shadow-golden-sm {
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
+}
+
+.shadow-golden {
+  box-shadow: 0 4px 16px rgba(255, 215, 0, 0.3);
+}
+
+.shadow-golden-lg {
+  box-shadow: 0 8px 24px rgba(255, 215, 0, 0.4);
+}
+
+/* Text Contrast Colors - WCAG AA Compliant */
+.text-contrast-high {
+  color: hsl(220, 15%, 15%); /* For headings on light backgrounds */
+}
+
+.text-contrast-medium {
+  color: hsl(220, 10%, 45%); /* For body text on light backgrounds */
+}
+
+.text-contrast-inverse {
+  color: hsl(36, 30%, 98%); /* For text on dark/colored backgrounds */
+}
+
+/* === PERFECT ACCESSIBILITY SYSTEM === */
+
+/* Focus States - Visible & Luxury */
+.focus-luxury {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.5);
+  transition: box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.focus-visible-luxury:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.5);
+}
+
+/* Keyboard Navigation Indicators */
+*:focus-visible {
+  outline: 2px solid rgba(212, 175, 55, 0.8);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid rgba(212, 175, 55, 0.8);
+  outline-offset: 2px;
+}
+
+/* Skip to Content Link - Accessibility */
+.skip-to-content {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  background: var(--foreground);
+  color: var(--background);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0 0 0.5rem 0;
+  font-weight: 600;
+  z-index: 9999;
+  transition: top 0.3s;
+}
+
+.skip-to-content:focus {
+  top: 0;
+}
+
+/* === LOADING STATE ANIMATIONS === */
+
+/* Enhanced Skeleton Loader */
+.skeleton-luxury {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    90deg,
+    rgba(212, 175, 55, 0.08) 0%,
+    rgba(212, 175, 55, 0.15) 50%,
+    rgba(212, 175, 55, 0.08) 100%
+  );
+  border-radius: 0.75rem;
+}
+
+.skeleton-luxury::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    transparent 100%
+  );
+  animation: skeleton-shimmer 2s infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Loading Spinner - Luxury Gold */
+.spinner-luxury {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 3px solid rgba(212, 175, 55, 0.2);
+  border-top-color: #d4af37;
+  border-radius: 50%;
+  animation: spin-luxury 0.8s linear infinite;
+}
+
+@keyframes spin-luxury {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Pulse Animation - Success States */
+.pulse-luxury {
+  animation: pulse-luxury 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-luxury {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Success Checkmark Animation */
+.success-checkmark {
+  animation: success-scale 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes success-scale {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* === EMPTY STATE STYLING === */
+
+.empty-state-luxury {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.empty-state-icon {
+  width: 5rem;
+  height: 5rem;
+  margin-bottom: 1.5rem;
+  color: rgba(212, 175, 55, 0.4);
+}
+
+.empty-state-title {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--foreground);
+  margin-bottom: 0.75rem;
+}
+
+.empty-state-description {
+  font-size: 1rem;
+  color: var(--muted-foreground);
+  max-width: 28rem;
+  margin-bottom: 2rem;
+}
+
+/* === ERROR STATE STYLING === */
+
+.error-state-luxury {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+  border-radius: 1rem;
+  background: rgba(239, 68, 68, 0.05);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.error-icon {
+  width: 4rem;
+  height: 4rem;
+  margin-bottom: 1rem;
+  color: rgba(239, 68, 68, 0.8);
+}
+
+.error-title {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: rgba(239, 68, 68, 1);
+  margin-bottom: 0.5rem;
+}
+
+.error-description {
+  font-size: 0.875rem;
+  color: rgba(239, 68, 68, 0.8);
+  max-width: 24rem;
+}
+
+/* === REDUCED MOTION PREFERENCES === */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .miami-float,
+  .skeleton-luxury::before,
+  .spinner-luxury {
+    animation: none !important;
+  }
+}
+
+/* === HIGH CONTRAST MODE === */
+
+@media (prefers-contrast: high) {
+  :root {
+    --foreground: hsl(220, 20%, 10%);
+    --muted-foreground: hsl(220, 15%, 30%);
+    --border: hsl(220, 20%, 40%);
+  }
+  
+  .luxury-hero-headline,
+  .business-name-luxury,
+  .elite-logo-text {
+    filter: none;
+    -webkit-text-fill-color: hsl(220, 20%, 10%);
+  }
+  
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible {
+    outline-width: 3px;
+    outline-color: hsl(220, 20%, 10%);
+  }
+}
+
 /* === PREMIUM LUXURY ELITE NAVIGATION === */
 
 /* Header Container with Marble & Gradient Border */
