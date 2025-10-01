@@ -182,7 +182,8 @@ export default function EliteNavigationHeader() {
               ) : (
                 <Button 
                   onClick={() => window.location.href = '/api/login'} 
-                  className="btn-miami-primary px-6 py-2 font-semibold"
+                  className="btn-luxury-signin px-8 py-2.5 relative z-10"
+                  data-testid="button-signin"
                 >
                   Sign In
                 </Button>
