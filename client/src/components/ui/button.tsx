@@ -45,7 +45,10 @@ const buttonVariants = cva(
         
         refined: "bg-transparent border-2 border-primary text-primary hover:bg-primary/10 hover:text-primary hover:shadow-md transform hover:scale-105 transition-all duration-300 ease-out",
         
-        premium: "bg-gradient-to-r from-accent via-primary to-secondary text-primary-foreground font-semibold shadow-lg hover:shadow-xl hover:shadow-accent/25 hover:scale-105 transform transition-all duration-300 ease-out relative before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/30 before:via-white/10 before:to-white/30 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300"
+        premium: "bg-gradient-to-r from-accent via-primary to-secondary text-primary-foreground font-semibold shadow-lg hover:shadow-xl hover:shadow-accent/25 hover:scale-105 transform transition-all duration-300 ease-out relative before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/30 before:via-white/10 before:to-white/30 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300",
+        
+        // Rainbow Button - Bright shiny animated rainbow effect
+        rainbow: "relative animate-rainbow cursor-pointer bg-[length:200%] text-white font-medium transition-colors [background-clip:padding-box,border-box,border-box] [background-origin:border-box] [border:calc(0.08*1rem)_solid_transparent] before:absolute before:bottom-[-20%] before:left-1/2 before:z-0 before:h-1/5 before:w-3/5 before:-translate-x-1/2 before:animate-rainbow before:bg-[linear-gradient(90deg,hsl(var(--color-1)),hsl(var(--color-5)),hsl(var(--color-3)),hsl(var(--color-4)),hsl(var(--color-2)))] before:bg-[length:200%] before:[filter:blur(calc(0.8*1rem))] bg-[linear-gradient(#121213,#121213),linear-gradient(#121213_50%,rgba(18,18,19,0.6)_80%,rgba(18,18,19,0)),linear-gradient(90deg,hsl(var(--color-1)),hsl(var(--color-5)),hsl(var(--color-3)),hsl(var(--color-4)),hsl(var(--color-2)))] dark:bg-[linear-gradient(#fff,#fff),linear-gradient(#fff_50%,rgba(255,255,255,0.6)_80%,rgba(0,0,0,0)),linear-gradient(90deg,hsl(var(--color-1)),hsl(var(--color-5)),hsl(var(--color-3)),hsl(var(--color-4)),hsl(var(--color-2)))]"
       },
       size: {
         default: "h-10 px-4 py-2",
