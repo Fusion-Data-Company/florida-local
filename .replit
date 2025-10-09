@@ -32,6 +32,11 @@ localPort = 27447
 externalPort = 3003
 
 [[ports]]
+localPort = 35875
+externalPort = 8000
+exposeLocalhost = true
+
+[[ports]]
 localPort = 38033
 externalPort = 5000
 
@@ -46,6 +51,11 @@ externalPort = 3001
 [[ports]]
 localPort = 44388
 externalPort = 6000
+exposeLocalhost = true
+
+[[ports]]
+localPort = 57867
+externalPort = 6800
 exposeLocalhost = true
 
 [env]

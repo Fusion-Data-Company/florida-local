@@ -66,9 +66,9 @@ export default function FloridaLocalElite() {
 
       {/* 2. HERO SECTION - BEACH VIDEO */}
       <section className="relative h-[80vh] overflow-hidden">
-        {/* Video Background Placeholder */}
+        {/* Video Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-400 via-teal-300 to-cyan-400">
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1920')] bg-cover bg-center opacity-60"></div>
+          <img src="/florida-local/Best_Lakes_mp4_image_78.jpg" alt="Florida Beach" className="absolute inset-0 w-full h-full object-cover opacity-60" />
           <div className="absolute inset-0 bg-black/30"></div>
         </div>
 
@@ -99,15 +99,15 @@ export default function FloridaLocalElite() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
             {[
-              { tag: "#4EverTourist", caption: "#4Boho Out In the D.R.", color: "bg-orange-500" },
-              { tag: "#ipowermoves", caption: "Sarah Insure", color: "bg-purple-500" },
-              { tag: "#itsGoodAF", caption: "Explore With Kenzo & Ben", color: "bg-yellow-500" },
-              { tag: "#effintrendy", caption: "OASIS Tropic Wear", color: "bg-pink-500" },
-              { tag: "#NeverHuntAlone", caption: "HOW TO BE FEATURED", color: "bg-green-500" }
+              { tag: "#4EverTourist", caption: "#4Boho Out In the D.R.", color: "bg-orange-500", image: "/florida-local/IMG_8619_qri8nygdvbs6m28t7xaxn_3.jpg" },
+              { tag: "#ipowermoves", caption: "Sarah Insure", color: "bg-purple-500", image: "/florida-local/Sarah_Insure_qri8nxijohqwaga6d_2.png" },
+              { tag: "#itsGoodAF", caption: "Explore With Kenzo & Ben", color: "bg-yellow-500", image: "/florida-local/IMG_9321_1_qri8nze825tgxo7g2fp_4.png" },
+              { tag: "#effintrendy", caption: "OASIS Tropic Wear", color: "bg-pink-500", image: "/florida-local/3E6A3388_scaled_qri8nygjylpn3c_7.jpg" },
+              { tag: "#NeverHuntAlone", caption: "HOW TO BE FEATURED", color: "bg-green-500", image: "/florida-local/Never_Hunt_Alone_Logo_47.png" }
             ].map((item, i) => (
               <Card key={i} className="group overflow-hidden rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
                 <div className="relative h-96">
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-400 to-pink-400"></div>
+                  <img src={item.image} alt={item.caption} className="absolute inset-0 w-full h-full object-cover" />
                   <Badge className={`${item.color} absolute top-4 left-4 text-white font-bold uppercase z-10 px-4 py-2`}>
                     {item.tag}
                   </Badge>
@@ -139,8 +139,8 @@ export default function FloridaLocalElite() {
                     It's ALL ABOUT US. Be Featured #ItsGoodAF | #4EverTourist
                   </p>
                 </div>
-                <div className="relative h-96 md:h-auto bg-gradient-to-br from-blue-300 to-teal-300">
-                  {/* Beach aerial image placeholder */}
+                <div className="relative h-96 md:h-auto">
+                  <img src="/florida-local/IMG_5090_1024x574_15.jpg" alt="Florida Local Lifestyle" className="w-full h-full object-cover" />
                 </div>
               </div>
             </Card>
@@ -169,8 +169,8 @@ export default function FloridaLocalElite() {
                     Florida Lake Life With Kelli & Jason @TheOrlandoLocals
                   </h3>
                 </div>
-                <div className="relative h-96 md:h-auto bg-gradient-to-br from-teal-300 to-blue-400">
-                  {/* Kayaking couple image placeholder */}
+                <div className="relative h-96 md:h-auto">
+                  <img src="/florida-local/Screen_Shot_2023_07_17_at_7_21_79.jpg" alt="Florida Lake Life" className="w-full h-full object-cover" />
                 </div>
               </div>
             </Card>
@@ -184,11 +184,14 @@ export default function FloridaLocalElite() {
           <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {/* Left Column - Large Image */}
             <Card className="rounded-3xl overflow-hidden shadow-2xl">
-              <div className="h-full bg-gradient-to-br from-amber-400 to-orange-500 p-8 flex flex-col justify-end">
-                <Badge className="bg-white/20 backdrop-blur-md text-white w-fit mb-4 px-4 py-2">
-                  FEATURED
-                </Badge>
-                <p className="text-white font-semibold text-lg">Ivanhoe Park Brewing Co.</p>
+              <div className="relative h-full min-h-[400px]">
+                <img src="/florida-local/bavariandonsta_1024x923_58.jpg" alt="Ivanhoe Park Brewing" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent p-8 flex flex-col justify-end">
+                  <Badge className="bg-white/20 backdrop-blur-md text-white w-fit mb-4 px-4 py-2">
+                    FEATURED
+                  </Badge>
+                  <p className="text-white font-semibold text-lg">Ivanhoe Park Brewing Co.</p>
+                </div>
               </div>
             </Card>
 
@@ -236,7 +239,8 @@ export default function FloridaLocalElite() {
               <Badge className="bg-red-500 text-white font-bold px-6 py-3 rounded-full shadow-lg">
                 Local Foodie Verified
               </Badge>
-              <Card className="rounded-3xl overflow-hidden shadow-2xl h-64 bg-gradient-to-br from-pink-300 to-purple-400">
+              <Card className="rounded-3xl overflow-hidden shadow-2xl h-64">
+                <img src="/florida-local/elbles_bistello_stacks_2_57.jpg" alt="Local Food" className="w-full h-full object-cover" />
               </Card>
               <div className="flex items-center gap-2 text-sm font-semibold">
                 <MapPin className="h-4 w-4 text-orange-500" />
@@ -305,8 +309,14 @@ export default function FloridaLocalElite() {
               </div>
             </div>
             <div className="grid grid-cols-3 gap-4">
-              {[1, 2, 3].map((i) => (
-                <Card key={i} className="rounded-2xl overflow-hidden h-64 bg-gradient-to-br from-orange-300 to-red-400 shadow-lg"></Card>
+              {[
+                "/florida-local/Updated_Turulls_Dish_36.png",
+                "/florida-local/IMG_1376_2_123.jpg",
+                "/florida-local/IMG_1378_124.jpg"
+              ].map((img, i) => (
+                <Card key={i} className="rounded-2xl overflow-hidden h-64 shadow-lg">
+                  <img src={img} alt={`Spanish cuisine ${i + 1}`} className="w-full h-full object-cover" />
+                </Card>
               ))}
             </div>
           </div>
@@ -330,8 +340,8 @@ export default function FloridaLocalElite() {
 
       {/* 8. #ITSGOODAF | EVERY DAY IS A VACATION */}
       <section className="relative h-96 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600">
-          {/* Sunset jet ski image placeholder */}
+        <div className="absolute inset-0">
+          <img src="/florida-local/IMG_0655_Optimized_90.jpg" alt="Every Day is A Vacation" className="w-full h-full object-cover" />
         </div>
         <div className="absolute inset-0 bg-black/40"></div>
         <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4">
@@ -373,8 +383,14 @@ export default function FloridaLocalElite() {
             </Badge>
 
             <div className="grid md:grid-cols-3 gap-6 mb-8">
-              {[1, 2, 3].map((i) => (
-                <Card key={i} className="rounded-2xl overflow-hidden h-48 bg-gradient-to-br from-blue-300 to-purple-400"></Card>
+              {[
+                "/florida-local/cropped_Central_Florida_Insura_10.png",
+                "/florida-local/Screen_Shot_2023_07_26_at_6_32_12.png",
+                "/florida-local/Screen_Shot_2023_07_26_at_6_19_13.png"
+              ].map((img, i) => (
+                <Card key={i} className="rounded-2xl overflow-hidden h-48">
+                  <img src={img} alt={`Insurance school ${i + 1}`} className="w-full h-full object-cover" />
+                </Card>
               ))}
             </div>
 
@@ -415,19 +431,12 @@ export default function FloridaLocalElite() {
               {/* App Download */}
               <div className="text-center">
                 <h3 className="text-3xl font-bold mb-8">Download the iPowerMoves App</h3>
+                <div className="mb-8">
+                  <img src="/florida-local/iflash4uscreens_1024x1024_1_19.png" alt="iPowerMoves App" className="w-full max-w-md mx-auto mb-6" />
+                </div>
                 <div className="flex flex-col gap-4 justify-center mb-8">
-                  <Button className="bg-black text-white px-8 py-6 rounded-2xl text-lg hover:bg-gray-800 w-full">
-                    <svg className="h-6 w-6 mr-2" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
-                    </svg>
-                    Download on App Store
-                  </Button>
-                  <Button className="bg-black text-white px-8 py-6 rounded-2xl text-lg hover:bg-gray-800 w-full">
-                    <svg className="h-6 w-6 mr-2" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.5,12.92 20.16,13.19L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
-                    </svg>
-                    Get it on Google Play
-                  </Button>
+                  <img src="/florida-local/App_Store_Download_18.png" alt="Download on App Store" className="w-full max-w-xs mx-auto cursor-pointer hover:opacity-80 transition-opacity" />
+                  <img src="/florida-local/Get_it_On_Google_Play_Mobile_A_17.png" alt="Get it on Google Play" className="w-full max-w-xs mx-auto cursor-pointer hover:opacity-80 transition-opacity" />
                 </div>
               </div>
             </div>
@@ -464,13 +473,15 @@ export default function FloridaLocalElite() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
             {[
-              { title: "The Insurance School | We Make...", color: "from-blue-300 to-purple-400" },
-              { title: "Power Moves | The Mo-Fo's Who are...", color: "from-teal-300 to-blue-400" },
-              { title: "Neil Schwabe, MGA With United...", color: "from-green-300 to-teal-400" },
-              { title: "Tactical Brewing Newest Released...", color: "from-orange-300 to-pink-400" }
+              { title: "The Insurance School | We Make...", image: "/florida-local/Screen_Shot_2023_07_26_at_6_17_14.png" },
+              { title: "Power Moves | The Mo-Fo's Who are...", image: "/florida-local/how_to_make_a_website_like_onl_11.png" },
+              { title: "Neil Schwabe, MGA With United...", image: "/florida-local/Sample_Logo_6.png" },
+              { title: "Tactical Brewing Newest Released...", image: "/florida-local/banner7_3_1_52.jpg" }
             ].map((item, i) => (
               <Card key={i} className="rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 cursor-pointer">
-                <div className={`h-64 bg-gradient-to-br ${item.color}`}></div>
+                <div className="h-64">
+                  <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                </div>
                 <CardContent className="p-6">
                   <Badge className="bg-green-500 text-white mb-3 px-3 py-1 rounded-full text-xs">
                     FEATURED
@@ -498,8 +509,8 @@ export default function FloridaLocalElite() {
                     I ❤️ PR | Jan & Lauras Island Excursions
                   </h3>
                 </div>
-                <div className="relative h-96 md:h-auto bg-gradient-to-br from-pink-300 to-purple-400">
-                  {/* PR sign couple image placeholder */}
+                <div className="relative h-96 md:h-auto">
+                  <img src="/florida-local/IMG_4616_2_96.jpg" alt="I Love PR" className="w-full h-full object-cover" />
                 </div>
               </div>
             </Card>
@@ -511,15 +522,17 @@ export default function FloridaLocalElite() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              "Steffieemariee – DR is In",
-              "Island Hopping In Punta Cana DR",
-              "Clear Water Beach on a Charge",
-              "Caribbean Hotspots, Visit Punta Cana..."
-            ].map((title, i) => (
+              { title: "Steffieemariee – DR is In", image: "/florida-local/3E6A3770_scaled_qri8nxim47c6uw_64.jpg" },
+              { title: "Island Hopping In Punta Cana DR", image: "/florida-local/3E6A3784_2_scaled_qri8nxim47c6_62.jpg" },
+              { title: "Clear Water Beach on a Charge", image: "/florida-local/3E6A1746_1_scaled_qri8nyggb1dh_66.jpg" },
+              { title: "Caribbean Hotspots, Visit Punta Cana...", image: "/florida-local/IMG_9321_1_qri8nzeahveri4j4nbg_65.png" }
+            ].map((item, i) => (
               <Card key={i} className="rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 cursor-pointer">
-                <div className="h-64 bg-gradient-to-br from-blue-300 to-teal-400"></div>
+                <div className="h-64">
+                  <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                </div>
                 <CardContent className="p-6">
-                  <h4 className="font-bold text-lg">{title}</h4>
+                  <h4 className="font-bold text-lg">{item.title}</h4>
                 </CardContent>
               </Card>
             ))}
@@ -541,8 +554,15 @@ export default function FloridaLocalElite() {
             {/* Before/After Photos Slider */}
             <div>
               <div className="grid grid-cols-2 gap-4 mb-4">
-                {[1, 2, 3, 4].map((i) => (
-                  <Card key={i} className="rounded-2xl overflow-hidden h-48 bg-gradient-to-br from-blue-200 to-purple-300"></Card>
+                {[
+                  "/florida-local/ANTES_YD_768x960_2_r0z7vyga2r3_31.png",
+                  "/florida-local/999_768x960_2_r0z7w0bygf6dlldx_32.png",
+                  "/florida-local/34_1_768x960_2_r0z7w19sn97nx7c_33.jpg",
+                  "/florida-local/JJBHJBJH_768x960_2_r0z7w35h0xa_34.png"
+                ].map((img, i) => (
+                  <Card key={i} className="rounded-2xl overflow-hidden h-48">
+                    <img src={img} alt={`Dental work ${i + 1}`} className="w-full h-full object-cover" />
+                  </Card>
                 ))}
               </div>
               <div className="flex justify-center gap-2">
@@ -582,9 +602,15 @@ export default function FloridaLocalElite() {
           </Badge>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto mb-12">
-            {[1, 2, 3].map((i) => (
+            {[
+              "/florida-local/IMG_6248_120.jpg",
+              "/florida-local/Icafe_Cover_1024x576_134.jpg",
+              "/florida-local/IMG_0205_scaled_93.jpg"
+            ].map((img, i) => (
               <Card key={i} className="rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300">
-                <div className="h-64 bg-gradient-to-br from-orange-300 to-pink-400"></div>
+                <div className="h-64">
+                  <img src={img} alt={`Foodie ${i + 1}`} className="w-full h-full object-cover" />
+                </div>
               </Card>
             ))}
             <Card className="rounded-3xl overflow-hidden shadow-xl bg-yellow-400 flex items-center justify-center">
@@ -636,8 +662,8 @@ export default function FloridaLocalElite() {
                     The City Council of Palm Bay Joins the Space Coast Locals
                   </h3>
                 </div>
-                <div className="relative h-96 md:h-auto bg-gradient-to-br from-blue-300 to-purple-400">
-                  {/* City council ceremony image placeholder */}
+                <div className="relative h-96 md:h-auto">
+                  <img src="/florida-local/252864306_118346030630867_6942_139.jpg" alt="City Council Palm Bay" className="w-full h-full object-cover" />
                 </div>
               </div>
             </Card>
@@ -652,7 +678,9 @@ export default function FloridaLocalElite() {
             {/* Left: Foodie Posts */}
             <div className="space-y-6">
               <Card className="rounded-3xl overflow-hidden shadow-xl">
-                <div className="h-64 bg-gradient-to-br from-orange-300 to-red-400"></div>
+                <div className="h-64">
+                  <img src="/florida-local/IMG_4953_91.jpg" alt="Pizza Guy" className="w-full h-full object-cover" />
+                </div>
                 <CardContent className="p-6">
                   <h4 className="font-bold text-xl mb-2">Fly Guy Pizza Guy W/ @EatsWithAlicia</h4>
                   <p className="text-gray-600">Woman enjoying cheesy pizza</p>
@@ -660,7 +688,9 @@ export default function FloridaLocalElite() {
               </Card>
 
               <Card className="rounded-3xl overflow-hidden shadow-xl">
-                <div className="h-64 bg-gradient-to-br from-yellow-300 to-orange-400"></div>
+                <div className="h-64">
+                  <img src="/florida-local/IMG_4962_98.jpg" alt="Tibby's New Orleans" className="w-full h-full object-cover" />
+                </div>
                 <CardContent className="p-6">
                   <h4 className="font-bold text-xl mb-2">Tibby's New Orleans Kitchen with Baloo Eats</h4>
                   <p className="text-gray-600">Smiling man enjoying a drink</p>
