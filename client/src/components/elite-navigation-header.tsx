@@ -37,6 +37,7 @@ export default function EliteNavigationHeader() {
   // ELITE NAVIGATION ITEMS - CLEAN & INTEGRATED
   const navigationItems = [
     { href: "/", label: "Discover", icon: "✨", testId: "nav-discover" },
+    { href: "/florida-elite", label: "Florida Elite", icon: "🏝️", testId: "nav-florida-elite" },
     { href: "/marketplace", label: "Marketplace", icon: "🏪", testId: "nav-marketplace" },
     { href: "/messages", label: "Messages", icon: "💬", testId: "nav-messages" },
     { href: "/cart", label: "Cart", icon: "🛒", testId: "nav-cart" },

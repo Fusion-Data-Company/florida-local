@@ -19,12 +19,16 @@ import OrderConfirmation from "@/pages/order-confirmation";
 import Orders from "@/pages/orders";
 import VendorProducts from "@/pages/vendor-products";
 import VendorPayouts from "@/pages/vendor-payouts";
+import FloridaLocalElite from "@/pages/florida-local-elite";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
 
   return (
     <Switch>
+      {/* Public route - accessible to everyone */}
+      <Route path="/florida-elite" component={FloridaLocalElite} />
+
       {isLoading || !isAuthenticated ? (
         <Route path="/" component={Landing} />
       ) : (

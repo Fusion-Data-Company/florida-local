@@ -76,6 +76,12 @@ export const businesses = pgTable("businesses", {
   stripeOnboardingStatus: text("stripe_onboarding_status"), // pending, active, disabled
   stripeChargesEnabled: boolean("stripe_charges_enabled").default(false),
   stripePayoutsEnabled: boolean("stripe_payouts_enabled").default(false),
+
+  // Multi-payment integration support (Phase 2)
+  paymentIntegrations: jsonb("payment_integrations"), // { stripe: {accountId, isActive}, paypal: {...}, square: {...} }
+  miniStoreEnabled: boolean("mini_store_enabled").default(false),
+  miniStoreConfig: jsonb("mini_store_config"), // { theme, colors, banner, logo }
+
   rating: decimal("rating", { precision: 3, scale: 2 }).default("0"),
   reviewCount: integer("review_count").default(0),
   followerCount: integer("follower_count").default(0),
@@ -219,7 +225,10 @@ export const orders = pgTable("orders", {
   customerEmail: varchar("customer_email"),
   customerPhone: varchar("customer_phone", { length: 20 }),
   notes: text("notes"),
+  customerComment: varchar("customer_comment", { length: 200 }), // Phase 2: For purchase notification widget
   invoiceNumber: varchar("invoice_number", { length: 50 }),
+  vendorBusinessId: uuid("vendor_business_id").references(() => businesses.id), // Phase 2: Track which vendor
+  parentOrderId: uuid("parent_order_id"), // Phase 2: For multi-vendor cart splits
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -373,8 +382,227 @@ export const apiKeys = pgTable("api_keys", {
   index("idx_api_keys_user_id").on(table.userId)
 ]);
 
+// ====================================================================
+// PHASE 2: ENTREPRENEUR-FIRST PLATFORM SCHEMAS
+// ====================================================================
+
+// Entrepreneur Profiles - Separate from business profiles
+export const entrepreneurs = pgTable("entrepreneurs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }).unique(),
+  firstName: varchar("first_name", { length: 100 }).notNull(),
+  lastName: varchar("last_name", { length: 100 }).notNull(),
+  bio: text("bio"), // Short bio
+  story: text("story"), // Full entrepreneurial story
+  tagline: varchar("tagline", { length: 200 }),
+  profileImageUrl: varchar("profile_image_url"),
+  coverImageUrl: varchar("cover_image_url"),
+  socialLinks: jsonb("social_links"), // { twitter, linkedin, instagram, facebook }
+  achievements: jsonb("achievements"), // Array of achievement objects
+  specialties: jsonb("specialties"), // Array of specialty tags
+  location: varchar("location", { length: 255 }),
+  website: varchar("website", { length: 255 }),
+  yearsExperience: integer("years_experience"),
+  totalBusinessesOwned: integer("total_businesses_owned").default(0),
+  totalRevenueGenerated: decimal("total_revenue_generated", { precision: 12, scale: 2 }),
+  followerCount: integer("follower_count").default(0),
+  showcaseCount: integer("showcase_count").default(0),
+  isVerified: boolean("is_verified").default(false),
+  isFeatured: boolean("is_featured").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Entrepreneur-Business relationship (many-to-many)
+export const entrepreneurBusinesses = pgTable("entrepreneur_businesses", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  entrepreneurId: uuid("entrepreneur_id").notNull().references(() => entrepreneurs.id, { onDelete: 'cascade' }),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  role: varchar("role", { length: 50 }).notNull().default("founder"), // founder, co-founder, owner, partner
+  equityPercentage: decimal("equity_percentage", { precision: 5, scale: 2 }),
+  joinedDate: timestamp("joined_date").defaultNow(),
+  leftDate: timestamp("left_date"),
+  isCurrent: boolean("is_current").default(true),
+  isPublic: boolean("is_public").default(true), // Show on entrepreneur profile
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  uniqueIndex("idx_unique_entrepreneur_business").on(table.entrepreneurId, table.businessId)
+]);
+
+// Timeline Showcases - Main feed content
+export const timelineShowcases = pgTable("timeline_showcases", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  entrepreneurId: uuid("entrepreneur_id").references(() => entrepreneurs.id, { onDelete: 'cascade' }),
+  businessId: uuid("business_id").references(() => businesses.id, { onDelete: 'cascade' }),
+  authorId: varchar("author_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  type: varchar("type", { length: 30 }).notNull().default("story"), // story, launch, milestone, promotion, update
+  title: varchar("title", { length: 255 }).notNull(),
+  content: text("content").notNull(),
+  excerpt: varchar("excerpt", { length: 500 }),
+  mediaUrls: jsonb("media_urls"), // Array of image/video URLs
+  ctaText: varchar("cta_text", { length: 100 }),
+  ctaUrl: varchar("cta_url", { length: 500 }),
+  tags: jsonb("tags"), // Array of tag strings
+  category: varchar("category", { length: 100 }),
+  voteCount: integer("vote_count").default(0),
+  likeCount: integer("like_count").default(0),
+  commentCount: integer("comment_count").default(0),
+  shareCount: integer("share_count").default(0),
+  viewCount: integer("view_count").default(0),
+  isPinned: boolean("is_pinned").default(false),
+  isFeatured: boolean("is_featured").default(false),
+  isPromoted: boolean("is_promoted").default(false), // Paid promotion
+  promotionSpotId: uuid("promotion_spot_id"), // References ad spot if promoted
+  promotionStartDate: timestamp("promotion_start_date"),
+  promotionEndDate: timestamp("promotion_end_date"),
+  isApproved: boolean("is_approved").default(false), // Admin moderation
+  approvedBy: varchar("approved_by").references(() => users.id),
+  approvedAt: timestamp("approved_at"),
+  scheduledAt: timestamp("scheduled_at"),
+  publishedAt: timestamp("published_at"),
+  isPublished: boolean("is_published").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_timeline_published").on(table.isPublished, table.publishedAt),
+  index("idx_timeline_votes").on(table.voteCount),
+  index("idx_timeline_entrepreneur").on(table.entrepreneurId)
+]);
+
+// Timeline Showcase Votes
+export const timelineShowcaseVotes = pgTable("timeline_showcase_votes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  showcaseId: uuid("showcase_id").notNull().references(() => timelineShowcases.id, { onDelete: 'cascade' }),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  voteType: varchar("vote_type", { length: 10 }).notNull().default("upvote"), // upvote, downvote
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  uniqueIndex("idx_unique_showcase_vote").on(table.showcaseId, table.userId)
+]);
+
+// Vendor Transactions - Track all payments through mini-stores
+export const vendorTransactions = pgTable("vendor_transactions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  orderId: uuid("order_id").notNull().references(() => orders.id, { onDelete: 'cascade' }),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(), // Total order amount
+  platformFee: decimal("platform_fee", { precision: 10, scale: 2 }).notNull(), // Platform's cut (e.g., 5%)
+  vendorPayout: decimal("vendor_payout", { precision: 10, scale: 2 }).notNull(), // Amount vendor receives
+  currency: varchar("currency", { length: 3 }).notNull().default("usd"),
+  stripeTransferId: varchar("stripe_transfer_id"), // Stripe Connect transfer ID
+  stripeChargeId: varchar("stripe_charge_id"),
+  paymentProcessor: varchar("payment_processor", { length: 20 }).default("stripe"), // stripe, paypal, square
+  status: varchar("status", { length: 20 }).notNull().default("pending"), // pending, completed, failed, refunded
+  failureReason: text("failure_reason"),
+  paidOutAt: timestamp("paid_out_at"),
+  refundedAt: timestamp("refunded_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("idx_vendor_transactions_business").on(table.businessId),
+  index("idx_vendor_transactions_order").on(table.orderId)
+]);
+
+// Recent Purchases - For notification widget
+export const recentPurchases = pgTable("recent_purchases", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  orderId: uuid("order_id").notNull().references(() => orders.id, { onDelete: 'cascade' }),
+  customerName: varchar("customer_name", { length: 100 }).notNull(), // Anonymized: "John D."
+  customerLocation: varchar("customer_location", { length: 100 }), // "Miami, FL"
+  productName: varchar("product_name", { length: 255 }).notNull(),
+  vendorName: varchar("vendor_name", { length: 255 }).notNull(),
+  vendorBusinessId: uuid("vendor_business_id").references(() => businesses.id, { onDelete: 'cascade' }),
+  customerComment: varchar("customer_comment", { length: 200 }), // Optional comment at checkout
+  amount: decimal("amount", { precision: 10, scale: 2 }),
+  isVisible: boolean("is_visible").default(true), // Can be hidden by admin
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("idx_recent_purchases_created").on(table.createdAt)
+]);
+
+// Ad Spots - Available advertising positions
+export const adSpots = pgTable("ad_spots", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 100 }).notNull().unique(),
+  displayName: varchar("display_name", { length: 100 }).notNull(),
+  description: text("description"),
+  location: varchar("location", { length: 50 }).notNull(), // timeline, marketplace, home, sidebar
+  position: varchar("position", { length: 50 }), // hero, top, middle, bottom, #3, #8, etc.
+  pricePerDay: decimal("price_per_day", { precision: 10, scale: 2 }),
+  pricePerWeek: decimal("price_per_week", { precision: 10, scale: 2 }),
+  pricePerMonth: decimal("price_per_month", { precision: 10, scale: 2 }),
+  dimensions: varchar("dimensions", { length: 50 }), // "300x250", "728x90", etc.
+  maxActiveSlots: integer("max_active_slots").default(1), // How many can run simultaneously
+  isAvailable: boolean("is_available").default(true),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Ad Campaigns - Businesses buying ad spots
+export const adCampaigns = pgTable("ad_campaigns", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  adSpotId: uuid("ad_spot_id").notNull().references(() => adSpots.id),
+  showcaseId: uuid("showcase_id").references(() => timelineShowcases.id), // Content to promote
+  name: varchar("name", { length: 255 }).notNull(),
+  creativeUrl: varchar("creative_url"), // Custom ad image/video URL
+  targetUrl: varchar("target_url"), // Where ad clicks go
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date").notNull(),
+  totalCost: decimal("total_cost", { precision: 10, scale: 2 }).notNull(),
+  billingCycle: varchar("billing_cycle", { length: 20 }).default("prepaid"), // prepaid, monthly
+  impressions: integer("impressions").default(0),
+  clicks: integer("clicks").default(0),
+  conversions: integer("conversions").default(0),
+  status: varchar("status", { length: 20 }).notNull().default("pending"), // pending, active, paused, completed, cancelled
+  isPaid: boolean("is_paid").default(false),
+  paidAt: timestamp("paid_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_ad_campaigns_business").on(table.businessId),
+  index("idx_ad_campaigns_spot").on(table.adSpotId),
+  index("idx_ad_campaigns_dates").on(table.startDate, table.endDate)
+]);
+
+// Ad Impressions - Track ad views
+export const adImpressions = pgTable("ad_impressions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  campaignId: uuid("campaign_id").notNull().references(() => adCampaigns.id, { onDelete: 'cascade' }),
+  userId: varchar("user_id").references(() => users.id, { onDelete: 'set null' }),
+  ipAddress: varchar("ip_address", { length: 45 }), // Support IPv6
+  userAgent: text("user_agent"),
+  referrer: varchar("referrer", { length: 500 }),
+  isClick: boolean("is_click").default(false),
+  isConversion: boolean("is_conversion").default(false),
+  timestamp: timestamp("timestamp").defaultNow(),
+}, (table) => [
+  index("idx_ad_impressions_campaign").on(table.campaignId),
+  index("idx_ad_impressions_timestamp").on(table.timestamp)
+]);
+
+// Premium Features - Paid visibility boosts
+export const premiumFeatures = pgTable("premium_features", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  featureType: varchar("feature_type", { length: 30 }).notNull(), // pin, boost, badge, email, multi_category
+  showcaseId: uuid("showcase_id").references(() => timelineShowcases.id), // If feature applies to showcase
+  name: varchar("name", { length: 100 }).notNull(),
+  description: text("description"),
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date").notNull(),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  status: varchar("status", { length: 20 }).notNull().default("active"), // active, expired, cancelled
+  isPaid: boolean("is_paid").default(false),
+  paidAt: timestamp("paid_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("idx_premium_features_business").on(table.businessId),
+  index("idx_premium_features_type").on(table.featureType)
+]);
+
 // Relations
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ one, many }) => ({
   businesses: many(businesses),
   postLikes: many(postLikes),
   postComments: many(postComments),
@@ -384,6 +612,9 @@ export const usersRelations = relations(users, ({ many }) => ({
   cartItems: many(cartItems),
   orders: many(orders),
   spotlightVotes: many(spotlightVotes),
+  entrepreneur: one(entrepreneurs), // Phase 2
+  timelineShowcases: many(timelineShowcases), // Phase 2
+  timelineShowcaseVotes: many(timelineShowcaseVotes), // Phase 2
 }));
 
 export const businessesRelations = relations(businesses, ({ one, many }) => ({
@@ -403,6 +634,13 @@ export const businessesRelations = relations(businesses, ({ one, many }) => ({
   gmbTokens: one(gmbTokens),
   gmbSyncHistory: many(gmbSyncHistory),
   gmbReviews: many(gmbReviews),
+  // Phase 2 relations
+  entrepreneurBusinesses: many(entrepreneurBusinesses),
+  timelineShowcases: many(timelineShowcases),
+  vendorTransactions: many(vendorTransactions),
+  recentPurchases: many(recentPurchases),
+  adCampaigns: many(adCampaigns),
+  premiumFeatures: many(premiumFeatures),
 }));
 
 export const productsRelations = relations(products, ({ one, many }) => ({
@@ -586,6 +824,120 @@ export const apiKeysRelations = relations(apiKeys, ({ one }) => ({
   }),
 }));
 
+// Phase 2 Relations
+export const entrepreneursRelations = relations(entrepreneurs, ({ one, many }) => ({
+  user: one(users, {
+    fields: [entrepreneurs.userId],
+    references: [users.id],
+  }),
+  entrepreneurBusinesses: many(entrepreneurBusinesses),
+  timelineShowcases: many(timelineShowcases),
+}));
+
+export const entrepreneurBusinessesRelations = relations(entrepreneurBusinesses, ({ one }) => ({
+  entrepreneur: one(entrepreneurs, {
+    fields: [entrepreneurBusinesses.entrepreneurId],
+    references: [entrepreneurs.id],
+  }),
+  business: one(businesses, {
+    fields: [entrepreneurBusinesses.businessId],
+    references: [businesses.id],
+  }),
+}));
+
+export const timelineShowcasesRelations = relations(timelineShowcases, ({ one, many }) => ({
+  entrepreneur: one(entrepreneurs, {
+    fields: [timelineShowcases.entrepreneurId],
+    references: [entrepreneurs.id],
+  }),
+  business: one(businesses, {
+    fields: [timelineShowcases.businessId],
+    references: [businesses.id],
+  }),
+  author: one(users, {
+    fields: [timelineShowcases.authorId],
+    references: [users.id],
+  }),
+  votes: many(timelineShowcaseVotes),
+  premiumFeatures: many(premiumFeatures),
+  adCampaigns: many(adCampaigns),
+}));
+
+export const timelineShowcaseVotesRelations = relations(timelineShowcaseVotes, ({ one }) => ({
+  showcase: one(timelineShowcases, {
+    fields: [timelineShowcaseVotes.showcaseId],
+    references: [timelineShowcases.id],
+  }),
+  user: one(users, {
+    fields: [timelineShowcaseVotes.userId],
+    references: [users.id],
+  }),
+}));
+
+export const vendorTransactionsRelations = relations(vendorTransactions, ({ one }) => ({
+  business: one(businesses, {
+    fields: [vendorTransactions.businessId],
+    references: [businesses.id],
+  }),
+  order: one(orders, {
+    fields: [vendorTransactions.orderId],
+    references: [orders.id],
+  }),
+}));
+
+export const recentPurchasesRelations = relations(recentPurchases, ({ one }) => ({
+  order: one(orders, {
+    fields: [recentPurchases.orderId],
+    references: [orders.id],
+  }),
+  vendorBusiness: one(businesses, {
+    fields: [recentPurchases.vendorBusinessId],
+    references: [businesses.id],
+  }),
+}));
+
+export const adSpotsRelations = relations(adSpots, ({ many }) => ({
+  adCampaigns: many(adCampaigns),
+}));
+
+export const adCampaignsRelations = relations(adCampaigns, ({ one, many }) => ({
+  business: one(businesses, {
+    fields: [adCampaigns.businessId],
+    references: [businesses.id],
+  }),
+  adSpot: one(adSpots, {
+    fields: [adCampaigns.adSpotId],
+    references: [adSpots.id],
+  }),
+  showcase: one(timelineShowcases, {
+    fields: [adCampaigns.showcaseId],
+    references: [timelineShowcases.id],
+  }),
+  impressions: many(adImpressions),
+}));
+
+export const adImpressionsRelations = relations(adImpressions, ({ one }) => ({
+  campaign: one(adCampaigns, {
+    fields: [adImpressions.campaignId],
+    references: [adCampaigns.id],
+  }),
+  user: one(users, {
+    fields: [adImpressions.userId],
+    references: [users.id],
+  }),
+}));
+
+export const premiumFeaturesRelations = relations(premiumFeatures, ({ one }) => ({
+  business: one(businesses, {
+    fields: [premiumFeatures.businessId],
+    references: [businesses.id],
+  }),
+  showcase: one(timelineShowcases, {
+    fields: [premiumFeatures.showcaseId],
+    references: [timelineShowcases.id],
+  }),
+}));
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -730,3 +1082,101 @@ export type InsertGmbReview = z.infer<typeof insertGmbReviewSchema>;
 // API Key Types
 export type ApiKey = typeof apiKeys.$inferSelect;
 export type InsertApiKey = z.infer<typeof insertApiKeySchema>;
+
+// Phase 2 Insert Schemas
+export const insertEntrepreneurSchema = createInsertSchema(entrepreneurs).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  followerCount: true,
+  showcaseCount: true,
+  totalBusinessesOwned: true,
+});
+
+export const updateEntrepreneurSchema = insertEntrepreneurSchema.omit({
+  userId: true,
+});
+
+export const insertEntrepreneurBusinessSchema = createInsertSchema(entrepreneurBusinesses).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertTimelineShowcaseSchema = createInsertSchema(timelineShowcases).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  voteCount: true,
+  likeCount: true,
+  commentCount: true,
+  shareCount: true,
+  viewCount: true,
+});
+
+export const updateTimelineShowcaseSchema = insertTimelineShowcaseSchema.omit({
+  authorId: true,
+});
+
+export const insertTimelineShowcaseVoteSchema = createInsertSchema(timelineShowcaseVotes).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertVendorTransactionSchema = createInsertSchema(vendorTransactions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertRecentPurchaseSchema = createInsertSchema(recentPurchases).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertAdSpotSchema = createInsertSchema(adSpots).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertAdCampaignSchema = createInsertSchema(adCampaigns).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  impressions: true,
+  clicks: true,
+  conversions: true,
+});
+
+export const insertAdImpressionSchema = createInsertSchema(adImpressions).omit({
+  id: true,
+  timestamp: true,
+});
+
+export const insertPremiumFeatureSchema = createInsertSchema(premiumFeatures).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Phase 2 Types
+export type Entrepreneur = typeof entrepreneurs.$inferSelect;
+export type InsertEntrepreneur = z.infer<typeof insertEntrepreneurSchema>;
+export type UpdateEntrepreneur = z.infer<typeof updateEntrepreneurSchema>;
+export type EntrepreneurBusiness = typeof entrepreneurBusinesses.$inferSelect;
+export type InsertEntrepreneurBusiness = z.infer<typeof insertEntrepreneurBusinessSchema>;
+export type TimelineShowcase = typeof timelineShowcases.$inferSelect;
+export type InsertTimelineShowcase = z.infer<typeof insertTimelineShowcaseSchema>;
+export type UpdateTimelineShowcase = z.infer<typeof updateTimelineShowcaseSchema>;
+export type TimelineShowcaseVote = typeof timelineShowcaseVotes.$inferSelect;
+export type InsertTimelineShowcaseVote = z.infer<typeof insertTimelineShowcaseVoteSchema>;
+export type VendorTransaction = typeof vendorTransactions.$inferSelect;
+export type InsertVendorTransaction = z.infer<typeof insertVendorTransactionSchema>;
+export type RecentPurchase = typeof recentPurchases.$inferSelect;
+export type InsertRecentPurchase = z.infer<typeof insertRecentPurchaseSchema>;
+export type AdSpot = typeof adSpots.$inferSelect;
+export type InsertAdSpot = z.infer<typeof insertAdSpotSchema>;
+export type AdCampaign = typeof adCampaigns.$inferSelect;
+export type InsertAdCampaign = z.infer<typeof insertAdCampaignSchema>;
+export type AdImpression = typeof adImpressions.$inferSelect;
+export type InsertAdImpression = z.infer<typeof insertAdImpressionSchema>;
+export type PremiumFeature = typeof premiumFeatures.$inferSelect;
+export type InsertPremiumFeature = z.infer<typeof insertPremiumFeatureSchema>;
