@@ -3,17 +3,188 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
+import {
   Search, Facebook, Instagram, Youtube, Twitter, Moon, User,
   MapPin, Star, Phone, Calendar, ChevronLeft, ChevronRight,
-  Heart, Bookmark, Play
+  Heart, Bookmark, Play, Sparkles
 } from "lucide-react";
+
+// Premium Metallic Badge Component
+const MetallicBadge = ({ children, color = "gold", className = "" }: { children: React.ReactNode; color?: "gold" | "platinum" | "bronze" | "emerald" | "ruby"; className?: string }) => {
+  const colorStyles = {
+    gold: {
+      background: 'linear-gradient(135deg, #f6d365 0%, #fda085 50%, #f093fb 100%)',
+      shadow: '0 4px 20px rgba(246, 211, 101, 0.5), inset 0 1px 0 rgba(255,255,255,0.8), inset 0 -1px 0 rgba(0,0,0,0.2)',
+    },
+    platinum: {
+      background: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 50%, #a5b4fc 100%)',
+      shadow: '0 4px 20px rgba(192, 210, 254, 0.5), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.15)',
+    },
+    bronze: {
+      background: 'linear-gradient(135deg, #cd7f32 0%, #e89b5c 50%, #fbb574 100%)',
+      shadow: '0 4px 20px rgba(205, 127, 50, 0.5), inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(0,0,0,0.25)',
+    },
+    emerald: {
+      background: 'linear-gradient(135deg, #10b981 0%, #34d399 50%, #6ee7b7 100%)',
+      shadow: '0 4px 20px rgba(16, 185, 129, 0.5), inset 0 1px 0 rgba(255,255,255,0.8), inset 0 -1px 0 rgba(0,0,0,0.2)',
+    },
+    ruby: {
+      background: 'linear-gradient(135deg, #f43f5e 0%, #fb7185 50%, #fda4af 100%)',
+      shadow: '0 4px 20px rgba(244, 63, 94, 0.5), inset 0 1px 0 rgba(255,255,255,0.8), inset 0 -1px 0 rgba(0,0,0,0.2)',
+    },
+  };
+
+  const style = colorStyles[color];
+
+  return (
+    <div
+      className={`relative inline-flex items-center gap-2 px-4 py-2 rounded-xl overflow-hidden font-bold uppercase tracking-wide text-white transform hover:scale-105 transition-all duration-300 ${className}`}
+      style={{
+        background: style.background,
+        boxShadow: style.shadow,
+      }}
+    >
+      {/* Animated shimmer overlay */}
+      <div
+        className="absolute inset-0 opacity-70"
+        style={{
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, transparent 30%, transparent 70%, rgba(255,255,255,0.9) 100%)',
+          backgroundSize: '200% 100%',
+          animation: 'shimmer 3s linear infinite',
+        }}
+      ></div>
+      {/* Glass-face effect */}
+      <div
+        className="absolute inset-0 opacity-30"
+        style={{
+          background: 'linear-gradient(180deg, rgba(255,255,255,0.8) 0%, transparent 50%, rgba(0,0,0,0.1) 100%)',
+        }}
+      ></div>
+      <Sparkles className="h-4 w-4 relative z-10" />
+      <span className="relative z-10 drop-shadow-md text-sm">{children}</span>
+    </div>
+  );
+};
 
 export default function FloridaLocalElite() {
   const [activeTab, setActiveTab] = useState("restaurants");
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
+    <div className="min-h-screen relative overflow-hidden">
+      {/* ARTISTIC STUCCO/MARBLE TEXTURE LAYERS - HIGHLY VISIBLE */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        {/* Artistic Stucco Texture Layer 1 - Prominent */}
+        <div 
+          className="absolute inset-0 opacity-50"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 800 800' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='stucco1'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='8' seed='1' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0.3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23stucco1)' fill='%23d4c5b0'/%3E%3C/svg%3E")`,
+            backgroundSize: '500px 500px',
+            backgroundRepeat: 'repeat',
+            mixBlendMode: 'multiply'
+          }}
+        />
+        
+        {/* Artistic Plaster Texture Layer 2 - Gold Tones */}
+        <div 
+          className="absolute inset-0 opacity-35"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 700 700' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='plaster'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='6' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0.4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23plaster)' fill='%23e8d4b8'/%3E%3C/svg%3E")`,
+            backgroundSize: '650px 650px',
+            backgroundRepeat: 'repeat',
+            backgroundPosition: '150px 150px',
+            mixBlendMode: 'overlay'
+          }}
+        />
+        
+        {/* Fine Grain Texture - Very Visible */}
+        <div 
+          className="absolute inset-0 opacity-40"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='4' seed='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)' fill='%23baa68a' opacity='0.7'/%3E%3C/svg%3E")`,
+            backgroundSize: '250px 250px',
+            backgroundRepeat: 'repeat'
+          }}
+        />
+        
+        {/* Warm Gradient Base with Depth */}
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-100 via-orange-100 to-rose-100" />
+        
+        {/* Marble Vein Effect - Artistic Touch */}
+        <div 
+          className="absolute inset-0 opacity-25"
+          style={{
+            background: `repeating-linear-gradient(
+              45deg,
+              transparent,
+              transparent 100px,
+              rgba(139, 115, 85, 0.15) 100px,
+              rgba(139, 115, 85, 0.15) 102px
+            ), repeating-linear-gradient(
+              -45deg,
+              transparent,
+              transparent 150px,
+              rgba(160, 130, 95, 0.1) 150px,
+              rgba(160, 130, 95, 0.1) 152px
+            )`
+          }}
+        />
+      </div>
+
+      {/* ANIMATED AURORA GRADIENT ORBS - DEPTH LAYERS */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        {/* Aurora Orb 1 - Purple/Pink */}
+        <div 
+          className="absolute w-[800px] h-[800px] rounded-full blur-3xl opacity-30 animate-aurora-drift-1"
+          style={{
+            background: 'radial-gradient(circle, rgba(168, 85, 247, 0.5) 0%, rgba(236, 72, 153, 0.3) 50%, transparent 70%)',
+            top: '10%',
+            left: '5%'
+          }}
+        />
+        
+        {/* Aurora Orb 2 - Blue/Cyan */}
+        <div 
+          className="absolute w-[700px] h-[700px] rounded-full blur-3xl opacity-25 animate-aurora-drift-2"
+          style={{
+            background: 'radial-gradient(circle, rgba(59, 130, 246, 0.5) 0%, rgba(6, 182, 212, 0.3) 50%, transparent 70%)',
+            top: '60%',
+            right: '10%'
+          }}
+        />
+        
+        {/* Aurora Orb 3 - Orange/Yellow */}
+        <div 
+          className="absolute w-[600px] h-[600px] rounded-full blur-3xl opacity-20 animate-aurora-drift-3"
+          style={{
+            background: 'radial-gradient(circle, rgba(251, 146, 60, 0.5) 0%, rgba(250, 204, 21, 0.3) 50%, transparent 70%)',
+            bottom: '15%',
+            left: '40%'
+          }}
+        />
+        
+        {/* Aurora Orb 4 - Emerald/Teal */}
+        <div 
+          className="absolute w-[750px] h-[750px] rounded-full blur-3xl opacity-20 animate-aurora-drift-4"
+          style={{
+            background: 'radial-gradient(circle, rgba(16, 185, 129, 0.4) 0%, rgba(20, 184, 166, 0.3) 50%, transparent 70%)',
+            top: '40%',
+            right: '30%'
+          }}
+        />
+        
+        {/* Aurora Orb 5 - Rose/Fuchsia */}
+        <div 
+          className="absolute w-[650px] h-[650px] rounded-full blur-3xl opacity-25 animate-aurora-drift-5"
+          style={{
+            background: 'radial-gradient(circle, rgba(244, 63, 94, 0.4) 0%, rgba(217, 70, 239, 0.3) 50%, transparent 70%)',
+            bottom: '30%',
+            right: '5%'
+          }}
+        />
+      </div>
+
+      {/* CONTENT WRAPPER - Above all effects */}
+      <div className="relative z-10">
       {/* 1. SITE HEADER / NAVIGATION */}
       <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-purple-100 shadow-sm">
         <div className="container mx-auto px-4 py-4">
@@ -64,55 +235,160 @@ export default function FloridaLocalElite() {
         </div>
       </header>
 
-      {/* 2. HERO SECTION - BEACH VIDEO */}
-      <section className="relative h-[80vh] overflow-hidden">
-        {/* Video Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-400 via-teal-300 to-cyan-400">
-          <img src="/florida-local/Bg_d604993a_0.png" alt="Florida Beach" className="absolute inset-0 w-full h-full object-cover opacity-60" />
-          <div className="absolute inset-0 bg-black/30"></div>
+      {/* 2. PREMIUM HERO SECTION - 5X UPGRADED */}
+      <section className="relative h-[85vh] overflow-hidden group">
+        {/* Animated gradient background with parallax */}
+        <div className="absolute inset-0">
+          <div
+            className="absolute inset-0 bg-gradient-to-br from-blue-500 via-teal-400 to-cyan-500 transition-transform duration-700"
+            style={{
+              transform: 'scale(1.1)',
+            }}
+          >
+            <img
+              src="/florida-local/Bg_d604993a_0.png"
+              alt="Florida Beach"
+              className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-1000"
+            />
+          </div>
+          {/* Premium gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20"></div>
+          {/* Ambient glow effects */}
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-400/30 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }}></div>
         </div>
 
-        {/* 4K Badge */}
-        <div className="absolute top-8 left-8 z-10">
-          <Badge className="bg-white/20 backdrop-blur-md text-white border-white/40 px-4 py-2">
+        {/* Floating particles */}
+        <div className="absolute inset-0 overflow-hidden">
+          {[...Array(30)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-2 h-2 bg-white/40 rounded-full animate-pulse"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 5}s`,
+                animationDuration: `${3 + Math.random() * 3}s`,
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Premium 4K Badge - METALLIC */}
+        <div className="absolute top-8 left-8 z-20">
+          <MetallicBadge color="platinum">
             4K Cinematic Video | Florida, USA – By Drone
-          </Badge>
+          </MetallicBadge>
         </div>
 
-        {/* Hero Text */}
+        {/* PREMIUM Hero Text with glass morphism */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10 px-4">
-          <h1 className="text-7xl md:text-8xl font-bold text-white mb-6 drop-shadow-2xl">
-            The Florida Local
-          </h1>
-          <p className="text-3xl md:text-4xl text-white font-light max-w-4xl drop-shadow-lg">
-            Life's is BETTER when you're Living Like a <span className="font-bold">LOCAL</span>.
-          </p>
+          {/* Glass container for text */}
+          <div
+            className="relative p-12 rounded-3xl"
+            style={{
+              background: 'rgba(255, 255, 255, 0.1)',
+              backdropFilter: 'blur(20px) saturate(180%)',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+            }}
+          >
+            {/* Metallic gradient text */}
+            <h1
+              className="text-7xl md:text-8xl font-black mb-6 animate-shimmer"
+              style={{
+                background: 'linear-gradient(135deg, #ffffff 0%, #ffd700 25%, #ffffff 50%, #ffa500 75%, #ffffff 100%)',
+                backgroundSize: '200% 100%',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                textShadow: '0 0 40px rgba(255, 215, 0, 0.5)',
+                animation: 'shimmer 4s linear infinite',
+              }}
+            >
+              The Florida Local
+            </h1>
+            <p className="text-3xl md:text-4xl text-white font-light max-w-4xl leading-relaxed">
+              Life's is BETTER when you're Living Like a{" "}
+              <span
+                className="font-black"
+                style={{
+                  background: 'linear-gradient(135deg, #ffd700 0%, #ffa500 50%, #ffd700 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  textShadow: '0 0 30px rgba(255, 215, 0, 0.6)',
+                }}
+              >
+                LOCAL
+              </span>
+              .
+            </p>
+          </div>
         </div>
+
+        {/* Bottom gradient fade */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white via-white/50 to-transparent z-10"></div>
       </section>
 
-      {/* 3. FOODIES, CREATORS & COLLABORATORS SLIDER */}
-      <section className="py-16 bg-gradient-to-r from-purple-100 via-blue-100 to-pink-100">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+      {/* 3. FOODIES, CREATORS & COLLABORATORS SLIDER - PREMIUM */}
+      <section className="py-20 relative overflow-hidden">
+        {/* Glass morphism background */}
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-100 via-blue-100 to-pink-100 opacity-90"></div>
+        <div className="absolute inset-0 backdrop-blur-sm"></div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <h2
+            className="text-4xl md:text-5xl font-black text-center mb-16"
+            style={{
+              background: 'linear-gradient(135deg, #9333ea 0%, #ec4899 50%, #f97316 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
             The Florida Local | Foodies, Creators & Collaborators
           </h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
             {[
-              { tag: "#4EverTourist", caption: "#4Boho Out In the D.R.", color: "bg-orange-500", image: "/florida-local/IMG_8619_qri8nygdvbs6m28t7xaxn_3.jpg" },
-              { tag: "#ipowermoves", caption: "Sarah Insure", color: "bg-purple-500", image: "/florida-local/Sarah_Insure_qri8nxijohqwaga6d_2.png" },
-              { tag: "#itsGoodAF", caption: "Explore With Kenzo & Ben", color: "bg-yellow-500", image: "/florida-local/IMG_9321_1_qri8nze825tgxo7g2fp_4.png" },
-              { tag: "#effintrendy", caption: "OASIS Tropic Wear", color: "bg-pink-500", image: "/florida-local/3E6A3388_scaled_qri8nygjylpn3c_7.jpg" },
-              { tag: "#NeverHuntAlone", caption: "HOW TO BE FEATURED", color: "bg-green-500", image: "/florida-local/Never_Hunt_Alone_Logo_47.png" }
+              { tag: "#4EverTourist", caption: "#4Boho Out In the D.R.", badgeColor: "gold", image: "/florida-local/IMG_8619_qri8nygdvbs6m28t7xaxn_3.jpg" },
+              { tag: "#ipowermoves", caption: "Sarah Insure", badgeColor: "platinum", image: "/florida-local/Sarah_Insure_qri8nxijohqwaga6d_2.png" },
+              { tag: "#itsGoodAF", caption: "Explore With Kenzo & Ben", badgeColor: "bronze", image: "/florida-local/IMG_9321_1_qri8nze825tgxo7g2fp_4.png" },
+              { tag: "#effintrendy", caption: "OASIS Tropic Wear", badgeColor: "ruby", image: "/florida-local/3E6A3388_scaled_qri8nygjylpn3c_7.jpg" },
+              { tag: "#NeverHuntAlone", caption: "HOW TO BE FEATURED", badgeColor: "emerald", image: "/florida-local/Never_Hunt_Alone_Logo_47.png" }
             ].map((item, i) => (
-              <Card key={i} className="group overflow-hidden rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
-                <div className="relative h-96">
-                  <img src={item.image} alt={item.caption} className="absolute inset-0 w-full h-full object-cover" />
-                  <Badge className={`${item.color} absolute top-4 left-4 text-white font-bold uppercase z-10 px-4 py-2`}>
-                    {item.tag}
-                  </Badge>
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
-                    <p className="text-white font-semibold text-lg">{item.caption}</p>
+              <Card
+                key={i}
+                className="group overflow-hidden rounded-3xl transition-all duration-500 hover:-translate-y-3 cursor-pointer"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.95)',
+                  backdropFilter: 'blur(20px)',
+                  boxShadow: '0 10px 40px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.9)',
+                  border: '2px solid rgba(255, 255, 255, 0.5)',
+                }}
+              >
+                <div className="relative h-96 overflow-hidden">
+                  {/* Shimmer overlay on image */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10"></div>
+                  <img
+                    src={item.image}
+                    alt={item.caption}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  {/* Metallic Badge */}
+                  <div className="absolute top-4 left-4 z-20">
+                    <MetallicBadge color={item.badgeColor as any}>{item.tag}</MetallicBadge>
+                  </div>
+                  {/* Glass caption bar */}
+                  <div
+                    className="absolute bottom-0 left-0 right-0 p-6 z-10"
+                    style={{
+                      background: 'linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.6), transparent)',
+                      backdropFilter: 'blur(10px)',
+                    }}
+                  >
+                    <p className="text-white font-bold text-lg drop-shadow-lg">{item.caption}</p>
                   </div>
                 </div>
               </Card>
@@ -121,32 +397,57 @@ export default function FloridaLocalElite() {
         </div>
       </section>
 
-      {/* 4. FEATURING | THE FLORIDA LOCAL LIFESTYLE */}
-      <section className="py-16 bg-gradient-to-br from-pink-50 to-purple-50">
+      {/* 4. FEATURING | THE FLORIDA LOCAL LIFESTYLE - PREMIUM GLASS */}
+      <section className="py-20 bg-gradient-to-br from-pink-50 to-purple-50 relative overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <Card className="rounded-3xl shadow-2xl overflow-hidden">
+            <Card
+              className="rounded-3xl overflow-hidden group hover:-translate-y-2 transition-all duration-500"
+              style={{
+                background: 'rgba(255, 255, 255, 0.98)',
+                backdropFilter: 'blur(30px) saturate(180%)',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.2), inset 0 2px 0 rgba(255,255,255,1), 0 0 0 3px rgba(255,255,255,0.5)',
+                border: '2px solid rgba(255, 255, 255, 0.8)',
+              }}
+            >
               <div className="grid md:grid-cols-2 gap-0">
-                <div className="p-12 flex flex-col justify-center">
-                  <Badge className="bg-purple-500 text-white w-fit mb-4 px-4 py-2">
-                    FEATURED LOCAL PAGES
-                  </Badge>
-                  <p className="text-sm text-gray-600 mb-2">By The Locals • March 25, 2024</p>
-                  <h3 className="text-4xl font-bold mb-6 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                <div className="p-12 flex flex-col justify-center relative z-10">
+                  <MetallicBadge color="ruby" className="mb-4">FEATURED LOCAL PAGES</MetallicBadge>
+                  <p className="text-sm text-gray-500 mb-3 font-semibold">By The Locals • March 25, 2024</p>
+                  <h3
+                    className="text-5xl font-black mb-6"
+                    style={{
+                      background: 'linear-gradient(135deg, #9333ea 0%, #ec4899 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
+                    }}
+                  >
                     The Florida Local
                   </h3>
-                  <p className="text-xl text-gray-700 leading-relaxed">
+                  <p className="text-xl text-gray-700 leading-relaxed font-medium">
                     It's ALL ABOUT US. Be Featured #ItsGoodAF | #4EverTourist
                   </p>
                 </div>
-                <div className="relative h-96 md:h-auto">
-                  <img src="/florida-local/IMG_5090_1024x574_15.jpg" alt="Florida Local Lifestyle" className="w-full h-full object-cover" />
+                <div className="relative h-96 md:h-auto overflow-hidden">
+                  <img
+                    src="/florida-local/IMG_5090_1024x574_15.jpg"
+                    alt="Florida Local Lifestyle"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 via-transparent to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 </div>
               </div>
             </Card>
 
-            <div className="mt-8 text-center">
-              <a href="#" className="inline-flex items-center gap-2 text-blue-600 font-semibold text-lg hover:underline">
+            <div className="mt-10 text-center">
+              <a
+                href="#"
+                className="inline-flex items-center gap-2 text-blue-600 font-bold text-xl hover:scale-105 transition-transform duration-300"
+                style={{
+                  textShadow: '0 2px 10px rgba(37, 99, 235, 0.3)',
+                }}
+              >
                 Follow The Orlando Locals On IG!
               </a>
             </div>
@@ -154,23 +455,42 @@ export default function FloridaLocalElite() {
         </div>
       </section>
 
-      {/* 5. FLORIDA LAKE LIFE FEATURE */}
-      <section className="py-16 bg-gradient-to-br from-blue-50 to-purple-50">
+      {/* 5. FLORIDA LAKE LIFE FEATURE - PREMIUM GLASS */}
+      <section className="py-20 bg-gradient-to-br from-blue-50 to-purple-50 relative overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <Card className="rounded-3xl shadow-2xl overflow-hidden">
+            <Card
+              className="rounded-3xl overflow-hidden group hover:-translate-y-2 transition-all duration-500"
+              style={{
+                background: 'rgba(255, 255, 255, 0.98)',
+                backdropFilter: 'blur(30px) saturate(180%)',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.2), inset 0 2px 0 rgba(255,255,255,1), 0 0 0 3px rgba(255,255,255,0.5)',
+                border: '2px solid rgba(255, 255, 255, 0.8)',
+              }}
+            >
               <div className="grid md:grid-cols-2 gap-0">
-                <div className="p-12 flex flex-col justify-center">
-                  <Badge className="bg-blue-500 text-white w-fit mb-4 px-4 py-2">
-                    FEATURED
-                  </Badge>
-                  <p className="text-sm text-gray-600 mb-2">The Locals • July 17, 2023</p>
-                  <h3 className="text-4xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">
+                <div className="p-12 flex flex-col justify-center relative z-10">
+                  <MetallicBadge color="platinum" className="mb-4">FEATURED</MetallicBadge>
+                  <p className="text-sm text-gray-500 mb-3 font-semibold">The Locals • July 17, 2023</p>
+                  <h3
+                    className="text-5xl font-black mb-6"
+                    style={{
+                      background: 'linear-gradient(135deg, #2563eb 0%, #14b8a6 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
+                    }}
+                  >
                     Florida Lake Life With Kelli & Jason @TheOrlandoLocals
                   </h3>
                 </div>
-                <div className="relative h-96 md:h-auto">
-                  <img src="/florida-local/Screen_Shot_2023_07_17_at_7_21_79.jpg" alt="Florida Lake Life" className="w-full h-full object-cover" />
+                <div className="relative h-96 md:h-auto overflow-hidden">
+                  <img
+                    src="/florida-local/Screen_Shot_2023_07_17_at_7_21_79.jpg"
+                    alt="Florida Lake Life"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 via-transparent to-teal-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 </div>
               </div>
             </Card>
@@ -178,19 +498,35 @@ export default function FloridaLocalElite() {
         </div>
       </section>
 
-      {/* 6. FEATURED | LOCAL YELP ELITE - LOCAL FOODIE VERIFIED */}
-      <section className="py-16 bg-gradient-to-br from-orange-50 via-pink-50 to-purple-50">
+      {/* 6. FEATURED | LOCAL YELP ELITE - PREMIUM FOODIE SECTION */}
+      <section className="py-20 bg-gradient-to-br from-orange-50 via-pink-50 to-purple-50 relative overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            {/* Left Column - Large Image */}
-            <Card className="rounded-3xl overflow-hidden shadow-2xl">
-              <div className="relative h-full min-h-[400px]">
-                <img src="/florida-local/bavariandonsta_1024x923_58.jpg" alt="Ivanhoe Park Brewing" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent p-8 flex flex-col justify-end">
-                  <Badge className="bg-white/20 backdrop-blur-md text-white w-fit mb-4 px-4 py-2">
-                    FEATURED
-                  </Badge>
-                  <p className="text-white font-semibold text-lg">Ivanhoe Park Brewing Co.</p>
+            {/* Left Column - Premium Glass Card */}
+            <Card
+              className="rounded-3xl overflow-hidden group hover:-translate-y-2 transition-all duration-500"
+              style={{
+                background: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(20px)',
+                boxShadow: '0 15px 50px rgba(0,0,0,0.18), inset 0 2px 0 rgba(255,255,255,1)',
+                border: '2px solid rgba(255, 255, 255, 0.6)',
+              }}
+            >
+              <div className="relative h-full min-h-[400px] overflow-hidden">
+                <img
+                  src="/florida-local/bavariandonsta_1024x923_58.jpg"
+                  alt="Ivanhoe Park Brewing"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                <div
+                  className="absolute inset-0 p-8 flex flex-col justify-end"
+                  style={{
+                    background: 'linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0.4), transparent)',
+                    backdropFilter: 'blur(10px)',
+                  }}
+                >
+                  <MetallicBadge color="gold" className="mb-4">FEATURED</MetallicBadge>
+                  <p className="text-white font-bold text-xl drop-shadow-lg">Ivanhoe Park Brewing Co.</p>
                 </div>
               </div>
             </Card>
@@ -236,9 +572,9 @@ export default function FloridaLocalElite() {
 
             {/* Right Column - Collage */}
             <div className="space-y-4">
-              <Badge className="bg-red-500 text-white font-bold px-6 py-3 rounded-full shadow-lg">
+              <MetallicBadge color="ruby">
                 Local Foodie Verified
-              </Badge>
+              </MetallicBadge>
               <Card className="rounded-3xl overflow-hidden shadow-2xl h-64">
                 <img src="/florida-local/elbles_bistello_stacks_2_57.jpg" alt="Local Food" className="w-full h-full object-cover" />
               </Card>
@@ -467,9 +803,11 @@ export default function FloridaLocalElite() {
       {/* 11. ENTREPRENEURS, CREATORS & COLLABORATORS */}
       <section className="py-16 bg-gradient-to-br from-green-50 to-blue-50">
         <div className="container mx-auto px-4">
-          <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white text-2xl px-8 py-4 mb-12 mx-auto block w-fit rounded-full font-bold shadow-xl">
-            Entrepreneurs, Creators & Collaborators
-          </Badge>
+          <div className="flex justify-center mb-12">
+            <MetallicBadge color="emerald" className="text-2xl px-10 py-5">
+              Entrepreneurs, Creators & Collaborators
+            </MetallicBadge>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
             {[
@@ -516,9 +854,11 @@ export default function FloridaLocalElite() {
             </Card>
           </div>
 
-          <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xl px-8 py-4 mb-8 mx-auto block w-fit rounded-full font-bold">
-            Power of We | Shop Local #NeverHuntAlone
-          </Badge>
+          <div className="flex justify-center mb-8">
+            <MetallicBadge color="emerald" className="text-xl px-8 py-4">
+              Power of We | Shop Local #NeverHuntAlone
+            </MetallicBadge>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
@@ -593,13 +933,17 @@ export default function FloridaLocalElite() {
       {/* 14. THE FLORIDA LOCAL - FEATURED COLLABORATORS & FOODIE EXPERTS */}
       <section className="py-16 bg-gradient-to-br from-green-50 via-purple-50 to-pink-50">
         <div className="container mx-auto px-4">
-          <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xl px-8 py-4 mb-6 mx-auto block w-fit rounded-full font-bold">
-            The Florida Local – Featured Collaborators
-          </Badge>
+          <div className="flex justify-center mb-6">
+            <MetallicBadge color="emerald" className="text-xl px-8 py-4">
+              The Florida Local – Featured Collaborators
+            </MetallicBadge>
+          </div>
 
-          <Badge className="bg-gradient-to-r from-purple-500 to-pink-600 text-white text-2xl px-8 py-4 mb-12 mx-auto block w-fit rounded-full font-bold">
-            #itsGoodAF | The Local Foodie Experts
-          </Badge>
+          <div className="flex justify-center mb-12">
+            <MetallicBadge color="ruby" className="text-2xl px-10 py-5">
+              #itsGoodAF | The Local Foodie Experts
+            </MetallicBadge>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto mb-12">
             {[
@@ -771,9 +1115,11 @@ export default function FloridaLocalElite() {
       {/* 19. #IPOWERMOVES - ENTREPRENEUR SPOTLIGHT & CREATORS GRID */}
       <section className="py-16 bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
         <div className="container mx-auto px-4">
-          <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white text-2xl px-8 py-4 mb-12 mx-auto block w-fit rounded-full font-bold">
-            #iPowerMoves | Entrepreneur Spotlight – The Florida Local –
-          </Badge>
+          <div className="flex justify-center mb-12">
+            <MetallicBadge color="platinum" className="text-2xl px-10 py-5">
+              #iPowerMoves | Entrepreneur Spotlight – The Florida Local –
+            </MetallicBadge>
+          </div>
 
           <h3 className="text-3xl font-bold text-center mb-12">The Florida Local Creators & Collaborators</h3>
 
@@ -941,6 +1287,8 @@ export default function FloridaLocalElite() {
           </div>
         </div>
       </footer>
+      </div>
+      {/* End Content Wrapper */}
     </div>
   );
 }

@@ -53,15 +53,36 @@ export default function EliteNavigationHeader() {
             
             {/* ELITE LOGO */}
             <Link href="/" className="elite-logo-container group relative z-10" data-testid="brand-logo">
-              <div className="flex items-center space-x-3">
-                <div className="elite-logo-icon">
-                  <TreePine className="h-8 w-8 text-cyan-600 group-hover:text-cyan-500 transition-colors duration-300" />
+              <div className="flex items-center space-x-4">
+                <div className="elite-logo-icon relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full blur-md opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
+                  <TreePine className="h-10 w-10 text-cyan-600 group-hover:text-cyan-500 transition-colors duration-300 relative z-10" />
                 </div>
                 <div>
-                  <h1 className="elite-logo-text">
+                  <h1 className="elite-logo-text text-2xl">
                     Florida Local Elite
                   </h1>
-                  <p className="elite-logo-subtitle">Premium Business Network</p>
+                </div>
+                {/* PREMIUM BADGE - SEPARATE BLOCK */}
+                <div
+                  className="relative px-4 py-2 rounded-xl overflow-hidden group-hover:scale-105 transition-transform duration-300"
+                  style={{
+                    background: 'linear-gradient(135deg, #f6d365 0%, #fda085 50%, #f093fb 100%)',
+                    boxShadow: '0 4px 15px rgba(246, 211, 101, 0.4), inset 0 1px 0 rgba(255,255,255,0.6)'
+                  }}
+                >
+                  {/* Glass shimmer effect */}
+                  <div
+                    className="absolute inset-0 opacity-60"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(255,255,255,0.8) 0%, transparent 50%, rgba(255,255,255,0.8) 100%)',
+                      backgroundSize: '200% 100%',
+                      animation: 'shimmer 3s linear infinite'
+                    }}
+                  ></div>
+                  <span className="relative z-10 text-xs font-black uppercase tracking-wider text-white drop-shadow-md">
+                    Premium Business Network
+                  </span>
                 </div>
               </div>
             </Link>

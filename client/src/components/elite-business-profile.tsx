@@ -221,24 +221,48 @@ export default function EliteBusinessProfile() {
                     {business.tagline}
                   </p>
 
-                  {/* Elite Stats Row */}
+                  {/* Premium Elite Stats Row with Metallic Effects */}
                   <div className="flex flex-wrap gap-6 mb-6">
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200">
-                      <Star className="h-5 w-5 text-yellow-500 fill-current" />
-                      <span className="font-bold text-yellow-700">{business.rating || "4.8"}</span>
-                      <span className="text-yellow-600">({business.reviewCount || 0} reviews)</span>
-                    </div>
-                    
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200">
-                      <Heart className="h-5 w-5 text-blue-500" />
-                      <span className="font-bold text-blue-700">{business.followerCount || 0}</span>
-                      <span className="text-blue-600">followers</span>
+                    <div
+                      className="relative flex items-center gap-3 px-6 py-3 rounded-xl overflow-hidden group hover:scale-105 transition-transform duration-300"
+                      style={{
+                        background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fcd34d 100%)',
+                        boxShadow: '0 4px 15px rgba(252, 211, 77, 0.4), inset 0 1px 0 rgba(255,255,255,0.8)',
+                        border: '2px solid rgba(251, 191, 36, 0.5)',
+                      }}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/60 via-transparent to-white/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ animation: 'shimmer 3s linear infinite' }}></div>
+                      <Star className="h-6 w-6 text-yellow-600 fill-yellow-500 relative z-10" />
+                      <span className="font-black text-yellow-800 text-lg relative z-10">{business.rating || "4.8"}</span>
+                      <span className="text-yellow-700 font-semibold relative z-10">({business.reviewCount || 0} reviews)</span>
                     </div>
 
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200">
-                      <BarChart3 className="h-5 w-5 text-purple-500" />
-                      <span className="font-bold text-purple-700">{business.postCount || 0}</span>
-                      <span className="text-purple-600">posts</span>
+                    <div
+                      className="relative flex items-center gap-3 px-6 py-3 rounded-xl overflow-hidden group hover:scale-105 transition-transform duration-300"
+                      style={{
+                        background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 50%, #93c5fd 100%)',
+                        boxShadow: '0 4px 15px rgba(147, 197, 253, 0.4), inset 0 1px 0 rgba(255,255,255,0.8)',
+                        border: '2px solid rgba(96, 165, 250, 0.5)',
+                      }}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/60 via-transparent to-white/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ animation: 'shimmer 3s linear infinite' }}></div>
+                      <Heart className="h-6 w-6 text-blue-600 fill-blue-500 relative z-10" />
+                      <span className="font-black text-blue-800 text-lg relative z-10">{business.followerCount || 0}</span>
+                      <span className="text-blue-700 font-semibold relative z-10">followers</span>
+                    </div>
+
+                    <div
+                      className="relative flex items-center gap-3 px-6 py-3 rounded-xl overflow-hidden group hover:scale-105 transition-transform duration-300"
+                      style={{
+                        background: 'linear-gradient(135deg, #fae8ff 0%, #f3e8ff 50%, #e9d5ff 100%)',
+                        boxShadow: '0 4px 15px rgba(233, 213, 255, 0.4), inset 0 1px 0 rgba(255,255,255,0.8)',
+                        border: '2px solid rgba(192, 132, 252, 0.5)',
+                      }}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/60 via-transparent to-white/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ animation: 'shimmer 3s linear infinite' }}></div>
+                      <BarChart3 className="h-6 w-6 text-purple-600 relative z-10" />
+                      <span className="font-black text-purple-800 text-lg relative z-10">{business.postCount || 0}</span>
+                      <span className="text-purple-700 font-semibold relative z-10">posts</span>
                     </div>
                   </div>
 
