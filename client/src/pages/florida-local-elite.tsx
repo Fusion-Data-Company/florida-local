@@ -68,7 +68,7 @@ export default function FloridaLocalElite() {
       <section className="relative h-[80vh] overflow-hidden">
         {/* Video Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-400 via-teal-300 to-cyan-400">
-          <img src="/florida-local/Best_Lakes_mp4_image_78.jpg" alt="Florida Beach" className="absolute inset-0 w-full h-full object-cover opacity-60" />
+          <img src="/florida-local/Bg_d604993a_0.png" alt="Florida Beach" className="absolute inset-0 w-full h-full object-cover opacity-60" />
           <div className="absolute inset-0 bg-black/30"></div>
         </div>
 
