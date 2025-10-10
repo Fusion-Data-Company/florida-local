@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ChevronDown, TreePine, Menu, X, Home, MapPin, Store, MessageSquare, ShoppingCart, Package, Building2 } from "lucide-react";
+import { ChevronDown, Menu, X, Home, MapPin, Store, MessageSquare, ShoppingCart, Package, Building2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import CartIcon from "@/components/cart-icon";
 import ThemeToggleButton from "@/components/theme-toggle-button";
@@ -53,15 +53,12 @@ export default function EliteNavigationHeader() {
 
             {/* LOGO - FIXED SIZE */}
             <Link href="/" className="elite-logo-container flex items-center" style={{ gap: '10px' }} data-testid="brand-logo">
-              <div className="elite-logo-icon flex items-center justify-center">
-                <TreePine style={{ width: '20px', height: '20px' }} className="text-cyan-600" strokeWidth={2.5} />
-              </div>
-              <h1 className="elite-logo-text hidden md:block">
-                Florida Local Elite
-              </h1>
-              <h1 className="elite-logo-text md:hidden">
-                FL Elite
-              </h1>
+              <img 
+                src="/attached_assets/94D42685-8392-4D2E-96A1-EAF19B6B53F3_1760138032602.png" 
+                alt="The Florida Local" 
+                className="h-12 w-auto object-contain"
+                style={{ maxHeight: '48px' }}
+              />
             </Link>
 
             {/* NAVIGATION - FIXED SIZES */}
