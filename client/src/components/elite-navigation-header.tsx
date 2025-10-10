@@ -179,53 +179,61 @@ export default function EliteNavigationHeader() {
           </div>
         </div>
 
-        {/* APPLE-STYLE MOBILE MENU */}
+        {/* PREMIUM MOBILE MENU */}
         {isMobileMenuOpen && (
-          <>
-            <div className="lg:hidden border-t border-black/8">
-              <nav className="container mx-auto px-4 py-3 space-y-1">
-                {navigationItems.map((item) => {
-                  const IconComponent = item.icon;
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-black/5 transition-colors"
-                    >
-                      <IconComponent className="h-4 w-4" />
-                      <span className="text-sm font-medium">{item.label}</span>
-                    </Link>
-                  );
-                })}
+          <div className="lg:hidden border-t border-black/8 bg-gradient-to-b from-white/95 to-white/90 backdrop-blur-xl">
+            <nav className="container mx-auto px-4 py-4 space-y-1">
+              {navigationItems.map((item) => {
+                const IconComponent = item.icon;
+                const isActive = isActivePath(item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
+                      isActive
+                        ? 'bg-gradient-to-r from-cyan-50 to-teal-50 text-cyan-700 font-semibold shadow-sm'
+                        : 'hover:bg-gradient-to-r hover:from-cyan-50/50 hover:to-teal-50/50 text-gray-700'
+                    }`}
+                  >
+                    <IconComponent className="h-5 w-5" strokeWidth={isActive ? 2.5 : 2} />
+                    <span className="text-sm font-medium">{item.label}</span>
+                  </Link>
+                );
+              })}
 
-                {/* Mobile Business Menu */}
-                <div className="pt-3 mt-3 border-t border-black/8">
-                  <div className="text-xs font-semibold text-black/60 mb-2 px-3">BUSINESS</div>
-                  {userBusinesses.length > 0 ? (
-                    <>
-                      <Link href={`/business/${userBusinesses[0].id}`} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-black/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
-                        <span className="text-sm">View Profile</span>
-                      </Link>
-                      <Link href={`/business/${userBusinesses[0].id}/edit`} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-black/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
-                        <span className="text-sm">Edit Business</span>
-                      </Link>
-                      <Link href="/vendor/products" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-black/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
-                        <span className="text-sm">Manage Products</span>
-                      </Link>
-                      <Link href="/vendor/payouts" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-black/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
-                        <span className="text-sm">Payouts & Billing</span>
-                      </Link>
-                    </>
-                  ) : (
-                    <Link href="/create-business" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-black/5 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
-                      <span className="text-sm">Create Business</span>
+              {/* Mobile Business Menu */}
+              <div className="pt-4 mt-4 border-t border-black/8">
+                <div className="text-xs font-bold text-gray-500 mb-3 px-4 tracking-wider">BUSINESS</div>
+                {userBusinesses.length > 0 ? (
+                  <>
+                    <Link href={`/business/${userBusinesses[0].id}`} className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-cyan-50/50 hover:to-teal-50/50 transition-all text-gray-700" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Building2 className="h-5 w-5" />
+                      <span className="text-sm font-medium">View Profile</span>
                     </Link>
-                  )}
-                </div>
-              </nav>
-            </div>
-          </>
+                    <Link href={`/business/${userBusinesses[0].id}/edit`} className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-cyan-50/50 hover:to-teal-50/50 transition-all text-gray-700" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Building2 className="h-5 w-5" />
+                      <span className="text-sm font-medium">Edit Business</span>
+                    </Link>
+                    <Link href="/vendor/products" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-cyan-50/50 hover:to-teal-50/50 transition-all text-gray-700" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Package className="h-5 w-5" />
+                      <span className="text-sm font-medium">Manage Products</span>
+                    </Link>
+                    <Link href="/vendor/payouts" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-cyan-50/50 hover:to-teal-50/50 transition-all text-gray-700" onClick={() => setIsMobileMenuOpen(false)}>
+                      <ShoppingCart className="h-5 w-5" />
+                      <span className="text-sm font-medium">Payouts & Billing</span>
+                    </Link>
+                  </>
+                ) : (
+                  <Link href="/create-business" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-cyan-50/50 hover:to-teal-50/50 transition-all text-gray-700" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Building2 className="h-5 w-5" />
+                    <span className="text-sm font-medium">Create Business</span>
+                  </Link>
+                )}
+              </div>
+            </nav>
+          </div>
         )}
       </header>
     </>
