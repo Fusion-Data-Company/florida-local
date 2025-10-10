@@ -72,9 +72,6 @@ export default function MarketplaceSection() {
 
   return (
     <section className="py-20 bg-background miami-marketplace-section relative overflow-hidden">
-      {/* Animated Background Orbs - Limited to 2 for performance */}
-      <div className="absolute top-20 left-10 w-96 h-96 gradient-iridescent float-dynamic rounded-full opacity-[0.08] blur-3xl will-change-transform"></div>
-      <div className="absolute bottom-20 right-10 w-80 h-80 gradient-iridescent float-gentle rounded-full opacity-[0.08] blur-3xl will-change-transform"></div>
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         <div className="flex flex-col lg:flex-row items-center justify-between mb-16">
           <div className="lg:w-1/2 mb-8 lg:mb-0">

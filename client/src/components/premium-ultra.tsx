@@ -102,8 +102,8 @@ export const HoverTrail = () => {
         const colorIndex = index % colors.length;
         // Calculate recency: newest points (at end of array) should be most prominent
         const recency = trail.length - 1 - index;
-        const opacity = 1 - (recency / trail.length);
-        const size = 80 - (recency * 2); // Newest = largest (80px), oldest = smallest
+        const opacity = Math.max(0.85, 1 - (recency / trail.length));
+        const size = Math.max(28, 80 - (recency * 2.5)); // Newest = 80px, oldest = 28px minimum
         
         return (
           <div
@@ -114,25 +114,25 @@ export const HoverTrail = () => {
               top: point.y,
               width: `${size}px`,
               height: `${size}px`,
-              background: `radial-gradient(circle, ${colors[colorIndex]} 0%, transparent 70%)`,
+              background: `radial-gradient(circle, rgba(255,255,255,0.95) 0%, ${colors[colorIndex]} 40%, transparent 65%)`,
               transform: 'translate(-50%, -50%)',
-              opacity: opacity * 0.9,
-              animation: 'trail-fade-out 1.2s forwards',
-              filter: 'blur(8px)',
-              boxShadow: `0 0 ${size}px ${colors[colorIndex]}`,
+              opacity: opacity,
+              animation: 'trail-fade-out-clean 1.2s forwards',
+              filter: `drop-shadow(0 0 10px ${colors[colorIndex].replace('0.9', '0.5')})`,
+              willChange: 'transform, opacity',
             }}
           />
         );
       })}
       <style>{`
-        @keyframes trail-fade-out {
+        @keyframes trail-fade-out-clean {
           0% { 
             opacity: 1; 
             transform: translate(-50%, -50%) scale(1);
           }
           100% { 
             opacity: 0; 
-            transform: translate(-50%, -50%) scale(1.5);
+            transform: translate(-50%, -50%) scale(1.15);
           }
         }
       `}</style>
