@@ -72,7 +72,7 @@ export const PremiumLoader = ({ text = "Loading..." }: { text?: string }) => {
   );
 };
 
-// INTERACTIVE HOVER TRAIL
+// INTERACTIVE HOVER TRAIL - ENHANCED VERSION
 export const HoverTrail = () => {
   const [trail, setTrail] = useState<{ x: number; y: number; id: number }[]>([]);
 
@@ -80,33 +80,60 @@ export const HoverTrail = () => {
     let idCounter = 0;
     const handleMouseMove = (e: MouseEvent) => {
       const newPoint = { x: e.clientX, y: e.clientY, id: idCounter++ };
-      setTrail(prev => [...prev.slice(-10), newPoint]);
+      setTrail(prev => [...prev.slice(-20), newPoint]); // Keep more trail points
     };
 
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
+  // Rainbow colors matching the demo
+  const colors = [
+    'rgba(6, 182, 212, 0.9)',    // cyan
+    'rgba(139, 92, 246, 0.9)',   // purple
+    'rgba(236, 72, 153, 0.9)',   // pink
+    'rgba(251, 191, 36, 0.9)',   // amber
+    'rgba(14, 165, 233, 0.9)',   // sky
+  ];
+
   return (
     <div className="fixed inset-0 pointer-events-none z-50">
-      {trail.map((point, index) => (
-        <div
-          key={point.id}
-          className="absolute rounded-full"
-          style={{
-            left: point.x,
-            top: point.y,
-            width: '20px',
-            height: '20px',
-            background: `radial-gradient(circle, rgba(59, 130, 246, ${0.4 - index * 0.04}) 0%, transparent 70%)`,
-            transform: 'translate(-50%, -50%)',
-            animation: 'fade-out 0.8s forwards',
-          }}
-        />
-      ))}
+      {trail.map((point, index) => {
+        const colorIndex = index % colors.length;
+        // Calculate recency: newest points (at end of array) should be most prominent
+        const recency = trail.length - 1 - index;
+        const opacity = 1 - (recency / trail.length);
+        const size = 80 - (recency * 2); // Newest = largest (80px), oldest = smallest
+        
+        return (
+          <div
+            key={point.id}
+            className="absolute rounded-full"
+            style={{
+              left: point.x,
+              top: point.y,
+              width: `${size}px`,
+              height: `${size}px`,
+              background: `radial-gradient(circle, ${colors[colorIndex]} 0%, transparent 70%)`,
+              transform: 'translate(-50%, -50%)',
+              opacity: opacity * 0.9,
+              animation: 'trail-fade-out 1.2s forwards',
+              filter: 'blur(8px)',
+              boxShadow: `0 0 ${size}px ${colors[colorIndex]}`,
+            }}
+          />
+        );
+      })}
       <style>{`
-        @keyframes fade-out {
-          to { opacity: 0; transform: translate(-50%, -50%) scale(2); }
+        @keyframes trail-fade-out {
+          0% { 
+            opacity: 1; 
+            transform: translate(-50%, -50%) scale(1);
+          }
+          100% { 
+            opacity: 0; 
+            transform: translate(-50%, -50%) scale(1.5);
+          }
         }
       `}</style>
     </div>
