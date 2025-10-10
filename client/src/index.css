@@ -1694,6 +1694,56 @@ textarea:focus-visible {
   opacity: 1;
 }
 
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .elite-glass-header {
+    background: linear-gradient(180deg,
+      rgba(15, 23, 42, 0.85) 0%,
+      rgba(15, 23, 42, 0.75) 100%
+    );
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.2),
+      0 4px 12px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  .elite-glass-header::before {
+    background: linear-gradient(90deg,
+      rgba(6, 182, 212, 0.05) 0%,
+      rgba(16, 185, 129, 0.04) 50%,
+      rgba(251, 191, 36, 0.05) 100%
+    );
+  }
+
+  .elite-glass-header.scrolled {
+    background: linear-gradient(180deg,
+      rgba(15, 23, 42, 0.95) 0%,
+      rgba(15, 23, 42, 0.92) 100%
+    );
+  }
+
+  .elite-nav-item {
+    color: rgba(255, 255, 255, 0.75);
+  }
+
+  .elite-nav-item:hover {
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  .elite-nav-active {
+    color: rgba(6, 182, 212, 1);
+  }
+
+  .elite-glass-dropdown {
+    background: linear-gradient(180deg,
+      rgba(30, 41, 59, 0.98) 0%,
+      rgba(30, 41, 59, 0.95) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
 /* Premium Logo with Refined Styling */
 .elite-logo-container {
   position: relative;

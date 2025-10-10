@@ -51,10 +51,10 @@ export default function EliteNavigationHeader() {
         <div className="container mx-auto px-4">
           <div className="flex h-12 items-center justify-between">
 
-            {/* APPLE-STYLE COMPACT LOGO */}
-            <Link href="/" className="elite-logo-container flex items-center gap-2" data-testid="brand-logo">
-              <div className="elite-logo-icon">
-                <TreePine className="h-6 w-6 text-cyan-600" />
+            {/* PREMIUM LOGO WITH REFINED STYLING */}
+            <Link href="/" className="elite-logo-container flex items-center gap-2 group" data-testid="brand-logo">
+              <div className="elite-logo-icon flex items-center justify-center">
+                <TreePine className="h-5 w-5 text-cyan-600" strokeWidth={2.5} />
               </div>
               <h1 className="elite-logo-text hidden md:block">
                 Florida Local Elite
@@ -62,6 +62,10 @@ export default function EliteNavigationHeader() {
               <h1 className="elite-logo-text md:hidden">
                 FL Elite
               </h1>
+              {/* Premium Badge on Hover */}
+              <span className="hidden lg:inline-block opacity-0 group-hover:opacity-100 transition-opacity duration-300 ml-2 px-2 py-0.5 text-[10px] font-semibold tracking-wider uppercase rounded-md bg-gradient-to-r from-cyan-500 to-teal-500 text-white">
+                Premium
+              </span>
             </Link>
 
             {/* APPLE-STYLE NAVIGATION - MINIMAL & CLEAN */}
