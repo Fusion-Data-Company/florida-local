@@ -38,7 +38,11 @@
           ]
         },
         workbox: {
-          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+          globPatterns: ['**/*.{js,css,html,ico,svg,woff2}'],
+          // Increase file size limit to 10MB for large assets
+          maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
+          // Exclude florida-local images from precaching (use runtime caching instead)
+          globIgnores: ['**/florida-local/**'],
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/api\./,
@@ -59,6 +63,18 @@
                 expiration: {
                   maxEntries: 200,
                   maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
+                }
+              }
+            },
+            {
+              // Runtime caching for florida-local images
+              urlPattern: /\/florida-local\/.*/,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'florida-local-cache',
+                expiration: {
+                  maxEntries: 100,
+                  maxAgeSeconds: 60 * 24 * 60 * 60 // 60 days
                 }
               }
             }
@@ -85,6 +101,7 @@
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './client/src'),
+        '@assets': path.resolve(__dirname, './client/src/assets'),
         '@shared': path.resolve(__dirname, './shared'),
       },
     },

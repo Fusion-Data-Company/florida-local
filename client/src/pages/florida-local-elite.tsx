@@ -4,10 +4,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Search, Facebook, Instagram, Youtube, Twitter, Moon, User,
+  Search, Facebook, Instagram, Youtube, Twitter, Moon, Sun, User,
   MapPin, Star, Phone, Calendar, ChevronLeft, ChevronRight,
   Heart, Bookmark, Play, Sparkles
 } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
+import {
+  AnimatedGradientHero,
+  ParticleField,
+  AuroraAmbient,
+  HoverTrail,
+} from "@/components/premium-ultra";
 
 // Premium Metallic Badge Component
 const MetallicBadge = ({ children, color = "gold", className = "" }: { children: React.ReactNode; color?: "gold" | "platinum" | "bronze" | "emerald" | "ruby"; className?: string }) => {
@@ -68,123 +75,18 @@ const MetallicBadge = ({ children, color = "gold", className = "" }: { children:
 
 export default function FloridaLocalElite() {
   const [activeTab, setActiveTab] = useState("restaurants");
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* ARTISTIC STUCCO/MARBLE TEXTURE LAYERS - HIGHLY VISIBLE */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        {/* Artistic Stucco Texture Layer 1 - Prominent */}
-        <div 
-          className="absolute inset-0 opacity-50"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 800 800' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='stucco1'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='8' seed='1' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0.3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23stucco1)' fill='%23d4c5b0'/%3E%3C/svg%3E")`,
-            backgroundSize: '500px 500px',
-            backgroundRepeat: 'repeat',
-            mixBlendMode: 'multiply'
-          }}
-        />
-        
-        {/* Artistic Plaster Texture Layer 2 - Gold Tones */}
-        <div 
-          className="absolute inset-0 opacity-35"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 700 700' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='plaster'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='6' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0.4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23plaster)' fill='%23e8d4b8'/%3E%3C/svg%3E")`,
-            backgroundSize: '650px 650px',
-            backgroundRepeat: 'repeat',
-            backgroundPosition: '150px 150px',
-            mixBlendMode: 'overlay'
-          }}
-        />
-        
-        {/* Fine Grain Texture - Very Visible */}
-        <div 
-          className="absolute inset-0 opacity-40"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='4' seed='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)' fill='%23baa68a' opacity='0.7'/%3E%3C/svg%3E")`,
-            backgroundSize: '250px 250px',
-            backgroundRepeat: 'repeat'
-          }}
-        />
-        
-        {/* Warm Gradient Base with Depth */}
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-100 via-orange-100 to-rose-100" />
-        
-        {/* Marble Vein Effect - Artistic Touch */}
-        <div 
-          className="absolute inset-0 opacity-25"
-          style={{
-            background: `repeating-linear-gradient(
-              45deg,
-              transparent,
-              transparent 100px,
-              rgba(139, 115, 85, 0.15) 100px,
-              rgba(139, 115, 85, 0.15) 102px
-            ), repeating-linear-gradient(
-              -45deg,
-              transparent,
-              transparent 150px,
-              rgba(160, 130, 95, 0.1) 150px,
-              rgba(160, 130, 95, 0.1) 152px
-            )`
-          }}
-        />
-      </div>
+      {/* ULTRA PREMIUM EFFECTS */}
+      <AuroraAmbient intensity="medium" />
+      <HoverTrail />
 
-      {/* ANIMATED AURORA GRADIENT ORBS - DEPTH LAYERS */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        {/* Aurora Orb 1 - Purple/Pink */}
-        <div 
-          className="absolute w-[800px] h-[800px] rounded-full blur-3xl opacity-30 animate-aurora-drift-1"
-          style={{
-            background: 'radial-gradient(circle, rgba(168, 85, 247, 0.5) 0%, rgba(236, 72, 153, 0.3) 50%, transparent 70%)',
-            top: '10%',
-            left: '5%'
-          }}
-        />
-        
-        {/* Aurora Orb 2 - Blue/Cyan */}
-        <div 
-          className="absolute w-[700px] h-[700px] rounded-full blur-3xl opacity-25 animate-aurora-drift-2"
-          style={{
-            background: 'radial-gradient(circle, rgba(59, 130, 246, 0.5) 0%, rgba(6, 182, 212, 0.3) 50%, transparent 70%)',
-            top: '60%',
-            right: '10%'
-          }}
-        />
-        
-        {/* Aurora Orb 3 - Orange/Yellow */}
-        <div 
-          className="absolute w-[600px] h-[600px] rounded-full blur-3xl opacity-20 animate-aurora-drift-3"
-          style={{
-            background: 'radial-gradient(circle, rgba(251, 146, 60, 0.5) 0%, rgba(250, 204, 21, 0.3) 50%, transparent 70%)',
-            bottom: '15%',
-            left: '40%'
-          }}
-        />
-        
-        {/* Aurora Orb 4 - Emerald/Teal */}
-        <div 
-          className="absolute w-[750px] h-[750px] rounded-full blur-3xl opacity-20 animate-aurora-drift-4"
-          style={{
-            background: 'radial-gradient(circle, rgba(16, 185, 129, 0.4) 0%, rgba(20, 184, 166, 0.3) 50%, transparent 70%)',
-            top: '40%',
-            right: '30%'
-          }}
-        />
-        
-        {/* Aurora Orb 5 - Rose/Fuchsia */}
-        <div 
-          className="absolute w-[650px] h-[650px] rounded-full blur-3xl opacity-25 animate-aurora-drift-5"
-          style={{
-            background: 'radial-gradient(circle, rgba(244, 63, 94, 0.4) 0%, rgba(217, 70, 239, 0.3) 50%, transparent 70%)',
-            bottom: '30%',
-            right: '5%'
-          }}
-        />
-      </div>
+      {/* BLOCKING TEXTURE & GRADIENT OVERLAYS REMOVED - were preventing all content visibility */}
 
-      {/* CONTENT WRAPPER - Above all effects */}
-      <div className="relative z-10">
+      {/* CONTENT WRAPPER - Above all effects - PROPER Z-INDEX */}
+      <div className="relative" style={{ zIndex: 10 }}>
       {/* 1. SITE HEADER / NAVIGATION */}
       <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-purple-100 shadow-sm">
         <div className="container mx-auto px-4 py-4">
@@ -223,9 +125,23 @@ export default function FloridaLocalElite() {
               <Button variant="ghost" size="icon" className="rounded-full">
                 <Twitter className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="sm" className="rounded-full">
-                <Moon className="h-4 w-4 mr-1" />
-                Dark
+              <Button
+                variant="ghost"
+                size="sm"
+                className="rounded-full hover:scale-110 transition-transform"
+                onClick={toggleTheme}
+              >
+                {theme === 'dark' ? (
+                  <>
+                    <Sun className="h-4 w-4 mr-1 text-yellow-500" />
+                    <span className="font-semibold">Light</span>
+                  </>
+                ) : (
+                  <>
+                    <Moon className="h-4 w-4 mr-1 text-indigo-600" />
+                    <span className="font-semibold">Dark</span>
+                  </>
+                )}
               </Button>
               <Button variant="ghost" size="icon" className="rounded-full">
                 <User className="h-4 w-4" />
@@ -235,44 +151,20 @@ export default function FloridaLocalElite() {
         </div>
       </header>
 
-      {/* 2. PREMIUM HERO SECTION - 5X UPGRADED */}
-      <section className="relative h-[85vh] overflow-hidden group">
-        {/* Animated gradient background with parallax */}
+      {/* 2. ULTRA PREMIUM HERO SECTION - LEVEL 6 UPGRADED */}
+      <AnimatedGradientHero className="relative h-[85vh] overflow-hidden group">
+        {/* Background Image Layer */}
         <div className="absolute inset-0">
-          <div
-            className="absolute inset-0 bg-gradient-to-br from-blue-500 via-teal-400 to-cyan-500 transition-transform duration-700"
-            style={{
-              transform: 'scale(1.1)',
-            }}
-          >
-            <img
-              src="/florida-local/Bg_d604993a_0.png"
-              alt="Florida Beach"
-              className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-1000"
-            />
-          </div>
-          {/* Premium gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20"></div>
-          {/* Ambient glow effects */}
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-400/30 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }}></div>
+          <img
+            src="/florida-local/Bg_d604993a_0.png"
+            alt="Florida Beach"
+            className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-1000"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
         </div>
 
-        {/* Floating particles */}
-        <div className="absolute inset-0 overflow-hidden">
-          {[...Array(30)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-2 h-2 bg-white/40 rounded-full animate-pulse"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 5}s`,
-                animationDuration: `${3 + Math.random() * 3}s`,
-              }}
-            />
-          ))}
-        </div>
+        {/* PARTICLE FIELD */}
+        <ParticleField count={80} color="cyan" />
 
         {/* Premium 4K Badge - METALLIC */}
         <div className="absolute top-8 left-8 z-20">
@@ -329,7 +221,7 @@ export default function FloridaLocalElite() {
 
         {/* Bottom gradient fade */}
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white via-white/50 to-transparent z-10"></div>
-      </section>
+      </AnimatedGradientHero>
 
       {/* 3. FOODIES, CREATORS & COLLABORATORS SLIDER - PREMIUM */}
       <section className="py-20 relative overflow-hidden">

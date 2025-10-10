@@ -27,7 +27,7 @@ const toastVariants = cva(
   {
     variants: {
       variant: {
-        default: "border bg-background text-foreground",
+        default: "premium-surface border bg-background text-foreground",
         destructive:
           "destructive group border-destructive bg-destructive text-destructive-foreground",
       },
@@ -42,10 +42,20 @@ const Toast = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Root>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Root> &
     VariantProps<typeof toastVariants>
->(({ className, variant, ...props }, ref) => {
+>(({ className, variant, "data-surface-intensity": surfaceIntensity, "data-surface-tone": surfaceTone, "data-surface": surfaceMode, ...props }, ref) => {
+  const resolvedSurfaceMode =
+    surfaceMode ?? (variant === "destructive" ? "flat" : undefined)
+  const resolvedIntensity =
+    surfaceIntensity ?? (variant === "destructive" ? undefined : "delicate")
+  const resolvedTone =
+    surfaceTone ?? (variant === "destructive" ? undefined : "warm")
+
   return (
     <ToastPrimitives.Root
       ref={ref}
+      data-surface={resolvedSurfaceMode}
+      data-surface-intensity={resolvedIntensity}
+      data-surface-tone={resolvedTone}
       className={cn(toastVariants({ variant }), className)}
       {...props}
     />

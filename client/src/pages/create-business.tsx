@@ -104,7 +104,11 @@ export default function CreateBusiness() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-background">
+      <div
+        className="premium-page-wrapper premium-surface min-h-screen bg-background"
+        data-surface-intensity="delicate"
+        data-surface-tone="warm"
+      >
         <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-16 text-center">
           <Store className="mx-auto h-16 w-16 text-muted-foreground mb-6" />
@@ -122,7 +126,11 @@ export default function CreateBusiness() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div
+      className="premium-page-wrapper premium-surface min-h-screen bg-background"
+      data-surface-intensity="delicate"
+      data-surface-tone="warm"
+    >
       <EliteNavigationHeader />
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">

@@ -171,7 +171,10 @@ export default function LoadingSpinner({
 
 // Specialized loading components
 export const LoadingPage: React.FC<{ text?: string }> = ({ text = 'Loading...' }) => (
-  <div className="min-h-screen flex items-center justify-center bg-background">
+  <div
+    className="premium-page-wrapper premium-surface min-h-screen flex items-center justify-center bg-background"
+    data-surface-intensity="delicate"
+  >
     <LoadingSpinner size="xl" variant="magic" text={text} />
   </div>
 );

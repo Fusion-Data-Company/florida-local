@@ -9,7 +9,11 @@ import { Store, ShoppingCart, Users } from "lucide-react";
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-background">
+    <div
+      className="premium-page-wrapper premium-surface min-h-screen bg-background"
+      data-surface-intensity="bold"
+      data-surface-tone="warm"
+    >
       <EliteNavigationHeader />
       <HeroSection />
       <SpotlightShowcase />
@@ -80,7 +84,7 @@ export default function Landing() {
       <SocialFeed />
 
       {/* Footer */}
-      <footer className="bg-card border-t border-border">
+      <footer className="bg-card border-t border-border premium-surface" data-surface-intensity="delicate">
         <div className="container mx-auto px-4 lg:px-8 py-16">
           <div className="grid lg:grid-cols-4 gap-12 mb-12">
             {/* Brand Column */}

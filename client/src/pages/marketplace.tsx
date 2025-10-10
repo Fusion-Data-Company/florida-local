@@ -19,7 +19,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Package, Image as ImageIcon } from "lucide-react";
+import { Plus, Package, Image as ImageIcon, Search } from "lucide-react";
+import {
+  AnimatedGradientHero,
+  ParticleField,
+  AuroraAmbient,
+  PremiumLoader,
+  HoverTrail,
+} from "@/components/premium-ultra";
+import { PremiumBadge } from "@/components/premium-ui";
 
 const createProductSchema = insertProductSchema.omit({ id: true }).extend({
   name: z.string().min(1, "Product name is required").max(255, "Product name must be less than 255 characters"),
@@ -122,21 +130,45 @@ export default function Marketplace() {
     "Books & Media"
   ];
 
+  if (isLoading) {
+    return (
+      <div
+        className="premium-page-wrapper premium-surface min-h-screen bg-background flex items-center justify-center"
+        data-surface-intensity="delicate"
+        data-surface-tone="cool"
+      >
+        <PremiumLoader text="Loading marketplace..." />
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-background">
+    <div
+      className="premium-page-wrapper premium-surface min-h-screen bg-background relative"
+      data-surface-intensity="delicate"
+      data-surface-tone="cool"
+    >
+      {/* ULTRA PREMIUM EFFECTS */}
+      <AuroraAmbient intensity="low" />
+      <HoverTrail />
+
       <EliteNavigationHeader />
 
-      {/* Miami Elite Marketplace Header */}
-      <section className="py-12 bg-gradient-to-r from-primary/10 to-secondary/10 miami-marketplace-hero marketplace-hero">
-        <div className="container mx-auto px-4 lg:px-8 marble-content">
+      {/* ULTRA PREMIUM MARKETPLACE HERO */}
+      <AnimatedGradientHero className="py-16">
+        <ParticleField count={40} color="purple" />
+        <div className="container mx-auto px-4 lg:px-8 relative z-10">
           <div className="text-center mb-8">
-            <div className="flex flex-col items-center justify-between gap-4 md:flex-row md:text-left">
+            <div className="flex flex-col items-center justify-between gap-6 md:flex-row md:text-left">
               <div className="flex-1">
-                <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4 miami-gradient-text miami-heading">
+                <PremiumBadge color="emerald" size="sm" className="mb-4">
+                  Premium Marketplace
+                </PremiumBadge>
+                <h1 className="text-5xl md:text-6xl font-black mb-4 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
                   Local Marketplace
                 </h1>
-                <p className="text-xl text-muted-foreground max-w-2xl miami-body-text">
-                  Discover unique products from Florida's most innovative businesses. 
+                <p className="text-xl text-muted-foreground max-w-2xl leading-relaxed">
+                  Discover unique products from Florida's most innovative businesses.
                   Support local entrepreneurs while finding exactly what you need.
                 </p>
               </div>
@@ -334,25 +366,25 @@ export default function Marketplace() {
                 </div>
               </div>
 
-              {/* Filter Tags */}
-              <div className="flex flex-wrap gap-2">
-                <Badge variant="default" className="cursor-pointer" data-testid="filter-local-made">
+              {/* PREMIUM FILTER BADGES */}
+              <div className="flex flex-wrap gap-3">
+                <PremiumBadge color="emerald" size="sm" className="cursor-pointer" data-testid="filter-local-made">
                   Local Made
-                </Badge>
-                <Badge variant="secondary" className="cursor-pointer" data-testid="filter-eco-friendly">
+                </PremiumBadge>
+                <PremiumBadge color="jade" size="sm" className="cursor-pointer" data-testid="filter-eco-friendly">
                   Eco-Friendly
-                </Badge>
-                <Badge variant="outline" className="cursor-pointer" data-testid="filter-small-batch">
+                </PremiumBadge>
+                <PremiumBadge color="topaz" size="sm" className="cursor-pointer" data-testid="filter-small-batch">
                   Small Batch
-                </Badge>
-                <Badge variant="outline" className="cursor-pointer" data-testid="filter-free-shipping">
+                </PremiumBadge>
+                <PremiumBadge color="sapphire" size="sm" className="cursor-pointer" data-testid="filter-free-shipping">
                   Free Shipping
-                </Badge>
+                </PremiumBadge>
               </div>
             </div>
           </div>
         </div>
-      </section>
+      </AnimatedGradientHero>
 
       {/* Featured Products */}
       {!searchQuery && !selectedCategory && (

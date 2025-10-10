@@ -10,7 +10,11 @@ interface LayoutProps {
 
 export default function Layout({ children, showFooter = true, showMobileNav = true }: LayoutProps) {
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div
+      className="premium-page-wrapper premium-surface min-h-screen bg-background flex flex-col"
+      data-surface-intensity="delicate"
+      data-surface-tone="warm"
+    >
       <EliteNavigationHeader />
       <main className="flex-1">
         {children}

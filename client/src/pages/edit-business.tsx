@@ -170,7 +170,11 @@ export default function EditBusiness() {
   // Check authentication
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-background">
+      <div
+        className="premium-page-wrapper premium-surface min-h-screen bg-background"
+        data-surface-intensity="delicate"
+        data-surface-tone="warm"
+      >
         <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-16 text-center">
           <Store className="mx-auto h-16 w-16 text-muted-foreground mb-6" />
@@ -190,7 +194,11 @@ export default function EditBusiness() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div
+        className="premium-page-wrapper premium-surface min-h-screen bg-background"
+        data-surface-intensity="delicate"
+        data-surface-tone="warm"
+      >
         <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-8 max-w-4xl">
           <div className="space-y-8">
@@ -225,7 +233,11 @@ export default function EditBusiness() {
   // Error or business not found
   if (error || !business) {
     return (
-      <div className="min-h-screen bg-background">
+      <div
+        className="premium-page-wrapper premium-surface min-h-screen bg-background"
+        data-surface-intensity="delicate"
+        data-surface-tone="warm"
+      >
         <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-16 text-center">
           <AlertTriangle className="mx-auto h-16 w-16 text-muted-foreground mb-6" />
@@ -245,7 +257,11 @@ export default function EditBusiness() {
   // Authorization check - only business owner can edit
   if (business.ownerId !== user?.id) {
     return (
-      <div className="min-h-screen bg-background">
+      <div
+        className="premium-page-wrapper premium-surface min-h-screen bg-background"
+        data-surface-intensity="delicate"
+        data-surface-tone="warm"
+      >
         <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-16 text-center">
           <AlertTriangle className="mx-auto h-16 w-16 text-destructive mb-6" />
@@ -272,7 +288,11 @@ export default function EditBusiness() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div
+      className="premium-page-wrapper premium-surface min-h-screen bg-background"
+      data-surface-intensity="delicate"
+      data-surface-tone="warm"
+    >
       <EliteNavigationHeader />
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">

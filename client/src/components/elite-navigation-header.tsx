@@ -7,6 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { ChevronDown, TreePine, Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import CartIcon from "@/components/cart-icon";
+import ThemeToggleButton from "@/components/theme-toggle-button";
 import type { Business } from "@shared/types";
 
 export default function EliteNavigationHeader() {
@@ -162,6 +163,7 @@ export default function EliteNavigationHeader() {
             <div className="flex items-center space-x-4 relative z-10">
               {isAuthenticated ? (
                 <>
+                  <ThemeToggleButton />
                   <CartIcon />
                   
                   {/* ELITE USER AVATAR - NO MORE SHIT BADGE */}

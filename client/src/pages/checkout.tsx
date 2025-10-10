@@ -17,9 +17,18 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, CreditCard, Lock } from "lucide-react";
+import { ArrowLeft, CreditCard, Lock, ShoppingBag, Shield, CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
 import { ApiCartItem } from "@/lib/types";
+import {
+  AnimatedGradientHero,
+  ParticleField,
+  AuroraAmbient,
+  PremiumLoader,
+  HoverTrail,
+  Transform3DCard,
+} from "@/components/premium-ultra";
+import { PremiumGlassCard, PremiumBadge } from "@/components/premium-ui";
 
 // Initialize Stripe - from the blueprint integration (with graceful fallback)
 const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY 
@@ -193,15 +202,28 @@ export default function Checkout() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-background">
+      <div
+        className="premium-page-wrapper premium-surface min-h-screen bg-background relative"
+        data-surface-intensity="delicate"
+        data-surface-tone="cool"
+      >
+        <AuroraAmbient intensity="low" />
         <EliteNavigationHeader />
-        <div className="container mx-auto px-4 py-12 text-center">
-          <h1 className="text-2xl font-bold mb-4">Please log in to checkout</h1>
-          <Button asChild>
-            <Link href="/api/login" data-testid="button-login">
-              Log In
-            </Link>
-          </Button>
+        <div className="container mx-auto px-4 py-12 text-center relative z-10">
+          <Transform3DCard>
+            <PremiumGlassCard>
+              <CardContent className="py-16">
+                <Lock className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+                <h1 className="text-3xl font-bold mb-4">Please log in to checkout</h1>
+                <p className="text-muted-foreground mb-6">Access your cart and complete your purchase</p>
+                <Button asChild size="lg">
+                  <Link href="/api/login" data-testid="button-login">
+                    Log In
+                  </Link>
+                </Button>
+              </CardContent>
+            </PremiumGlassCard>
+          </Transform3DCard>
         </div>
         <MobileBottomNav />
       </div>
@@ -210,29 +232,40 @@ export default function Checkout() {
 
   if (cartLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <EliteNavigationHeader />
-        <div className="container mx-auto px-4 py-12 text-center">
-          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
-          <p className="mt-4">Loading checkout...</p>
-        </div>
-        <MobileBottomNav />
+      <div
+        className="premium-page-wrapper premium-surface min-h-screen bg-background flex items-center justify-center"
+        data-surface-intensity="delicate"
+        data-surface-tone="cool"
+      >
+        <PremiumLoader text="Loading checkout..." />
       </div>
     );
   }
 
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-screen bg-background">
+      <div
+        className="premium-page-wrapper premium-surface min-h-screen bg-background relative"
+        data-surface-intensity="delicate"
+        data-surface-tone="cool"
+      >
+        <AuroraAmbient intensity="low" />
         <EliteNavigationHeader />
-        <div className="container mx-auto px-4 py-12 text-center">
-          <h1 className="text-2xl font-bold mb-4">Your cart is empty</h1>
-          <p className="text-muted-foreground mb-6">Add some items to your cart before checking out</p>
-          <Button asChild>
-            <Link href="/marketplace" data-testid="link-marketplace">
-              Browse Products
-            </Link>
-          </Button>
+        <div className="container mx-auto px-4 py-12 text-center relative z-10">
+          <Transform3DCard>
+            <PremiumGlassCard>
+              <CardContent className="py-16">
+                <ShoppingBag className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+                <h1 className="text-3xl font-bold mb-4">Your cart is empty</h1>
+                <p className="text-muted-foreground mb-6">Add some items to your cart before checking out</p>
+                <Button asChild size="lg">
+                  <Link href="/marketplace" data-testid="link-marketplace">
+                    Browse Products
+                  </Link>
+                </Button>
+              </CardContent>
+            </PremiumGlassCard>
+          </Transform3DCard>
         </div>
         <MobileBottomNav />
       </div>
@@ -240,19 +273,49 @@ export default function Checkout() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div
+      className="premium-page-wrapper premium-surface min-h-screen bg-background relative"
+      data-surface-intensity="delicate"
+      data-surface-tone="cool"
+    >
+      {/* ULTRA PREMIUM EFFECTS */}
+      <AuroraAmbient intensity="low" />
+      <HoverTrail />
+
       <EliteNavigationHeader />
 
-      <div className="checkout-container container mx-auto px-4 py-8 lg:px-8">
-        <div className="marble-content mb-8">
-          <Button variant="ghost" asChild className="mb-4" data-testid="button-back-to-cart">
+      {/* ULTRA PREMIUM HERO */}
+      <AnimatedGradientHero className="py-12">
+        <ParticleField count={25} color="cyan" />
+        <div className="container mx-auto px-4 lg:px-8 relative z-10">
+          <Button variant="ghost" asChild className="mb-4 hover:bg-white/10" data-testid="button-back-to-cart">
             <Link href="/cart">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Cart
             </Link>
           </Button>
-          <h1 className="text-3xl font-serif font-bold" data-testid="text-checkout-title">Checkout</h1>
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-500 shadow-lg">
+              <CreditCard className="h-8 w-8 text-white" />
+            </div>
+            <h1 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 bg-clip-text text-transparent" data-testid="text-checkout-title">
+              Secure Checkout
+            </h1>
+          </div>
+          <div className="flex items-center gap-3 mt-4">
+            <PremiumBadge color="emerald" size="sm">
+              <Shield className="h-4 w-4 mr-1" />
+              Secure Payment
+            </PremiumBadge>
+            <PremiumBadge color="sapphire" size="sm">
+              <Lock className="h-4 w-4 mr-1" />
+              SSL Encrypted
+            </PremiumBadge>
+          </div>
         </div>
+      </AnimatedGradientHero>
+
+      <div className="checkout-container container mx-auto px-4 py-8 lg:px-8">
 
         <div className="marble-content grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Checkout Form */}
@@ -261,11 +324,15 @@ export default function Checkout() {
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   {/* Customer Information */}
-                  <Card className="checkout-form-card">
-                    <CardHeader className="marble-content">
-                      <CardTitle>Contact Information</CardTitle>
-                    </CardHeader>
-                    <CardContent className="marble-content space-y-4">
+                  <Transform3DCard>
+                    <PremiumGlassCard className="checkout-form-card">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <CheckCircle2 className="h-5 w-5 text-cyan-500" />
+                          Contact Information
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
                       <FormField
                         control={form.control}
                         name="customerEmail"
@@ -293,14 +360,19 @@ export default function Checkout() {
                         )}
                       />
                     </CardContent>
-                  </Card>
+                    </PremiumGlassCard>
+                  </Transform3DCard>
 
                   {/* Shipping Address */}
-                  <Card className="checkout-form-card">
-                    <CardHeader className="marble-content">
-                      <CardTitle>Shipping Address</CardTitle>
-                    </CardHeader>
-                    <CardContent className="marble-content space-y-4">
+                  <Transform3DCard>
+                    <PremiumGlassCard className="checkout-form-card">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <ShoppingBag className="h-5 w-5 text-purple-500" />
+                          Shipping Address
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
                       <FormField
                         control={form.control}
                         name="shippingAddress.fullName"
@@ -382,37 +454,41 @@ export default function Checkout() {
                         />
                       </div>
                     </CardContent>
-                  </Card>
+                    </PremiumGlassCard>
+                  </Transform3DCard>
 
                   {/* Order Notes */}
-                  <Card className="checkout-form-card">
-                    <CardHeader className="marble-content">
-                      <CardTitle>Order Notes (Optional)</CardTitle>
-                    </CardHeader>
-                    <CardContent className="marble-content">
-                      <FormField
-                        control={form.control}
-                        name="notes"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Textarea 
-                                placeholder="Special delivery instructions, gift message, etc." 
-                                {...field}
-                                data-testid="textarea-notes"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </CardContent>
-                  </Card>
+                  <Transform3DCard>
+                    <PremiumGlassCard className="checkout-form-card">
+                      <CardHeader>
+                        <CardTitle>Order Notes (Optional)</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <FormField
+                          control={form.control}
+                          name="notes"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Textarea
+                                  placeholder="Special delivery instructions, gift message, etc."
+                                  {...field}
+                                  data-testid="textarea-notes"
+                                  className="min-h-24"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </CardContent>
+                    </PremiumGlassCard>
+                  </Transform3DCard>
 
                   <Button
                     type="submit"
                     disabled={createPaymentIntentMutation.isPending}
-                    className="w-full"
+                    className="w-full h-14 text-lg font-bold"
                     size="lg"
                     data-testid="button-create-order"
                   >
@@ -422,73 +498,90 @@ export default function Checkout() {
                         Creating Order...
                       </>
                     ) : (
-                      "Continue to Payment"
+                      <>
+                        <CreditCard className="h-5 w-5 mr-2" />
+                        Continue to Payment
+                      </>
                     )}
                   </Button>
                 </form>
               </Form>
             ) : (
-              <Card className="checkout-payment-card">
-                <CardHeader className="marble-content">
-                  <CardTitle>Complete Your Payment</CardTitle>
-                </CardHeader>
-                <CardContent className="marble-content">
-                  <Elements stripe={stripePromise} options={{ clientSecret }}>
-                    <CheckoutForm clientSecret={clientSecret} orderId={orderId} />
-                  </Elements>
-                </CardContent>
-              </Card>
+              <Transform3DCard>
+                <PremiumGlassCard className="checkout-payment-card">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Lock className="h-5 w-5 text-emerald-500" />
+                      Complete Your Payment
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Elements stripe={stripePromise} options={{ clientSecret }}>
+                      <CheckoutForm clientSecret={clientSecret} orderId={orderId} />
+                    </Elements>
+                  </CardContent>
+                </PremiumGlassCard>
+              </Transform3DCard>
             )}
           </div>
 
           {/* Order Summary */}
-          <div className="lg:col-span-1">
-            <Card className="checkout-summary sticky top-4">
-              <CardHeader className="marble-content">
-                <CardTitle>Order Summary</CardTitle>
-              </CardHeader>
-              <CardContent className="marble-content space-y-4">
+          <div className="lg:col-span-1 lg:sticky lg:top-24 h-fit">
+            <Transform3DCard>
+              <PremiumGlassCard className="checkout-summary">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <ShoppingBag className="h-5 w-5 text-cyan-500" />
+                    Order Summary
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
                 {/* Cart Items */}
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {cartItems.map((item) => (
-                    <div key={item.id} className="flex justify-between items-start text-sm">
+                    <div key={item.id} className="flex justify-between items-start p-3 rounded-lg bg-muted/30">
                       <div className="flex-1">
-                        <p className="font-medium">{item.product.name}</p>
-                        <p className="text-muted-foreground">Qty: {item.quantity}</p>
+                        <p className="font-bold">{item.product.name}</p>
+                        <PremiumBadge color="jade" size="sm" className="mt-1">
+                          Qty: {item.quantity}
+                        </PremiumBadge>
                       </div>
-                      <p className="font-medium">
+                      <p className="font-black text-lg bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">
                         ${(parseFloat(String(item.product.price)) * item.quantity).toFixed(2)}
                       </p>
                     </div>
                   ))}
                 </div>
 
-                <Separator />
+                <Separator className="my-6" />
 
                 {/* Totals */}
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span>Subtotal</span>
-                    <span data-testid="text-checkout-subtotal">Calculating...</span>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Subtotal</span>
+                    <span className="font-semibold" data-testid="text-checkout-subtotal">Calculating...</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span>Tax</span>
-                    <span data-testid="text-checkout-tax">Calculating...</span>
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Tax</span>
+                    <span className="text-sm" data-testid="text-checkout-tax">Calculating...</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span>Shipping</span>
-                    <span data-testid="text-checkout-shipping">
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Shipping</span>
+                    <span className="text-sm" data-testid="text-checkout-shipping">
                       Calculating...
                     </span>
                   </div>
-                  <Separator />
-                  <div className="flex justify-between text-lg font-semibold">
-                    <span>Total</span>
-                    <span data-testid="text-checkout-total">Calculating...</span>
+                  <Separator className="my-4" />
+                  <div className="flex justify-between items-center p-4 rounded-lg bg-gradient-to-r from-cyan-500/10 to-blue-500/10">
+                    <span className="text-xl font-black">Total</span>
+                    <span className="text-2xl font-black bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 bg-clip-text text-transparent" data-testid="text-checkout-total">
+                      Calculating...
+                    </span>
                   </div>
                 </div>
               </CardContent>
-            </Card>
+              </PremiumGlassCard>
+            </Transform3DCard>
           </div>
         </div>
       </div>

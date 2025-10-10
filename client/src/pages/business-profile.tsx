@@ -83,7 +83,11 @@ export default function BusinessProfile() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div
+        className="premium-page-wrapper premium-surface min-h-screen bg-background"
+        data-surface-intensity="delicate"
+        data-surface-tone="warm"
+      >
         <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-8">
           <div className="space-y-6">
@@ -104,7 +108,11 @@ export default function BusinessProfile() {
 
   if (!business) {
     return (
-      <div className="min-h-screen bg-background">
+      <div
+        className="premium-page-wrapper premium-surface min-h-screen bg-background"
+        data-surface-intensity="delicate"
+        data-surface-tone="warm"
+      >
         <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-8 text-center">
           <h1 className="text-2xl font-bold text-muted-foreground">Business Not Found</h1>
@@ -117,7 +125,11 @@ export default function BusinessProfile() {
   const isOwner = user?.id === business?.ownerId;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div
+      className="premium-page-wrapper premium-surface min-h-screen bg-background"
+      data-surface-intensity="delicate"
+      data-surface-tone="warm"
+    >
       <EliteNavigationHeader />
 
       {/* Business Header */}

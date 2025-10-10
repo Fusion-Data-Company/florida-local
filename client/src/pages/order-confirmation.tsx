@@ -120,7 +120,11 @@ export default function OrderConfirmation() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-background">
+      <div
+        className="premium-page-wrapper premium-surface min-h-screen bg-background"
+        data-surface-intensity="delicate"
+        data-surface-tone="warm"
+      >
         <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-12 text-center">
           <h1 className="text-2xl font-bold mb-4">Please log in to view order confirmation</h1>
@@ -137,7 +141,11 @@ export default function OrderConfirmation() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div
+        className="premium-page-wrapper premium-surface min-h-screen bg-background"
+        data-surface-intensity="delicate"
+        data-surface-tone="warm"
+      >
         <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-12 text-center">
           <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
@@ -150,7 +158,11 @@ export default function OrderConfirmation() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div
+      className="premium-page-wrapper premium-surface min-h-screen bg-background"
+      data-surface-intensity="delicate"
+      data-surface-tone="warm"
+    >
       <EliteNavigationHeader />
 
       <div className="container mx-auto px-4 py-8 lg:px-8">

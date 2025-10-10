@@ -2,19 +2,33 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-const Card = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-lg border bg-card text-card-foreground shadow-sm glass-panel hover-lift transition-all duration-300 overflow-hidden relative",
-      className
-    )}
-    {...props}
-  />
-))
+type CardSurfaceProps = React.HTMLAttributes<HTMLDivElement> & {
+  "data-surface-intensity"?: string
+  "data-surface-tone"?: string
+}
+
+const Card = React.forwardRef<HTMLDivElement, CardSurfaceProps>(
+  ({ className, ...props }, ref) => {
+    const {
+      "data-surface-intensity": surfaceIntensity = "delicate",
+      "data-surface-tone": surfaceTone,
+      ...rest
+    } = props
+
+    return (
+      <div
+        ref={ref}
+        data-surface-intensity={surfaceIntensity}
+        data-surface-tone={surfaceTone}
+        className={cn(
+          "premium-surface rounded-lg border bg-card text-card-foreground shadow-sm glass-panel hover-lift transition-all duration-300 overflow-hidden relative",
+          className
+        )}
+        {...rest}
+      />
+    )
+  }
+)
 Card.displayName = "Card"
 
 const CardHeader = React.forwardRef<

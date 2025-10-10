@@ -65,7 +65,11 @@ export default function EliteBusinessProfile() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div
+        className="premium-page-wrapper premium-surface min-h-screen bg-background"
+        data-surface-intensity="delicate"
+        data-surface-tone="warm"
+      >
         <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-8">
           <Skeleton className="h-80 w-full mb-8" />
@@ -81,7 +85,11 @@ export default function EliteBusinessProfile() {
 
   if (!business) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div
+        className="premium-page-wrapper premium-surface min-h-screen bg-background flex items-center justify-center"
+        data-surface-intensity="delicate"
+        data-surface-tone="warm"
+      >
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Business not found</h1>
           <Button onClick={() => setLocation('/')}>Return Home</Button>
@@ -91,7 +99,11 @@ export default function EliteBusinessProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div
+      className="premium-page-wrapper premium-surface min-h-screen bg-background"
+      data-surface-intensity="delicate"
+      data-surface-tone="warm"
+    >
       <EliteNavigationHeader />
 
       {/* MAGIC MCP ELITE HERO SECTION */}

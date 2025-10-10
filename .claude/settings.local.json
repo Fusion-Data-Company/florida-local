@@ -5,7 +5,20 @@
       "Bash(npm run db:push:*)",
       "Bash(tsx scripts/extract-florida-local.ts:*)",
       "Bash(mkdir:*)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(cat:*)",
+      "Bash(xargs ls:*)",
+      "Bash(awk:*)",
+      "Bash(for file in /home/runner/workspace/client/src/pages/*.tsx)",
+      "Bash(head:*)",
+      "Bash(done)",
+      "Read(//tmp/**)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)",
+      "Bash(pkill:*)",
+      "Bash(curl -s http://localhost:5000)",
+      "Bash(curl -s 'http://localhost:5000/src/pages/home.tsx')",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

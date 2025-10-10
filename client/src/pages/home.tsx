@@ -12,6 +12,16 @@ import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Store, Plus, ArrowRight, Star, Users, TrendingUp } from "lucide-react";
+import {
+  AnimatedGradientHero,
+  ParticleField,
+  AuroraAmbient,
+  PremiumLoader,
+  HoverTrail,
+  Transform3DCard,
+  MicroIcon,
+} from "@/components/premium-ultra";
+import { PremiumButton, PremiumGlassCard } from "@/components/premium-ui";
 
 export default function Home() {
   const { toast } = useToast();
@@ -43,21 +53,30 @@ export default function Home() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      <div
+        className="premium-page-wrapper premium-surface min-h-screen bg-background flex items-center justify-center"
+        data-surface-intensity="delicate"
+      >
+        <PremiumLoader text="Loading your experience..." />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div
+      className="premium-page-wrapper premium-surface min-h-screen bg-background relative"
+      data-surface-intensity="delicate"
+      data-surface-tone="cool"
+    >
+      {/* ULTRA PREMIUM EFFECTS */}
+      <AuroraAmbient intensity="medium" />
+      <HoverTrail />
+
       <EliteNavigationHeader />
-      
-      {/* Welcome Hero for Authenticated Users - ELITE LUXURY */}
-      <section className="relative py-20 overflow-hidden hero-section">
-        {/* Floating Gradient Orbs - Limited to 2 for performance */}
-        <div className="absolute top-0 left-10 w-96 h-96 gradient-iridescent float-dynamic rounded-full opacity-[0.08] blur-3xl will-change-transform"></div>
-        <div className="absolute bottom-0 right-10 w-80 h-80 gradient-iridescent float-gentle rounded-full opacity-[0.08] blur-3xl will-change-transform"></div>
+
+      {/* ULTRA PREMIUM HERO - ANIMATED GRADIENT */}
+      <AnimatedGradientHero className="relative py-20 overflow-hidden">
+        <ParticleField count={50} color="cyan" />
         <div className="container mx-auto px-4 lg:px-8 text-center relative z-10">
           {!hasBusinesses ? (
             <>
@@ -89,35 +108,49 @@ export default function Home() {
                 </Button>
               </div>
 
-              {/* Benefits Section - ELITE LUXURY */}
-              <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                <Card className="relative backdrop-luxury transform-3d-float border-animated-gradient transition-all duration-300 benefit-card-1">
-                  <CardContent className="relative z-10 p-6 text-center">
-                    <Users className="h-12 w-12 text-primary mx-auto mb-4 gradient-metallic-gold filter-premium-depth p-3 rounded-full" />
-                    <h3 className="font-semibold mb-2">Connect with Customers</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Build relationships and grow your customer base in Florida's local community
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card className="relative backdrop-luxury transform-3d-float border-animated-gradient transition-all duration-300 benefit-card-2">
-                  <CardContent className="relative z-10 p-6 text-center">
-                    <TrendingUp className="h-12 w-12 text-secondary mx-auto mb-4 gradient-metallic-gold filter-premium-depth p-3 rounded-full" />
-                    <h3 className="font-semibold mb-2">Boost Your Sales</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Showcase products, run promotions, and drive more revenue through our marketplace
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card className="relative backdrop-luxury transform-3d-float border-animated-gradient transition-all duration-300 benefit-card-3">
-                  <CardContent className="relative z-10 p-6 text-center">
-                    <Star className="h-12 w-12 text-accent mx-auto mb-4 gradient-metallic-gold filter-premium-depth p-3 rounded-full" />
-                    <h3 className="font-semibold mb-2">Build Your Brand</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Create a professional presence and get featured in our business spotlight
-                    </p>
-                  </CardContent>
-                </Card>
+              {/* PREMIUM 3D BENEFITS CARDS */}
+              <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <Transform3DCard>
+                  <PremiumGlassCard className="group">
+                    <CardContent className="p-8 text-center">
+                      <MicroIcon color="rgba(6, 182, 212, 0.8)">
+                        <Users className="h-14 w-14 text-cyan-500 mx-auto mb-6" />
+                      </MicroIcon>
+                      <h3 className="font-bold text-xl mb-3">Connect with Customers</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        Build relationships and grow your customer base in Florida's local community
+                      </p>
+                    </CardContent>
+                  </PremiumGlassCard>
+                </Transform3DCard>
+
+                <Transform3DCard>
+                  <PremiumGlassCard className="group">
+                    <CardContent className="p-8 text-center">
+                      <MicroIcon color="rgba(251, 146, 60, 0.8)">
+                        <TrendingUp className="h-14 w-14 text-orange-500 mx-auto mb-6" />
+                      </MicroIcon>
+                      <h3 className="font-bold text-xl mb-3">Boost Your Sales</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        Showcase products, run promotions, and drive more revenue through our marketplace
+                      </p>
+                    </CardContent>
+                  </PremiumGlassCard>
+                </Transform3DCard>
+
+                <Transform3DCard>
+                  <PremiumGlassCard className="group">
+                    <CardContent className="p-8 text-center">
+                      <MicroIcon color="rgba(236, 72, 153, 0.8)">
+                        <Star className="h-14 w-14 text-pink-500 mx-auto mb-6" />
+                      </MicroIcon>
+                      <h3 className="font-bold text-xl mb-3">Build Your Brand</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        Create a professional presence and get featured in our business spotlight
+                      </p>
+                    </CardContent>
+                  </PremiumGlassCard>
+                </Transform3DCard>
               </div>
             </>
           ) : (
@@ -149,7 +182,7 @@ export default function Home() {
             </>
           )}
         </div>
-      </section>
+      </AnimatedGradientHero>
 
       <SpotlightShowcase />
       <MarketplaceSection />

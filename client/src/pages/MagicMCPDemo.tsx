@@ -155,7 +155,11 @@ export default function MagicMCPDemo() {
   return (
     <PageTransition>
       <SkipToMain />
-      <div className="min-h-screen bg-background">
+      <div
+        className="premium-page-wrapper premium-surface min-h-screen bg-background"
+        data-surface-intensity="delicate"
+        data-surface-tone="cool"
+      >
         {/* Header */}
         <div className="miami-glass border-b border-white/20 sticky top-0 z-40">
           <div className="container mx-auto px-4 py-6">
