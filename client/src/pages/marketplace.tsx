@@ -25,7 +25,6 @@ import {
   ParticleField,
   AuroraAmbient,
   PremiumLoader,
-  HoverTrail,
 } from "@/components/premium-ultra";
 import { PremiumBadge } from "@/components/premium-ui";
 
@@ -150,7 +149,6 @@ export default function Marketplace() {
     >
       {/* ULTRA PREMIUM EFFECTS */}
       <AuroraAmbient intensity="low" />
-      <HoverTrail />
 
       <EliteNavigationHeader />
 

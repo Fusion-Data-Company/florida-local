@@ -46,15 +46,15 @@ export default function EliteNavigationHeader() {
 
   return (
     <>
-      {/* APPLE-STYLE ULTRA ELITE HEADER */}
+      {/* GREY MARBLE GLASS HEADER - APPLE STYLE */}
       <header className={`elite-glass-header sticky top-0 z-50 w-full ${scrolled ? 'scrolled' : ''}`}>
-        <div className="container mx-auto px-4">
-          <div className="flex h-12 items-center justify-between">
+        <div className="container mx-auto px-6" style={{ position: 'relative', zIndex: 10 }}>
+          <div className="flex items-center justify-between" style={{ height: '72px' }}>
 
-            {/* PREMIUM LOGO WITH REFINED STYLING */}
-            <Link href="/" className="elite-logo-container flex items-center gap-2 group" data-testid="brand-logo">
+            {/* LOGO - FIXED SIZE */}
+            <Link href="/" className="elite-logo-container flex items-center" style={{ gap: '10px' }} data-testid="brand-logo">
               <div className="elite-logo-icon flex items-center justify-center">
-                <TreePine className="h-5 w-5 text-cyan-600" strokeWidth={2.5} />
+                <TreePine style={{ width: '20px', height: '20px' }} className="text-cyan-600" strokeWidth={2.5} />
               </div>
               <h1 className="elite-logo-text hidden md:block">
                 Florida Local Elite
@@ -62,36 +62,32 @@ export default function EliteNavigationHeader() {
               <h1 className="elite-logo-text md:hidden">
                 FL Elite
               </h1>
-              {/* Premium Badge on Hover */}
-              <span className="hidden lg:inline-block opacity-0 group-hover:opacity-100 transition-opacity duration-300 ml-2 px-2 py-0.5 text-[10px] font-semibold tracking-wider uppercase rounded-md bg-gradient-to-r from-cyan-500 to-teal-500 text-white">
-                Premium
-              </span>
             </Link>
 
-            {/* APPLE-STYLE NAVIGATION - MINIMAL & CLEAN */}
+            {/* NAVIGATION - FIXED SIZES */}
             {isAuthenticated && (
-              <nav className="hidden lg:flex items-center gap-1">
+              <nav className="hidden lg:flex items-center" style={{ gap: '4px' }}>
                 {navigationItems.map((item) => {
                   const IconComponent = item.icon;
                   return (
                     <Link
                       key={item.href}
                       href={item.href}
-                      className={`elite-nav-item flex items-center gap-1.5 ${isActivePath(item.href) ? 'elite-nav-active' : ''}`}
+                      className={`elite-nav-item ${isActivePath(item.href) ? 'elite-nav-active' : ''}`}
                       data-testid={item.testId}
                     >
-                      <IconComponent className="h-4 w-4" />
+                      <IconComponent />
                       <span>{item.label}</span>
                     </Link>
                   );
                 })}
 
-                {/* BUSINESS DROPDOWN */}
+                {/* BUSINESS DROPDOWN - FIXED SIZE */}
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="elite-nav-item flex items-center gap-1.5">
-                    <Building2 className="h-4 w-4" />
+                  <DropdownMenuTrigger className="elite-nav-item" style={{ gap: '6px' }}>
+                    <Building2 style={{ width: '18px', height: '18px' }} />
                     <span>Business</span>
-                    <ChevronDown className="h-3 w-3" />
+                    <ChevronDown style={{ width: '14px', height: '14px', marginLeft: '-2px' }} />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="elite-glass-dropdown w-52">
                     {userBusinesses.length > 0 ? (
@@ -123,22 +119,32 @@ export default function EliteNavigationHeader() {
               </nav>
             )}
 
-            {/* APPLE-STYLE USER MENU - MINIMAL */}
-            <div className="flex items-center gap-2">
+            {/* USER MENU - FIXED SIZES */}
+            <div className="flex items-center" style={{ gap: '8px' }}>
               {isAuthenticated ? (
                 <>
-                  <div className="hidden md:flex items-center gap-2">
+                  <div className="hidden md:flex items-center" style={{ gap: '8px' }}>
                     <ThemeToggleButton />
                     <CartIcon />
                   </div>
 
-                  {/* APPLE-STYLE USER AVATAR */}
+                  {/* USER AVATAR - FIXED SIZE WITH METALLIC RING */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="p-1 rounded-full h-auto hover:opacity-80">
-                        <Avatar className="w-8 h-8">
+                      <Button
+                        variant="ghost"
+                        className="rounded-full hover:bg-black/5 transition-all"
+                        style={{
+                          width: '36px',
+                          height: '36px',
+                          padding: 0,
+                          border: '1px solid rgba(255, 255, 255, 0.5)',
+                          boxShadow: '0 2px 8px rgba(6, 182, 212, 0.15), 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 0 12px rgba(255, 255, 255, 0.2)'
+                        }}
+                      >
+                        <Avatar style={{ width: '32px', height: '32px' }}>
                           <AvatarImage src={user?.profileImageUrl || undefined} />
-                          <AvatarFallback className="text-xs bg-gradient-to-br from-cyan-500 to-blue-500 text-white">
+                          <AvatarFallback className="text-xs bg-gradient-to-br from-cyan-500 to-blue-500 text-white" style={{ fontSize: '13px' }}>
                             {user?.firstName?.charAt(0) || 'U'}
                           </AvatarFallback>
                         </Avatar>
@@ -158,22 +164,22 @@ export default function EliteNavigationHeader() {
               ) : (
                 <Button
                   onClick={() => window.location.href = '/api/login'}
-                  size="sm"
-                  className="h-8 px-4 text-sm"
+                  className="rounded-lg"
+                  style={{ height: '40px', padding: '0 20px', fontSize: '15px', fontWeight: 500 }}
                   data-testid="button-signin"
                 >
                   Sign In
                 </Button>
               )}
 
-              {/* MOBILE MENU TOGGLE */}
+              {/* MOBILE MENU TOGGLE - FIXED SIZE */}
               <Button
                 variant="ghost"
-                size="sm"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden p-2 h-8 w-8"
+                className="lg:hidden rounded-lg hover:bg-black/5"
+                style={{ width: '40px', height: '40px', padding: 0 }}
               >
-                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                {isMobileMenuOpen ? <X style={{ width: '22px', height: '22px' }} /> : <Menu style={{ width: '22px', height: '22px' }} />}
               </Button>
             </div>
           </div>

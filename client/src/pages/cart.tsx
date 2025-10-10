@@ -14,7 +14,6 @@ import {
   ParticleField,
   AuroraAmbient,
   PremiumLoader,
-  HoverTrail,
   Transform3DCard,
 } from "@/components/premium-ultra";
 import { PremiumGlassCard, PremiumBadge, PremiumButton } from "@/components/premium-ui";
@@ -83,7 +82,6 @@ export default function CartPage() {
     >
       {/* ULTRA PREMIUM EFFECTS */}
       <AuroraAmbient intensity="low" />
-      <HoverTrail />
 
       <EliteNavigationHeader />
 

@@ -1630,37 +1630,46 @@ textarea:focus-visible {
 /* === PREMIUM LUXURY ELITE NAVIGATION === */
 
 /* Header Container with Marble & Gradient Border */
-/* LUXURY FROSTED GLASS HEADER - ULTRA PREMIUM */
+/* GREY MARBLE GLASS HEADER - APPLE STYLE WITH METALLIC HIGHLIGHTS */
 .elite-glass-header {
-  height: 48px;
+  height: 72px;
   position: relative;
-  background: linear-gradient(180deg,
-    rgba(255, 255, 255, 0.85) 0%,
-    rgba(255, 255, 255, 0.75) 100%
-  );
+  background-image:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.82) 100%),
+    var(--texture-stucco);
+  background-size: cover, var(--texture-scale-large);
+  background-repeat: no-repeat, repeat;
+  background-blend-mode: normal, overlay;
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  border-top: 1px solid rgba(255, 255, 255, 0.6);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.04),
-    0 4px 12px rgba(0, 0, 0, 0.02),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    0 2px 0 rgba(255, 255, 255, 0.9) inset,
+    0 -1px 0 rgba(255, 255, 255, 0.5) inset,
+    0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
 }
 
+/* Premium Glass Face with Depth */
 .elite-glass-header::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg,
-    rgba(6, 182, 212, 0.03) 0%,
-    rgba(16, 185, 129, 0.02) 50%,
-    rgba(251, 191, 36, 0.03) 100%
-  );
+  background:
+    radial-gradient(circle at 30% 0%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 70% 0%, rgba(16, 185, 129, 0.06) 0%, transparent 50%),
+    linear-gradient(180deg,
+      rgba(255, 255, 255, 0.6) 0%,
+      rgba(255, 255, 255, 0.2) 30%,
+      rgba(255, 255, 255, 0.05) 70%,
+      rgba(0, 0, 0, 0.02) 100%
+    );
   pointer-events: none;
-  opacity: 0.6;
+  z-index: 1;
 }
 
+/* Accent gradient line at bottom */
 .elite-glass-header::after {
   content: '';
   position: absolute;
@@ -1670,24 +1679,23 @@ textarea:focus-visible {
   height: 1px;
   background: linear-gradient(90deg,
     transparent 0%,
-    rgba(6, 182, 212, 0.2) 20%,
-    rgba(16, 185, 129, 0.3) 50%,
-    rgba(251, 191, 36, 0.2) 80%,
+    rgba(6, 182, 212, 0.3) 30%,
+    rgba(16, 185, 129, 0.4) 50%,
+    rgba(6, 182, 212, 0.3) 70%,
     transparent 100%
   );
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  opacity: 0.5;
+  z-index: 2;
 }
 
 .elite-glass-header.scrolled {
-  background: linear-gradient(180deg,
-    rgba(255, 255, 255, 0.92) 0%,
-    rgba(255, 255, 255, 0.88) 100%
-  );
+  background-image:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.92) 100%),
+    var(--texture-stucco);
   box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.06),
-    0 8px 24px rgba(0, 0, 0, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 4px 16px rgba(0, 0, 0, 0.08),
+    0 8px 32px rgba(0, 0, 0, 0.04);
 }
 
 .elite-glass-header.scrolled::after {
@@ -1697,42 +1705,78 @@ textarea:focus-visible {
 /* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
   .elite-glass-header {
-    background: linear-gradient(180deg,
-      rgba(15, 23, 42, 0.85) 0%,
-      rgba(15, 23, 42, 0.75) 100%
-    );
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background-image:
+      linear-gradient(180deg, rgba(15, 23, 42, 0.92) 0%, rgba(15, 23, 42, 0.88) 100%),
+      var(--texture-stucco);
+    background-blend-mode: normal, overlay;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow:
-      0 1px 3px rgba(0, 0, 0, 0.2),
-      0 4px 12px rgba(0, 0, 0, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      0 1px 0 rgba(255, 255, 255, 0.05) inset,
+      0 2px 8px rgba(0, 0, 0, 0.3);
   }
 
   .elite-glass-header::before {
-    background: linear-gradient(90deg,
-      rgba(6, 182, 212, 0.05) 0%,
-      rgba(16, 185, 129, 0.04) 50%,
-      rgba(251, 191, 36, 0.05) 100%
-    );
+    background:
+      radial-gradient(circle at 30% 0%, rgba(6, 182, 212, 0.12) 0%, transparent 50%),
+      radial-gradient(circle at 70% 0%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+      linear-gradient(180deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.03) 30%,
+        rgba(255, 255, 255, 0.01) 70%,
+        rgba(0, 0, 0, 0.1) 100%
+      );
   }
 
   .elite-glass-header.scrolled {
-    background: linear-gradient(180deg,
-      rgba(15, 23, 42, 0.95) 0%,
-      rgba(15, 23, 42, 0.92) 100%
+    background-image:
+      linear-gradient(180deg, rgba(15, 23, 42, 0.97) 0%, rgba(15, 23, 42, 0.95) 100%),
+      var(--texture-stucco);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.08) inset,
+      0 4px 16px rgba(0, 0, 0, 0.4),
+      0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  .elite-logo-text {
+    background: linear-gradient(135deg,
+      #22d3ee 0%,
+      #14b8a6 100%
     );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   .elite-nav-item {
     color: rgba(255, 255, 255, 0.75);
   }
 
+  .elite-nav-item svg {
+    color: rgba(255, 255, 255, 0.65);
+  }
+
   .elite-nav-item:hover {
-    color: rgba(255, 255, 255, 0.95);
+    background: linear-gradient(135deg,
+      rgba(6, 182, 212, 0.25) 0%,
+      rgba(16, 185, 129, 0.2) 100%
+    );
+    color: #0c4a6e;
+  }
+
+  .elite-nav-item:hover svg {
+    color: #0c4a6e;
   }
 
   .elite-nav-active {
-    color: rgba(6, 182, 212, 1);
+    background: linear-gradient(135deg,
+      rgba(6, 182, 212, 0.35) 0%,
+      rgba(16, 185, 129, 0.3) 100%
+    );
+    color: #0c4a6e;
+  }
+
+  .elite-nav-active svg {
+    color: #0c4a6e;
   }
 
   .elite-glass-dropdown {
@@ -1740,115 +1784,146 @@ textarea:focus-visible {
       rgba(30, 41, 59, 0.98) 0%,
       rgba(30, 41, 59, 0.95) 100%
     );
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow:
+      0 12px 32px rgba(0, 0, 0, 0.4),
+      0 4px 12px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 }
 
-/* Premium Logo with Refined Styling */
+/* Logo Container - FIXED SIZE */
 .elite-logo-container {
   position: relative;
-  padding: 4px 12px 4px 4px;
-  border-radius: 10px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 40px;
+  padding: 0 16px 0 8px;
+  border-radius: 12px;
+  transition: background 0.2s ease;
+  z-index: 10;
 }
 
 .elite-logo-container:hover {
-  background: rgba(6, 182, 212, 0.06);
-  transform: translateY(-1px);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+/* Logo Icon - FIXED SIZE WITH METALLIC RING */
+.elite-logo-icon {
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+  border-radius: 8px;
+  background: rgba(6, 182, 212, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow:
+    0 2px 8px rgba(6, 182, 212, 0.15),
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 0 12px rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
 }
 
 .elite-logo-container:hover .elite-logo-icon {
   transform: scale(1.05);
+  box-shadow:
+    0 4px 12px rgba(6, 182, 212, 0.25),
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 0 16px rgba(255, 255, 255, 0.3);
 }
 
-.elite-logo-icon {
-  padding: 6px;
-  border-radius: 8px;
-  background: linear-gradient(135deg,
-    rgba(6, 182, 212, 0.1) 0%,
-    rgba(16, 185, 129, 0.08) 100%
-  );
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(6, 182, 212, 0.15);
-}
-
+/* Logo Text - FIXED SIZE */
 .elite-logo-text {
-  font-size: 1.0625rem;
+  font-size: 18px;
   font-weight: 600;
   background: linear-gradient(135deg,
-    rgba(6, 182, 212, 1) 0%,
-    rgba(13, 148, 136, 1) 100%
+    #0891b2 0%,
+    #0d9488 100%
   );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   letter-spacing: -0.02em;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
-/* Premium Pill Navigation Items */
+/* Navigation Items - FIXED SIZES INDIVIDUALLY */
 .elite-nav-item {
   position: relative;
-  padding: 7px 14px;
-  font-size: 13.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  font-size: 15px;
   font-weight: 500;
-  color: rgba(0, 0, 0, 0.75);
+  color: #0891b2;
   border-radius: 10px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
+  transition: all 0.2s ease;
   letter-spacing: -0.01em;
+  white-space: nowrap;
+  z-index: 10;
 }
 
-.elite-nav-item::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 10px;
-  background: linear-gradient(135deg,
-    rgba(6, 182, 212, 0.08) 0%,
-    rgba(16, 185, 129, 0.06) 100%
-  );
-  opacity: 0;
-  transition: opacity 0.3s ease;
+/* Nav Item Icon - FIXED SIZE */
+.elite-nav-item svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: #0891b2;
+  transition: color 0.2s ease;
 }
 
 .elite-nav-item:hover {
-  color: rgba(0, 0, 0, 0.95);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(6, 182, 212, 0.12);
+  background: linear-gradient(135deg,
+    rgba(6, 182, 212, 0.2) 0%,
+    rgba(16, 185, 129, 0.15) 100%
+  );
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow:
+    0 2px 6px rgba(6, 182, 212, 0.3),
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    0 0 12px rgba(255, 255, 255, 0.2);
 }
 
-.elite-nav-item:hover::before {
-  opacity: 1;
+.elite-nav-item:hover svg {
+  color: #ffffff;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
 }
 
 .elite-nav-active {
-  color: rgba(6, 182, 212, 1);
   background: linear-gradient(135deg,
-    rgba(6, 182, 212, 0.12) 0%,
-    rgba(16, 185, 129, 0.08) 100%
+    rgba(6, 182, 212, 0.3) 0%,
+    rgba(16, 185, 129, 0.25) 100%
   );
-  box-shadow:
-    0 2px 8px rgba(6, 182, 212, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  color: #ffffff;
   font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow:
+    0 2px 8px rgba(6, 182, 212, 0.4),
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 0 16px rgba(255, 255, 255, 0.3);
 }
 
-.elite-nav-active::before {
-  opacity: 0;
+.elite-nav-active svg {
+  color: #ffffff;
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.6));
 }
 
-/* Premium Dropdown Menu */
+/* Premium Dropdown Menu WITH METALLIC EDGE */
 .elite-glass-dropdown {
   background: linear-gradient(180deg,
     rgba(255, 255, 255, 0.98) 0%,
     rgba(255, 255, 255, 0.95) 100%
   );
   backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 12px;
   box-shadow:
     0 12px 32px rgba(0, 0, 0, 0.08),
     0 4px 12px rgba(0, 0, 0, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    0 2px 0 rgba(255, 255, 255, 0.9) inset,
+    0 0 16px rgba(255, 255, 255, 0.3);
   padding: 6px;
   animation: dropdown-slide-in 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }

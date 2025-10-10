@@ -25,7 +25,6 @@ import {
   ParticleField,
   AuroraAmbient,
   PremiumLoader,
-  HoverTrail,
   Transform3DCard,
 } from "@/components/premium-ultra";
 import { PremiumGlassCard, PremiumBadge } from "@/components/premium-ui";
@@ -280,7 +279,6 @@ export default function Checkout() {
     >
       {/* ULTRA PREMIUM EFFECTS */}
       <AuroraAmbient intensity="low" />
-      <HoverTrail />
 
       <EliteNavigationHeader />
 

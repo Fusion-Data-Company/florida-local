@@ -17,7 +17,6 @@ import {
   ParticleField,
   AuroraAmbient,
   PremiumLoader,
-  HoverTrail,
   Transform3DCard,
   MicroIcon,
 } from "@/components/premium-ultra";
@@ -70,7 +69,6 @@ export default function Home() {
     >
       {/* ULTRA PREMIUM EFFECTS */}
       <AuroraAmbient intensity="medium" />
-      <HoverTrail />
 
       <EliteNavigationHeader />
 
