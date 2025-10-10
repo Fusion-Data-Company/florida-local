@@ -3,6 +3,30 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  /* MARBLE TEXTURE UTILITY CLASSES - Apply to all white/light backgrounds */
+  .marble-texture {
+    background: var(--texture-stucco), var(--background);
+    background-size: var(--texture-scale-large), cover;
+    background-repeat: repeat, no-repeat;
+    background-blend-mode: multiply;
+  }
+
+  .marble-texture-white {
+    background: var(--texture-stucco), white;
+    background-size: var(--texture-scale-large), cover;
+    background-repeat: repeat, no-repeat;
+    background-blend-mode: multiply;
+  }
+
+  .marble-texture-card {
+    background: var(--texture-stucco), var(--card);
+    background-size: var(--texture-scale-large), cover;
+    background-repeat: repeat, no-repeat;
+    background-blend-mode: multiply;
+  }
+}
+
 :root {
   /* MIAMI NETWORKING AGENCY ELITE COLOR PALETTE */
   --background: hsl(36, 25%, 96%);  /* Warm cream base */
@@ -168,29 +192,6 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    /* ALL marble texture backgrounds removed - they were creating diagonal stripe patterns that blocked content */
-  }
-  
-  /* Aurora gradient overlays REMOVED - they were blocking content
-   * AnimatedGradientHero component provides gradient effects where needed
-   * All texture system and premium styling remains intact */
-
-  /* PREMIUM PAGE WRAPPER - Ensure content appears above ALL background layers */
-  .premium-page-wrapper {
-    position: relative;
-    z-index: 10;
-  }
-
-  /* PREMIUM SURFACE - Ensure proper stacking for textured surfaces */
-  .premium-surface {
-    position: relative;
-    z-index: 5;
-  }
-
-  /* Ensure ALL direct children of body are above background */
-  body > * {
-    position: relative;
-    z-index: 10;
   }
 
   /* Navigation and headers must be on top */
@@ -1629,180 +1630,60 @@ textarea:focus-visible {
 /* === PREMIUM LUXURY ELITE NAVIGATION === */
 
 /* Header Container with Marble & Gradient Border */
+/* APPLE-STYLE ULTRA ELITE HEADER */
 .elite-glass-header {
-  position: relative;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(24px) saturate(200%);
-  border-bottom: 2px solid transparent;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)),
-                    linear-gradient(90deg, 
-                      rgba(212, 175, 55, 0.3) 0%,
-                      rgba(184, 134, 11, 0.3) 25%,
-                      rgba(255, 215, 0, 0.3) 50%,
-                      rgba(184, 134, 11, 0.3) 75%,
-                      rgba(212, 175, 55, 0.3) 100%
-                    );
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
-  box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.08),
-    0 2px 4px -1px rgba(0, 0, 0, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  height: 48px;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: saturate(180%) blur(16px);
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
 }
 
-.elite-glass-header::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
-  background-size: cover;
-  background-position: center;
-  mix-blend-mode: multiply;
-  opacity: 0.5;
-  pointer-events: none;
-  z-index: 0;
+.elite-glass-header.scrolled {
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* Logo Container */
+/* Apple-Style Logo */
 .elite-logo-container {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.2s ease;
 }
 
-.elite-logo-container:hover .elite-logo-icon {
-  transform: scale(1.15);
-  filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.5));
-}
-
-/* Logo Text with Metallic Gold to Bronze Gradient */
-.elite-logo-text {
-  font-family: var(--font-serif);
-  font-weight: 700;
-  font-size: 1.25rem;
-  background: linear-gradient(135deg, 
-    #d4af37 0%,     /* Rich Gold */
-    #b8860b 25%,    /* Dark Goldenrod */
-    #ffd700 50%,    /* Gold */
-    #cd7f32 75%,    /* Bronze */
-    #8b4513 100%    /* Saddle Brown */
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 2px 4px rgba(139, 69, 19, 0.25));
-  letter-spacing: -0.02em;
-  position: relative;
-}
-
-.elite-logo-container:hover .elite-logo-text {
-  filter: drop-shadow(0 2px 4px rgba(139, 69, 19, 0.25))
-          drop-shadow(0 0 12px rgba(212, 175, 55, 0.4));
-}
-
-.elite-logo-subtitle {
-  font-size: 0.7rem;
-  background: linear-gradient(135deg, 
-    rgba(139, 69, 19, 0.7) 0%,
-    rgba(184, 134, 11, 0.7) 100%
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9);
+.elite-logo-container:hover {
+  opacity: 0.85;
 }
 
 .elite-logo-icon {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.2s ease;
 }
 
-/* Navigation Items with Glass Morphism */
+.elite-logo-text {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.88);
+  letter-spacing: -0.01em;
+}
+
+/* Apple-Style Navigation Items */
 .elite-nav-item {
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 0.625rem;
-  position: relative;
-  overflow: visible;
-  backdrop-filter: blur(0px);
-  background: transparent;
-  border: 1px solid transparent;
-}
-
-.elite-nav-item::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(12px) saturate(180%);
-  opacity: 0;
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: inherit;
-  z-index: -1;
-  border: 1px solid rgba(212, 175, 55, 0.2);
-  box-shadow: 
-    0 2px 8px rgba(0, 0, 0, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
-}
-
-.elite-nav-item::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%) scaleX(0);
-  width: 80%;
-  height: 2px;
-  background: linear-gradient(90deg, 
-    transparent 0%,
-    rgba(212, 175, 55, 0.8) 50%,
-    transparent 100%
-  );
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 1px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.8);
+  border-radius: 8px;
+  transition: all 0.2s ease;
 }
 
 .elite-nav-item:hover {
-  color: var(--foreground);
-  transform: translateY(-1px);
+  color: rgba(0, 0, 0, 1);
+  background: rgba(0, 0, 0, 0.05);
 }
 
-.elite-nav-item:hover::before {
-  opacity: 1;
-}
-
-.elite-nav-item:hover::after {
-  transform: translateX(-50%) scaleX(1);
-}
-
-/* Active Navigation Item */
 .elite-nav-active {
-  background: linear-gradient(135deg, 
-    rgba(212, 175, 55, 0.15) 0%,
-    rgba(184, 134, 11, 0.15) 100%
-  );
-  backdrop-filter: blur(12px) saturate(180%);
-  color: var(--foreground);
-  border: 1px solid rgba(212, 175, 55, 0.3);
-  box-shadow: 
-    0 4px 12px rgba(212, 175, 55, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
-  position: relative;
-}
-
-.elite-nav-active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%) scaleX(1);
-  width: 80%;
-  height: 2px;
-  background: linear-gradient(90deg, 
-    transparent 0%,
-    rgba(212, 175, 55, 1) 50%,
-    transparent 100%
-  );
-  border-radius: 1px;
+  color: rgba(0, 0, 0, 1);
+  background: rgba(0, 0, 0, 0.08);
 }
 
 /* Dropdown with Glass Morphism & Marble */
@@ -4717,87 +4598,7 @@ textarea:focus-visible,
 /* === ELITE MARKETING FIRM HEADER === */
 
 /* Ultra-Premium Glass Header */
-.elite-glass-header {
-  background: 
-    linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%),
-    linear-gradient(135deg, rgba(25,182,246,0.03) 0%, rgba(255,152,67,0.02) 100%);
-  backdrop-filter: blur(20px) saturate(180%) brightness(110%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%) brightness(110%);
-  border-bottom: 1px solid rgba(255,255,255,0.18);
-  box-shadow: 
-    0 8px 32px rgba(0,0,0,0.06),
-    inset 0 1px 0 rgba(255,255,255,0.15),
-    0 0 0 1px rgba(255,255,255,0.05);
-}
-
-/* Elite Logo Container */
-.elite-logo-container {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.elite-logo-container:hover {
-  transform: translateY(-1px);
-}
-
-.elite-logo-icon {
-  position: relative;
-  padding: 8px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, rgba(25,182,246,0.1), rgba(16,185,129,0.1));
-  border: 1px solid rgba(255,255,255,0.2);
-}
-
-.elite-logo-text {
-  font-size: 1.25rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #0891b2, #0d9488);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.elite-logo-subtitle {
-  font-size: 0.75rem;
-  color: #64748b;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-}
-
-/* Elite Navigation Items */
-.elite-nav-item {
-  position: relative;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 8px;
-}
-
-.elite-nav-item::before {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 50%;
-  width: 0;
-  height: 2px;
-  background: linear-gradient(90deg, #06b6d4, #10b981);
-  transform: translateX(-50%);
-  transition: width 0.3s ease;
-  border-radius: 1px;
-}
-
-.elite-nav-item:hover::before {
-  width: 80%;
-}
-
-.elite-nav-active {
-  background: linear-gradient(135deg, #06b6d4, #10b981);
-  color: white;
-  box-shadow: 
-    0 4px 12px rgba(6,182,212,0.3),
-    0 0 0 1px rgba(255,255,255,0.1);
-}
-
-.elite-nav-active::before {
-  display: none;
-}
+/* Duplicate CSS removed - using Apple-style header above */
 
 /* Elite User Avatar - NO MORE SHIT BADGE */
 .elite-user-avatar-container {

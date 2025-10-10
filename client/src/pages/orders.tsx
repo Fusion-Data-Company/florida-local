@@ -82,7 +82,7 @@ export default function Orders() {
   if (!isAuthenticated) {
     return (
       <div
-        className="premium-page-wrapper premium-surface min-h-screen bg-background relative"
+        className="premium-page-wrapper premium-surface min-h-screen marble-texture relative"
         data-surface-intensity="delicate"
         data-surface-tone="warm"
       >
@@ -112,7 +112,7 @@ export default function Orders() {
   if (isLoading) {
     return (
       <div
-        className="premium-page-wrapper premium-surface min-h-screen bg-background flex items-center justify-center"
+        className="premium-page-wrapper premium-surface min-h-screen marble-texture flex items-center justify-center"
         data-surface-intensity="delicate"
         data-surface-tone="warm"
       >
@@ -123,7 +123,7 @@ export default function Orders() {
 
   return (
     <div
-      className="premium-page-wrapper premium-surface min-h-screen bg-background relative"
+      className="premium-page-wrapper premium-surface min-h-screen marble-texture relative"
       data-surface-intensity="delicate"
       data-surface-tone="warm"
     >

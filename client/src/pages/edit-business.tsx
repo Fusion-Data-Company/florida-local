@@ -171,7 +171,7 @@ export default function EditBusiness() {
   if (!isAuthenticated) {
     return (
       <div
-        className="premium-page-wrapper premium-surface min-h-screen bg-background"
+        className="premium-page-wrapper premium-surface min-h-screen marble-texture"
         data-surface-intensity="delicate"
         data-surface-tone="warm"
       >
@@ -195,7 +195,7 @@ export default function EditBusiness() {
   if (isLoading) {
     return (
       <div
-        className="premium-page-wrapper premium-surface min-h-screen bg-background"
+        className="premium-page-wrapper premium-surface min-h-screen marble-texture"
         data-surface-intensity="delicate"
         data-surface-tone="warm"
       >
@@ -234,7 +234,7 @@ export default function EditBusiness() {
   if (error || !business) {
     return (
       <div
-        className="premium-page-wrapper premium-surface min-h-screen bg-background"
+        className="premium-page-wrapper premium-surface min-h-screen marble-texture"
         data-surface-intensity="delicate"
         data-surface-tone="warm"
       >
@@ -258,7 +258,7 @@ export default function EditBusiness() {
   if (business.ownerId !== user?.id) {
     return (
       <div
-        className="premium-page-wrapper premium-surface min-h-screen bg-background"
+        className="premium-page-wrapper premium-surface min-h-screen marble-texture"
         data-surface-intensity="delicate"
         data-surface-tone="warm"
       >
@@ -289,7 +289,7 @@ export default function EditBusiness() {
 
   return (
     <div
-      className="premium-page-wrapper premium-surface min-h-screen bg-background"
+      className="premium-page-wrapper premium-surface min-h-screen marble-texture"
       data-surface-intensity="delicate"
       data-surface-tone="warm"
     >

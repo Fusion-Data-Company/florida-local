@@ -121,7 +121,7 @@ export default function OrderConfirmation() {
   if (!isAuthenticated) {
     return (
       <div
-        className="premium-page-wrapper premium-surface min-h-screen bg-background"
+        className="premium-page-wrapper premium-surface min-h-screen marble-texture"
         data-surface-intensity="delicate"
         data-surface-tone="warm"
       >
@@ -142,7 +142,7 @@ export default function OrderConfirmation() {
   if (isLoading) {
     return (
       <div
-        className="premium-page-wrapper premium-surface min-h-screen bg-background"
+        className="premium-page-wrapper premium-surface min-h-screen marble-texture"
         data-surface-intensity="delicate"
         data-surface-tone="warm"
       >
@@ -159,7 +159,7 @@ export default function OrderConfirmation() {
 
   return (
     <div
-      className="premium-page-wrapper premium-surface min-h-screen bg-background"
+      className="premium-page-wrapper premium-surface min-h-screen marble-texture"
       data-surface-intensity="delicate"
       data-surface-tone="warm"
     >

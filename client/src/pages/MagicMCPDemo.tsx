@@ -156,7 +156,7 @@ export default function MagicMCPDemo() {
     <PageTransition>
       <SkipToMain />
       <div
-        className="premium-page-wrapper premium-surface min-h-screen bg-background"
+        className="premium-page-wrapper premium-surface min-h-screen marble-texture"
         data-surface-intensity="delicate"
         data-surface-tone="cool"
       >

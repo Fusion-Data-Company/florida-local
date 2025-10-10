@@ -10,7 +10,7 @@ import { Store, ShoppingCart, Users } from "lucide-react";
 export default function Landing() {
   return (
     <div
-      className="premium-page-wrapper premium-surface min-h-screen bg-background"
+      className="premium-page-wrapper premium-surface min-h-screen marble-texture"
       data-surface-intensity="bold"
       data-surface-tone="warm"
     >

@@ -19,7 +19,10 @@
       "Bash(curl -s http://localhost:5000)",
       "Bash(curl -s 'http://localhost:5000/src/pages/home.tsx')",
       "Bash(curl:*)",
-      "Bash(xargs ps:*)"
+      "Bash(xargs ps:*)",
+      "Bash(for:*)",
+      "Bash(do)",
+      "Bash(echo \"Updated: $file\")"
     ],
     "deny": [],
     "ask": []

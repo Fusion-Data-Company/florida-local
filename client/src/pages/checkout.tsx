@@ -203,7 +203,7 @@ export default function Checkout() {
   if (!isAuthenticated) {
     return (
       <div
-        className="premium-page-wrapper premium-surface min-h-screen bg-background relative"
+        className="premium-page-wrapper premium-surface min-h-screen marble-texture relative"
         data-surface-intensity="delicate"
         data-surface-tone="cool"
       >
@@ -233,7 +233,7 @@ export default function Checkout() {
   if (cartLoading) {
     return (
       <div
-        className="premium-page-wrapper premium-surface min-h-screen bg-background flex items-center justify-center"
+        className="premium-page-wrapper premium-surface min-h-screen marble-texture flex items-center justify-center"
         data-surface-intensity="delicate"
         data-surface-tone="cool"
       >
@@ -245,7 +245,7 @@ export default function Checkout() {
   if (cartItems.length === 0) {
     return (
       <div
-        className="premium-page-wrapper premium-surface min-h-screen bg-background relative"
+        className="premium-page-wrapper premium-surface min-h-screen marble-texture relative"
         data-surface-intensity="delicate"
         data-surface-tone="cool"
       >
@@ -274,7 +274,7 @@ export default function Checkout() {
 
   return (
     <div
-      className="premium-page-wrapper premium-surface min-h-screen bg-background relative"
+      className="premium-page-wrapper premium-surface min-h-screen marble-texture relative"
       data-surface-intensity="delicate"
       data-surface-tone="cool"
     >
