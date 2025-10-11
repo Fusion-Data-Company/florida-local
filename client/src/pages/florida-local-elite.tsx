@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Facebook, Instagram, Youtube, Twitter,
+  Facebook, Instagram, Youtube, Twitter, MapPin,
   Star, Phone, Calendar, ChevronLeft, ChevronRight,
   Heart, Bookmark, Play, Sparkles
 } from "lucide-react";
@@ -408,15 +408,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 7. LOCALS | EAST ORLANDO FLAVOR - TURULL'S BOQUERIA */}
-      <section
-        className="py-16"
-        style={{
-          background: `var(--texture-stucco), linear-gradient(to bottom right, rgb(239, 246, 255), rgb(250, 245, 255))`,
-          backgroundSize: 'var(--texture-scale-large), cover',
-          backgroundRepeat: 'repeat, no-repeat',
-          backgroundBlendMode: 'multiply'
-        }}
-      >
+      <section className="py-16 bg-gradient-to-br from-blue-50 via-purple-50 to-white">
         <div className="container mx-auto px-4 max-w-6xl">
           <h2 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
             Locals | East Orlando Flavor
@@ -629,15 +621,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 11. ENTREPRENEURS, CREATORS & COLLABORATORS */}
-      <section
-        className="py-16"
-        style={{
-          background: `var(--texture-stucco), linear-gradient(to bottom right, rgb(240, 253, 244), rgb(239, 246, 255))`,
-          backgroundSize: 'var(--texture-scale-large), cover',
-          backgroundRepeat: 'repeat, no-repeat',
-          backgroundBlendMode: 'multiply'
-        }}
-      >
+      <section className="py-16 bg-gradient-to-br from-green-50 via-blue-50 to-white">
         <div className="container mx-auto px-4">
           <div className="flex justify-center mb-12">
             <MetallicBadge color="emerald" className="text-2xl px-10 py-5">
@@ -669,15 +653,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 12. IPOWER MOVES & CARIBBEAN LOCALS SLIDER */}
-      <section
-        className="py-16"
-        style={{
-          background: `var(--texture-stucco), linear-gradient(to bottom right, rgb(250, 245, 255), rgb(252, 231, 243), rgb(239, 246, 255))`,
-          backgroundSize: 'var(--texture-scale-large), cover',
-          backgroundRepeat: 'repeat, no-repeat',
-          backgroundBlendMode: 'multiply'
-        }}
-      >
+      <section className="py-16 bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto mb-12">
             <Card className="rounded-3xl shadow-2xl overflow-hidden">
@@ -725,15 +701,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 13. DENTAL SPOTLIGHT - SIAN DENTAL STUDIO */}
-      <section
-        className="py-16"
-        style={{
-          background: `var(--texture-stucco), linear-gradient(to bottom right, rgb(239, 246, 255), rgb(250, 245, 255))`,
-          backgroundSize: 'var(--texture-scale-large), cover',
-          backgroundRepeat: 'repeat, no-repeat',
-          backgroundBlendMode: 'multiply'
-        }}
-      >
+      <section className="py-16 bg-gradient-to-br from-blue-50 via-purple-50 to-white">
         <div className="container mx-auto px-4 max-w-6xl">
           <h2 className="text-5xl font-bold text-center mb-4">
             ORLANDO | Your SMILE Is Contagious
@@ -783,15 +751,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 14. THE FLORIDA LOCAL - FEATURED COLLABORATORS & FOODIE EXPERTS */}
-      <section
-        className="py-16"
-        style={{
-          background: `var(--texture-stucco), linear-gradient(to bottom right, rgb(240, 253, 244), rgb(250, 245, 255), rgb(252, 231, 243))`,
-          backgroundSize: 'var(--texture-scale-large), cover',
-          backgroundRepeat: 'repeat, no-repeat',
-          backgroundBlendMode: 'multiply'
-        }}
-      >
+      <section className="py-16 bg-gradient-to-br from-green-50 via-purple-50 to-pink-50">
         <div className="container mx-auto px-4">
           <div className="flex justify-center mb-6">
             <MetallicBadge color="emerald" className="text-xl px-8 py-4">
@@ -852,15 +812,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 15. IPOWERMOVES - INDEPENDENT POWER MOVES */}
-      <section
-        className="py-16"
-        style={{
-          background: `var(--texture-stucco), linear-gradient(to bottom right, rgb(255, 247, 237), rgb(252, 231, 243))`,
-          backgroundSize: 'var(--texture-scale-large), cover',
-          backgroundRepeat: 'repeat, no-repeat',
-          backgroundBlendMode: 'multiply'
-        }}
-      >
+      <section className="py-16 bg-gradient-to-br from-orange-50 via-pink-50 to-white">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <Card className="rounded-3xl shadow-2xl overflow-hidden">
@@ -884,15 +836,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 16. CILANTRILLO RESTAURANT MENU & FOODIE POSTS */}
-      <section
-        className="py-16"
-        style={{
-          background: `var(--texture-stucco), linear-gradient(to bottom right, rgb(250, 245, 255), rgb(252, 231, 243))`,
-          backgroundSize: 'var(--texture-scale-large), cover',
-          backgroundRepeat: 'repeat, no-repeat',
-          backgroundBlendMode: 'multiply'
-        }}
-      >
+      <section className="py-16 bg-gradient-to-br from-purple-50 via-pink-50 to-white">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="grid md:grid-cols-2 gap-8">
             {/* Left: Foodie Posts */}
@@ -962,15 +906,7 @@ export default function FloridaLocalElite() {
       {/* 17. #EFFINTRENDY - MUSIC, FASHION & LIFESTYLE (Already included earlier, enhanced version) */}
 
       {/* 18. FEATURED ENTREPRENEURS - IFASTSOCIAL ENDORSEMENT */}
-      <section
-        className="py-16"
-        style={{
-          background: `var(--texture-stucco), linear-gradient(to bottom right, rgb(254, 252, 232), rgb(255, 247, 237))`,
-          backgroundSize: 'var(--texture-scale-large), cover',
-          backgroundRepeat: 'repeat, no-repeat',
-          backgroundBlendMode: 'multiply'
-        }}
-      >
+      <section className="py-16 bg-gradient-to-br from-yellow-50 via-orange-50 to-white">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <Card className="rounded-3xl shadow-2xl overflow-hidden">
@@ -997,15 +933,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 19. #IPOWERMOVES - ENTREPRENEUR SPOTLIGHT & CREATORS GRID */}
-      <section
-        className="py-16"
-        style={{
-          background: `var(--texture-stucco), linear-gradient(to bottom right, rgb(250, 245, 255), rgb(239, 246, 255), rgb(252, 231, 243))`,
-          backgroundSize: 'var(--texture-scale-large), cover',
-          backgroundRepeat: 'repeat, no-repeat',
-          backgroundBlendMode: 'multiply'
-        }}
-      >
+      <section className="py-16 bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
         <div className="container mx-auto px-4">
           <div className="flex justify-center mb-12">
             <MetallicBadge color="platinum" className="text-2xl px-10 py-5">
@@ -1061,15 +989,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 20. CATEGORIES & TAG CLUSTERS */}
-      <section
-        className="py-16"
-        style={{
-          background: `var(--texture-stucco), white`,
-          backgroundSize: 'var(--texture-scale-large), cover',
-          backgroundRepeat: 'repeat, no-repeat',
-          backgroundBlendMode: 'multiply'
-        }}
-      >
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl font-bold text-center mb-12">Explore By Category</h2>
           
@@ -1124,71 +1044,10 @@ export default function FloridaLocalElite() {
         </div>
       </section>
 
-      <footer className="relative py-16 bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 text-white overflow-hidden">
-        {/* Mountain silhouette effect */}
-        <div className="absolute bottom-0 left-0 right-0 h-48 opacity-20">
-          <svg viewBox="0 0 1200 120" className="w-full h-full">
-            <path d="M0,60 L300,20 L600,50 L900,10 L1200,40 L1200,120 L0,120 Z" fill="currentColor" />
-          </svg>
-        </div>
-
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto mb-12">
-            {/* Categories */}
-            <div>
-              <h4 className="font-bold text-xl mb-6 text-purple-300">Categories</h4>
-              <ul className="space-y-3">
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:underline">Term Of Use</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:underline">Release Notes</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:underline">Upgrade Guide</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:underline">Travel</a></li>
-              </ul>
-            </div>
-
-            {/* Pages */}
-            <div>
-              <h4 className="font-bold text-xl mb-6 text-purple-300">Pages</h4>
-              <ul className="space-y-3">
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:underline">Installation</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:underline">IntelliSense</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:underline">Browser Support</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:underline">Upgrade Guide</a></li>
-              </ul>
-            </div>
-
-            {/* Social */}
-            <div>
-              <h4 className="font-bold text-xl mb-6 text-purple-300">Social</h4>
-              <p className="text-gray-300 mb-6">Connect with The Florida Locals on social media for the latest updates and local stories.</p>
-              <div className="flex gap-4">
-                <Button variant="ghost" size="icon" className="rounded-full bg-white/10 hover:bg-white/20 transition-colors">
-                  <Facebook className="h-5 w-5" />
-                </Button>
-                <Button variant="ghost" size="icon" className="rounded-full bg-white/10 hover:bg-white/20 transition-colors">
-                  <Instagram className="h-5 w-5" />
-                </Button>
-                <Button variant="ghost" size="icon" className="rounded-full bg-white/10 hover:bg-white/20 transition-colors">
-                  <Youtube className="h-5 w-5" />
-                </Button>
-                <Button variant="ghost" size="icon" className="rounded-full bg-white/10 hover:bg-white/20 transition-colors">
-                  <Twitter className="h-5 w-5" />
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-white/20 pt-8 text-center">
-            <p className="text-gray-400">
-              Copyright © 2023 The Locals. Created By{" "}
-              <a href="https://ifastsocial.com" className="text-purple-300 hover:text-white transition-colors font-semibold">
-                iFastSocial.com
-              </a>
-            </p>
-          </div>
-        </div>
-      </footer>
       </div>
       {/* End Content Wrapper */}
+      
+      <LuxuryFooter />
     </div>
   );
 }
