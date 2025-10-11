@@ -111,22 +111,22 @@ export default function FloridaLocalElite() {
         {/* Content Overlay - Absolutely positioned on video */}
         <div className="relative z-10 min-h-[600px] md:min-h-[700px] lg:min-h-[800px]">
           {/* LOGO WITH SUBTLE GLOW - FORCED TO LEFT EDGE */}
-          <div className="absolute bottom-32 md:bottom-40 lg:bottom-48 left-0">
+          <div className="absolute bottom-32 md:bottom-40 lg:bottom-48 left-0 -ml-4 md:-ml-8 lg:-ml-12" style={{ transform: 'translateX(0)' }}>
             <img
               src="/attached_assets/me_1760215801481.png"
               alt="The Florida Local"
-              className="w-96 md:w-[700px] lg:w-[900px] h-auto transition-all duration-500 animate-float logo-subtle-glow"
+              className="w-[500px] md:w-[800px] lg:w-[1000px] h-auto transition-all duration-500 animate-float logo-subtle-glow"
               data-testid="img-hero-logo"
             />
           </div>
 
           {/* ULTRA ELEGANT TAGLINE WITH STYLED CAPITALS - CENTERED ACROSS BOTTOM */}
           <div className="absolute bottom-12 md:bottom-16 lg:bottom-20 left-0 right-0 w-full px-4">
-            <p className="text-center text-3xl md:text-4xl lg:text-5xl leading-relaxed tracking-wide whitespace-nowrap" data-testid="text-hero-tagline">
+            <p className="text-center text-4xl md:text-5xl lg:text-6xl leading-relaxed tracking-wide whitespace-nowrap" data-testid="text-hero-tagline">
               <span className="inline-block relative">
                 <span className="text-white/90 drop-shadow-lg">Life's is </span>
                 <span 
-                  className="font-bold tracking-wider drop-shadow-[0_0_20px_rgba(251,191,36,0.6)]"
+                  className="font-bold tracking-wider drop-shadow-[0_0_20px_rgba(251,191,36,0.6)] gold-underline"
                   style={{
                     background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #fbbf24 100%)',
                     WebkitBackgroundClip: 'text',
@@ -139,7 +139,7 @@ export default function FloridaLocalElite() {
                 </span>
                 <span className="text-white/90 drop-shadow-lg"> when you're </span>
                 <span 
-                  className="font-bold tracking-wider drop-shadow-[0_0_20px_rgba(251,191,36,0.6)]"
+                  className="font-bold tracking-wider drop-shadow-[0_0_20px_rgba(251,191,36,0.6)] gold-underline"
                   style={{
                     background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #fbbf24 100%)',
                     WebkitBackgroundClip: 'text',
@@ -152,7 +152,7 @@ export default function FloridaLocalElite() {
                 </span>
                 <span className="text-white/90 drop-shadow-lg"> </span>
                 <span 
-                  className="font-bold tracking-wider drop-shadow-[0_0_20px_rgba(251,191,36,0.6)]"
+                  className="font-bold tracking-wider drop-shadow-[0_0_20px_rgba(251,191,36,0.6)] gold-underline"
                   style={{
                     background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #fbbf24 100%)',
                     WebkitBackgroundClip: 'text',
@@ -165,7 +165,7 @@ export default function FloridaLocalElite() {
                 </span>
                 <span className="text-white/90 drop-shadow-lg"> a </span>
                 <span 
-                  className="font-bold tracking-wider drop-shadow-[0_0_20px_rgba(251,191,36,0.6)]"
+                  className="font-bold tracking-wider drop-shadow-[0_0_20px_rgba(251,191,36,0.6)] gold-underline"
                   style={{
                     background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #fbbf24 100%)',
                     WebkitBackgroundClip: 'text',

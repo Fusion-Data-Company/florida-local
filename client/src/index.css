@@ -473,6 +473,24 @@ button[class*="btn-miami-primary"]:not([data-no-rainbow]) {
   filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.25));
 }
 
+/* Gold gradient underline for tagline words */
+.gold-underline {
+  position: relative;
+  padding-bottom: 4px;
+}
+
+.gold-underline::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #fbbf24 100%);
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
+}
+
 @keyframes pageEnter {
   from {
     opacity: 0;
