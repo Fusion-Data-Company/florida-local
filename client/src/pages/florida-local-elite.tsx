@@ -104,13 +104,13 @@ export default function FloridaLocalElite() {
               </p>
             </div>
           </div>
-          <div className="aspect-[2/3] absolute inset-1 overflow-hidden rounded-3xl border border-black/10 sm:aspect-video lg:rounded-[3rem] dark:border-white/5">
+          <div className="aspect-[2/3] absolute inset-0 overflow-hidden sm:aspect-video">
             <video
               autoPlay
               loop
               muted
               playsInline
-              className="size-full object-cover opacity-50 dark:opacity-35"
+              className="size-full object-cover"
               src="/attached_assets/17853291-uhd_3840_2160_30fps_1760213055083.mp4"
             />
           </div>
@@ -126,8 +126,8 @@ export default function FloridaLocalElite() {
             </div>
             <div className="relative py-6 md:w-[calc(100%-11rem)]">
               <InfiniteSlider
-                speedOnHover={20}
-                speed={40}
+                speedOnHover={40}
+                speed={80}
                 gap={112}>
                 <div className="flex">
                   <img
