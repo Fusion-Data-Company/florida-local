@@ -109,8 +109,8 @@ export default function FloridaLocalElite() {
         </div>
 
         {/* Content Overlay - Absolutely positioned on video */}
-        <div className="relative z-10 flex items-center justify-center min-h-[600px] md:min-h-[700px] lg:min-h-[800px] px-6 lg:px-12">
-          <div className="text-center max-w-5xl">
+        <div className="relative z-10 flex items-end justify-start min-h-[600px] md:min-h-[700px] lg:min-h-[800px] px-6 lg:px-12 pb-12 md:pb-16 lg:pb-20">
+          <div className="text-left max-w-5xl">
             {/* ULTRA PREMIUM LOGO WITH LAYERED EFFECTS */}
             <div className="mb-8 inline-block relative group">
               {/* Glass morphism backdrop - always visible */}
@@ -133,7 +133,7 @@ export default function FloridaLocalElite() {
             </div>
 
             {/* ULTRA ELEGANT TAGLINE WITH STYLED CAPITALS */}
-            <p className="mt-8 max-w-2xl mx-auto text-balance text-xl md:text-2xl leading-relaxed tracking-wide" data-testid="text-hero-tagline">
+            <p className="mt-8 max-w-2xl text-balance text-xl md:text-2xl leading-relaxed tracking-wide" data-testid="text-hero-tagline">
               <span className="inline-block relative">
                 <span className="text-white/90 drop-shadow-lg">Life's is </span>
                 <span 
