@@ -450,6 +450,35 @@ button[class*="btn-miami-primary"]:not([data-no-rainbow]) {
 }
 
 
+/* Float animation for logo */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Logo premium stacked shadows */
+.logo-premium-shadows {
+  filter: 
+    drop-shadow(0 0 15px rgba(251, 191, 36, 0.5))
+    drop-shadow(0 0 30px rgba(20, 184, 166, 0.3))
+    drop-shadow(0 10px 40px rgba(0, 0, 0, 0.4));
+}
+
+.logo-premium-shadows:hover {
+  filter: 
+    drop-shadow(0 0 25px rgba(251, 191, 36, 0.7))
+    drop-shadow(0 0 50px rgba(20, 184, 166, 0.5))
+    drop-shadow(0 10px 40px rgba(0, 0, 0, 0.4));
+}
+
 @keyframes pageEnter {
   from {
     opacity: 0;
