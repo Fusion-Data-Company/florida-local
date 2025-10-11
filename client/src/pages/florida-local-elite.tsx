@@ -110,9 +110,9 @@ export default function FloridaLocalElite() {
 
         {/* Content Overlay - Absolutely positioned on video */}
         <div className="relative z-10 min-h-[600px] md:min-h-[700px] lg:min-h-[800px] pb-12 md:pb-16 lg:pb-20">
-          <div className="absolute bottom-12 md:bottom-16 lg:bottom-20 left-0 w-full px-4 md:px-6 lg:px-8">
-            {/* LOGO WITH SUBTLE GLOW */}
-            <div className="mb-8 inline-block relative group">
+          <div className="absolute bottom-12 md:bottom-16 lg:bottom-20 left-0 w-full">
+            {/* LOGO WITH SUBTLE GLOW - FORCED TO LEFT EDGE */}
+            <div className="mb-8 inline-block relative group ml-0">
               {/* Logo with subtle ambient glow */}
               <img
                 src="/attached_assets/me_1760215801481.png"
