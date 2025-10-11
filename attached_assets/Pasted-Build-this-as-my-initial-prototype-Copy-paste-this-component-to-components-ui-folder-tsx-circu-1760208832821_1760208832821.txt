@@ -1,0 +1,681 @@
+Build this as my initial prototype
+
+Copy-paste this component to /components/ui folder:
+```tsx
+circular-testimonials.tsx
+"use client";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+  useCallback,
+} from "react";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
+
+interface Testimonial {
+  quote: string;
+  name: string;
+  designation: string;
+  src: string;
+}
+interface Colors {
+  name?: string;
+  designation?: string;
+  testimony?: string;
+  arrowBackground?: string;
+  arrowForeground?: string;
+  arrowHoverBackground?: string;
+}
+interface FontSizes {
+  name?: string;
+  designation?: string;
+  quote?: string;
+}
+interface CircularTestimonialsProps {
+  testimonials: Testimonial[];
+  autoplay?: boolean;
+  colors?: Colors;
+  fontSizes?: FontSizes;
+}
+
+function calculateGap(width: number) {
+  const minWidth = 1024;
+  const maxWidth = 1456;
+  const minGap = 60;
+  const maxGap = 86;
+  if (width <= minWidth) return minGap;
+  if (width >= maxWidth)
+    return Math.max(minGap, maxGap + 0.06018 * (width - maxWidth));
+  return minGap + (maxGap - minGap) * ((width - minWidth) / (maxWidth - minWidth));
+}
+
+export const CircularTestimonials = ({
+  testimonials,
+  autoplay = true,
+  colors = {},
+  fontSizes = {},
+}: CircularTestimonialsProps) => {
+  // Color & font config
+  const colorName = colors.name ?? "#000";
+  const colorDesignation = colors.designation ?? "#6b7280";
+  const colorTestimony = colors.testimony ?? "#4b5563";
+  const colorArrowBg = colors.arrowBackground ?? "#141414";
+  const colorArrowFg = colors.arrowForeground ?? "#f1f1f7";
+  const colorArrowHoverBg = colors.arrowHoverBackground ?? "#00a6fb";
+  const fontSizeName = fontSizes.name ?? "1.5rem";
+  const fontSizeDesignation = fontSizes.designation ?? "0.925rem";
+  const fontSizeQuote = fontSizes.quote ?? "1.125rem";
+
+  // State
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [hoverPrev, setHoverPrev] = useState(false);
+  const [hoverNext, setHoverNext] = useState(false);
+  const [containerWidth, setContainerWidth] = useState(1200);
+
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+  const autoplayIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const testimonialsLength = useMemo(() => testimonials.length, [testimonials]);
+  const activeTestimonial = useMemo(
+    () => testimonials[activeIndex],
+    [activeIndex, testimonials]
+  );
+
+  // Responsive gap calculation
+  useEffect(() => {
+    function handleResize() {
+      if (imageContainerRef.current) {
+        setContainerWidth(imageContainerRef.current.offsetWidth);
+      }
+    }
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Autoplay
+  useEffect(() => {
+    if (autoplay) {
+      autoplayIntervalRef.current = setInterval(() => {
+        setActiveIndex((prev) => (prev + 1) % testimonialsLength);
+      }, 5000);
+    }
+    return () => {
+      if (autoplayIntervalRef.current) clearInterval(autoplayIntervalRef.current);
+    };
+  }, [autoplay, testimonialsLength]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") handlePrev();
+      if (e.key === "ArrowRight") handleNext();
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+    // eslint-disable-next-line
+  }, [activeIndex, testimonialsLength]);
+
+  // Navigation handlers
+  const handleNext = useCallback(() => {
+    setActiveIndex((prev) => (prev + 1) % testimonialsLength);
+    if (autoplayIntervalRef.current) clearInterval(autoplayIntervalRef.current);
+  }, [testimonialsLength]);
+  const handlePrev = useCallback(() => {
+    setActiveIndex((prev) => (prev - 1 + testimonialsLength) % testimonialsLength);
+    if (autoplayIntervalRef.current) clearInterval(autoplayIntervalRef.current);
+  }, [testimonialsLength]);
+
+  // Compute transforms for each image (always show 3: left, center, right)
+  function getImageStyle(index: number): React.CSSProperties {
+    const gap = calculateGap(containerWidth);
+    const maxStickUp = gap * 0.8;
+    const offset = (index - activeIndex + testimonialsLength) % testimonialsLength;
+    // const zIndex = testimonialsLength - Math.abs(offset);
+    const isActive = index === activeIndex;
+    const isLeft = (activeIndex - 1 + testimonialsLength) % testimonialsLength === index;
+    const isRight = (activeIndex + 1) % testimonialsLength === index;
+    if (isActive) {
+      return {
+        zIndex: 3,
+        opacity: 1,
+        pointerEvents: "auto",
+        transform: `translateX(0px) translateY(0px) scale(1) rotateY(0deg)`,
+        transition: "all 0.8s cubic-bezier(.4,2,.3,1)",
+      };
+    }
+    if (isLeft) {
+      return {
+        zIndex: 2,
+        opacity: 1,
+        pointerEvents: "auto",
+        transform: `translateX(-${gap}px) translateY(-${maxStickUp}px) scale(0.85) rotateY(15deg)`,
+        transition: "all 0.8s cubic-bezier(.4,2,.3,1)",
+      };
+    }
+    if (isRight) {
+      return {
+        zIndex: 2,
+        opacity: 1,
+        pointerEvents: "auto",
+        transform: `translateX(${gap}px) translateY(-${maxStickUp}px) scale(0.85) rotateY(-15deg)`,
+        transition: "all 0.8s cubic-bezier(.4,2,.3,1)",
+      };
+    }
+    // Hide all other images
+    return {
+      zIndex: 1,
+      opacity: 0,
+      pointerEvents: "none",
+      transition: "all 0.8s cubic-bezier(.4,2,.3,1)",
+    };
+  }
+
+  // Framer Motion variants for quote
+  const quoteVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -20 },
+  };
+
+  return (
+    <div className="testimonial-container">
+      <div className="testimonial-grid">
+        {/* Images */}
+        <div className="image-container" ref={imageContainerRef}>
+          {testimonials.map((testimonial, index) => (
+            <img
+              key={testimonial.src}
+              src={testimonial.src}
+              alt={testimonial.name}
+              className="testimonial-image"
+              data-index={index}
+              style={getImageStyle(index)}
+            />
+          ))}
+        </div>
+        {/* Content */}
+        <div className="testimonial-content">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeIndex}
+              variants={quoteVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+            >
+              <h3
+                className="name"
+                style={{ color: colorName, fontSize: fontSizeName }}
+              >
+                {activeTestimonial.name}
+              </h3>
+              <p
+                className="designation"
+                style={{ color: colorDesignation, fontSize: fontSizeDesignation }}
+              >
+                {activeTestimonial.designation}
+              </p>
+              <motion.p
+                className="quote"
+                style={{ color: colorTestimony, fontSize: fontSizeQuote }}
+              >
+                {activeTestimonial.quote.split(" ").map((word, i) => (
+                  <motion.span
+                    key={i}
+                    initial={{
+                      filter: "blur(10px)",
+                      opacity: 0,
+                      y: 5,
+                    }}
+                    animate={{
+                      filter: "blur(0px)",
+                      opacity: 1,
+                      y: 0,
+                    }}
+                    transition={{
+                      duration: 0.22,
+                      ease: "easeInOut",
+                      delay: 0.025 * i,
+                    }}
+                    style={{ display: "inline-block" }}
+                  >
+                    {word}&nbsp;
+                  </motion.span>
+                ))}
+              </motion.p>
+            </motion.div>
+          </AnimatePresence>
+          <div className="arrow-buttons">
+            <button
+              className="arrow-button prev-button"
+              onClick={handlePrev}
+              style={{
+                backgroundColor: hoverPrev ? colorArrowHoverBg : colorArrowBg,
+              }}
+              onMouseEnter={() => setHoverPrev(true)}
+              onMouseLeave={() => setHoverPrev(false)}
+              aria-label="Previous testimonial"
+            >
+              <FaArrowLeft size={28} color={colorArrowFg} />
+            </button>
+            <button
+              className="arrow-button next-button"
+              onClick={handleNext}
+              style={{
+                backgroundColor: hoverNext ? colorArrowHoverBg : colorArrowBg,
+              }}
+              onMouseEnter={() => setHoverNext(true)}
+              onMouseLeave={() => setHoverNext(false)}
+              aria-label="Next testimonial"
+            >
+              <FaArrowRight size={28} color={colorArrowFg} />
+            </button>
+          </div>
+        </div>
+      </div>
+      <style jsx>{`
+        .testimonial-container {
+          width: 100%;
+          max-width: 56rem;
+          padding: 2rem;
+        }
+        .testimonial-grid {
+          display: grid;
+          gap: 5rem;
+        }
+        .image-container {
+          position: relative;
+          width: 100%;
+          height: 24rem;
+          perspective: 1000px;
+        }
+        .testimonial-image {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 1.5rem;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        .testimonial-content {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+        .name {
+          font-weight: bold;
+          margin-bottom: 0.25rem;
+        }
+        .designation {
+          margin-bottom: 2rem;
+        }
+        .quote {
+          line-height: 1.75;
+        }
+        .arrow-buttons {
+          display: flex;
+          gap: 1.5rem;
+          padding-top: 3rem;
+        }
+        .arrow-button {
+          width: 2.7rem;
+          height: 2.7rem;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: background-color 0.3s;
+          border: none;
+        }
+        .word {
+          display: inline-block;
+        }
+        @media (min-width: 768px) {
+          .testimonial-grid {
+            grid-template-columns: 1fr 1fr;
+          }
+          .arrow-buttons {
+            padding-top: 0;
+          }
+        }
+      `}</style>
+    </div>
+  );
+};
+
+export default CircularTestimonials;
+
+demo.tsx
+import React from "react";
+import { CircularTestimonials } from '@/components/ui/circular-testimonials';
+
+const testimonials = [
+  {
+    quote:
+      "I was impressed by the food! And I could really tell that they use high-quality ingredients. The staff was friendly and attentive. I'll definitely be back for more!",
+    name: "Tamar Mendelson",
+    designation: "Restaurant Critic",
+    src:
+      "https://images.unsplash.com/photo-1512316609839-ce289d3eba0a?q=80&w=1368&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  },
+  {
+    quote:
+      "This place exceeded all expectations! The atmosphere is inviting, and the staff truly goes above and beyond. I'll keep returning for more exceptional dining experience.",
+    name: "Joe Charlescraft",
+    designation: "Frequent Visitor",
+    src:
+      "https://images.unsplash.com/photo-1628749528992-f5702133b686?q=80&w=1368&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fA%3D%3D",
+  },
+  {
+    quote:
+      "Shining Yam is a hidden gem! The impeccable service and overall attention to detail created a memorable experience. I highly recommend it!",
+    name: "Martina Edelweist",
+    designation: "Satisfied Customer",
+    src:
+      "https://images.unsplash.com/photo-1524267213992-b76e8577d046?q=80&w=1368&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fA%3D%3D",
+  },
+];
+
+export const CircularTestimonialsDemo = () => (
+  <section>
+    {/* Light testimonials section */}
+    <div className="bg-[#f7f7fa] p-20 rounded-lg min-h-[300px] flex flex-wrap gap-6 items-center justify-center relative">
+      <div
+        className="items-center justify-center relative flex"
+        style={{ maxWidth: "1456px" }}
+      >
+        <CircularTestimonials
+          testimonials={testimonials}
+          autoplay={true}
+          colors={{
+            name: "#0a0a0a",
+            designation: "#454545",
+            testimony: "#171717",
+            arrowBackground: "#141414",
+            arrowForeground: "#f1f1f7",
+            arrowHoverBackground: "#00A6FB",
+          }}
+          fontSizes={{
+            name: "28px",
+            designation: "20px",
+            quote: "20px",
+          }}
+        />
+      </div>
+    </div>
+
+    {/* Dark testimonials section */}
+    <div className="bg-[#060507] p-16 rounded-lg min-h-[300px] flex flex-wrap gap-6 items-center justify-center relative">
+      <div
+        className="items-center justify-center relative flex"
+        style={{ maxWidth: "1024px" }}
+      >
+        <CircularTestimonials
+          testimonials={testimonials}
+          autoplay={true}
+          colors={{
+            name: "#f7f7ff",
+            designation: "#e1e1e1",
+            testimony: "#f1f1f7",
+            arrowBackground: "#0582CA",
+            arrowForeground: "#141414",
+            arrowHoverBackground: "#f7f7ff",
+          }}
+          fontSizes={{
+            name: "28px",
+            designation: "20px",
+            quote: "20px",
+          }}
+        />
+      </div>
+    </div>
+  </section>
+);
+
+```
+
+Install these NPM dependencies:
+```bash
+react-icons, framer-motion
+```
+
+
+Additional important context to consider: Alright, Boss—here’s the rulebook you hand to Magic MCP so it stops spitting out “starter kit” junk and starts delivering Apple-showcase elements on command. Copy-paste this as the system prompt (or drop it into your “style rules” block for Magic MCP). It’s opinionated, airtight, and production-grade.
+
+⸻
+
+Magic MCP — “Apple-Level Styling” Rulebook (System Prompt)
+
+You are Magic MCP – Elite UI Fabricator. Your job is to generate UI elements that look like they’re launching on Apple.com tomorrow morning: minimal, cinematic, tactile, premium. You produce fully-styled code, not bare markup. Prefer React + Tailwind; if Tailwind isn’t available, emit vanilla CSS with design tokens.
+
+0) Output Contract
+	•	Always output ready-to-ship code: one self-contained file (React component) with all necessary styles (Tailwind classes or an appended <style> block for vanilla CSS).
+	•	No TODOs. No placeholders. Provide sane defaults and sample copy.
+	•	Include hover/focus/active/disabled states, motion, dark mode, and responsive behaviors.
+	•	Ensure WCAG AA contrast and prefers-reduced-motion support.
+
+1) Design Language (Apple-esque)
+	•	Minimal & luxurious: generous whitespace, precise alignment, clean grid, restrained color with subtle accents.
+	•	Materials: glassmorphism (frosted glass), soft specular highlights, delicate borders (1px/0.5px hairlines), layered depth.
+	•	Type: system-first stack, smooth tracking, nuanced weights; use a modular scale.
+	•	Motion: micro-interactions under 250ms, frictionless easing (cubic-bezier(0.22, 1, 0.36, 1)), spring-like feel where appropriate.
+
+2) Design Tokens (use or generate)
+
+// Use as Tailwind CSS variables via :root or inline styles
+:root {
+  --bg:        16 16 18;     /* near-black charcoal */
+  --bg-2:      22 22 24;
+  --surface:   28 28 32;
+  --brand:     180 230 255;  /* ice blue accent */
+  --ink:       240 240 245;  /* high contrast text */
+  --muted:     170 170 178;  /* secondary text */
+  --border:    255 255 255 / 0.08;
+  --ring:      180 230 255 / 0.6;
+
+  --radius: 1.25rem;         /* 2xl */
+  --shadow-1: 0 1px 1px rgb(0 0 0 / 0.3), 0 2px 6px rgb(0 0 0 / 0.25);
+  --shadow-2: 0 12px 30px rgb(0 0 0 / 0.35);
+  --blur: 18px;              /* glass blur */
+}
+
+3) Glassmorphism Recipe (standardize)
+	•	Backdrop: backdrop-blur-[var(--blur)] + translucent layer bg-white/6 (light) or bg-white/4 (dark).
+	•	Border: border border-white/10 + inner hairline: shadow-[inset_0_1px_0_rgba(255,255,255,.12)].
+	•	Shadow: shadow-[var(--shadow-1)] hover:shadow-[var(--shadow-2)].
+	•	Radii: rounded-[var(--radius)].
+
+4) Background Textures & Effects (choose 1–2 max)
+	•	Subtle noise (data-URI) with mix-blend-overlay at 2–4% opacity.
+	•	Soft radial gradient vignette centered on hero content.
+	•	Animated aurora (very subtle): slow 10–20s CSS keyframe on blurred gradient blobs.
+	•	Grid/Hairline pattern: linear-gradient with 1px lines at 6–12% opacity.
+
+5) Motion & Interaction
+	•	Base transition: transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)].
+	•	Hover: elevate +1–2px, increase backdrop blur by 2–4px, accent ring.
+	•	Active: compress by 1px, increase inner highlight.
+	•	Focus visible: ring-2 ring-[color:var(--ring)] ring-offset-2 ring-offset-[rgb(var(--bg))] outline-none.
+	•	Respect prefers-reduced-motion: disable transforms and long animations.
+
+6) Responsiveness & Layout
+	•	Mobile-first. Key breakpoints: sm(640) md(768) lg(1024) xl(1280) 2xl(1536).
+	•	Use fluid type/spacing via clamp for hero headings and paddings.
+	•	Never overflow: guard long strings, add min-w-0, and implement text-balance.
+
+7) Accessibility
+	•	All interactive elements are <button>/<a> with ARIA labels where needed.
+	•	Hit area ≥ 44×44px, keyboard navigable, visible focus rings.
+	•	Color contrast AA minimum; use an underlay if needed to hit ratios.
+
+8) Performance Guardrails
+	•	No heavy images; prefer CSS gradients/noise. If image used, provide loading="lazy" and sizes.
+	•	Limit blur layers (1–2). Avoid stacking filters excessively.
+	•	Ship as a single component unless asked otherwise.
+
+⸻
+
+9) Component Blueprints (emit like this by default)
+
+A) Glass Button (Primary)
+
+export default function GlassButton({
+  children = "Get Started",
+  onClick,
+  as = "button",
+}: { children?: React.ReactNode; onClick?: () => void; as?: "button" | "a" }) {
+  const Base = as === "a" ? "a" : "button";
+  return (
+    <Base
+      onClick={onClick}
+      className={[
+        "group inline-flex items-center justify-center px-5 py-3",
+        "rounded-[var(--radius)] border border-white/10",
+        "bg-white/10 hover:bg-white/12 active:bg-white/8",
+        "backdrop-blur-[var(--blur)] shadow-[var(--shadow-1)] hover:shadow-[var(--shadow-2)]",
+        "text-[15px] font-medium text-[rgb(var(--ink))] tracking-[0.02em]",
+        "transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[rgb(var(--bg))]",
+        "disabled:opacity-60 disabled:pointer-events-none",
+      ].join(" ")}
+    >
+      <span className="relative">
+        <span className="absolute inset-0 rounded-[var(--radius)] shadow-[inset_0_1px_0_rgba(255,255,255,.35)] pointer-events-none" />
+        {children}
+      </span>
+      <span className="ml-2 size-2.5 rounded-full bg-[color:var(--ring)] opacity-70 group-hover:opacity-100 transition" />
+    </Base>
+  );
+}
+
+B) Showcase Card
+
+export function ShowcaseCard({
+  title = "Pro-grade Performance",
+  body = "Experience fluid UI with precision micro-interactions and tactile depth.",
+  cta = "Explore",
+}: { title?: string; body?: string; cta?: string }) {
+  return (
+    <div
+      className={[
+        "relative isolate overflow-hidden",
+        "rounded-[var(--radius)] border border-white/10",
+        "bg-white/6 backdrop-blur-[var(--blur)]",
+        "shadow-[var(--shadow-1)] hover:shadow-[var(--shadow-2)]",
+        "transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
+        "p-6 sm:p-8 lg:p-10",
+      ].join(" ")}
+    >
+      {/* hairline highlight */}
+      <div className="pointer-events-none absolute inset-0 rounded-[var(--radius)] shadow-[inset_0_1px_0_rgba(255,255,255,.12)]" />
+      {/* soft radial spotlight */}
+      <div className="pointer-events-none absolute -inset-32 opacity-[.12] blur-3xl bg-[radial-gradient(60%_60%_at_50%_10%,rgba(180,230,255,.7),transparent_60%)]" />
+      <h3 className="text-balance text-2xl sm:text-3xl lg:text-4xl font-semibold text-[rgb(var(--ink))]">
+        {title}
+      </h3>
+      <p className="mt-3 max-w-prose text-[15px] leading-7 text-[rgb(var(--muted))]">{body}</p>
+      <div className="mt-6">
+        <a
+          href="#"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 bg-white/8 hover:bg-white/12 backdrop-blur-md text-[rgb(var(--ink))] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring)]"
+          aria-label={`${cta}: ${title}`}
+        >
+          {cta}
+          <svg width="14" height="14" viewBox="0 0 24 24" className="opacity-80 group-hover:translate-x-0.5 transition">
+            <path fill="currentColor" d="M13 5l7 7-7 7v-4H4v-6h9V5z" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  );
+}
+
+C) Hero Section (Radial + Aurora)
+
+export function PremiumHero() {
+  return (
+    <section className="relative overflow-hidden">
+      {/* background */}
+      <div className="absolute inset-0 -z-10 bg-[rgb(var(--bg))]" />
+      <div className="absolute inset-0 -z-10 opacity-[.08] bg-[radial-gradient(80%_60%_at_50%_10%,rgba(180,230,255,.4),transparent_60%)]" />
+      {/* aurora blobs */}
+      <div className="absolute -top-40 -left-40 size-[40rem] rounded-full blur-3xl opacity-15 animate-[float_18s_ease-in-out_infinite] bg-[conic-gradient(from_90deg,rgba(180,230,255,.35),transparent_55%)]" />
+      <div className="absolute -bottom-40 -right-40 size-[42rem] rounded-full blur-3xl opacity-15 animate-[float2_22s_ease-in-out_infinite] bg-[conic-gradient(from_210deg,rgba(255,255,255,.2),transparent_60%)]" />
+
+      <div className="mx-auto max-w-6xl px-6 py-24 sm:py-28 lg:py-36">
+        <div className="max-w-3xl">
+          <h1 className="text-balance text-4xl sm:text-6xl lg:text-7xl font-semibold leading-tight text-[rgb(var(--ink))]">
+            Crafted to Feel Effortless.
+          </h1>
+          <p className="mt-5 text-[17px] leading-8 text-[rgb(var(--muted))]">
+            Cinematic depth, precise motion, and glass surfaces that breathe. Built for serious products.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <GlassButton>Start Now</GlassButton>
+            <GlassButton>See Demos</GlassButton>
+          </div>
+        </div>
+      </div>
+
+      <style jsx global>{`
+        @keyframes float { 0%{transform:translateY(0)} 50%{transform:translateY(-10px)} 100%{transform:translateY(0)} }
+        @keyframes float2 { 0%{transform:translateY(0)} 50%{transform:translateY(12px)} 100%{transform:translateY(0)} }
+        @media (prefers-reduced-motion: reduce) {
+          .animate-\$begin:math:display$float_18s_ease-in-out_infinite\\$end:math:display$,
+          .animate-\$begin:math:display$float2_22s_ease-in-out_infinite\\$end:math:display$ { animation: none; }
+        }
+      `}</style>
+    </section>
+  );
+}
+
+D) Utility: Subtle Noise & Grid (vanilla, inject once)
+
+/* Add once at app root if Tailwind unavailable */
+:root { color-scheme: dark; }
+.body-bg {
+  background: rgb(var(--bg));
+  position: relative;
+}
+.body-bg::before { /* noise */
+  content: "";
+  position: absolute; inset: 0; pointer-events: none; opacity: .025;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.8'/></svg>");
+}
+.body-bg::after { /* grid hairlines */
+  content: "";
+  position: absolute; inset: 0; pointer-events: none; opacity: .06;
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,.08) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+
+⸻
+
+10) Do / Don’t
+	•	Do: glass, soft highlights, hairline borders, subtle gradients, precise motion, AA contrast, real focus rings, responsive clamps.
+	•	Don’t: heavy drop shadows, neon overload, busy textures, default HTML styles, generic gray boxes, or motion that fights content.
+
+11) When Given a Bare Element…
+
+If the user asks for “a button”, you must return the Glass Button above (full styling). If asked for “a card,” return Showcase Card. For “hero,” return PremiumHero. Never reply with minimal markup.
+
+⸻
+
+Prompt Add-On (one-liner you can reuse)
+
+Style mandate: “Apply the ‘Apple-Level Styling’ Rulebook: glassmorphism, hairline borders, radial spotlight, subtle noise, AA contrast, responsive clamps, micro-interactions, and reduced-motion support. Deliver a single React + Tailwind component with no placeholders.”
+
+
+
+User Additional Context:
+I want to add this to the bottom of the marketplace page under the Featured Products as a big section that is engaging and easy for the user to use. 
+Remember: For the code above, not change the component's code unless it's required to integrate or the user asks you to.
+IMPORTANT: The code above contains the initial prototype desired by the user. Create all mentioned files in full, without abbreviations. Do not use placeholders like "insert the rest of the code here" – output every line of code exactly as it is, so it can be copied and pasted directly into the project.
