@@ -72,13 +72,19 @@ export default function Home() {
 
       <EliteNavigationHeader />
 
-      {/* ULTRA PREMIUM HERO - ANIMATED GRADIENT */}
-      <AnimatedGradientHero className="relative py-20 overflow-hidden">
+      {/* FLORIDA LOCAL ULTRA-ELITE HERO */}
+      <div className="relative py-24 overflow-hidden">
+        {/* Teal-Gold Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[var(--fl-teal-lagoon)]/10 via-background to-[var(--fl-sunset-gold)]/10" />
+        
+        {/* Particle Field with Teal-Gold Colors */}
         <ParticleField count={50} color="cyan" />
+        
         <div className="container mx-auto px-4 lg:px-8 text-center relative z-10">
           {!hasBusinesses ? (
             <>
-              <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6 gradient-text">
+              {/* Florida Local Branded Headline */}
+              <h1 className="text-5xl md:text-7xl font-serif font-bold mb-6 bg-gradient-to-r from-[var(--fl-teal-lagoon)] via-[var(--fl-sunset-gold)] to-[var(--fl-bronze)] bg-clip-text text-transparent">
                 Ready to Grow Your Business?
               </h1>
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
@@ -86,20 +92,24 @@ export default function Home() {
                 and grow your local presence with our comprehensive platform.
               </p>
               
+              {/* Florida Local Branded Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
                 <Button 
+                  variant="fl-gold"
                   size="lg" 
                   onClick={() => setLocation('/create-business')}
                   data-testid="button-get-started-create-business"
+                  className="shadow-lg shadow-[var(--fl-sunset-gold)]/20 hover:shadow-xl hover:shadow-[var(--fl-sunset-gold)]/30 transition-all duration-300"
                 >
                   <Store className="h-5 w-5 mr-2" />
                   Get Started - Create Your Business
                 </Button>
                 <Button 
-                  variant="outline" 
+                  variant="fl-teal"
                   size="lg"
                   onClick={() => setLocation('/marketplace')}
                   data-testid="button-explore-marketplace"
+                  className="shadow-lg shadow-[var(--fl-teal-lagoon)]/20 hover:shadow-xl hover:shadow-[var(--fl-teal-lagoon)]/30 transition-all duration-300"
                 >
                   Explore Marketplace
                   <ArrowRight className="h-4 w-4 ml-2" />
@@ -180,7 +190,7 @@ export default function Home() {
             </>
           )}
         </div>
-      </AnimatedGradientHero>
+      </div>
 
       <SpotlightShowcase />
       <MarketplaceSection />
