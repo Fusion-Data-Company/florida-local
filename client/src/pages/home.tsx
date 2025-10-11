@@ -146,53 +146,6 @@ export default function Home() {
               </PremiumGlassCard>
             </Transform3DCard>
           </div>
-
-          {/* Section Divider */}
-          <div className="my-16 border-t border-border/50"></div>
-
-          {/* Second Hero Section */}
-          <GlowHero 
-            glowText="Welcome Back to Your Community"
-            glowTextSize="lg"
-            className="mb-6"
-          />
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
-            Stay connected with Florida's thriving business network. Discover new opportunities, 
-            showcase your latest updates, and grow your local presence.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              variant="fl-gold"
-              size="lg"
-              onClick={() => setLocation(userBusinesses[0]?.id ? `/business/${userBusinesses[0].id}` : '/create-business')}
-              data-testid="button-view-my-business-secondary"
-              className="shadow-[0_8px_30px_rgba(212,175,55,0.2)] hover:shadow-[0_12px_40px_rgba(212,175,55,0.35)] transition-shadow"
-            >
-              <Store className="h-5 w-5 mr-2" />
-              {userBusinesses[0]?.id ? 'View My Business' : 'Create Your Business'}
-            </Button>
-            <Button 
-              variant="fl-teal"
-              size="lg"
-              onClick={() => setLocation('/create-post')}
-              data-testid="button-create-post-secondary"
-              className="shadow-[0_8px_30px_rgba(0,139,139,0.2)] hover:shadow-[0_12px_40px_rgba(0,139,139,0.35)] transition-shadow"
-            >
-              <Plus className="h-5 w-5 mr-2" />
-              Create Post
-            </Button>
-            <Button 
-              variant="outline"
-              size="lg"
-              onClick={() => setLocation('/vendor/products')}
-              data-testid="button-add-product"
-              className="shadow-[0_8px_30px_rgba(205,127,50,0.15)] hover:shadow-[0_12px_40px_rgba(205,127,50,0.25)] transition-shadow"
-            >
-              <Plus className="h-5 w-5 mr-2" />
-              Add Product
-            </Button>
-          </div>
         </div>
       </div>
 

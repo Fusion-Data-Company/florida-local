@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Heart, Trophy, TrendingUp, Calendar } from "lucide-react";
+import GlowHero from "@/components/ui/glow-hero";
 
 export default function SpotlightShowcase() {
   const [activeTab, setActiveTab] = useState<'daily' | 'weekly' | 'monthly'>('daily');
@@ -90,13 +91,11 @@ export default function SpotlightShowcase() {
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         {/* Section Header - ELITE LUXURY */}
         <div className="text-center mb-16">
-          <div className="relative inline-block mb-6">
-            <div className="absolute inset-0 gradient-conic-shimmer p-1 rounded-2xl opacity-[0.1] pointer-events-none"></div>
-            <h2 className="relative spotlight-section-title bg-background px-8 py-4 rounded-xl">
-              Community Spotlight
-            </h2>
-            <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-px bg-gradient-to-r from-transparent via-primary to-transparent float-gentle"></div>
-          </div>
+          <GlowHero 
+            glowText="Community Spotlight"
+            glowTextSize="lg"
+            className="mb-6"
+          />
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             Celebrating the businesses that make Florida communities thrive. 
             Discover featured entrepreneurs selected by our intelligent promotion algorithms.
