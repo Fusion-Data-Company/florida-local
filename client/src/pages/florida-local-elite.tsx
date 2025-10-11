@@ -4,11 +4,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Search, Facebook, Instagram, Youtube, Twitter, Moon, Sun, User,
-  MapPin, Star, Phone, Calendar, ChevronLeft, ChevronRight,
+  Facebook, Instagram, Youtube, Twitter,
+  Star, Phone, Calendar, ChevronLeft, ChevronRight,
   Heart, Bookmark, Play, Sparkles
 } from "lucide-react";
-import { useTheme } from "@/contexts/ThemeContext";
+import EliteNavigationHeader from "@/components/elite-navigation-header";
+import LuxuryFooter from "@/components/luxury-footer";
 import {
   AnimatedGradientHero,
   ParticleField,
@@ -76,88 +77,17 @@ const MetallicBadge = ({ children, color = "gold", className = "" }: { children:
 
 export default function FloridaLocalElite() {
   const [activeTab, setActiveTab] = useState("restaurants");
-  const { theme, toggleTheme } = useTheme();
 
   return (
-    <div
-      className="min-h-screen relative overflow-hidden"
-      style={{
-        background: 'var(--texture-stucco)',
-        backgroundSize: 'var(--texture-scale-large)',
-        backgroundRepeat: 'repeat'
-      }}
-    >
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-50">
       {/* ULTRA PREMIUM EFFECTS */}
       <AuroraAmbient intensity="medium" />
       <HoverTrail />
 
-      {/* BLOCKING TEXTURE & GRADIENT OVERLAYS REMOVED - were preventing all content visibility */}
-
       {/* CONTENT WRAPPER - Above all effects - PROPER Z-INDEX */}
       <div className="relative" style={{ zIndex: 10 }}>
       {/* 1. SITE HEADER / NAVIGATION */}
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-purple-100 shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between gap-4">
-            {/* Search */}
-            <div className="flex-1 max-w-xs">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <input 
-                  type="text"
-                  placeholder="Search travel, food..."
-                  className="w-full pl-10 pr-4 py-2 rounded-full bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
-              </div>
-            </div>
-
-            {/* Logo */}
-            <div className="flex items-center gap-2">
-              <MapPin className="h-8 w-8 text-red-500 fill-red-500" />
-              <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent">
-                THE FLORIDA LOCALS
-              </span>
-            </div>
-
-            {/* Social & Actions */}
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <Facebook className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <Instagram className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <Youtube className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <Twitter className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="rounded-full hover:scale-110 transition-transform"
-                onClick={toggleTheme}
-              >
-                {theme === 'dark' ? (
-                  <>
-                    <Sun className="h-4 w-4 mr-1 text-yellow-500" />
-                    <span className="font-semibold">Light</span>
-                  </>
-                ) : (
-                  <>
-                    <Moon className="h-4 w-4 mr-1 text-indigo-600" />
-                    <span className="font-semibold">Dark</span>
-                  </>
-                )}
-              </Button>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <User className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <EliteNavigationHeader />
 
       {/* 2. ULTRA PREMIUM HERO SECTION - LEVEL 6 UPGRADED */}
       <AnimatedGradientHero className="relative h-[85vh] overflow-hidden group">
@@ -223,16 +153,8 @@ export default function FloridaLocalElite() {
       </AnimatedGradientHero>
 
       {/* 3. FOODIES, CREATORS & COLLABORATORS SLIDER - PREMIUM */}
-      <section
-        className="py-20 relative overflow-hidden"
-        style={{
-          background: 'var(--texture-stucco)',
-          backgroundSize: 'var(--texture-scale-large)',
-          backgroundRepeat: 'repeat'
-        }}
-      >
+      <section className="py-20 relative overflow-hidden bg-gradient-to-r from-purple-50 via-blue-50 to-pink-50">
         {/* Glass morphism background */}
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-100 via-blue-100 to-pink-100 opacity-90"></div>
         <div className="absolute inset-0 backdrop-blur-sm"></div>
 
         <div className="container mx-auto px-4 relative z-10">
@@ -296,15 +218,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 4. FEATURING | THE FLORIDA LOCAL LIFESTYLE - PREMIUM GLASS */}
-      <section
-        className="py-20 relative overflow-hidden"
-        style={{
-          background: `var(--texture-stucco), linear-gradient(to bottom right, rgb(252, 231, 243), rgb(250, 245, 255))`,
-          backgroundSize: 'var(--texture-scale-large), cover',
-          backgroundRepeat: 'repeat, no-repeat',
-          backgroundBlendMode: 'multiply'
-        }}
-      >
+      <section className="py-20 relative overflow-hidden bg-gradient-to-br from-pink-50 via-purple-50 to-white">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <Card
@@ -362,15 +276,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 5. FLORIDA LAKE LIFE FEATURE - PREMIUM GLASS */}
-      <section
-        className="py-20 relative overflow-hidden"
-        style={{
-          background: `var(--texture-stucco), linear-gradient(to bottom right, rgb(239, 246, 255), rgb(250, 245, 255))`,
-          backgroundSize: 'var(--texture-scale-large), cover',
-          backgroundRepeat: 'repeat, no-repeat',
-          backgroundBlendMode: 'multiply'
-        }}
-      >
+      <section className="py-20 relative overflow-hidden bg-gradient-to-br from-blue-50 via-purple-50 to-white">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <Card
@@ -413,15 +319,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 6. FEATURED | LOCAL YELP ELITE - PREMIUM FOODIE SECTION */}
-      <section
-        className="py-20 relative overflow-hidden"
-        style={{
-          background: `var(--texture-stucco), linear-gradient(to bottom right, rgb(255, 247, 237), rgb(252, 231, 243), rgb(250, 245, 255))`,
-          backgroundSize: 'var(--texture-scale-large), cover',
-          backgroundRepeat: 'repeat, no-repeat',
-          backgroundBlendMode: 'multiply'
-        }}
-      >
+      <section className="py-20 relative overflow-hidden bg-gradient-to-br from-orange-50 via-pink-50 to-purple-50">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {/* Left Column - Premium Glass Card */}
