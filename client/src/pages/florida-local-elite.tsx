@@ -109,31 +109,21 @@ export default function FloridaLocalElite() {
         </div>
 
         {/* Content Overlay - Absolutely positioned on video */}
-        <div className="relative z-10 flex items-end justify-start min-h-[600px] md:min-h-[700px] lg:min-h-[800px] px-6 lg:px-12 pb-12 md:pb-16 lg:pb-20">
-          <div className="text-left max-w-5xl">
-            {/* ULTRA PREMIUM LOGO WITH LAYERED EFFECTS */}
+        <div className="relative z-10 flex items-end justify-start min-h-[600px] md:min-h-[700px] lg:min-h-[800px] pb-12 md:pb-16 lg:pb-20">
+          <div className="text-left max-w-2xl md:max-w-3xl lg:max-w-4xl">
+            {/* LOGO WITH SUBTLE GLOW */}
             <div className="mb-8 inline-block relative group">
-              {/* Glass morphism backdrop - always visible */}
-              <div className="absolute inset-0 bg-white/5 backdrop-blur-xl rounded-3xl -m-8 opacity-40 group-hover:opacity-70 transition-opacity duration-700"></div>
-              
-              {/* Outer glow layers */}
-              <div className="absolute inset-0 -m-4 blur-3xl opacity-60 bg-gradient-to-r from-amber-400/40 via-teal-500/40 to-amber-400/40 animate-pulse"></div>
-              <div className="absolute inset-0 -m-6 blur-2xl opacity-40 bg-gradient-to-br from-yellow-300/30 to-teal-600/30"></div>
-              
-              {/* Logo with premium stacked shadows */}
+              {/* Logo with subtle ambient glow */}
               <img
                 src="/attached_assets/me_1760215801481.png"
                 alt="The Florida Local"
-                className="relative w-64 md:w-80 lg:w-96 h-auto transition-all duration-500 animate-float logo-premium-shadows"
+                className="relative w-96 md:w-[700px] lg:w-[900px] h-auto transition-all duration-500 animate-float logo-subtle-glow"
                 data-testid="img-hero-logo"
               />
-              
-              {/* Shimmer effect overlay */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
             </div>
 
             {/* ULTRA ELEGANT TAGLINE WITH STYLED CAPITALS */}
-            <p className="mt-8 max-w-2xl text-balance text-xl md:text-2xl leading-relaxed tracking-wide" data-testid="text-hero-tagline">
+            <p className="mt-8 max-w-3xl text-balance text-2xl md:text-3xl lg:text-4xl leading-relaxed tracking-wide" data-testid="text-hero-tagline">
               <span className="inline-block relative">
                 <span className="text-white/90 drop-shadow-lg">Life's is </span>
                 <span 

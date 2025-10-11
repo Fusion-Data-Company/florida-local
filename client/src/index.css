@@ -464,19 +464,13 @@ button[class*="btn-miami-primary"]:not([data-no-rainbow]) {
   animation: float 3s ease-in-out infinite;
 }
 
-/* Logo premium stacked shadows */
-.logo-premium-shadows {
-  filter: 
-    drop-shadow(0 0 15px rgba(251, 191, 36, 0.5))
-    drop-shadow(0 0 30px rgba(20, 184, 166, 0.3))
-    drop-shadow(0 10px 40px rgba(0, 0, 0, 0.4));
+/* Logo subtle ambient glow */
+.logo-subtle-glow {
+  filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.15));
 }
 
-.logo-premium-shadows:hover {
-  filter: 
-    drop-shadow(0 0 25px rgba(251, 191, 36, 0.7))
-    drop-shadow(0 0 50px rgba(20, 184, 166, 0.5))
-    drop-shadow(0 10px 40px rgba(0, 0, 0, 0.4));
+.logo-subtle-glow:hover {
+  filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.25));
 }
 
 @keyframes pageEnter {
