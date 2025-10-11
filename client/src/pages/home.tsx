@@ -99,7 +99,7 @@ export default function Home() {
                   size="lg" 
                   onClick={() => setLocation('/create-business')}
                   data-testid="button-get-started-create-business"
-                  className="shadow-lg shadow-[var(--fl-sunset-gold)]/20 hover:shadow-xl hover:shadow-[var(--fl-sunset-gold)]/30 transition-all duration-300"
+                  className="shadow-[0_8px_30px_rgba(212,175,55,0.2)] hover:shadow-[0_12px_40px_rgba(212,175,55,0.35)] transition-all duration-300"
                 >
                   <Store className="h-5 w-5 mr-2" />
                   Get Started - Create Your Business
@@ -109,22 +109,24 @@ export default function Home() {
                   size="lg"
                   onClick={() => setLocation('/marketplace')}
                   data-testid="button-explore-marketplace"
-                  className="shadow-lg shadow-[var(--fl-teal-lagoon)]/20 hover:shadow-xl hover:shadow-[var(--fl-teal-lagoon)]/30 transition-all duration-300"
+                  className="shadow-[0_8px_30px_rgba(0,139,139,0.2)] hover:shadow-[0_12px_40px_rgba(0,139,139,0.35)] transition-all duration-300"
                 >
                   Explore Marketplace
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               </div>
 
-              {/* PREMIUM 3D BENEFITS CARDS */}
+              {/* FLORIDA LOCAL BENEFITS CARDS - Teal-Gold-Bronze Theme */}
               <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
                 <Transform3DCard>
-                  <PremiumGlassCard className="group">
+                  <PremiumGlassCard className="group hover:shadow-[0_20px_45px_rgba(0,139,139,0.25)] transition-shadow duration-300">
                     <CardContent className="p-8 text-center">
-                      <MicroIcon color="rgba(6, 182, 212, 0.8)">
-                        <Users className="h-14 w-14 text-cyan-500 mx-auto mb-6" />
+                      <MicroIcon color="rgba(0, 139, 139, 0.8)">
+                        <Users className="h-14 w-14 mx-auto mb-6 text-[var(--fl-teal-lagoon)]" />
                       </MicroIcon>
-                      <h3 className="font-bold text-xl mb-3">Connect with Customers</h3>
+                      <h3 className="font-bold text-xl mb-3 bg-gradient-to-r from-[var(--fl-teal-lagoon)] to-[var(--fl-teal-lagoon)]/70 bg-clip-text text-transparent">
+                        Connect with Customers
+                      </h3>
                       <p className="text-sm text-muted-foreground leading-relaxed">
                         Build relationships and grow your customer base in Florida's local community
                       </p>
@@ -133,12 +135,14 @@ export default function Home() {
                 </Transform3DCard>
 
                 <Transform3DCard>
-                  <PremiumGlassCard className="group">
+                  <PremiumGlassCard className="group hover:shadow-[0_20px_45px_rgba(212,175,55,0.25)] transition-shadow duration-300">
                     <CardContent className="p-8 text-center">
-                      <MicroIcon color="rgba(251, 146, 60, 0.8)">
-                        <TrendingUp className="h-14 w-14 text-orange-500 mx-auto mb-6" />
+                      <MicroIcon color="rgba(212, 175, 55, 0.8)">
+                        <TrendingUp className="h-14 w-14 mx-auto mb-6 text-[var(--fl-sunset-gold)]" />
                       </MicroIcon>
-                      <h3 className="font-bold text-xl mb-3">Boost Your Sales</h3>
+                      <h3 className="font-bold text-xl mb-3 bg-gradient-to-r from-[var(--fl-sunset-gold)] to-[var(--fl-sunset-gold)]/70 bg-clip-text text-transparent">
+                        Boost Your Sales
+                      </h3>
                       <p className="text-sm text-muted-foreground leading-relaxed">
                         Showcase products, run promotions, and drive more revenue through our marketplace
                       </p>
@@ -147,12 +151,14 @@ export default function Home() {
                 </Transform3DCard>
 
                 <Transform3DCard>
-                  <PremiumGlassCard className="group">
+                  <PremiumGlassCard className="group hover:shadow-[0_20px_45px_rgba(205,127,50,0.25)] transition-shadow duration-300">
                     <CardContent className="p-8 text-center">
-                      <MicroIcon color="rgba(236, 72, 153, 0.8)">
-                        <Star className="h-14 w-14 text-pink-500 mx-auto mb-6" />
+                      <MicroIcon color="rgba(205, 127, 50, 0.8)">
+                        <Star className="h-14 w-14 mx-auto mb-6 text-[var(--fl-bronze)]" />
                       </MicroIcon>
-                      <h3 className="font-bold text-xl mb-3">Build Your Brand</h3>
+                      <h3 className="font-bold text-xl mb-3 bg-gradient-to-r from-[var(--fl-bronze)] to-[var(--fl-bronze)]/70 bg-clip-text text-transparent">
+                        Build Your Brand
+                      </h3>
                       <p className="text-sm text-muted-foreground leading-relaxed">
                         Create a professional presence and get featured in our business spotlight
                       </p>
@@ -163,29 +169,41 @@ export default function Home() {
             </>
           ) : (
             <>
-              <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6 miami-gradient-text miami-heading">
+              <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6 bg-gradient-to-r from-[var(--fl-teal-lagoon)] via-[var(--fl-sunset-gold)] to-[var(--fl-bronze)] bg-clip-text text-transparent">
                 Welcome Back to Your Community
               </h1>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8 miami-body-text">
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
                 Stay connected with Florida's thriving business network. Discover new opportunities, 
                 showcase your latest updates, and grow your local presence.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
+                  variant="fl-gold"
                   size="lg"
                   onClick={() => setLocation(`/business/${userBusinesses[0].id}`)}
                   data-testid="button-view-my-business"
+                  className="shadow-[0_8px_30px_rgba(212,175,55,0.2)] hover:shadow-[0_12px_40px_rgba(212,175,55,0.35)] transition-shadow"
                 >
                   <Store className="h-5 w-5 mr-2" />
                   View My Business
                 </Button>
-                <button className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 rounded-lg font-semibold transition-all" data-testid="button-create-post">
+                <Button 
+                  variant="fl-teal"
+                  size="lg"
+                  data-testid="button-create-post"
+                  className="shadow-[0_8px_30px_rgba(0,139,139,0.2)] hover:shadow-[0_12px_40px_rgba(0,139,139,0.35)] transition-shadow"
+                >
                   <i className="fas fa-plus mr-2"></i>Create Post
-                </button>
-                <button className="bg-secondary hover:bg-secondary/90 text-secondary-foreground px-8 py-3 rounded-lg font-semibold transition-all" data-testid="button-add-product">
+                </Button>
+                <Button 
+                  variant="fl-outline"
+                  size="lg"
+                  data-testid="button-add-product"
+                  className="shadow-[0_8px_30px_rgba(205,127,50,0.15)] hover:shadow-[0_12px_40px_rgba(205,127,50,0.25)] transition-shadow"
+                >
                   <i className="fas fa-shopping-bag mr-2"></i>Add Product
-                </button>
+                </Button>
               </div>
             </>
           )}
