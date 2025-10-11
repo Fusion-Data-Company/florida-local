@@ -111,7 +111,7 @@ export default function FloridaLocalElite() {
         {/* Content Overlay - Absolutely positioned on video */}
         <div className="relative z-10 min-h-[600px] md:min-h-[700px] lg:min-h-[800px]">
           {/* LOGO WITH SUBTLE GLOW - FORCED TO LEFT EDGE */}
-          <div className="absolute bottom-32 md:bottom-40 lg:bottom-48 left-0 -ml-4 md:-ml-8 lg:-ml-12" style={{ transform: 'translateX(0)' }}>
+          <div className="absolute bottom-32 md:bottom-40 lg:bottom-48 left-0 -ml-16 md:-ml-24 lg:-ml-32" style={{ transform: 'translateX(-120px)' }}>
             <img
               src="/attached_assets/me_1760215801481.png"
               alt="The Florida Local"
