@@ -9,6 +9,7 @@ import SocialFeed from "@/components/social-feed";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { Button } from "@/components/ui/button";
 import { StardustButton } from "@/components/ui/stardust-button";
+import { ShaderAnimation } from "@/components/ui/shader-animation";
 import GlowHero from "@/components/ui/glow-hero";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Store, Plus, ArrowRight, Star, Users, TrendingUp } from "lucide-react";
@@ -23,7 +24,7 @@ import {
 import { PremiumButton, PremiumGlassCard } from "@/components/premium-ui";
 
 export default function Home() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const [, setLocation] = useLocation();
 
   // Fetch user businesses for dynamic button behavior
@@ -53,6 +54,14 @@ export default function Home() {
       <AuroraAmbient intensity="medium" />
 
       <EliteNavigationHeader />
+
+      {/* SHADER ANIMATION HERO */}
+      <div className="relative flex h-[650px] w-full flex-col items-center justify-center overflow-hidden rounded-xl border bg-blue-700">
+        <ShaderAnimation/>
+        <span className="absolute pointer-events-none z-10 text-center text-7xl leading-none font-semibold tracking-tighter whitespace-pre-wrap text-white">
+          {userBusinesses[0]?.name || (user?.username ? `Hello, ${user.username}` : 'Welcome to Florida Local')}
+        </span>
+      </div>
 
       {/* FLORIDA LOCAL ULTRA-ELITE HERO */}
       <div className="relative py-24 overflow-hidden">
