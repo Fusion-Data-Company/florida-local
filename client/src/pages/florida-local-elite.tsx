@@ -119,26 +119,28 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 2.3 VAPORIZE TEXT SECTION */}
-      <section className="bg-black h-screen w-full flex justify-center items-center">
-        <VaporizeTextCycle
-          texts={["Foodies", "Creators", "Collaborators", "The Florida Local"]}
-          font={{
-            fontFamily: "Inter, sans-serif",
-            fontSize: "70px",
-            fontWeight: 600
-          }}
-          color="rgb(255,255, 255)"
-          spread={5}
-          density={5}
-          animation={{
-            vaporizeDuration: 2,
-            fadeInDuration: 1,
-            waitDuration: 0.5
-          }}
-          direction="left-to-right"
-          alignment="center"
-          tag={Tag.H2}
-        />
+      <section className="bg-black w-full py-16 md:py-20">
+        <div className="h-32 md:h-40 flex justify-center items-center">
+          <VaporizeTextCycle
+            texts={["Foodies", "Creators", "Collaborators", "The Florida Local"]}
+            font={{
+              fontFamily: "Inter, sans-serif",
+              fontSize: "70px",
+              fontWeight: 600
+            }}
+            color="rgb(255,255, 255)"
+            spread={5}
+            density={5}
+            animation={{
+              vaporizeDuration: 2,
+              fadeInDuration: 1,
+              waitDuration: 0.5
+            }}
+            direction="left-to-right"
+            alignment="center"
+            tag={Tag.H2}
+          />
+        </div>
       </section>
 
       {/* 2.5 SCROLLING BRAND BAR */}
