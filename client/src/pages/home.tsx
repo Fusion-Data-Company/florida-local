@@ -65,13 +65,13 @@ export default function Home() {
         <div className="container mx-auto px-4 lg:px-8 text-center relative z-10">
           {/* Florida Local Branded Headline */}
           <GlowHero 
-            glowText="Ready to Grow Your Business?"
+            glowText="Welcome Back to Your Community"
             glowTextSize="xl"
             className="mb-6"
           />
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
-            Join Florida's premier business community. Connect with customers, showcase your products,
-            and grow your local presence with our comprehensive platform.
+            Stay connected with Florida's thriving business network. Discover new opportunities, 
+            showcase your latest updates, and grow your local presence.
           </p>
           
           {/* Florida Local Branded Buttons */}
