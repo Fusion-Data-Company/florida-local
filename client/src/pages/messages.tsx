@@ -93,6 +93,16 @@ export default function Messages() {
   const typingTimeoutRef = useRef<NodeJS.Timeout>();
   const previousConversationRef = useRef<string | null>(null);
   
+  // Animated beam refs (must be declared before any conditional returns)
+  const beamContainerRef = useRef<HTMLDivElement>(null);
+  const node1Ref = useRef<HTMLDivElement>(null);
+  const node2Ref = useRef<HTMLDivElement>(null);
+  const node3Ref = useRef<HTMLDivElement>(null);
+  const node4Ref = useRef<HTMLDivElement>(null);
+  const centerNodeRef = useRef<HTMLDivElement>(null);
+  const node6Ref = useRef<HTMLDivElement>(null);
+  const node7Ref = useRef<HTMLDivElement>(null);
+  
   const { socket, connected } = useWebSocket();
 
   // Scroll to bottom when new messages arrive
@@ -470,15 +480,6 @@ export default function Messages() {
       </div>
     );
   }
-
-  const beamContainerRef = useRef<HTMLDivElement>(null);
-  const node1Ref = useRef<HTMLDivElement>(null);
-  const node2Ref = useRef<HTMLDivElement>(null);
-  const node3Ref = useRef<HTMLDivElement>(null);
-  const node4Ref = useRef<HTMLDivElement>(null);
-  const centerNodeRef = useRef<HTMLDivElement>(null);
-  const node6Ref = useRef<HTMLDivElement>(null);
-  const node7Ref = useRef<HTMLDivElement>(null);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
