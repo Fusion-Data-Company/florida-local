@@ -201,7 +201,7 @@ export default function Home() {
                   <i className="fas fa-plus mr-2"></i>Create Post
                 </Button>
                 <Button 
-                  variant="fl-outline"
+                  variant="outline"
                   size="lg"
                   data-testid="button-add-product"
                   className="shadow-[0_8px_30px_rgba(205,127,50,0.15)] hover:shadow-[0_12px_40px_rgba(205,127,50,0.25)] transition-shadow"

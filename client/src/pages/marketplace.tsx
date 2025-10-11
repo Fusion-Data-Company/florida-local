@@ -3,7 +3,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Product, insertProductSchema } from "@shared/types";
+import { Product, Business, insertProductSchema } from "@shared/types";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -30,11 +30,16 @@ import {
 } from "@/components/premium-ultra";
 import { PremiumBadge } from "@/components/premium-ui";
 
-const createProductSchema = insertProductSchema.omit({ id: true }).extend({
+const createProductSchema = z.object({
+  businessId: z.string().min(1, "Business is required"),
   name: z.string().min(1, "Product name is required").max(255, "Product name must be less than 255 characters"),
   description: z.string().min(1, "Product description is required"),
   price: z.string().min(1, "Price is required").refine((val) => !isNaN(Number(val)) && Number(val) > 0, "Price must be a positive number"),
   category: z.string().min(1, "Category is required"),
+  imageUrl: z.string().optional(),
+  isActive: z.boolean().default(true),
+  stockQuantity: z.number().default(0),
+  tags: z.array(z.string()).optional(),
 });
 
 type CreateProductForm = z.infer<typeof createProductSchema>;
@@ -61,7 +66,7 @@ export default function Marketplace() {
     queryFn: () => fetch(`/api/products/featured?limit=20&unique=images`).then(res => res.json()),
   });
 
-  const { data: userBusinesses = [] } = useQuery({
+  const { data: userBusinesses = [] } = useQuery<Business[]>({
     queryKey: ['/api/businesses/my'],
     enabled: isAuthenticated,
   });
@@ -74,9 +79,10 @@ export default function Marketplace() {
       price: "",
       category: "",
       businessId: "",
-      inventory: 0,
+      imageUrl: "",
       isActive: true,
-      isDigital: false,
+      stockQuantity: 0,
+      tags: [],
     },
   });
 
