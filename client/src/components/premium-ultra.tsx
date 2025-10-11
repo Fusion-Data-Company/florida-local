@@ -5,17 +5,129 @@ import { Sparkles, Crown, Star, Zap } from 'lucide-react';
 // ULTRA PREMIUM COMPONENTS - LEVEL 5 UPGRADE
 // ============================================
 
-// ANIMATED GRADIENT HERO BACKGROUND - DISABLED (causing content visibility issues)
+// ANIMATED GRADIENT HERO BACKGROUND - RE-ENABLED with proper z-index layering
 export const AnimatedGradientHero = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => {
-  // Component simplified to just render children without gradient overlays
-  // The gradient layers were visually blocking content despite pointer-events-none
-  return <div className={className}>{children}</div>;
+  return (
+    <div className={`relative ${className}`}>
+      {/* Gradient orb 1 - Cyan/Blue */}
+      <div
+        className="absolute inset-0 -z-10 pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle at 20% 30%, rgba(6, 182, 212, 0.4) 0%, transparent 50%)',
+          filter: 'blur(60px)',
+          animation: 'float-gradient-1 20s ease-in-out infinite',
+        }}
+      />
+      
+      {/* Gradient orb 2 - Purple */}
+      <div
+        className="absolute inset-0 -z-10 pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle at 80% 60%, rgba(139, 92, 246, 0.35) 0%, transparent 50%)',
+          filter: 'blur(70px)',
+          animation: 'float-gradient-2 25s ease-in-out infinite',
+        }}
+      />
+      
+      {/* Gradient orb 3 - Pink */}
+      <div
+        className="absolute inset-0 -z-10 pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle at 50% 80%, rgba(236, 72, 153, 0.3) 0%, transparent 50%)',
+          filter: 'blur(80px)',
+          animation: 'float-gradient-3 30s ease-in-out infinite',
+        }}
+      />
+      
+      {/* Content wrapper with positive z-index */}
+      <div className="relative z-10">
+        {children}
+      </div>
+      
+      <style>{`
+        @keyframes float-gradient-1 {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          33% { transform: translate(10%, -5%) scale(1.1); }
+          66% { transform: translate(-5%, 10%) scale(0.95); }
+        }
+        @keyframes float-gradient-2 {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          33% { transform: translate(-8%, 8%) scale(1.05); }
+          66% { transform: translate(12%, -10%) scale(0.9); }
+        }
+        @keyframes float-gradient-3 {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          33% { transform: translate(-10%, -8%) scale(1.15); }
+          66% { transform: translate(8%, 12%) scale(0.85); }
+        }
+      `}</style>
+    </div>
+  );
 };
 
-// PARTICLE EFFECTS SYSTEM - DISABLED (causing content visibility issues)
+// PARTICLE EFFECTS SYSTEM - RE-ENABLED with proper z-index layering
 export const ParticleField = ({ count = 50, color = "cyan" }: { count?: number; color?: "cyan" | "pink" | "yellow" | "purple" }) => {
-  // Component disabled - particles were visually blocking content
-  return null;
+  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; delay: number; duration: number; size: number }>>([]);
+
+  useEffect(() => {
+    const newParticles = Array.from({ length: count }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      delay: Math.random() * 5,
+      duration: 15 + Math.random() * 10,
+      size: 2 + Math.random() * 4,
+    }));
+    setParticles(newParticles);
+  }, [count]);
+
+  const colorMap = {
+    cyan: 'rgba(6, 182, 212, 0.5)',
+    pink: 'rgba(236, 72, 153, 0.5)',
+    yellow: 'rgba(251, 191, 36, 0.5)',
+    purple: 'rgba(139, 92, 246, 0.5)',
+  };
+
+  return (
+    <>
+      {particles.map((particle) => (
+        <div
+          key={particle.id}
+          className="absolute -z-10 pointer-events-none rounded-full"
+          style={{
+            left: `${particle.x}%`,
+            top: `${particle.y}%`,
+            width: `${particle.size}px`,
+            height: `${particle.size}px`,
+            background: colorMap[color],
+            opacity: 0.3 + Math.random() * 0.3,
+            animation: `particle-float-${particle.id % 3} ${particle.duration}s ease-in-out ${particle.delay}s infinite`,
+            boxShadow: `0 0 ${particle.size * 2}px ${colorMap[color]}`,
+          }}
+        />
+      ))}
+      <style>{`
+        @keyframes particle-float-0 {
+          0%, 100% { transform: translate(0, 0); }
+          25% { transform: translate(20px, -30px); }
+          50% { transform: translate(-15px, -60px); }
+          75% { transform: translate(25px, -40px); }
+        }
+        @keyframes particle-float-1 {
+          0%, 100% { transform: translate(0, 0); }
+          25% { transform: translate(-25px, -25px); }
+          50% { transform: translate(15px, -55px); }
+          75% { transform: translate(-20px, -35px); }
+        }
+        @keyframes particle-float-2 {
+          0%, 100% { transform: translate(0, 0); }
+          25% { transform: translate(15px, -35px); }
+          50% { transform: translate(-20px, -65px); }
+          75% { transform: translate(10px, -45px); }
+        }
+      `}</style>
+    </>
+  );
 };
 
 // PREMIUM LOADING STATE
@@ -181,11 +293,122 @@ export const Transform3DCard = ({ children, className = "" }: { children: React.
   );
 };
 
-// AURORA AMBIENT LIGHTING - DISABLED (was blocking all page content)
+// AURORA AMBIENT LIGHTING - RE-ENABLED with proper z-index layering
 export const AuroraAmbient = ({ intensity = "medium" }: { intensity?: "low" | "medium" | "high" }) => {
-  // Component disabled to fix content blocking issue
-  // Fixed position overlay with z-index was preventing page interaction
-  return null;
+  const intensityMap = {
+    low: 0.3,
+    medium: 0.5,
+    high: 0.7,
+  };
+
+  const opacityValue = intensityMap[intensity];
+
+  return (
+    <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
+      {/* Aurora wave 1 - Cyan/Blue */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.6) 0%, transparent 60%)',
+          filter: 'blur(100px)',
+          opacity: opacityValue,
+          animation: 'aurora-wave-1 15s ease-in-out infinite',
+          mixBlendMode: 'screen',
+        }}
+      />
+      
+      {/* Aurora wave 2 - Purple */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: 'linear-gradient(225deg, rgba(139, 92, 246, 0.5) 0%, transparent 60%)',
+          filter: 'blur(120px)',
+          opacity: opacityValue * 0.9,
+          animation: 'aurora-wave-2 20s ease-in-out infinite',
+          mixBlendMode: 'screen',
+        }}
+      />
+      
+      {/* Aurora wave 3 - Pink */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: 'linear-gradient(45deg, rgba(236, 72, 153, 0.4) 0%, transparent 60%)',
+          filter: 'blur(110px)',
+          opacity: opacityValue * 0.8,
+          animation: 'aurora-wave-3 18s ease-in-out infinite',
+          mixBlendMode: 'screen',
+        }}
+      />
+      
+      {/* Shimmer overlay */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: 'radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%)',
+          filter: 'blur(80px)',
+          opacity: opacityValue * 0.6,
+          animation: 'aurora-shimmer 10s ease-in-out infinite',
+          mixBlendMode: 'overlay',
+        }}
+      />
+      
+      <style>{`
+        @keyframes aurora-wave-1 {
+          0%, 100% { 
+            transform: translateX(0) translateY(0) scale(1);
+            opacity: ${opacityValue};
+          }
+          33% { 
+            transform: translateX(-10%) translateY(5%) scale(1.05);
+            opacity: ${opacityValue * 1.2};
+          }
+          66% { 
+            transform: translateX(5%) translateY(-8%) scale(0.95);
+            opacity: ${opacityValue * 0.8};
+          }
+        }
+        @keyframes aurora-wave-2 {
+          0%, 100% { 
+            transform: translateX(0) translateY(0) rotate(0deg);
+            opacity: ${opacityValue * 0.9};
+          }
+          33% { 
+            transform: translateX(8%) translateY(-6%) rotate(2deg);
+            opacity: ${opacityValue * 1.1};
+          }
+          66% { 
+            transform: translateX(-6%) translateY(10%) rotate(-2deg);
+            opacity: ${opacityValue * 0.7};
+          }
+        }
+        @keyframes aurora-wave-3 {
+          0%, 100% { 
+            transform: translateX(0) translateY(0) scale(1);
+            opacity: ${opacityValue * 0.8};
+          }
+          33% { 
+            transform: translateX(6%) translateY(8%) scale(1.1);
+            opacity: ${opacityValue};
+          }
+          66% { 
+            transform: translateX(-8%) translateY(-5%) scale(0.9);
+            opacity: ${opacityValue * 0.6};
+          }
+        }
+        @keyframes aurora-shimmer {
+          0%, 100% { 
+            transform: scale(1);
+            opacity: ${opacityValue * 0.6};
+          }
+          50% { 
+            transform: scale(1.3);
+            opacity: ${opacityValue * 0.9};
+          }
+        }
+      `}</style>
+    </div>
+  );
 };
 
 // RIPPLE EFFECT BUTTON
