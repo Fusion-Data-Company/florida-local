@@ -510,9 +510,9 @@ export default function Messages() {
         </div>
 
         {/* Animated Network Visualization */}
-        <Card className="mb-8 miami-glass border-orange-200/50 dark:border-gray-700/50 overflow-hidden">
+        <Card className="mb-8 miami-glass border-orange-200/50 dark:border-gray-700/50 overflow-visible">
           <div
-            className="relative flex h-[300px] w-full items-center justify-center p-4 sm:p-8 bg-gradient-to-br from-orange-50/50 to-blue-50/50 dark:from-gray-800/50 dark:to-gray-900/50"
+            className="relative flex h-[300px] w-full items-center justify-center p-8 sm:p-12 bg-gradient-to-br from-orange-50/50 to-blue-50/50 dark:from-gray-800/50 dark:to-gray-900/50"
             ref={beamContainerRef}
           >
             <div className="flex size-full max-w-4xl items-center justify-center">
