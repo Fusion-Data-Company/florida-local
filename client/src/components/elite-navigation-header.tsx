@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Menu, X, Home, MapPin, Store, MessageSquare, ShoppingCart, Package, Building2 } from "lucide-react";
+import { ChevronDown, Menu, X, Home, MapPin, Store, MessageSquare, ShoppingCart, Package, Building2, ScrollText } from "lucide-react";
 import { useState, useEffect } from "react";
 import CartIcon from "@/components/cart-icon";
 import type { Business } from "@shared/types";
@@ -38,6 +38,7 @@ export default function EliteNavigationHeader() {
   const navigationItems = [
     { href: "/", label: "Discover", icon: Home, testId: "nav-discover" },
     { href: "/florida-elite", label: "Florida", icon: MapPin, testId: "nav-florida-elite" },
+    { href: "/registry", label: "Registry", icon: ScrollText, testId: "nav-registry" },
     { href: "/marketplace", label: "Marketplace", icon: Store, testId: "nav-marketplace" },
     { href: "/messages", label: "Messages", icon: MessageSquare, testId: "nav-messages" },
     { href: "/orders", label: "Orders", icon: Package, testId: "nav-orders" },
