@@ -9,7 +9,7 @@ export const PremiumBadge = ({
   size = "md"
 }: {
   children: React.ReactNode;
-  color?: "gold" | "platinum" | "bronze" | "emerald" | "ruby" | "diamond";
+  color?: "gold" | "platinum" | "bronze" | "emerald" | "ruby" | "diamond" | "sapphire" | "topaz" | "amethyst" | "crimson" | "pearl";
   className?: string;
   size?: "sm" | "md" | "lg";
 }) => {
@@ -37,6 +37,26 @@ export const PremiumBadge = ({
     diamond: {
       background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 25%, #bae6fd 50%, #7dd3fc 75%, #38bdf8 100%)',
       shadow: '0 4px 25px rgba(56, 189, 248, 0.6), inset 0 1px 0 rgba(255,255,255,1), inset 0 -1px 0 rgba(0,0,0,0.1)',
+    },
+    sapphire: {
+      background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%)',
+      shadow: '0 4px 20px rgba(59, 130, 246, 0.5), inset 0 1px 0 rgba(255,255,255,0.8), inset 0 -1px 0 rgba(0,0,0,0.2)',
+    },
+    topaz: {
+      background: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #fcd34d 100%)',
+      shadow: '0 4px 20px rgba(251, 191, 36, 0.5), inset 0 1px 0 rgba(255,255,255,0.8), inset 0 -1px 0 rgba(0,0,0,0.2)',
+    },
+    amethyst: {
+      background: 'linear-gradient(135deg, #7c3aed 0%, #a78bfa 50%, #c4b5fd 100%)',
+      shadow: '0 4px 20px rgba(124, 58, 237, 0.5), inset 0 1px 0 rgba(255,255,255,0.8), inset 0 -1px 0 rgba(0,0,0,0.2)',
+    },
+    crimson: {
+      background: 'linear-gradient(135deg, #dc2626 0%, #ef4444 50%, #f87171 100%)',
+      shadow: '0 4px 20px rgba(220, 38, 38, 0.5), inset 0 1px 0 rgba(255,255,255,0.8), inset 0 -1px 0 rgba(0,0,0,0.2)',
+    },
+    pearl: {
+      background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%)',
+      shadow: '0 4px 20px rgba(226, 232, 240, 0.5), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.15)',
     },
   };
 

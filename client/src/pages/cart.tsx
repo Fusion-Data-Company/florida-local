@@ -61,7 +61,7 @@ export default function CartPage() {
     },
   });
 
-  const subtotal = items.reduce((sum, i) => sum + parseFloat(i.product.price || "0") * i.quantity, 0);
+  const subtotal = items.reduce((sum, i) => sum + (Number(i.product.price) || 0) * i.quantity, 0);
 
   if (isLoading) {
     return (
@@ -129,9 +129,9 @@ export default function CartPage() {
                   <PremiumGlassCard className="cart-item-card">
                     <CardContent className="p-6">
                       <div className="flex gap-6">
-                        {Array.isArray(item.product.images) && item.product.images.length > 0 ? (
+                        {item.product.imageUrl ? (
                           <img
-                            src={item.product.images[0]}
+                            src={item.product.imageUrl}
                             alt={item.product.name}
                             className="w-32 h-32 object-cover rounded-xl shadow-lg"
                           />
@@ -180,7 +180,7 @@ export default function CartPage() {
                           <div>
                             <p className="text-sm text-muted-foreground mb-1">Total</p>
                             <p className="text-2xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                              ${(parseFloat(item.product.price || "0") * item.quantity).toFixed(2)}
+                              ${((Number(item.product.price) || 0) * item.quantity).toFixed(2)}
                             </p>
                           </div>
                           <Button
