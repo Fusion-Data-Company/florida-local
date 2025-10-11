@@ -263,7 +263,7 @@ export const CircularTestimonials = ({
           </div>
         </div>
       </div>
-      <style jsx>{`
+      <style>{`
         .testimonial-container {
           width: 100%;
           max-width: 90rem;

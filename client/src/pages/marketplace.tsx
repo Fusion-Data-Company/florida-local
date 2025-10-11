@@ -29,6 +29,8 @@ import {
   PremiumLoader,
 } from "@/components/premium-ultra";
 import { PremiumBadge } from "@/components/premium-ui";
+import { CircularTestimonials } from "@/components/ui/circular-testimonials";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const createProductSchema = z.object({
   businessId: z.string().min(1, "Business is required"),
@@ -47,6 +49,7 @@ type CreateProductForm = z.infer<typeof createProductSchema>;
 export default function Marketplace() {
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
+  const { theme } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
   const [isCreateProductOpen, setIsCreateProductOpen] = useState(false);
@@ -135,6 +138,33 @@ export default function Marketplace() {
     "Art & Crafts",
     "Sports & Fitness",
     "Books & Media"
+  ];
+
+  const testimonials = [
+    {
+      quote:
+        "Florida Local has been a game changer for my small business! The platform makes it easy to reach customers across the state. The support from the community has been incredible!",
+      name: "Maria Rodriguez",
+      designation: "Artisan Baker, Miami",
+      src:
+        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=1368&auto=format&fit=crop&ixlib=rb-4.0.3",
+    },
+    {
+      quote:
+        "I love discovering unique Florida-made products on this marketplace. The quality is outstanding and I feel great supporting local entrepreneurs. It's my go-to for gifts!",
+      name: "James Patterson",
+      designation: "Loyal Customer, Orlando",
+      src:
+        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1368&auto=format&fit=crop&ixlib=rb-4.0.3",
+    },
+    {
+      quote:
+        "As a small business owner, Florida Local has given me the visibility I needed. Sales have tripled since joining, and the platform is so easy to use. Highly recommend!",
+      name: "Sarah Chen",
+      designation: "Jewelry Designer, Tampa",
+      src:
+        "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1368&auto=format&fit=crop&ixlib=rb-4.0.3",
+    },
   ];
 
   if (isLoading) {
@@ -464,6 +494,60 @@ export default function Marketplace() {
               </p>
             </div>
           ) : null}
+        </div>
+      </section>
+
+      {/* Customer Testimonials Section */}
+      <section className="py-20 relative overflow-hidden">
+        <div className={`p-12 md:p-20 rounded-lg min-h-[300px] flex flex-wrap gap-6 items-center justify-center relative ${
+          theme === 'dark' 
+            ? 'bg-gradient-to-br from-[#060507] via-[#0a0a0c] to-[#060507]' 
+            : 'bg-gradient-to-br from-[#f7f7fa] via-white to-[#f7f7fa]'
+        }`}>
+          <div className="absolute inset-0 opacity-5">
+            <div className={`absolute inset-0 ${
+              theme === 'dark' 
+                ? 'bg-[radial-gradient(circle_at_50%_50%,rgba(0,166,251,0.15),transparent_70%)]' 
+                : 'bg-[radial-gradient(circle_at_50%_50%,rgba(0,166,251,0.08),transparent_70%)]'
+            }`} />
+          </div>
+          <div className="w-full text-center mb-8 relative z-10">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-[var(--fl-teal-lagoon)] via-[var(--fl-sunset-gold)] to-[var(--fl-bronze)] bg-clip-text text-transparent">
+              What Our Community Says
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Join thousands of satisfied customers and business owners thriving on Florida Local
+            </p>
+          </div>
+          <div
+            className="items-center justify-center relative flex w-full"
+            style={{ maxWidth: "1456px" }}
+          >
+            <CircularTestimonials
+              testimonials={testimonials}
+              autoplay={true}
+              colors={theme === 'dark' ? {
+                name: "#f7f7ff",
+                designation: "#e1e1e1",
+                testimony: "#f1f1f7",
+                arrowBackground: "#0582CA",
+                arrowForeground: "#141414",
+                arrowHoverBackground: "#f7f7ff",
+              } : {
+                name: "#0a0a0a",
+                designation: "#454545",
+                testimony: "#171717",
+                arrowBackground: "#141414",
+                arrowForeground: "#f1f1f7",
+                arrowHoverBackground: "#00A6FB",
+              }}
+              fontSizes={{
+                name: "32px",
+                designation: "20px",
+                quote: "22px",
+              }}
+            />
+          </div>
         </div>
       </section>
 
