@@ -79,36 +79,6 @@ export default function Orders() {
     }
   };
 
-  if (!isAuthenticated) {
-    return (
-      <div
-        className="premium-page-wrapper premium-surface min-h-screen marble-texture relative"
-        data-surface-intensity="delicate"
-        data-surface-tone="warm"
-      >
-        <AuroraAmbient intensity="low" />
-        <EliteNavigationHeader />
-        <div className="container mx-auto px-4 py-12 text-center relative z-10">
-          <Transform3DCard>
-            <PremiumGlassCard>
-              <CardContent className="py-16">
-                <ShoppingBag className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
-                <h1 className="text-3xl font-bold mb-4">Please log in to view your orders</h1>
-                <p className="text-muted-foreground mb-6">Track your purchases and order history</p>
-                <Button asChild size="lg">
-                  <Link href="/api/login" data-testid="button-login">
-                    Log In
-                  </Link>
-                </Button>
-              </CardContent>
-            </PremiumGlassCard>
-          </Transform3DCard>
-        </div>
-        <MobileBottomNav />
-      </div>
-    );
-  }
-
   if (isLoading) {
     return (
       <div
@@ -160,10 +130,31 @@ export default function Orders() {
         </div>
       </AnimatedGradientHero>
 
-      <div className="container mx-auto px-4 py-8 lg:px-8">
-        {orders.length === 0 ? (
+      <div className="container mx-auto px-4 py-8 lg:px-8 relative">
+        {/* Authentication Overlay */}
+        {!isAuthenticated && (
+          <div className="absolute inset-0 z-50 bg-black/50 flex items-center justify-center backdrop-blur-sm rounded-2xl">
+            <Transform3DCard>
+              <PremiumGlassCard>
+                <CardContent className="p-8 text-center">
+                  <ShoppingBag className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
+                  <h3 className="text-2xl font-bold mb-2">Log in to view orders</h3>
+                  <p className="text-muted-foreground mb-6">Track your purchases and order history</p>
+                  <Button asChild size="lg">
+                    <Link href="/api/login" data-testid="button-login">
+                      Log In
+                    </Link>
+                  </Button>
+                </CardContent>
+              </PremiumGlassCard>
+            </Transform3DCard>
+          </div>
+        )}
+
+        <div className={!isAuthenticated ? 'pointer-events-none opacity-30' : ''}>
+          {/* Empty State - Always visible for editing */}
           <Transform3DCard>
-            <PremiumGlassCard className="orders-empty-state">
+            <PremiumGlassCard className="orders-empty-state mb-8">
               <CardContent className="text-center py-16">
                 <Package className="mx-auto h-20 w-20 text-muted-foreground opacity-50 mb-6" />
                 <h2 className="text-3xl font-bold mb-4" data-testid="text-no-orders">
@@ -181,92 +172,93 @@ export default function Orders() {
               </CardContent>
             </PremiumGlassCard>
           </Transform3DCard>
-        ) : (
-          <div className="space-y-6">
-            {orders.map((order) => (
-              <Transform3DCard key={order.id}>
-                <PremiumGlassCard className="order-card-luxury" data-testid={`order-card-${order.id}`}>
-                  <CardHeader className="pb-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-xl flex items-center gap-2" data-testid={`text-order-id-${order.id}`}>
-                          <Package className="h-5 w-5 text-purple-500" />
-                          Order #{order.id.slice(-8).toUpperCase()}
-                        </CardTitle>
-                        <div className="flex items-center gap-2 mt-2">
-                          <Clock className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm text-muted-foreground" data-testid={`text-order-date-${order.id}`}>
-                            {format(new Date(order.createdAt), 'MMM d, yyyy h:mm a')}
-                          </span>
-                        </div>
-                      </div>
-                      <PremiumBadge color={getStatusColor(order.status)} size="md" data-testid={`badge-order-status-${order.id}`}>
-                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                      </PremiumBadge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <div className="grid md:grid-cols-2 gap-6 mb-6">
-                      <div>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          {getStatusDescription(order.status)}
-                        </p>
-                        <p className="text-3xl font-black bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent" data-testid={`text-order-total-${order.id}`}>
-                          ${parseFloat(order.total).toFixed(2)}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {order.currency.toUpperCase()}
-                        </p>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center p-2 rounded bg-muted/30">
-                          <span className="text-sm">Subtotal</span>
-                          <span className="font-semibold">${parseFloat(order.subtotal).toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between items-center p-2 rounded bg-muted/30">
-                          <span className="text-sm">Tax</span>
-                          <span className="font-semibold">${parseFloat(order.taxAmount).toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between items-center p-2 rounded bg-muted/30">
-                          <span className="text-sm">Shipping</span>
-                          <span className="font-semibold">
-                            {parseFloat(order.shippingAmount) === 0 ? (
-                              <PremiumBadge color="emerald" size="sm">Free</PremiumBadge>
-                            ) : (
-                              `$${parseFloat(order.shippingAmount).toFixed(2)}`
-                            )}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
 
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pt-4 border-t">
-                      <div className="text-sm text-muted-foreground">
-                        {order.shippingAddress && (
-                          <div className="flex items-center gap-2">
-                            <ShoppingBag className="h-4 w-4" />
-                            <span>
-                              Shipping to: {order.shippingAddress.city}, {order.shippingAddress.state}
+          {/* Orders List - Show if available */}
+          {orders.length > 0 && (
+            <div className="space-y-6">
+              {orders.map((order) => (
+                <Transform3DCard key={order.id}>
+                  <PremiumGlassCard className="order-card-luxury" data-testid={`order-card-${order.id}`}>
+                    <CardHeader className="pb-4">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <CardTitle className="text-xl flex items-center gap-2" data-testid={`text-order-id-${order.id}`}>
+                            <Package className="h-5 w-5 text-purple-500" />
+                            Order #{order.id.slice(-8).toUpperCase()}
+                          </CardTitle>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Clock className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm text-muted-foreground" data-testid={`text-order-date-${order.id}`}>
+                              {format(new Date(order.createdAt), 'MMM d, yyyy h:mm a')}
                             </span>
                           </div>
-                        )}
+                        </div>
+                        <PremiumBadge color={getStatusColor(order.status)} size="md" data-testid={`badge-order-status-${order.id}`}>
+                          {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                        </PremiumBadge>
                       </div>
-                      <Button variant="outline" size="lg" asChild data-testid={`button-view-order-${order.id}`}>
-                        <Link href={`/orders/${order.id}`}>
-                          View Details
-                          <ArrowRight className="ml-2 h-4 w-4" />
-                        </Link>
-                      </Button>
-                    </div>
-                  </CardContent>
-                </PremiumGlassCard>
-              </Transform3DCard>
-            ))}
-          </div>
-        )}
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="grid md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                          <p className="text-sm text-muted-foreground mb-2">
+                            {getStatusDescription(order.status)}
+                          </p>
+                          <p className="text-3xl font-black bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent" data-testid={`text-order-total-${order.id}`}>
+                            ${parseFloat(order.total).toFixed(2)}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {order.currency.toUpperCase()}
+                          </p>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center p-2 rounded bg-muted/30">
+                            <span className="text-sm">Subtotal</span>
+                            <span className="font-semibold">${parseFloat(order.subtotal).toFixed(2)}</span>
+                          </div>
+                          <div className="flex justify-between items-center p-2 rounded bg-muted/30">
+                            <span className="text-sm">Tax</span>
+                            <span className="font-semibold">${parseFloat(order.taxAmount).toFixed(2)}</span>
+                          </div>
+                          <div className="flex justify-between items-center p-2 rounded bg-muted/30">
+                            <span className="text-sm">Shipping</span>
+                            <span className="font-semibold">
+                              {parseFloat(order.shippingAmount) === 0 ? (
+                                <PremiumBadge color="emerald" size="sm">Free</PremiumBadge>
+                              ) : (
+                                `$${parseFloat(order.shippingAmount).toFixed(2)}`
+                              )}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
 
-        {/* Quick Actions */}
-        {orders.length > 0 && (
+                      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pt-4 border-t">
+                        <div className="text-sm text-muted-foreground">
+                          {order.shippingAddress && (
+                            <div className="flex items-center gap-2">
+                              <ShoppingBag className="h-4 w-4" />
+                              <span>
+                                Shipping to: {order.shippingAddress.city}, {order.shippingAddress.state}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        <Button variant="outline" size="lg" asChild data-testid={`button-view-order-${order.id}`}>
+                          <Link href={`/orders/${order.id}`}>
+                            View Details
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                          </Link>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </PremiumGlassCard>
+                </Transform3DCard>
+              ))}
+            </div>
+          )}
+
+          {/* Quick Actions - Always show for editing */}
           <div className="mt-12">
             <Transform3DCard>
               <PremiumGlassCard className="orders-quick-actions">
@@ -290,7 +282,7 @@ export default function Orders() {
               </PremiumGlassCard>
             </Transform3DCard>
           </div>
-        )}
+        </div>
       </div>
 
       <MobileBottomNav />
