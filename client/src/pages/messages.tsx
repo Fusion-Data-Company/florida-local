@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, forwardRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Message, Business } from "@shared/types";
 import { useAuth } from "@/hooks/useAuth";
@@ -17,6 +17,8 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ObjectUploader } from "@/components/ObjectUploader";
+import { AnimatedBeam } from "@/components/ui/animated-beam";
+import { cn } from "@/lib/utils";
 import { 
   Send, 
   Search, 
@@ -35,7 +37,10 @@ import {
   MoreVertical,
   Smile,
   Users,
-  Globe
+  Globe,
+  MessageSquare,
+  Mail,
+  Video
 } from "lucide-react";
 
 interface ConversationUser {
@@ -52,6 +57,25 @@ interface EnhancedMessage extends Message {
   business?: Business;
   product?: any;
 }
+
+const MessageNode = forwardRef<
+  HTMLDivElement,
+  { className?: string; children?: React.ReactNode }
+>(({ className, children }, ref) => {
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        "z-10 flex size-16 items-center justify-center rounded-full border-2 bg-white dark:bg-gray-800 p-4 shadow-lg dark:border-gray-700 transition-all hover:scale-110",
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
+});
+
+MessageNode.displayName = "MessageNode";
 
 export default function Messages() {
   const { user } = useAuth();
@@ -447,6 +471,15 @@ export default function Messages() {
     );
   }
 
+  const beamContainerRef = useRef<HTMLDivElement>(null);
+  const node1Ref = useRef<HTMLDivElement>(null);
+  const node2Ref = useRef<HTMLDivElement>(null);
+  const node3Ref = useRef<HTMLDivElement>(null);
+  const node4Ref = useRef<HTMLDivElement>(null);
+  const centerNodeRef = useRef<HTMLDivElement>(null);
+  const node6Ref = useRef<HTMLDivElement>(null);
+  const node7Ref = useRef<HTMLDivElement>(null);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
       <EliteNavigationHeader />
@@ -474,6 +507,112 @@ export default function Messages() {
             </div>
           </div>
         </div>
+
+        {/* Animated Network Visualization */}
+        <Card className="mb-8 miami-glass border-orange-200/50 dark:border-gray-700/50 overflow-hidden">
+          <div
+            className="relative flex h-[300px] w-full items-center justify-center p-8 bg-gradient-to-br from-orange-50/50 to-blue-50/50 dark:from-gray-800/50 dark:to-gray-900/50"
+            ref={beamContainerRef}
+          >
+            <div className="flex size-full max-w-4xl max-h-[220px] items-stretch justify-between gap-8">
+              {/* Top Row */}
+              <div className="flex flex-row items-center justify-between w-full">
+                <MessageNode ref={node1Ref} className="border-orange-500 dark:border-orange-600">
+                  <Users className="h-8 w-8 text-orange-600 dark:text-orange-400" />
+                </MessageNode>
+                <MessageNode ref={node2Ref} className="border-blue-500 dark:border-blue-600 hidden sm:flex">
+                  <MessageSquare className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                </MessageNode>
+                <MessageNode ref={node3Ref} className="border-green-500 dark:border-green-600">
+                  <Phone className="h-8 w-8 text-green-600 dark:text-green-400" />
+                </MessageNode>
+              </div>
+
+              {/* Center - User Hub */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <MessageNode 
+                  ref={centerNodeRef} 
+                  className="size-20 border-4 border-gradient-primary shadow-xl bg-gradient-to-br from-orange-100 to-blue-100 dark:from-orange-900/30 dark:to-blue-900/30"
+                >
+                  <div className="h-10 w-10 rounded-full bg-gradient-to-r from-orange-700 to-blue-700 flex items-center justify-center">
+                    <Globe className="h-6 w-6 text-white" />
+                  </div>
+                </MessageNode>
+              </div>
+
+              {/* Bottom Row */}
+              <div className="flex flex-row items-end justify-between w-full">
+                <MessageNode ref={node4Ref} className="border-purple-500 dark:border-purple-600">
+                  <Mail className="h-8 w-8 text-purple-600 dark:text-purple-400" />
+                </MessageNode>
+                <MessageNode ref={node6Ref} className="border-pink-500 dark:border-pink-600 hidden sm:flex">
+                  <Video className="h-8 w-8 text-pink-600 dark:text-pink-400" />
+                </MessageNode>
+                <MessageNode ref={node7Ref} className="border-teal-500 dark:border-teal-600">
+                  <Building2 className="h-8 w-8 text-teal-600 dark:text-teal-400" />
+                </MessageNode>
+              </div>
+            </div>
+
+            {/* Animated Beams */}
+            <AnimatedBeam
+              containerRef={beamContainerRef}
+              fromRef={node1Ref}
+              toRef={centerNodeRef}
+              curvature={-60}
+              gradientStartColor="#f97316"
+              gradientStopColor="#ea580c"
+            />
+            <AnimatedBeam
+              containerRef={beamContainerRef}
+              fromRef={node2Ref}
+              toRef={centerNodeRef}
+              curvature={0}
+              gradientStartColor="#3b82f6"
+              gradientStopColor="#2563eb"
+            />
+            <AnimatedBeam
+              containerRef={beamContainerRef}
+              fromRef={node3Ref}
+              toRef={centerNodeRef}
+              curvature={60}
+              gradientStartColor="#10b981"
+              gradientStopColor="#059669"
+            />
+            <AnimatedBeam
+              containerRef={beamContainerRef}
+              fromRef={node4Ref}
+              toRef={centerNodeRef}
+              curvature={60}
+              reverse
+              gradientStartColor="#a855f7"
+              gradientStopColor="#9333ea"
+            />
+            <AnimatedBeam
+              containerRef={beamContainerRef}
+              fromRef={node6Ref}
+              toRef={centerNodeRef}
+              curvature={0}
+              reverse
+              gradientStartColor="#ec4899"
+              gradientStopColor="#db2777"
+            />
+            <AnimatedBeam
+              containerRef={beamContainerRef}
+              fromRef={node7Ref}
+              toRef={centerNodeRef}
+              curvature={-60}
+              reverse
+              gradientStartColor="#14b8a6"
+              gradientStopColor="#0d9488"
+            />
+          </div>
+          <CardContent className="py-4 text-center border-t border-border/50">
+            <p className="text-sm text-muted-foreground">
+              Real-time messaging network connecting Florida businesses
+            </p>
+          </CardContent>
+        </Card>
 
         <div className="grid lg:grid-cols-4 gap-6 h-[calc(100vh-200px)] relative z-10">
           {/* Conversations Sidebar */}
