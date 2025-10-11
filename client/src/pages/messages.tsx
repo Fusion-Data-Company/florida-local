@@ -529,46 +529,49 @@ export default function Messages() {
                 </MessageNode>
               </div>
 
-              {/* Scattered Satellite Nodes */}
+              {/* LEFT GROUP - 3 Nodes */}
+              
               {/* Top Left - Users (orange) */}
-              <div className="absolute top-[18%] left-[12%] sm:left-[15%]">
+              <div className="absolute top-[12%] left-[8%] sm:left-[10%]">
                 <MessageNode ref={node1Ref} className="border-orange-500 dark:border-orange-600">
                   <Users className="h-6 w-6 sm:h-8 sm:w-8 text-orange-600 dark:text-orange-400" />
                 </MessageNode>
               </div>
 
-              {/* Top Center - MessageSquare (blue) */}
-              <div className="absolute top-[5%] left-[45%] sm:left-[48%]">
-                <MessageNode ref={node2Ref} className="border-blue-500 dark:border-blue-600">
-                  <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 dark:text-blue-400" />
-                </MessageNode>
-              </div>
-
-              {/* Far Right - Phone (green) - pushed to edge */}
-              <div className="absolute top-[48%] right-[2%] sm:right-[4%]">
-                <MessageNode ref={node3Ref} className="border-green-500 dark:border-green-600">
-                  <Phone className="h-6 w-6 sm:h-8 sm:w-8 text-green-600 dark:text-green-400" />
+              {/* Middle Left - Building (teal) */}
+              <div className="absolute top-[50%] left-[5%] sm:left-[7%]">
+                <MessageNode ref={node7Ref} className="border-teal-500 dark:border-teal-600">
+                  <Building2 className="h-6 w-6 sm:h-8 sm:w-8 text-teal-600 dark:text-teal-400" />
                 </MessageNode>
               </div>
 
               {/* Bottom Left - Mail (purple) */}
-              <div className="absolute bottom-[8%] left-[8%] sm:left-[12%]">
+              <div className="absolute bottom-[10%] left-[12%] sm:left-[15%]">
                 <MessageNode ref={node4Ref} className="border-purple-500 dark:border-purple-600">
                   <Mail className="h-6 w-6 sm:h-8 sm:w-8 text-purple-600 dark:text-purple-400" />
                 </MessageNode>
               </div>
 
-              {/* Bottom Right - Video (pink) */}
-              <div className="absolute bottom-[22%] right-[18%] sm:right-[22%]">
-                <MessageNode ref={node6Ref} className="border-pink-500 dark:border-pink-600">
-                  <Video className="h-6 w-6 sm:h-8 sm:w-8 text-pink-600 dark:text-pink-400" />
+              {/* RIGHT GROUP - 3 Nodes */}
+              
+              {/* Top Right - MessageSquare (blue) */}
+              <div className="absolute top-[15%] right-[10%] sm:right-[12%]">
+                <MessageNode ref={node2Ref} className="border-blue-500 dark:border-blue-600">
+                  <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 dark:text-blue-400" />
                 </MessageNode>
               </div>
 
-              {/* Left Side - Building (teal) */}
-              <div className="absolute top-[62%] left-[3%] sm:left-[6%]">
-                <MessageNode ref={node7Ref} className="border-teal-500 dark:border-teal-600">
-                  <Building2 className="h-6 w-6 sm:h-8 sm:w-8 text-teal-600 dark:text-teal-400" />
+              {/* Middle Right - Phone (green) */}
+              <div className="absolute top-[48%] right-[5%] sm:right-[7%]">
+                <MessageNode ref={node3Ref} className="border-green-500 dark:border-green-600">
+                  <Phone className="h-6 w-6 sm:h-8 sm:w-8 text-green-600 dark:text-green-400" />
+                </MessageNode>
+              </div>
+
+              {/* Bottom Right - Video (pink) */}
+              <div className="absolute bottom-[12%] right-[15%] sm:right-[18%]">
+                <MessageNode ref={node6Ref} className="border-pink-500 dark:border-pink-600">
+                  <Video className="h-6 w-6 sm:h-8 sm:w-8 text-pink-600 dark:text-pink-400" />
                 </MessageNode>
               </div>
             </div>
