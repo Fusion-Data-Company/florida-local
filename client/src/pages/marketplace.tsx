@@ -152,17 +152,20 @@ export default function Marketplace() {
 
       <EliteNavigationHeader />
 
-      {/* ULTRA PREMIUM MARKETPLACE HERO */}
-      <AnimatedGradientHero className="py-16">
-        <ParticleField count={40} color="purple" />
+      {/* FLORIDA LOCAL MARKETPLACE HERO */}
+      <div className="relative py-16 overflow-hidden">
+        {/* Teal-Gold Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[var(--fl-teal-lagoon)]/10 via-background to-[var(--fl-sunset-gold)]/10" />
+        
+        <ParticleField count={40} color="cyan" />
         <div className="container mx-auto px-4 lg:px-8 relative z-10">
           <div className="text-center mb-8">
             <div className="flex flex-col items-center justify-between gap-6 md:flex-row md:text-left">
               <div className="flex-1">
                 <PremiumBadge color="emerald" size="sm" className="mb-4">
-                  Premium Marketplace
+                  Florida Local Marketplace
                 </PremiumBadge>
-                <h1 className="text-5xl md:text-6xl font-black mb-4 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
+                <h1 className="text-5xl md:text-6xl font-black mb-4 bg-gradient-to-r from-[var(--fl-teal-lagoon)] via-[var(--fl-sunset-gold)] to-[var(--fl-bronze)] bg-clip-text text-transparent">
                   Local Marketplace
                 </h1>
                 <p className="text-xl text-muted-foreground max-w-2xl leading-relaxed">
@@ -174,9 +177,9 @@ export default function Marketplace() {
                 <Dialog open={isCreateProductOpen} onOpenChange={setIsCreateProductOpen}>
                   <DialogTrigger asChild>
                     <Button 
-                      variant="metallic-primary"
+                      variant="fl-gold"
                       size="lg"
-                      className="whitespace-nowrap miami-hover-lift"
+                      className="whitespace-nowrap shadow-[0_8px_30px_rgba(212,175,55,0.2)] hover:shadow-[0_12px_40px_rgba(212,175,55,0.35)] transition-shadow"
                       data-testid="button-add-product"
                     >
                       <Plus className="h-5 w-5 mr-2" />
@@ -382,13 +385,13 @@ export default function Marketplace() {
             </div>
           </div>
         </div>
-      </AnimatedGradientHero>
+      </div>
 
       {/* Featured Products */}
       {!searchQuery && !selectedCategory && (
         <section className="py-16 marketplace-product-grid">
           <div className="container mx-auto px-4 lg:px-8 marble-content">
-            <h2 className="text-3xl font-bold mb-8 text-center">Featured Products</h2>
+            <h2 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-[var(--fl-teal-lagoon)] via-[var(--fl-sunset-gold)] to-[var(--fl-bronze)] bg-clip-text text-transparent">Featured Products</h2>
             
             {isLoading ? (
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -416,7 +419,7 @@ export default function Marketplace() {
         <div className="container mx-auto px-4 lg:px-8 marble-content">
           {(searchQuery || selectedCategory) && (
             <div className="mb-8">
-              <h2 className="text-2xl font-bold">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-[var(--fl-teal-lagoon)] to-[var(--fl-sunset-gold)] bg-clip-text text-transparent">
                 {searchQuery 
                   ? `Search results for "${searchQuery}"` 
                   : `Products in ${selectedCategory}`
