@@ -6,6 +6,8 @@
 @layer utilities {
   /* MARBLE TEXTURE UTILITY CLASSES - Apply to all white/light backgrounds */
   .marble-texture {
+    position: relative;
+    z-index: 1;
     background: var(--texture-stucco), var(--background);
     background-size: var(--texture-scale-large), cover;
     background-repeat: repeat, no-repeat;
@@ -13,6 +15,8 @@
   }
 
   .marble-texture-white {
+    position: relative;
+    z-index: 1;
     background: var(--texture-stucco), white;
     background-size: var(--texture-scale-large), cover;
     background-repeat: repeat, no-repeat;
@@ -20,10 +24,30 @@
   }
 
   .marble-texture-card {
+    position: relative;
+    z-index: 1;
     background: var(--texture-stucco), var(--card);
     background-size: var(--texture-scale-large), cover;
     background-repeat: repeat, no-repeat;
     background-blend-mode: multiply;
+  }
+
+  /* MARBLE TEXTURE BACKGROUND - For pure background layers only */
+  .marble-texture-bg {
+    position: relative;
+    z-index: 0;
+    background: var(--texture-stucco), var(--background);
+    background-size: var(--texture-scale-large), cover;
+    background-repeat: repeat, no-repeat;
+    background-blend-mode: multiply;
+  }
+
+  /* CONTENT LAYER - Ensures content appears above marble backgrounds */
+  .marble-texture > *,
+  .marble-texture-white > *,
+  .marble-texture-card > * {
+    position: relative;
+    z-index: 2;
   }
 }
 
