@@ -37,7 +37,7 @@ export default function CartIcon() {
         <ShoppingCart 
           className="h-5 w-5" 
           style={{ 
-            color: '#0891b2',
+            color: '#008B8B',
             strokeWidth: 2 
           }} 
         />
