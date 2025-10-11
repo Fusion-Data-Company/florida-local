@@ -20,6 +20,8 @@ import GlowHero from "@/components/ui/glow-hero";
 import { InfiniteSlider } from "@/components/ui/infinite-slider";
 import { ProgressiveBlur } from "@/components/ui/progressive-blur";
 import VaporizeTextCycle, { Tag } from "@/components/ui/vapour-text-effect";
+import { ScrollXCarousel, ScrollXCarouselContainer, ScrollXCarouselProgress, ScrollXCarouselWrap } from "@/components/ui/scroll-x-carousel";
+import { CardHoverReveal, CardHoverRevealContent, CardHoverRevealMain } from "@/components/ui/reveal-on-hover";
 
 // Premium Metallic Badge Component
 const MetallicBadge = ({ children, color = "gold", className = "" }: { children: React.ReactNode; color?: "gold" | "platinum" | "bronze" | "emerald" | "ruby"; className?: string }) => {
@@ -313,70 +315,109 @@ export default function FloridaLocalElite() {
         </div>
       </section>
 
-      {/* 3. FOODIES, CREATORS & COLLABORATORS SLIDER - PREMIUM */}
-      <section className="py-20 relative overflow-hidden bg-gradient-to-r from-purple-50 via-blue-50 to-pink-50">
-        {/* Glass morphism background */}
-        <div className="absolute inset-0 backdrop-blur-sm"></div>
+      {/* 3. FOODIES, CREATORS & COLLABORATORS CAROUSEL - HORIZONTAL SCROLL */}
+      <ScrollXCarousel className="h-[150vh]">
+        <ScrollXCarouselContainer className="h-dvh place-content-center flex flex-col gap-8 py-12">
+          <div className="pointer-events-none w-[12vw] h-[103%] absolute inset-[0_auto_0_0] z-10 bg-[linear-gradient(90deg,_var(--background)_35%,_transparent)]" />
+          <div className="pointer-events-none bg-[linear-gradient(270deg,_var(--background)_35%,_transparent)] w-[15vw] h-[103%] absolute inset-[0_0_0_auto] z-10" />
 
-        <div className="container mx-auto px-4 relative z-10">
-          <h2
-            className="text-4xl md:text-5xl font-black text-center mb-16"
-            style={{
-              background: 'linear-gradient(135deg, #9333ea 0%, #ec4899 50%, #f97316 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}
-          >
-            The Florida Local | Foodies, Creators & Collaborators
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+          <ScrollXCarouselWrap className="flex-4/5 flex space-x-8 [&>*:first-child]:ml-8">
             {[
-              { tag: "#4EverTourist", caption: "#4Boho Out In the D.R.", badgeColor: "gold", image: "/florida-local/IMG_8619_qri8nygdvbs6m28t7xaxn_3.jpg" },
-              { tag: "#ipowermoves", caption: "Sarah Insure", badgeColor: "platinum", image: "/florida-local/Sarah_Insure_qri8nxijohqwaga6d_2.png" },
-              { tag: "#itsGoodAF", caption: "Explore With Kenzo & Ben", badgeColor: "bronze", image: "/florida-local/IMG_9321_1_qri8nze825tgxo7g2fp_4.png" },
-              { tag: "#effintrendy", caption: "OASIS Tropic Wear", badgeColor: "ruby", image: "/florida-local/3E6A3388_scaled_qri8nygjylpn3c_7.jpg" },
-              { tag: "#NeverHuntAlone", caption: "HOW TO BE FEATURED", badgeColor: "emerald", image: "/florida-local/Never_Hunt_Alone_Logo_47.png" }
-            ].map((item, i) => (
-              <Card
-                key={i}
-                className="group overflow-hidden rounded-3xl transition-all duration-500 hover:-translate-y-3 cursor-pointer"
-                style={{
-                  background: 'rgba(255, 255, 255, 0.95)',
-                  backdropFilter: 'blur(20px)',
-                  boxShadow: '0 10px 40px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.9)',
-                  border: '2px solid rgba(255, 255, 255, 0.5)',
-                }}
+              { 
+                id: 'slide-1',
+                title: '#4Boho Out In the D.R.',
+                description: 'Experience the bohemian lifestyle with our featured local creator, sharing the best of Dominican Republic adventures.',
+                services: ['travel', 'lifestyle', 'photography'],
+                type: '#4EverTourist',
+                imageUrl: '/florida-local/IMG_8619_qri8nygdvbs6m28t7xaxn_3.jpg'
+              },
+              { 
+                id: 'slide-2',
+                title: 'Sarah Insure',
+                description: 'Your trusted insurance expert bringing peace of mind and comprehensive coverage solutions to the community.',
+                services: ['insurance', 'consulting', 'local business'],
+                type: '#ipowermoves',
+                imageUrl: '/florida-local/Sarah_Insure_qri8nxijohqwaga6d_2.png'
+              },
+              { 
+                id: 'slide-3',
+                title: 'Explore With Kenzo & Ben',
+                description: 'Join Kenzo & Ben on their exciting adventures exploring the best local spots and hidden gems.',
+                services: ['exploration', 'food', 'entertainment'],
+                type: '#itsGoodAF',
+                imageUrl: '/florida-local/IMG_9321_1_qri8nze825tgxo7g2fp_4.png'
+              },
+              { 
+                id: 'slide-4',
+                title: 'OASIS Tropic Wear',
+                description: 'Discover trendy tropical fashion that brings island vibes to your everyday style.',
+                services: ['fashion', 'tropical wear', 'local brand'],
+                type: '#effintrendy',
+                imageUrl: '/florida-local/3E6A3388_scaled_qri8nygjylpn3c_7.jpg'
+              },
+              { 
+                id: 'slide-5',
+                title: 'HOW TO BE FEATURED',
+                description: 'Want to be featured on The Florida Local? Join our community of creators, foodies, and collaborators.',
+                services: ['community', 'featured', 'collaboration'],
+                type: '#NeverHuntAlone',
+                imageUrl: '/florida-local/Never_Hunt_Alone_Logo_47.png'
+              }
+            ].map((slide) => (
+              <CardHoverReveal
+                key={slide.id}
+                className="min-w-[70vw] md:min-w-[38vw] shadow-xl border xl:min-w-[30vw] rounded-xl"
+                data-testid={`card-${slide.id}`}
               >
-                <div className="relative h-96 overflow-hidden">
-                  {/* Shimmer overlay on image */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10"></div>
+                <CardHoverRevealMain>
                   <img
-                    src={item.image}
-                    alt={item.caption}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    alt={slide.title}
+                    src={slide.imageUrl}
+                    className="size-full aspect-square object-cover"
+                    data-testid={`img-${slide.id}`}
                   />
-                  {/* Metallic Badge */}
-                  <div className="absolute top-4 left-4 z-20">
-                    <MetallicBadge color={item.badgeColor as any}>{item.tag}</MetallicBadge>
+                </CardHoverRevealMain>
+                <CardHoverRevealContent className="space-y-4 rounded-2xl bg-[rgba(0,0,0,.5)] backdrop-blur-3xl p-4">
+                  <div className="space-y-2">
+                    <h3 className="text-sm text-white/80">Type</h3>
+                    <div className="flex flex-wrap gap-2">
+                      <Badge className="capitalize rounded-full bg-indigo-500" data-testid={`badge-type-${slide.id}`}>
+                        {slide.type}
+                      </Badge>
+                    </div>
                   </div>
-                  {/* Glass caption bar */}
-                  <div
-                    className="absolute bottom-0 left-0 right-0 p-6 z-10"
-                    style={{
-                      background: 'linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.6), transparent)',
-                      backdropFilter: 'blur(10px)',
-                    }}
-                  >
-                    <p className="text-white font-bold text-lg drop-shadow-lg">{item.caption}</p>
+                  <div className="space-y-2">
+                    <h3 className="text-sm text-white/80">Services</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {slide.services.map((service) => (
+                        <Badge
+                          key={service}
+                          className="capitalize rounded-full"
+                          variant={'secondary'}
+                          data-testid={`badge-service-${slide.id}-${service}`}
+                        >
+                          {service}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </Card>
+
+                  <div className="space-y-2 mt-2">
+                    <h3 className="text-white capitalize font-medium" data-testid={`title-${slide.id}`}>
+                      {slide.title}
+                    </h3>
+                    <p className="text-white/80 text-sm" data-testid={`description-${slide.id}`}>{slide.description}</p>
+                  </div>
+                </CardHoverRevealContent>
+              </CardHoverReveal>
             ))}
-          </div>
-        </div>
-      </section>
+          </ScrollXCarouselWrap>
+          <ScrollXCarouselProgress
+            className="bg-secondary mx-8 h-1 rounded-full overflow-hidden"
+            progressStyle="size-full bg-indigo-500/70 rounded-full"
+          />
+        </ScrollXCarouselContainer>
+      </ScrollXCarousel>
 
       {/* 4. FEATURING | THE FLORIDA LOCAL LIFESTYLE - PREMIUM GLASS */}
       <section className="py-20 relative overflow-hidden bg-gradient-to-br from-pink-50 via-purple-50 to-white">

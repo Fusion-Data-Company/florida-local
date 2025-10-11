@@ -37,7 +37,7 @@ export default function EliteNavigationHeader() {
   // APPLE-STYLE NAVIGATION ITEMS - CLEAN & MINIMAL
   const navigationItems = [
     { href: "/", label: "Discover", icon: Home, testId: "nav-discover" },
-    { href: "/florida-elite", label: "Florida", icon: MapPin, testId: "nav-florida-elite" },
+    { href: "/florida-elite", label: "Florida Local", icon: MapPin, testId: "nav-florida-elite" },
     { href: "/registry", label: "Registry", icon: ScrollText, testId: "nav-registry" },
     { href: "/marketplace", label: "Marketplace", icon: Store, testId: "nav-marketplace" },
     { href: "/messages", label: "Messages", icon: MessageSquare, testId: "nav-messages" },
