@@ -376,7 +376,7 @@ export default function Marketplace() {
                 <PremiumBadge color="emerald" size="sm" className="cursor-pointer" data-testid="filter-local-made">
                   Local Made
                 </PremiumBadge>
-                <PremiumBadge color="jade" size="sm" className="cursor-pointer" data-testid="filter-eco-friendly">
+                <PremiumBadge color="emerald" size="sm" className="cursor-pointer" data-testid="filter-eco-friendly">
                   Eco-Friendly
                 </PremiumBadge>
                 <PremiumBadge color="topaz" size="sm" className="cursor-pointer" data-testid="filter-small-batch">
