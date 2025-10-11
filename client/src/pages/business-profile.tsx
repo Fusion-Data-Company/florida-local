@@ -140,7 +140,7 @@ export default function BusinessProfile() {
           style={{
             backgroundImage: business.coverImageUrl 
               ? `linear-gradient(135deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 100%), url(${business.coverImageUrl})` 
-              : 'linear-gradient(135deg, var(--miami-vice-cyan) 0%, var(--miami-emerald) 100%)'
+              : 'linear-gradient(135deg, var(--fl-teal-lagoon) 0%, var(--fl-sunset-gold) 100%)'
           }}
         >
           {/* Magic MCP Floating Particles */}
@@ -181,8 +181,8 @@ export default function BusinessProfile() {
                 border: '3px solid rgba(255,255,255,0.3)',
                 boxShadow: `
                   0 32px 64px rgba(0,0,0,0.12),
-                  0 0 40px rgba(25, 182, 246, 0.2),
-                  0 0 80px rgba(255, 152, 67, 0.1),
+                  0 0 40px rgba(0, 139, 139, 0.2),
+                  0 0 80px rgba(212, 175, 55, 0.15),
                   inset 0 1px 0 rgba(255,255,255,1)
                 `
               }}
@@ -422,8 +422,8 @@ export default function BusinessProfile() {
           </Button>
           {isOwner && (
             <Button 
-              variant={activeTab === 'analytics' ? 'default' : 'outline'} 
-              className="whitespace-nowrap btn-miami-glass marble-content" 
+              variant={activeTab === 'analytics' ? 'fl-teal' : 'outline'} 
+              className="whitespace-nowrap marble-content" 
               onClick={() => setActiveTab('analytics')}
               data-testid="tab-analytics"
             >
@@ -501,11 +501,11 @@ export default function BusinessProfile() {
                 </div>
               ))
             ) : (
-              <div className="col-span-full text-center py-16 miami-glass rounded-2xl">
+              <div className="col-span-full text-center py-16 bg-gradient-to-br from-background via-muted/20 to-background rounded-2xl border border-border shadow-lg">
                 <i className="fas fa-box text-4xl text-muted-foreground mb-4"></i>
-                <p className="text-muted-foreground miami-body-text">No products listed yet.</p>
+                <p className="text-muted-foreground">No products listed yet.</p>
                 {isOwner && (
-                  <Button className="mt-4 btn-miami-primary miami-hover-lift px-6 py-3" data-testid="button-add-first-product">
+                  <Button variant="fl-gold" className="mt-4 px-6 py-3 shadow-[0_8px_30px_rgba(212,175,55,0.25)]" data-testid="button-add-first-product">
                     Add Your First Product
                   </Button>
                 )}
