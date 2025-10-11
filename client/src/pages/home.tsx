@@ -10,6 +10,7 @@ import MarketplaceSection from "@/components/marketplace-section";
 import SocialFeed from "@/components/social-feed";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { Button } from "@/components/ui/button";
+import { StardustButton } from "@/components/ui/stardust-button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Store, Plus, ArrowRight, Star, Users, TrendingUp } from "lucide-react";
 import {
@@ -94,26 +95,24 @@ export default function Home() {
               
               {/* Florida Local Branded Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                <Button 
-                  variant="fl-gold"
+                <StardustButton 
+                  variant="gold"
                   size="lg" 
                   onClick={() => setLocation('/create-business')}
                   data-testid="button-get-started-create-business"
-                  className="shadow-[0_8px_30px_rgba(212,175,55,0.2)] hover:shadow-[0_12px_40px_rgba(212,175,55,0.35)] transition-all duration-300"
                 >
                   <Store className="h-5 w-5 mr-2" />
                   Get Started - Create Your Business
-                </Button>
-                <Button 
-                  variant="fl-teal"
+                </StardustButton>
+                <StardustButton 
+                  variant="teal"
                   size="lg"
                   onClick={() => setLocation('/marketplace')}
                   data-testid="button-explore-marketplace"
-                  className="shadow-[0_8px_30px_rgba(0,139,139,0.2)] hover:shadow-[0_12px_40px_rgba(0,139,139,0.35)] transition-all duration-300"
                 >
                   Explore Marketplace
                   <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
+                </StardustButton>
               </div>
 
               {/* FLORIDA LOCAL BENEFITS CARDS - Teal-Gold-Bronze Theme */}

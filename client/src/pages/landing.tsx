@@ -5,6 +5,7 @@ import MarketplaceSection from "@/components/marketplace-section";
 import SocialFeed from "@/components/social-feed";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { Button } from "@/components/ui/button";
+import { StardustButton } from "@/components/ui/stardust-button";
 import { Store, ShoppingCart, Users } from "lucide-react";
 
 export default function Landing() {
@@ -59,22 +60,20 @@ export default function Landing() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                variant="glass-secondary"
+              <StardustButton 
+                variant="gold"
                 size="lg"
                 onClick={() => window.location.href = '/api/login'} 
-                className="px-8 py-4 text-lg font-semibold"
                 data-testid="button-create-profile"
               >
                 Create Your Business Profile
-              </Button>
-              <Button 
-                variant="outline-refined"
+              </StardustButton>
+              <StardustButton 
+                variant="teal"
                 size="lg"
-                className="border-2 border-white text-white hover:bg-white/20 px-8 py-4 text-lg font-semibold"
               >
                 See Pricing Plans
-              </Button>
+              </StardustButton>
             </div>
           </div>
         </div>

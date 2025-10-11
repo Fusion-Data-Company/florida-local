@@ -13,6 +13,7 @@ import ProductCard from "@/components/product-card";
 import MagicEliteProductCard, { MagicEliteProductGrid } from "@/components/magic-elite-product-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { StardustButton } from "@/components/ui/stardust-button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -176,15 +177,15 @@ export default function Marketplace() {
               {isAuthenticated && userBusinesses.length > 0 && (
                 <Dialog open={isCreateProductOpen} onOpenChange={setIsCreateProductOpen}>
                   <DialogTrigger asChild>
-                    <Button 
-                      variant="fl-gold"
+                    <StardustButton 
+                      variant="gold"
                       size="lg"
-                      className="whitespace-nowrap shadow-[0_8px_30px_rgba(212,175,55,0.2)] hover:shadow-[0_12px_40px_rgba(212,175,55,0.35)] transition-shadow"
+                      className="whitespace-nowrap"
                       data-testid="button-add-product"
                     >
                       <Plus className="h-5 w-5 mr-2" />
                       Add Product
-                    </Button>
+                    </StardustButton>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-2xl marketplace-dialog">
                     <div className="marble-content">

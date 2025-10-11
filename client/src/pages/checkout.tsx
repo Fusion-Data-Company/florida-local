@@ -12,6 +12,7 @@ import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-
 import EliteNavigationHeader from "@/components/elite-navigation-header";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { Button } from "@/components/ui/button";
+import { StardustButton } from "@/components/ui/stardust-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -117,11 +118,11 @@ function CheckoutForm({ clientSecret, orderId }: { clientSecret: string; orderId
         <PaymentElement />
       </div>
       
-      <Button
+      <StardustButton
         type="submit"
         disabled={!stripe || isProcessing}
-        variant="fl-gold"
-        className="w-full shadow-[0_12px_40px_rgba(212,175,55,0.35)]"
+        variant="gold"
+        className="w-full"
         size="lg"
         data-testid="button-complete-payment"
       >
@@ -133,7 +134,7 @@ function CheckoutForm({ clientSecret, orderId }: { clientSecret: string; orderId
         ) : (
           "Complete Payment"
         )}
-      </Button>
+      </StardustButton>
     </form>
   );
 }
@@ -485,11 +486,11 @@ export default function Checkout() {
                     </PremiumGlassCard>
                   </Transform3DCard>
 
-                  <Button
+                  <StardustButton
                     type="submit"
                     disabled={createPaymentIntentMutation.isPending}
-                    variant="fl-gold"
-                    className="w-full h-14 text-lg font-bold shadow-[0_12px_40px_rgba(212,175,55,0.35)]"
+                    variant="gold"
+                    className="w-full"
                     size="lg"
                     data-testid="button-create-order"
                   >
@@ -504,7 +505,7 @@ export default function Checkout() {
                         Continue to Payment
                       </>
                     )}
-                  </Button>
+                  </StardustButton>
                 </form>
               </Form>
             ) : (
