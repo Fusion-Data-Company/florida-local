@@ -17,6 +17,8 @@ import {
   HoverTrail,
 } from "@/components/premium-ultra";
 import GlowHero from "@/components/ui/glow-hero";
+import { InfiniteSlider } from "@/components/ui/infinite-slider";
+import { ProgressiveBlur } from "@/components/ui/progressive-blur";
 
 // Premium Metallic Badge Component
 const MetallicBadge = ({ children, color = "gold", className = "" }: { children: React.ReactNode; color?: "gold" | "platinum" | "bronze" | "emerald" | "ruby"; className?: string }) => {
@@ -89,68 +91,136 @@ export default function FloridaLocalElite() {
       {/* 1. SITE HEADER / NAVIGATION */}
       <EliteNavigationHeader />
 
-      {/* 2. ULTRA PREMIUM HERO SECTION - LEVEL 6 UPGRADED */}
-      <AnimatedGradientHero className="relative h-[85vh] overflow-hidden group">
-        {/* Background Image Layer */}
-        <div className="absolute inset-0">
-          <img
-            src="/florida-local/Bg_d604993a_0.png"
-            alt="Florida Beach"
-            className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-1000"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-        </div>
-
-        {/* PARTICLE FIELD */}
-        <ParticleField count={80} color="cyan" />
-
-        {/* Premium 4K Badge - METALLIC */}
-        <div className="absolute top-8 left-8 z-20">
-          <MetallicBadge color="platinum">
-            4K Cinematic Video | Florida, USA – By Drone
-          </MetallicBadge>
-        </div>
-
-        {/* PREMIUM Hero Text with glass morphism */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10 px-4">
-          {/* Glass container for text */}
-          <div
-            className="relative p-12 rounded-3xl"
-            style={{
-              background: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(20px) saturate(180%)',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-            }}
-          >
-            {/* Florida Local GlowHero */}
-            <GlowHero 
-              glowText="The Florida Local"
-              glowTextSize="xl"
-              className="mb-6"
+      {/* 2. NEW HERO SECTION WITH VIDEO BACKGROUND */}
+      <section className="overflow-x-hidden">
+        <div className="relative py-24 md:pb-32 lg:pb-36 lg:pt-72">
+          <div className="relative z-10 mx-auto flex max-w-7xl flex-col px-6 lg:block lg:px-12">
+            <div className="mx-auto max-w-lg text-center lg:ml-0 lg:max-w-full lg:text-left">
+              <h1 className="mt-8 max-w-2xl text-balance text-5xl md:text-6xl lg:mt-16 xl:text-7xl text-white dark:text-white">
+                The Florida Local
+              </h1>
+              <p className="mt-8 max-w-2xl text-balance text-lg text-white dark:text-white">
+                Life's is BETTER when you're Living Like a LOCAL.
+              </p>
+            </div>
+          </div>
+          <div className="aspect-[2/3] absolute inset-1 overflow-hidden rounded-3xl border border-black/10 sm:aspect-video lg:rounded-[3rem] dark:border-white/5">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="size-full object-cover opacity-50 dark:opacity-35"
+              src="/attached_assets/17853291-uhd_3840_2160_30fps_1760213055083.mp4"
             />
-            <p className="text-3xl md:text-4xl text-white font-light max-w-4xl leading-relaxed">
-              Life's is BETTER when you're Living Like a{" "}
-              <span
-                className="font-black"
-                style={{
-                  background: 'linear-gradient(135deg, #ffd700 0%, #ffa500 50%, #ffd700 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                  textShadow: '0 0 30px rgba(255, 215, 0, 0.6)',
-                }}
-              >
-                LOCAL
-              </span>
-              .
-            </p>
           </div>
         </div>
+      </section>
 
-        {/* Bottom gradient fade */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white via-white/50 to-transparent z-10"></div>
-      </AnimatedGradientHero>
+      {/* 2.5 SCROLLING BRAND BAR */}
+      <section className="bg-background pb-2">
+        <div className="group relative m-auto max-w-7xl px-6">
+          <div className="flex flex-col items-center md:flex-row">
+            <div className="md:max-w-44 md:border-r md:pr-6">
+              <p className="text-end text-sm dark:text-white">Powering the best teams</p>
+            </div>
+            <div className="relative py-6 md:w-[calc(100%-11rem)]">
+              <InfiniteSlider
+                speedOnHover={20}
+                speed={40}
+                gap={112}>
+                <div className="flex">
+                  <img
+                    className="mx-auto h-5 w-fit dark:invert"
+                    src="https://html.tailus.io/blocks/customers/nvidia.svg"
+                    alt="Nvidia Logo"
+                    height="20"
+                    width="auto"
+                  />
+                </div>
+
+                <div className="flex">
+                  <img
+                    className="mx-auto h-4 w-fit dark:invert"
+                    src="https://html.tailus.io/blocks/customers/column.svg"
+                    alt="Column Logo"
+                    height="16"
+                    width="auto"
+                  />
+                </div>
+                <div className="flex">
+                  <img
+                    className="mx-auto h-4 w-fit dark:invert"
+                    src="https://html.tailus.io/blocks/customers/github.svg"
+                    alt="GitHub Logo"
+                    height="16"
+                    width="auto"
+                  />
+                </div>
+                <div className="flex">
+                  <img
+                    className="mx-auto h-5 w-fit dark:invert"
+                    src="https://html.tailus.io/blocks/customers/nike.svg"
+                    alt="Nike Logo"
+                    height="20"
+                    width="auto"
+                  />
+                </div>
+                <div className="flex">
+                  <img
+                    className="mx-auto h-5 w-fit dark:invert"
+                    src="https://html.tailus.io/blocks/customers/lemonsqueezy.svg"
+                    alt="Lemon Squeezy Logo"
+                    height="20"
+                    width="auto"
+                  />
+                </div>
+                <div className="flex">
+                  <img
+                    className="mx-auto h-4 w-fit dark:invert"
+                    src="https://html.tailus.io/blocks/customers/laravel.svg"
+                    alt="Laravel Logo"
+                    height="16"
+                    width="auto"
+                  />
+                </div>
+                <div className="flex">
+                  <img
+                    className="mx-auto h-7 w-fit dark:invert"
+                    src="https://html.tailus.io/blocks/customers/lilly.svg"
+                    alt="Lilly Logo"
+                    height="28"
+                    width="auto"
+                  />
+                </div>
+
+                <div className="flex">
+                  <img
+                    className="mx-auto h-6 w-fit dark:invert"
+                    src="https://html.tailus.io/blocks/customers/openai.svg"
+                    alt="OpenAI Logo"
+                    height="24"
+                    width="auto"
+                  />
+                </div>
+              </InfiniteSlider>
+
+              <div className="bg-linear-to-r from-background absolute inset-y-0 left-0 w-20"></div>
+              <div className="bg-linear-to-l from-background absolute inset-y-0 right-0 w-20"></div>
+              <ProgressiveBlur
+                className="pointer-events-none absolute left-0 top-0 h-full w-20"
+                direction="left"
+                blurIntensity={1}
+              />
+              <ProgressiveBlur
+                className="pointer-events-none absolute right-0 top-0 h-full w-20"
+                direction="right"
+                blurIntensity={1}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* 3. FOODIES, CREATORS & COLLABORATORS SLIDER - PREMIUM */}
       <section className="py-20 relative overflow-hidden bg-gradient-to-r from-purple-50 via-blue-50 to-pink-50">

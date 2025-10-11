@@ -68,6 +68,10 @@ externalPort = 6000
 exposeLocalhost = true
 
 [[ports]]
+localPort = 46669
+externalPort = 8081
+
+[[ports]]
 localPort = 57867
 externalPort = 6800
 exposeLocalhost = true
