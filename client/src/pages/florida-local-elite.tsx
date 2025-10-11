@@ -109,10 +109,10 @@ export default function FloridaLocalElite() {
         </div>
 
         {/* Content Overlay - Absolutely positioned on video */}
-        <div className="relative z-10 flex items-end justify-start min-h-[600px] md:min-h-[700px] lg:min-h-[800px] pb-12 md:pb-16 lg:pb-20 pl-4 md:pl-6 lg:pl-8">
-          <div className="text-left max-w-2xl md:max-w-3xl lg:max-w-4xl">
+        <div className="relative z-10 min-h-[600px] md:min-h-[700px] lg:min-h-[800px] pb-12 md:pb-16 lg:pb-20">
+          <div className="absolute bottom-12 md:bottom-16 lg:bottom-20 left-0 w-full px-4 md:px-6 lg:px-8">
             {/* LOGO WITH SUBTLE GLOW */}
-            <div className="mb-8 inline-block relative group -ml-4 md:-ml-6 lg:-ml-8">
+            <div className="mb-8 inline-block relative group">
               {/* Logo with subtle ambient glow */}
               <img
                 src="/attached_assets/me_1760215801481.png"
@@ -122,8 +122,8 @@ export default function FloridaLocalElite() {
               />
             </div>
 
-            {/* ULTRA ELEGANT TAGLINE WITH STYLED CAPITALS */}
-            <p className="mt-8 max-w-2xl text-balance text-xl md:text-2xl leading-relaxed tracking-wide" data-testid="text-hero-tagline">
+            {/* ULTRA ELEGANT TAGLINE WITH STYLED CAPITALS - CENTERED ACROSS BOTTOM */}
+            <p className="mt-8 text-center text-2xl md:text-3xl lg:text-4xl leading-relaxed tracking-wide whitespace-nowrap" data-testid="text-hero-tagline">
               <span className="inline-block relative">
                 <span className="text-white/90 drop-shadow-lg">Life's is </span>
                 <span 
