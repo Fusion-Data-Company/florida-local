@@ -120,7 +120,8 @@ function CheckoutForm({ clientSecret, orderId }: { clientSecret: string; orderId
       <Button
         type="submit"
         disabled={!stripe || isProcessing}
-        className="w-full"
+        variant="fl-gold"
+        className="w-full shadow-[0_12px_40px_rgba(212,175,55,0.35)]"
         size="lg"
         data-testid="button-complete-payment"
       >
@@ -282,8 +283,9 @@ export default function Checkout() {
 
       <EliteNavigationHeader />
 
-      {/* ULTRA PREMIUM HERO */}
-      <AnimatedGradientHero className="py-12">
+      {/* FLORIDA LOCAL CHECKOUT HERO */}
+      <div className="relative py-12 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[var(--fl-teal-lagoon)]/10 via-background to-[var(--fl-sunset-gold)]/10" />
         <ParticleField count={25} color="cyan" />
         <div className="container mx-auto px-4 lg:px-8 relative z-10">
           <Button variant="ghost" asChild className="mb-4 hover:bg-white/10" data-testid="button-back-to-cart">
@@ -293,25 +295,25 @@ export default function Checkout() {
             </Link>
           </Button>
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-500 shadow-lg">
+            <div className="p-3 rounded-2xl bg-gradient-to-br from-[var(--fl-teal-lagoon)] to-[var(--fl-sunset-gold)] shadow-[0_8px_30px_rgba(0,139,139,0.25)]">
               <CreditCard className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 bg-clip-text text-transparent" data-testid="text-checkout-title">
+            <h1 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-[var(--fl-teal-lagoon)] via-[var(--fl-sunset-gold)] to-[var(--fl-bronze)] bg-clip-text text-transparent" data-testid="text-checkout-title">
               Secure Checkout
             </h1>
           </div>
           <div className="flex items-center gap-3 mt-4">
-            <PremiumBadge color="emerald" size="sm">
+            <PremiumBadge color="jade" size="sm">
               <Shield className="h-4 w-4 mr-1" />
               Secure Payment
             </PremiumBadge>
-            <PremiumBadge color="sapphire" size="sm">
+            <PremiumBadge color="topaz" size="sm">
               <Lock className="h-4 w-4 mr-1" />
               SSL Encrypted
             </PremiumBadge>
           </div>
         </div>
-      </AnimatedGradientHero>
+      </div>
 
       <div className="checkout-container container mx-auto px-4 py-8 lg:px-8">
 
@@ -326,7 +328,7 @@ export default function Checkout() {
                     <PremiumGlassCard className="checkout-form-card">
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                          <CheckCircle2 className="h-5 w-5 text-cyan-500" />
+                          <CheckCircle2 className="h-5 w-5" style={{ color: 'var(--fl-teal-lagoon)' }} />
                           Contact Information
                         </CardTitle>
                       </CardHeader>
@@ -366,7 +368,7 @@ export default function Checkout() {
                     <PremiumGlassCard className="checkout-form-card">
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                          <ShoppingBag className="h-5 w-5 text-purple-500" />
+                          <ShoppingBag className="h-5 w-5" style={{ color: 'var(--fl-sunset-gold)' }} />
                           Shipping Address
                         </CardTitle>
                       </CardHeader>
@@ -486,7 +488,8 @@ export default function Checkout() {
                   <Button
                     type="submit"
                     disabled={createPaymentIntentMutation.isPending}
-                    className="w-full h-14 text-lg font-bold"
+                    variant="fl-gold"
+                    className="w-full h-14 text-lg font-bold shadow-[0_12px_40px_rgba(212,175,55,0.35)]"
                     size="lg"
                     data-testid="button-create-order"
                   >
@@ -509,7 +512,7 @@ export default function Checkout() {
                 <PremiumGlassCard className="checkout-payment-card">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <Lock className="h-5 w-5 text-emerald-500" />
+                      <Lock className="h-5 w-5" style={{ color: 'var(--fl-teal-lagoon)' }} />
                       Complete Your Payment
                     </CardTitle>
                   </CardHeader>
@@ -529,7 +532,7 @@ export default function Checkout() {
               <PremiumGlassCard className="checkout-summary">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <ShoppingBag className="h-5 w-5 text-cyan-500" />
+                    <ShoppingBag className="h-5 w-5" style={{ color: 'var(--fl-sunset-gold)' }} />
                     Order Summary
                   </CardTitle>
                 </CardHeader>
@@ -544,7 +547,7 @@ export default function Checkout() {
                           Qty: {item.quantity}
                         </PremiumBadge>
                       </div>
-                      <p className="font-black text-lg bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">
+                      <p className="font-black text-lg bg-gradient-to-r from-[var(--fl-teal-lagoon)] to-[var(--fl-sunset-gold)] bg-clip-text text-transparent">
                         ${(parseFloat(String(item.product.price)) * item.quantity).toFixed(2)}
                       </p>
                     </div>
@@ -570,9 +573,9 @@ export default function Checkout() {
                     </span>
                   </div>
                   <Separator className="my-4" />
-                  <div className="flex justify-between items-center p-4 rounded-lg bg-gradient-to-r from-cyan-500/10 to-blue-500/10">
+                  <div className="flex justify-between items-center p-4 rounded-lg bg-gradient-to-r from-[var(--fl-teal-lagoon)]/10 to-[var(--fl-sunset-gold)]/10">
                     <span className="text-xl font-black">Total</span>
-                    <span className="text-2xl font-black bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 bg-clip-text text-transparent" data-testid="text-checkout-total">
+                    <span className="text-2xl font-black bg-gradient-to-r from-[var(--fl-teal-lagoon)] via-[var(--fl-sunset-gold)] to-[var(--fl-bronze)] bg-clip-text text-transparent" data-testid="text-checkout-total">
                       Calculating...
                     </span>
                   </div>
