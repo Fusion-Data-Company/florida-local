@@ -79,20 +79,20 @@ export default function Home() {
             <StardustButton 
               variant="gold"
               size="lg" 
-              onClick={() => setLocation('/create-business')}
-              data-testid="button-get-started-create-business"
+              onClick={() => setLocation(userBusinesses[0]?.id ? `/business/${userBusinesses[0].id}` : '/create-business')}
+              data-testid="button-view-my-business"
             >
               <Store className="h-5 w-5 mr-2" />
-              Get Started - Create Your Business
+              {userBusinesses[0]?.id ? 'View My Business' : 'Create Your Business'}
             </StardustButton>
             <StardustButton 
               variant="teal"
               size="lg"
-              onClick={() => setLocation('/marketplace')}
-              data-testid="button-explore-marketplace"
+              onClick={() => setLocation('/create-post')}
+              data-testid="button-create-post"
             >
-              Explore Marketplace
-              <ArrowRight className="h-4 w-4 ml-2" />
+              <Plus className="h-4 w-4 mr-2" />
+              Create Post
             </StardustButton>
           </div>
 
@@ -165,28 +165,32 @@ export default function Home() {
             <Button 
               variant="fl-gold"
               size="lg"
-              onClick={() => setLocation(`/business/${userBusinesses[0]?.id || ''}`)}
-              data-testid="button-view-my-business"
+              onClick={() => setLocation(userBusinesses[0]?.id ? `/business/${userBusinesses[0].id}` : '/create-business')}
+              data-testid="button-view-my-business-secondary"
               className="shadow-[0_8px_30px_rgba(212,175,55,0.2)] hover:shadow-[0_12px_40px_rgba(212,175,55,0.35)] transition-shadow"
             >
               <Store className="h-5 w-5 mr-2" />
-              View My Business
+              {userBusinesses[0]?.id ? 'View My Business' : 'Create Your Business'}
             </Button>
             <Button 
               variant="fl-teal"
               size="lg"
-              data-testid="button-create-post"
+              onClick={() => setLocation('/create-post')}
+              data-testid="button-create-post-secondary"
               className="shadow-[0_8px_30px_rgba(0,139,139,0.2)] hover:shadow-[0_12px_40px_rgba(0,139,139,0.35)] transition-shadow"
             >
-              <i className="fas fa-plus mr-2"></i>Create Post
+              <Plus className="h-5 w-5 mr-2" />
+              Create Post
             </Button>
             <Button 
               variant="outline"
               size="lg"
+              onClick={() => setLocation('/vendor/products')}
               data-testid="button-add-product"
               className="shadow-[0_8px_30px_rgba(205,127,50,0.15)] hover:shadow-[0_12px_40px_rgba(205,127,50,0.25)] transition-shadow"
             >
-              <i className="fas fa-shopping-bag mr-2"></i>Add Product
+              <Plus className="h-5 w-5 mr-2" />
+              Add Product
             </Button>
           </div>
         </div>
