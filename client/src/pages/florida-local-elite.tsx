@@ -93,100 +93,103 @@ export default function FloridaLocalElite() {
       <EliteNavigationHeader />
 
       {/* 2. NEW HERO SECTION WITH VIDEO BACKGROUND */}
-      <section className="overflow-x-hidden">
-        <div className="relative py-24 md:pb-32 lg:pb-36 lg:pt-72">
-          <div className="relative z-10 mx-auto flex max-w-7xl flex-col px-6 lg:block lg:px-12">
-            <div className="mx-auto max-w-lg text-center lg:ml-0 lg:max-w-full lg:text-left">
-              {/* ULTRA PREMIUM LOGO WITH LAYERED EFFECTS */}
-              <div className="mt-8 lg:mt-16 mb-8 inline-block relative group">
-                {/* Glass morphism backdrop - always visible */}
-                <div className="absolute inset-0 bg-white/5 backdrop-blur-xl rounded-3xl -m-8 opacity-40 group-hover:opacity-70 transition-opacity duration-700"></div>
-                
-                {/* Outer glow layers */}
-                <div className="absolute inset-0 -m-4 blur-3xl opacity-60 bg-gradient-to-r from-amber-400/40 via-teal-500/40 to-amber-400/40 animate-pulse"></div>
-                <div className="absolute inset-0 -m-6 blur-2xl opacity-40 bg-gradient-to-br from-yellow-300/30 to-teal-600/30"></div>
-                
-                {/* Logo with premium stacked shadows */}
-                <img
-                  src="/attached_assets/FL LOCAL TRANSPARENT_1760215258098.png"
-                  alt="The Florida Local"
-                  className="relative w-64 md:w-80 lg:w-96 h-auto transition-all duration-500 animate-float logo-premium-shadows"
-                  data-testid="img-hero-logo"
-                />
-                
-                {/* Shimmer effect overlay */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
-              </div>
+      <section className="relative overflow-hidden min-h-[600px] md:min-h-[700px] lg:min-h-[800px]">
+        {/* Video Background */}
+        <div className="absolute inset-0 w-full h-full overflow-hidden">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+            src="/attached_assets/17853291-uhd_3840_2160_30fps_1760213055083.mp4"
+          />
+          {/* Video overlay for better text readability */}
+          <div className="absolute inset-0 bg-black/30"></div>
+        </div>
 
-              {/* ULTRA ELEGANT TAGLINE WITH STYLED CAPITALS */}
-              <p className="mt-8 max-w-2xl text-balance text-xl md:text-2xl leading-relaxed tracking-wide" data-testid="text-hero-tagline">
-                <span className="inline-block relative">
-                  <span className="text-white/90 drop-shadow-lg">Life's is </span>
-                  <span 
-                    className="font-bold tracking-wider drop-shadow-[0_0_20px_rgba(251,191,36,0.6)]"
-                    style={{
-                      background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #fbbf24 100%)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
-                      textShadow: '0 0 30px rgba(251,191,36,0.5)',
-                    }}
-                  >
-                    BETTER
-                  </span>
-                  <span className="text-white/90 drop-shadow-lg"> when you're </span>
-                  <span 
-                    className="font-bold tracking-wider drop-shadow-[0_0_20px_rgba(251,191,36,0.6)]"
-                    style={{
-                      background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #fbbf24 100%)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
-                      textShadow: '0 0 30px rgba(251,191,36,0.5)',
-                    }}
-                  >
-                    LIVING
-                  </span>
-                  <span className="text-white/90 drop-shadow-lg"> </span>
-                  <span 
-                    className="font-bold tracking-wider drop-shadow-[0_0_20px_rgba(251,191,36,0.6)]"
-                    style={{
-                      background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #fbbf24 100%)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
-                      textShadow: '0 0 30px rgba(251,191,36,0.5)',
-                    }}
-                  >
-                    LIKE
-                  </span>
-                  <span className="text-white/90 drop-shadow-lg"> a </span>
-                  <span 
-                    className="font-bold tracking-wider drop-shadow-[0_0_20px_rgba(251,191,36,0.6)]"
-                    style={{
-                      background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #fbbf24 100%)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
-                      textShadow: '0 0 30px rgba(251,191,36,0.5)',
-                    }}
-                  >
-                    LOCAL
-                  </span>
-                  <span className="text-white/90 drop-shadow-lg">.</span>
-                </span>
-              </p>
+        {/* Content Overlay - Absolutely positioned on video */}
+        <div className="relative z-10 flex items-center justify-center min-h-[600px] md:min-h-[700px] lg:min-h-[800px] px-6 lg:px-12">
+          <div className="text-center max-w-5xl">
+            {/* ULTRA PREMIUM LOGO WITH LAYERED EFFECTS */}
+            <div className="mb-8 inline-block relative group">
+              {/* Glass morphism backdrop - always visible */}
+              <div className="absolute inset-0 bg-white/5 backdrop-blur-xl rounded-3xl -m-8 opacity-40 group-hover:opacity-70 transition-opacity duration-700"></div>
+              
+              {/* Outer glow layers */}
+              <div className="absolute inset-0 -m-4 blur-3xl opacity-60 bg-gradient-to-r from-amber-400/40 via-teal-500/40 to-amber-400/40 animate-pulse"></div>
+              <div className="absolute inset-0 -m-6 blur-2xl opacity-40 bg-gradient-to-br from-yellow-300/30 to-teal-600/30"></div>
+              
+              {/* Logo with premium stacked shadows */}
+              <img
+                src="/attached_assets/me_1760215801481.png"
+                alt="The Florida Local"
+                className="relative w-64 md:w-80 lg:w-96 h-auto transition-all duration-500 animate-float logo-premium-shadows"
+                data-testid="img-hero-logo"
+              />
+              
+              {/* Shimmer effect overlay */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
             </div>
-          </div>
-          <div className="aspect-[2/3] absolute inset-0 overflow-hidden sm:aspect-video">
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="size-full object-cover"
-              src="/attached_assets/17853291-uhd_3840_2160_30fps_1760213055083.mp4"
-            />
+
+            {/* ULTRA ELEGANT TAGLINE WITH STYLED CAPITALS */}
+            <p className="mt-8 max-w-2xl mx-auto text-balance text-xl md:text-2xl leading-relaxed tracking-wide" data-testid="text-hero-tagline">
+              <span className="inline-block relative">
+                <span className="text-white/90 drop-shadow-lg">Life's is </span>
+                <span 
+                  className="font-bold tracking-wider drop-shadow-[0_0_20px_rgba(251,191,36,0.6)]"
+                  style={{
+                    background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #fbbf24 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    textShadow: '0 0 30px rgba(251,191,36,0.5)',
+                  }}
+                >
+                  BETTER
+                </span>
+                <span className="text-white/90 drop-shadow-lg"> when you're </span>
+                <span 
+                  className="font-bold tracking-wider drop-shadow-[0_0_20px_rgba(251,191,36,0.6)]"
+                  style={{
+                    background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #fbbf24 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    textShadow: '0 0 30px rgba(251,191,36,0.5)',
+                  }}
+                >
+                  LIVING
+                </span>
+                <span className="text-white/90 drop-shadow-lg"> </span>
+                <span 
+                  className="font-bold tracking-wider drop-shadow-[0_0_20px_rgba(251,191,36,0.6)]"
+                  style={{
+                    background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #fbbf24 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    textShadow: '0 0 30px rgba(251,191,36,0.5)',
+                  }}
+                >
+                  LIKE
+                </span>
+                <span className="text-white/90 drop-shadow-lg"> a </span>
+                <span 
+                  className="font-bold tracking-wider drop-shadow-[0_0_20px_rgba(251,191,36,0.6)]"
+                  style={{
+                    background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #fbbf24 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    textShadow: '0 0 30px rgba(251,191,36,0.5)',
+                  }}
+                >
+                  LOCAL
+                </span>
+                <span className="text-white/90 drop-shadow-lg">.</span>
+              </span>
+            </p>
           </div>
         </div>
       </section>
