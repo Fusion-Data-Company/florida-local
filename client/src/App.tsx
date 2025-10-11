@@ -21,6 +21,7 @@ import Orders from "@/pages/orders";
 import VendorProducts from "@/pages/vendor-products";
 import VendorPayouts from "@/pages/vendor-payouts";
 import FloridaLocalElite from "@/pages/florida-local-elite";
+import Registry from "@/pages/registry";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -29,6 +30,7 @@ function Router() {
     <Switch>
       {/* Public route - accessible to everyone */}
       <Route path="/florida-elite" component={FloridaLocalElite} />
+      <Route path="/registry" component={Registry} />
 
       {isLoading || !isAuthenticated ? (
         <Route path="/" component={Landing} />
