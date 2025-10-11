@@ -11,6 +11,7 @@ import SocialFeed from "@/components/social-feed";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { Button } from "@/components/ui/button";
 import { StardustButton } from "@/components/ui/stardust-button";
+import GlowHero from "@/components/ui/glow-hero";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Store, Plus, ArrowRight, Star, Users, TrendingUp } from "lucide-react";
 import {
@@ -85,9 +86,11 @@ export default function Home() {
           {!hasBusinesses ? (
             <>
               {/* Florida Local Branded Headline */}
-              <h1 className="text-5xl md:text-7xl font-serif font-bold mb-6 bg-gradient-to-r from-[var(--fl-teal-lagoon)] via-[var(--fl-sunset-gold)] to-[var(--fl-bronze)] bg-clip-text text-transparent">
-                Ready to Grow Your Business?
-              </h1>
+              <GlowHero 
+                glowText="Ready to Grow Your Business?"
+                glowTextSize="xl"
+                className="mb-6"
+              />
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
                 Join Florida's premier business community. Connect with customers, showcase your products,
                 and grow your local presence with our comprehensive platform.
@@ -168,9 +171,11 @@ export default function Home() {
             </>
           ) : (
             <>
-              <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6 bg-gradient-to-r from-[var(--fl-teal-lagoon)] via-[var(--fl-sunset-gold)] to-[var(--fl-bronze)] bg-clip-text text-transparent">
-                Welcome Back to Your Community
-              </h1>
+              <GlowHero 
+                glowText="Welcome Back to Your Community"
+                glowTextSize="lg"
+                className="mb-6"
+              />
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
                 Stay connected with Florida's thriving business network. Discover new opportunities, 
                 showcase your latest updates, and grow your local presence.

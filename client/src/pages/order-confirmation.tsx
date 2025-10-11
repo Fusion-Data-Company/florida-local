@@ -5,6 +5,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useLocation, Link } from "wouter";
 import EliteNavigationHeader from "@/components/elite-navigation-header";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
+import GlowHero from "@/components/ui/glow-hero";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -174,9 +175,12 @@ export default function OrderConfirmation() {
                 <CheckCircle className="h-12 w-12 text-green-600 dark:text-green-400" />
               </div>
             </div>
-            <h1 className="text-3xl font-serif font-bold mb-2" data-testid="text-order-success">
-              Order Confirmed!
-            </h1>
+            <GlowHero 
+              glowText="Order Confirmed!"
+              glowTextSize="md"
+              className="mb-2"
+              data-testid="text-order-success"
+            />
             <p className="text-lg text-muted-foreground">
               Thank you for your purchase. Your order has been successfully placed.
             </p>

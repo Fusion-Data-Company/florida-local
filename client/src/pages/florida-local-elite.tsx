@@ -15,6 +15,7 @@ import {
   AuroraAmbient,
   HoverTrail,
 } from "@/components/premium-ultra";
+import GlowHero from "@/components/ui/glow-hero";
 
 // Premium Metallic Badge Component
 const MetallicBadge = ({ children, color = "gold", className = "" }: { children: React.ReactNode; color?: "gold" | "platinum" | "bronze" | "emerald" | "ruby"; className?: string }) => {
@@ -192,21 +193,12 @@ export default function FloridaLocalElite() {
               border: '1px solid rgba(255, 255, 255, 0.2)',
             }}
           >
-            {/* Metallic gradient text */}
-            <h1
-              className="text-7xl md:text-8xl font-black mb-6 animate-shimmer"
-              style={{
-                background: 'linear-gradient(135deg, #ffffff 0%, #ffd700 25%, #ffffff 50%, #ffa500 75%, #ffffff 100%)',
-                backgroundSize: '200% 100%',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                textShadow: '0 0 40px rgba(255, 215, 0, 0.5)',
-                animation: 'shimmer 4s linear infinite',
-              }}
-            >
-              The Florida Local
-            </h1>
+            {/* Florida Local GlowHero */}
+            <GlowHero 
+              glowText="The Florida Local"
+              glowTextSize="xl"
+              className="mb-6"
+            />
             <p className="text-3xl md:text-4xl text-white font-light max-w-4xl leading-relaxed">
               Life's is BETTER when you're Living Like a{" "}
               <span

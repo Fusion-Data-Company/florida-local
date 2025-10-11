@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import EliteNavigationHeader from "@/components/elite-navigation-header";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 import ProductCard from "@/components/product-card";
+import GlowHero from "@/components/ui/glow-hero";
 import MagicEliteProductCard, { MagicEliteProductGrid } from "@/components/magic-elite-product-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -166,9 +167,11 @@ export default function Marketplace() {
                 <PremiumBadge color="emerald" size="sm" className="mb-4">
                   Florida Local Marketplace
                 </PremiumBadge>
-                <h1 className="text-5xl md:text-6xl font-black mb-4 bg-gradient-to-r from-[var(--fl-teal-lagoon)] via-[var(--fl-sunset-gold)] to-[var(--fl-bronze)] bg-clip-text text-transparent">
-                  Local Marketplace
-                </h1>
+                <GlowHero 
+                  glowText="Local Marketplace"
+                  glowTextSize="xl"
+                  className="mb-4"
+                />
                 <p className="text-xl text-muted-foreground max-w-2xl leading-relaxed">
                   Discover unique products from Florida's most innovative businesses.
                   Support local entrepreneurs while finding exactly what you need.

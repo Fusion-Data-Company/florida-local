@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Link } from "wouter";
 import EliteNavigationHeader from "@/components/elite-navigation-header";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
+import GlowHero from "@/components/ui/glow-hero";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -135,18 +136,15 @@ export default function Orders() {
       <AnimatedGradientHero className="py-16">
         <ParticleField count={35} color="purple" />
         <div className="container mx-auto px-4 lg:px-8 relative z-10">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="p-3 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg">
-              <Package className="h-8 w-8 text-white" />
-            </div>
-            <div>
-              <h1 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent" data-testid="text-orders-title">
-                Your Orders
-              </h1>
-              <p className="text-lg text-muted-foreground mt-1">
-                Track and manage your order history
-              </p>
-            </div>
+          <div className="flex flex-col items-center gap-4 mb-4">
+            <GlowHero 
+              glowText="Your Orders"
+              glowTextSize="lg"
+              data-testid="text-orders-title"
+            />
+            <p className="text-lg text-muted-foreground text-center">
+              Track and manage your order history
+            </p>
           </div>
           {orders.length > 0 && (
             <div className="flex items-center gap-3 mt-4">

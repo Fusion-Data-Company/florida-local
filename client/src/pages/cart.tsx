@@ -9,6 +9,7 @@ import { ApiCartItem } from "@/lib/types";
 import { ShoppingCart, Trash2, Plus, Minus } from "lucide-react";
 import EliteNavigationHeader from "@/components/elite-navigation-header";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
+import GlowHero from "@/components/ui/glow-hero";
 import {
   AnimatedGradientHero,
   ParticleField,
@@ -89,15 +90,11 @@ export default function CartPage() {
       <AnimatedGradientHero className="py-12">
         <ParticleField count={30} color="purple" />
         <div className="container mx-auto px-4 lg:px-8 relative z-10">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg">
-                <ShoppingCart className="h-8 w-8 text-white" />
-              </div>
-              <h1 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
-                Shopping Cart
-              </h1>
-            </div>
+          <div className="flex flex-col items-center gap-4 mb-4">
+            <GlowHero 
+              glowText="Shopping Cart"
+              glowTextSize="lg"
+            />
             {items.length > 0 && (
               <PremiumBadge color="sapphire" size="md">
                 {items.length} {items.length === 1 ? 'Item' : 'Items'}
