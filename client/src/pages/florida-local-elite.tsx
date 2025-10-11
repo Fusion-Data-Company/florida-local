@@ -19,6 +19,7 @@ import {
 import GlowHero from "@/components/ui/glow-hero";
 import { InfiniteSlider } from "@/components/ui/infinite-slider";
 import { ProgressiveBlur } from "@/components/ui/progressive-blur";
+import VaporizeTextCycle, { Tag } from "@/components/ui/vapour-text-effect";
 
 // Premium Metallic Badge Component
 const MetallicBadge = ({ children, color = "gold", className = "" }: { children: React.ReactNode; color?: "gold" | "platinum" | "bronze" | "emerald" | "ruby"; className?: string }) => {
@@ -115,6 +116,29 @@ export default function FloridaLocalElite() {
             />
           </div>
         </div>
+      </section>
+
+      {/* 2.3 VAPORIZE TEXT SECTION */}
+      <section className="bg-black h-screen w-full flex justify-center items-center">
+        <VaporizeTextCycle
+          texts={["Foodies", "Creators", "Collaborators", "The Florida Local"]}
+          font={{
+            fontFamily: "Inter, sans-serif",
+            fontSize: "70px",
+            fontWeight: 600
+          }}
+          color="rgb(255,255, 255)"
+          spread={5}
+          density={5}
+          animation={{
+            vaporizeDuration: 2,
+            fadeInDuration: 1,
+            waitDuration: 0.5
+          }}
+          direction="left-to-right"
+          alignment="center"
+          tag={Tag.H2}
+        />
       </section>
 
       {/* 2.5 SCROLLING BRAND BAR */}
