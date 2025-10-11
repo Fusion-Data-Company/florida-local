@@ -19,7 +19,18 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         
-        // === LUXURY ELITE VARIANTS ===
+        // === FLORIDA LOCAL LUXURY BUTTON VARIANTS ===
+        
+        // Florida Gold - Metallic gold primary button with shine effects
+        "fl-gold": "bg-gradient-to-br from-[#d4af37] via-[#ffd700] to-[#cd7f32] text-white font-bold tracking-wide border-2 border-white/30 shadow-[0_4px_20px_rgba(212,175,55,0.5),0_8px_40px_rgba(212,175,55,0.3),0_2px_10px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.6)] transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_8px_32px_rgba(212,175,55,0.6),0_12px_50px_rgba(212,175,55,0.4),0_0_40px_rgba(255,215,0,0.4),inset_0_1px_0_rgba(255,255,255,0.8)] before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/40 before:via-white/10 before:to-white/40 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300 active:translate-y-0",
+        
+        // Florida Teal - Primary teal gradient with gold accents
+        "fl-teal": "bg-gradient-to-br from-[#008B8B] via-[#00A8A8] to-[#006B6B] text-white font-bold tracking-wide border-2 border-[#d4af37]/40 shadow-[0_4px_20px_rgba(0,139,139,0.4),0_8px_40px_rgba(0,139,139,0.25),inset_0_1px_0_rgba(255,255,255,0.4)] transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_8px_32px_rgba(0,139,139,0.5),0_12px_50px_rgba(0,139,139,0.35),0_0_40px_rgba(212,175,55,0.3),inset_0_1px_0_rgba(255,255,255,0.6)] hover:border-[#d4af37]/60 before:absolute before:inset-0 before:bg-gradient-to-r before:from-[#d4af37]/20 before:via-transparent before:to-[#d4af37]/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300",
+        
+        // Florida Glass - Glass morphism with teal-gold gradient border
+        "fl-glass": "bg-white/40 backdrop-blur-xl border-2 border-transparent bg-origin-border bg-clip-padding text-[#008B8B] font-semibold shadow-[0_4px_12px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.8)] transition-all duration-300 ease-out before:absolute before:inset-0 before:rounded-[inherit] before:p-[2px] before:bg-gradient-to-br before:from-[#008B8B] before:via-[#d4af37] before:to-[#008B8B] before:-z-10 before:opacity-50 hover:bg-white/60 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12),0_0_30px_rgba(0,139,139,0.2),0_0_30px_rgba(212,175,55,0.2),inset_0_1px_0_rgba(255,255,255,0.9)] hover:-translate-y-1 hover:before:opacity-100",
+        
+        // === ORIGINAL LUXURY ELITE VARIANTS ===
         
         // Primary Metallic Button - Full gold/bronze gradient with multi-layer shadows
         "metallic-primary": "bg-gradient-to-br from-[#d4af37] via-[#ffd700] via-[#f4e5c3] via-[#cd7f32] to-[#b8860b] text-white font-bold tracking-wide border-2 border-white/30 shadow-[0_4px_12px_rgba(212,175,55,0.4),0_2px_6px_rgba(0,0,0,0.15),0_1px_3px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.6)] transition-all duration-350 ease-out hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(212,175,55,0.5),0_4px_12px_rgba(212,175,55,0.3),0_2px_6px_rgba(0,0,0,0.2),0_0_30px_rgba(255,215,0,0.3),inset_0_1px_0_rgba(255,255,255,0.8)] before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/30 before:via-white/10 before:to-white/30 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-350 active:translate-y-0",

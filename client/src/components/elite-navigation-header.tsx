@@ -7,7 +7,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { ChevronDown, Menu, X, Home, MapPin, Store, MessageSquare, ShoppingCart, Package, Building2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import CartIcon from "@/components/cart-icon";
-import ThemeToggleButton from "@/components/theme-toggle-button";
 import type { Business } from "@shared/types";
 
 export default function EliteNavigationHeader() {
@@ -51,13 +50,13 @@ export default function EliteNavigationHeader() {
         <div className="container mx-auto px-6" style={{ position: 'relative', zIndex: 10 }}>
           <div className="flex items-center justify-between" style={{ height: '72px' }}>
 
-            {/* LOGO - FIXED SIZE */}
-            <Link href="/" className="elite-logo-container flex items-center" style={{ gap: '10px' }} data-testid="brand-logo">
+            {/* FLORIDA LOCAL LOGO - ULTRA-ELITE TREATMENT */}
+            <Link href="/" className="elite-logo-container flex items-center" data-testid="brand-logo">
               <img 
-                src="/attached_assets/94D42685-8392-4D2E-96A1-EAF19B6B53F3_1760138032602.png" 
+                src="/attached_assets/74662944-EB83-4F94-B6A6-1E7F52ED2927_1760140259629.png" 
                 alt="The Florida Local" 
-                className="h-12 w-auto object-contain"
-                style={{ maxHeight: '48px' }}
+                className="h-16 w-auto object-contain"
+                style={{ maxHeight: '64px' }}
               />
             </Link>
 
@@ -121,7 +120,6 @@ export default function EliteNavigationHeader() {
               {isAuthenticated ? (
                 <>
                   <div className="hidden md:flex items-center" style={{ gap: '8px' }}>
-                    <ThemeToggleButton />
                     <CartIcon />
                   </div>
 
