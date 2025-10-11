@@ -9,6 +9,7 @@ import {
 import { Link } from "wouter";
 import EliteNavigationHeader from "@/components/elite-navigation-header";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
+import { RotatingCarousel } from "@/components/ui/rotating-carousel";
 
 // Business Owner Card Component
 const BusinessOwnerCard = ({
@@ -298,6 +299,54 @@ export default function Registry() {
   const secondShowcaseRow = businessShowcases.slice(0, 5);
   const thirdOwnerRow = additionalOwners.slice(0, 5);
 
+  // Carousel data for business owners (people)
+  const carouselOwners = [
+    {
+      title: "Maria Rodriguez",
+      button: "View Profile",
+      src: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=600&fit=crop",
+    },
+    {
+      title: "James Patterson",
+      button: "View Profile",
+      src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=600&fit=crop",
+    },
+    {
+      title: "Sarah Chen",
+      button: "View Profile",
+      src: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&h=600&fit=crop",
+    },
+    {
+      title: "Michael Thompson",
+      button: "View Profile",
+      src: "https://images.unsplash.com/photo-1556157382-97eda2d62296?w=600&h=600&fit=crop",
+    },
+  ];
+
+  // Carousel data for business showcases (cards)
+  const carouselShowcases = [
+    {
+      title: "Sunshine Café",
+      button: "Explore Business",
+      src: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=600&h=600&fit=crop",
+    },
+    {
+      title: "Martinez Construction Co.",
+      button: "Explore Business",
+      src: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&h=600&fit=crop",
+    },
+    {
+      title: "Ocean View Properties",
+      button: "Explore Business",
+      src: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&h=600&fit=crop",
+    },
+    {
+      title: "Luxury Spa & Retreat",
+      button: "Explore Business",
+      src: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=600&h=600&fit=crop",
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-black">
       <EliteNavigationHeader />
@@ -350,6 +399,42 @@ export default function Registry() {
             ))}
           </motion.div>
         </motion.div>
+      </div>
+
+      {/* Business Owners Carousel - Rotates Forward (Right) */}
+      <div className="py-20 bg-gradient-to-b from-black via-gray-900 to-black" data-testid="carousel-owners-section">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            Meet the Visionaries
+          </h2>
+          <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+            Florida's most innovative business leaders and entrepreneurs
+          </p>
+        </div>
+        <RotatingCarousel 
+          slides={carouselOwners} 
+          autoRotate={true} 
+          rotateInterval={5000} 
+          direction="forward" 
+        />
+      </div>
+
+      {/* Business Showcases Carousel - Rotates Reverse (Left) */}
+      <div className="py-20 bg-gradient-to-b from-black via-gray-900 to-gray-800" data-testid="carousel-showcases-section">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            Elite Business Showcase
+          </h2>
+          <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+            Discover exceptional businesses making their mark in Florida
+          </p>
+        </div>
+        <RotatingCarousel 
+          slides={carouselShowcases} 
+          autoRotate={true} 
+          rotateInterval={5000} 
+          direction="reverse" 
+        />
       </div>
 
       <MobileBottomNav />
