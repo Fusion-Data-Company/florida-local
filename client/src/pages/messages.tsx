@@ -510,27 +510,15 @@ export default function Messages() {
         </div>
 
         {/* Animated Network Visualization */}
-        <Card className="mb-8 miami-glass border-orange-200/50 dark:border-gray-700/50 overflow-visible">
+        <Card className="mb-8 miami-glass border-orange-200/50 dark:border-gray-700/50 overflow-hidden">
           <div
-            className="relative flex h-[300px] w-full items-center justify-center p-8 sm:p-12 bg-gradient-to-br from-orange-50/50 to-blue-50/50 dark:from-gray-800/50 dark:to-gray-900/50"
+            className="relative flex h-[300px] w-full items-center justify-center p-8 bg-gradient-to-br from-orange-50/50 to-blue-50/50 dark:from-gray-800/50 dark:to-gray-900/50"
             ref={beamContainerRef}
           >
-            <div className="flex size-full max-w-4xl items-center justify-center">
-              {/* Network Grid - Mobile: 2x3, Desktop: 3x3 */}
-              <div className="grid grid-cols-3 gap-4 sm:gap-8 items-center justify-items-center w-full max-w-2xl">
-                {/* Top Row */}
-                <MessageNode ref={node1Ref} className="border-orange-500 dark:border-orange-600">
-                  <Users className="h-6 w-6 sm:h-8 sm:w-8 text-orange-600 dark:text-orange-400" />
-                </MessageNode>
-                <MessageNode ref={node2Ref} className="border-blue-500 dark:border-blue-600">
-                  <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 dark:text-blue-400" />
-                </MessageNode>
-                <MessageNode ref={node3Ref} className="border-green-500 dark:border-green-600">
-                  <Phone className="h-6 w-6 sm:h-8 sm:w-8 text-green-600 dark:text-green-400" />
-                </MessageNode>
-
-                {/* Middle Row - Center Hub */}
-                <div></div>
+            {/* Scattered Network Nodes */}
+            <div className="relative w-full h-full max-w-4xl">
+              {/* Center Hub */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                 <MessageNode 
                   ref={centerNodeRef} 
                   className="size-20 sm:size-24 border-4 border-gradient-primary shadow-xl bg-gradient-to-br from-orange-100 to-blue-100 dark:from-orange-900/30 dark:to-blue-900/30"
@@ -539,15 +527,46 @@ export default function Messages() {
                     <Globe className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
                   </div>
                 </MessageNode>
-                <div></div>
+              </div>
 
-                {/* Bottom Row */}
+              {/* Scattered Satellite Nodes */}
+              {/* Top Left */}
+              <div className="absolute top-[15%] left-[8%] sm:left-[12%]">
+                <MessageNode ref={node1Ref} className="border-orange-500 dark:border-orange-600">
+                  <Users className="h-6 w-6 sm:h-8 sm:w-8 text-orange-600 dark:text-orange-400" />
+                </MessageNode>
+              </div>
+
+              {/* Top Right */}
+              <div className="absolute top-[8%] right-[15%] sm:right-[18%]">
+                <MessageNode ref={node2Ref} className="border-blue-500 dark:border-blue-600">
+                  <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 dark:text-blue-400" />
+                </MessageNode>
+              </div>
+
+              {/* Middle Right */}
+              <div className="absolute top-[42%] right-[6%] sm:right-[10%]">
+                <MessageNode ref={node3Ref} className="border-green-500 dark:border-green-600">
+                  <Phone className="h-6 w-6 sm:h-8 sm:w-8 text-green-600 dark:text-green-400" />
+                </MessageNode>
+              </div>
+
+              {/* Bottom Left */}
+              <div className="absolute bottom-[12%] left-[15%] sm:left-[20%]">
                 <MessageNode ref={node4Ref} className="border-purple-500 dark:border-purple-600">
                   <Mail className="h-6 w-6 sm:h-8 sm:w-8 text-purple-600 dark:text-purple-400" />
                 </MessageNode>
+              </div>
+
+              {/* Bottom Right */}
+              <div className="absolute bottom-[18%] right-[12%] sm:right-[16%]">
                 <MessageNode ref={node6Ref} className="border-pink-500 dark:border-pink-600">
                   <Video className="h-6 w-6 sm:h-8 sm:w-8 text-pink-600 dark:text-pink-400" />
                 </MessageNode>
+              </div>
+
+              {/* Middle Left */}
+              <div className="absolute top-[35%] left-[5%] sm:left-[8%]">
                 <MessageNode ref={node7Ref} className="border-teal-500 dark:border-teal-600">
                   <Building2 className="h-6 w-6 sm:h-8 sm:w-8 text-teal-600 dark:text-teal-400" />
                 </MessageNode>
