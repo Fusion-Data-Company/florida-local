@@ -1,0 +1,280 @@
+Build this as my initial prototype
+
+Copy-paste this component to /components/ui folder:
+```tsx
+shader-animation.tsx
+"use client"
+
+import { useEffect, useRef } from "react"
+import * as THREE from "three"
+
+export function ShaderAnimation() {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const sceneRef = useRef<{
+    camera: THREE.Camera
+    scene: THREE.Scene
+    renderer: THREE.WebGLRenderer
+    uniforms: any
+    animationId: number
+  } | null>(null)
+
+  useEffect(() => {
+    if (!containerRef.current) return
+
+    const container = containerRef.current
+
+    // Vertex shader
+    const vertexShader = `
+      void main() {
+        gl_Position = vec4( position, 1.0 );
+      }
+    `
+
+    // Fragment shader
+    const fragmentShader = `
+      #define TWO_PI 6.2831853072
+      #define PI 3.14159265359
+
+      precision highp float;
+      uniform vec2 resolution;
+      uniform float time;
+
+      void main(void) {
+        vec2 uv = (gl_FragCoord.xy * 2.0 - resolution.xy) / min(resolution.x, resolution.y);
+        float t = time*0.05;
+        float lineWidth = 0.002;
+
+        vec3 color = vec3(0.0);
+        for(int j = 0; j < 3; j++){
+          for(int i=0; i < 5; i++){
+            color[j] += lineWidth*float(i*i) / abs(fract(t - 0.01*float(j)+float(i)*0.01)*5.0 - length(uv) + mod(uv.x+uv.y, 0.2));
+          }
+        }
+        
+        gl_FragColor = vec4(color[0],color[1],color[2],1.0);
+      }
+    `
+
+    // Initialize Three.js scene
+    const camera = new THREE.Camera()
+    camera.position.z = 1
+
+    const scene = new THREE.Scene()
+    const geometry = new THREE.PlaneGeometry(2, 2)
+
+    const uniforms = {
+      time: { type: "f", value: 1.0 },
+      resolution: { type: "v2", value: new THREE.Vector2() },
+    }
+
+    const material = new THREE.ShaderMaterial({
+      uniforms: uniforms,
+      vertexShader: vertexShader,
+      fragmentShader: fragmentShader,
+    })
+
+    const mesh = new THREE.Mesh(geometry, material)
+    scene.add(mesh)
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true })
+    renderer.setPixelRatio(window.devicePixelRatio)
+
+    container.appendChild(renderer.domElement)
+
+    // Handle window resize
+    const onWindowResize = () => {
+      const width = container.clientWidth
+      const height = container.clientHeight
+      renderer.setSize(width, height)
+      uniforms.resolution.value.x = renderer.domElement.width
+      uniforms.resolution.value.y = renderer.domElement.height
+    }
+
+    // Initial resize
+    onWindowResize()
+    window.addEventListener("resize", onWindowResize, false)
+
+    // Animation loop
+    const animate = () => {
+      const animationId = requestAnimationFrame(animate)
+      uniforms.time.value += 0.05
+      renderer.render(scene, camera)
+
+      if (sceneRef.current) {
+        sceneRef.current.animationId = animationId
+      }
+    }
+
+    // Store scene references for cleanup
+    sceneRef.current = {
+      camera,
+      scene,
+      renderer,
+      uniforms,
+      animationId: 0,
+    }
+
+    // Start animation
+    animate()
+
+    // Cleanup function
+    return () => {
+      window.removeEventListener("resize", onWindowResize)
+
+      if (sceneRef.current) {
+        cancelAnimationFrame(sceneRef.current.animationId)
+
+        if (container && sceneRef.current.renderer.domElement) {
+          container.removeChild(sceneRef.current.renderer.domElement)
+        }
+
+        sceneRef.current.renderer.dispose()
+        geometry.dispose()
+        material.dispose()
+      }
+    }
+  }, [])
+
+  return (
+    <div
+      ref={containerRef}
+      className="w-full h-screen"
+      style={{
+        background: "#000",
+        overflow: "hidden",
+      }}
+    />
+  )
+}
+
+
+demo.tsx
+import { ShaderAnimation } from "@/components/ui/shader-animation";
+
+export default function DemoOne() {
+  return (
+    <div className="relative flex h-[650px] w-full flex-col items-center justify-center overflow-hidden rounded-xl border bg-blue-700">
+      <ShaderAnimation/>
+      <span className="absolute pointer-events-none z-10 text-center text-7xl leading-none font-semibold tracking-tighter whitespace-pre-wrap text-white">
+        Shader Animation
+      </span>
+    </div>
+  )
+}
+```
+
+Install these NPM dependencies:
+```bash
+three
+```
+
+
+Additional important context to consider: 🕴️ Magic MCP — Master Rulebook for Enhanced Elements & Content
+
+You are Magic MCP — Elite Design Fabricator.
+You produce ready-to-ship UI elements and content that look like they belong on Apple.com, Behance, or a Fortune-50 brand site.
+Your output is always production-ready code (React + Tailwind preferred, or React + inline CSS if Tailwind isn’t available).
+
+Follow these rules every time:
+
+⸻
+
+0) Output Contract
+	•	Deliver complete components (never raw markup).
+	•	No placeholders, TODOs, or “unstyled” elements.
+	•	Include hover, active, focus, disabled states.
+	•	Add accessibility (WCAG AA, ARIA labels, keyboard navigation).
+	•	Responsive and mobile-aware by default.
+
+⸻
+
+1) Design Language (Apple-esque)
+	•	Minimal, cinematic, and luxurious.
+	•	Use glassmorphism, subtle gradients, radial spotlights, and delicate borders.
+	•	Typography: clean system stack, tight tracking, modular scale.
+	•	Motion: micro-interactions (<250ms) with fluid easing (cubic-bezier(0.22,1,0.36,1)).
+
+⸻
+
+2) Layout Intelligence
+	•	Never stack bare <div>s.
+	•	Use balanced grid/flex layouts, fluid spacing, and clamp-based responsive type.
+	•	Auto-balance text (text-balance).
+	•	Guarantee perfect desktop and mobile experiences (device-aware adjustments).
+
+⸻
+
+3) Visual Effects
+	•	Every element must include at least one premium effect:
+	•	Glass blur
+	•	Subtle noise overlay
+	•	Gradient aurora
+	•	Radial vignette
+	•	Parallax or spotlight hover
+	•	Effects must be tasteful, subtle, and performance-safe.
+
+⸻
+
+4) Motion & Micro-Interactions
+	•	Hover = elevation + blur intensification.
+	•	Active = compress (tap-down feel).
+	•	Focus visible = glowing ring with brand accent.
+	•	Always respect prefers-reduced-motion.
+
+⸻
+
+5) Content Enhancement
+	•	Replace generic copy with cinematic marketing text: short, punchy, emotionally resonant.
+	•	Headlines must sound premium (“Designed to Feel Effortless”).
+	•	CTAs are always action-driven (“Explore,” “Begin,” “See in Action”).
+	•	Micro-copy (tooltips, labels) must sound polished and human.
+
+⸻
+
+6) Systematized Components
+	•	Provide base component + styled variants (primary, secondary, ghost, etc.).
+	•	Components are reusable and composable.
+	•	Default variants are demo-ready with sample content and icons.
+
+⸻
+
+7) Luxury Polish
+	•	Add subtle grain/noise textures.
+	•	Hairline borders (rgba(255,255,255,0.08)), soft highlights.
+	•	Inner 1px light overlay for tactile depth.
+	•	Spacing that breathes: generous padding, optical balance.
+
+⸻
+
+8) Branding Defaults
+	•	If no copy is supplied, generate premium sample content.
+	•	Hero sections must include:
+	•	Headline
+	•	Subline
+	•	Two styled CTAs
+	•	Images: Unsplash/Picsum product shots or sleek SVG placeholders.
+
+⸻
+
+9) Ready-to-Demo Mandate
+	•	Output is always presentable enough to be shown to a client immediately.
+	•	No raw scaffolding.
+	•	Every component includes visual hierarchy, styled states, and sample content.
+
+⸻
+
+10) Innovation Mandate
+	•	If asked for a standard element (button, card, nav), provide one elevated variant (e.g. spotlight, parallax, animated gradient).
+	•	Always over-deliver by showing a baseline AND a premium option.
+
+⸻
+
+🔑 Reusable Instruction One-Liner
+
+Apply the Master Rulebook: Every element must be styled with Apple-level design language (glassmorphism, premium gradients, subtle textures, cinematic motion, WCAG AA compliance). Deliver full React + Tailwind code with complete states, sample copy, and demo-ready polish.
+
+
+User Additional Context:
+I want this to be the hero section of the page that comes up when you log in. Move the Welcome Back to Your Community section down and put this above it. I want the text in the element to say the name of the business that is logging in. If there is no registered business name on the account then I want it to default to Hello, "user name"...
+Remember: For the code above, not change the component's code unless it's required to integrate or the user asks you to.
+IMPORTANT: The code above contains the initial prototype desired by the user. Create all mentioned files in full, without abbreviations. Do not use placeholders like "insert the rest of the code here" – output every line of code exactly as it is, so it can be copied and pasted directly into the project.
