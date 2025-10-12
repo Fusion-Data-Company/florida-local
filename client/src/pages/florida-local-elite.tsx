@@ -291,7 +291,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 2.6 VAPORIZE TEXT SECTION */}
-      <section className="bg-black w-full py-16 md:py-20">
+      <section className="bg-black w-full pt-16 md:pt-20 pb-8">
         <div className="h-32 md:h-40 flex justify-center items-center">
           <VaporizeTextCycle
             texts={["Foodies", "Creators", "Collaborators", "The Florida Local"]}
@@ -316,10 +316,10 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 3. FOODIES, CREATORS & COLLABORATORS CAROUSEL - HORIZONTAL SCROLL */}
-      <ScrollXCarousel className="h-[150vh] bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
-        <ScrollXCarouselContainer className="h-dvh place-content-center flex flex-col gap-8 py-12">
-          <div className="pointer-events-none w-[12vw] h-[103%] absolute inset-[0_auto_0_0] z-10 bg-[linear-gradient(90deg,_rgb(249_250_251)_35%,_transparent)]" />
-          <div className="pointer-events-none bg-[linear-gradient(270deg,_rgb(249_250_251)_35%,_transparent)] w-[15vw] h-[103%] absolute inset-[0_0_0_auto] z-10" />
+      <ScrollXCarousel className="h-auto bg-black pb-16">
+        <ScrollXCarouselContainer className="h-auto place-content-center flex flex-col gap-8 py-8">
+          <div className="pointer-events-none w-[12vw] h-[103%] absolute inset-[0_auto_0_0] z-10 bg-[linear-gradient(90deg,_rgb(0_0_0)_35%,_transparent)]" />
+          <div className="pointer-events-none bg-[linear-gradient(270deg,_rgb(0_0_0)_35%,_transparent)] w-[15vw] h-[103%] absolute inset-[0_0_0_auto] z-10" />
 
           <ScrollXCarouselWrap className="flex-4/5 flex space-x-8 [&>*:first-child]:ml-8">
             {[
