@@ -30,6 +30,7 @@ function Router() {
     <Switch>
       {/* Public route - accessible to everyone */}
       <Route path="/florida-elite" component={FloridaLocalElite} />
+      <Route path="/florida-local" component={FloridaLocalElite} />
       <Route path="/registry" component={Registry} />
 
       {isLoading || !isAuthenticated ? (

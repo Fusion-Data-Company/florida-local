@@ -159,8 +159,8 @@ npm run db:seed
 # Start development server
 npm run dev
 
-# Create production build
-npm run build
+# Create production build (for deployment)
+bash build-deploy.sh
 
 # Start production server
 npm start
@@ -170,6 +170,58 @@ npm run backup
 
 # Restore from backup
 npm run backup:restore backups/backup-[timestamp].sql
+```
+
+## Deployment Configuration
+
+**⚠️ IMPORTANT: Deployment Build Setup Required**
+
+The production deployment requires a specific build process that copies client files to the correct location. You must configure the deployment build command in the Replit Publishing workspace:
+
+### Steps to Configure Deployment:
+
+1. **Open the Publishing/Deployments workspace** in Replit
+2. **Navigate to your deployment settings** (Autoscale deployment)
+3. **Find the "Build command" field**
+4. **Update the build command to:**
+   ```bash
+   bash build-deploy.sh
+   ```
+5. **Ensure the run command is set to:**
+   ```bash
+   npm run start
+   ```
+6. **Save the changes**
+
+### Why This Is Required:
+
+The `build-deploy.sh` script properly handles the full production build process:
+- ✅ Builds the client with Vite → creates optimized frontend bundle
+- ✅ Builds the server with esbuild → creates production server
+- ✅ Copies client files to `dist/public/` → ensures server can serve static files
+- ✅ Verifies build integrity → confirms all files are in place
+
+The standard `npm run build` command does NOT copy files to the correct location for production deployment.
+
+### Build Script Comparison:
+
+| Command | Client Build | Server Build | Copy to dist/public | Production Ready |
+|---------|--------------|--------------|---------------------|------------------|
+| `npm run build` | ✅ | ✅ | ❌ | ❌ |
+| `bash build-deploy.sh` | ✅ | ✅ | ✅ | ✅ |
+
+### Verify Deployment Build:
+
+To test the deployment build locally:
+```bash
+# Run the deployment build
+bash build-deploy.sh
+
+# Verify files exist
+ls -la dist/public/index.html
+
+# Test production server (requires port 5000 to be free)
+NODE_ENV=production node dist/index.js
 ```
 
 ## Production Status
