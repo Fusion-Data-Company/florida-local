@@ -316,10 +316,10 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 3. FOODIES, CREATORS & COLLABORATORS CAROUSEL - HORIZONTAL SCROLL */}
-      <ScrollXCarousel className="h-[150vh]">
+      <ScrollXCarousel className="h-[150vh] bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
         <ScrollXCarouselContainer className="h-dvh place-content-center flex flex-col gap-8 py-12">
-          <div className="pointer-events-none w-[12vw] h-[103%] absolute inset-[0_auto_0_0] z-10 bg-[linear-gradient(90deg,_var(--background)_35%,_transparent)]" />
-          <div className="pointer-events-none bg-[linear-gradient(270deg,_var(--background)_35%,_transparent)] w-[15vw] h-[103%] absolute inset-[0_0_0_auto] z-10" />
+          <div className="pointer-events-none w-[12vw] h-[103%] absolute inset-[0_auto_0_0] z-10 bg-[linear-gradient(90deg,_rgb(249_250_251)_35%,_transparent)]" />
+          <div className="pointer-events-none bg-[linear-gradient(270deg,_rgb(249_250_251)_35%,_transparent)] w-[15vw] h-[103%] absolute inset-[0_0_0_auto] z-10" />
 
           <ScrollXCarouselWrap className="flex-4/5 flex space-x-8 [&>*:first-child]:ml-8">
             {[
