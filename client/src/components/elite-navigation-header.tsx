@@ -53,12 +53,18 @@ export default function EliteNavigationHeader() {
 
             {/* FLORIDA LOCAL LOGO - ULTRA-ELITE TREATMENT */}
             <Link href="/" className="elite-logo-container flex items-center" data-testid="brand-logo">
-              <img 
-                src="/attached_assets/74662944-EB83-4F94-B6A6-1E7F52ED2927_1760140259629.png" 
-                alt="The Florida Local" 
-                className="h-16 w-auto object-contain"
-                style={{ maxHeight: '64px' }}
-              />
+              <div className="relative px-4 py-2 rounded-xl" style={{
+                background: 'linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 100%)',
+                backdropFilter: 'blur(10px)',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)'
+              }}>
+                <img 
+                  src="/attached_assets/me_1760215801481.png" 
+                  alt="The Florida Local" 
+                  className="h-12 w-auto object-contain"
+                  style={{ maxHeight: '48px', filter: 'drop-shadow(0 2px 8px rgba(251,191,36,0.3))' }}
+                />
+              </div>
             </Link>
 
             {/* NAVIGATION - FIXED SIZES */}
