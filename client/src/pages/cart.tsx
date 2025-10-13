@@ -87,16 +87,17 @@ export default function CartPage() {
       <EliteNavigationHeader />
 
       {/* ULTRA PREMIUM HERO */}
-      <AnimatedGradientHero className="py-12">
+      <AnimatedGradientHero className="py-12 gradient-shift">
         <ParticleField count={30} color="purple" />
         <div className="container mx-auto px-4 lg:px-8 relative z-10">
           <div className="flex flex-col items-center gap-4 mb-4">
-            <GlowHero 
+            <GlowHero
               glowText="Shopping Cart"
               glowTextSize="lg"
+              className="entrance-fade-up"
             />
             {items.length > 0 && (
-              <PremiumBadge color="sapphire" size="md">
+              <PremiumBadge color="sapphire" size="md" className="entrance-scale-fade stagger-1">
                 {items.length} {items.length === 1 ? 'Item' : 'Items'}
               </PremiumBadge>
             )}
@@ -107,15 +108,15 @@ export default function CartPage() {
       <div className="cart-container container mx-auto px-4 lg:px-8 py-10">
         <div className="marble-content">
         {items.length === 0 ? (
-          <Transform3DCard>
-            <PremiumGlassCard className="cart-empty-state">
+          <Transform3DCard className="entrance-scale-fade">
+            <PremiumGlassCard className="cart-empty-state ambient-glow-purple">
               <CardContent className="text-center py-16">
                 <div className="mb-6">
                   <ShoppingCart className="h-20 w-20 mx-auto text-muted-foreground opacity-50" />
                 </div>
                 <h2 className="text-2xl font-bold mb-2">Your cart is empty</h2>
                 <p className="text-muted-foreground mb-6">Start shopping to add items to your cart</p>
-                <Button asChild size="lg">
+                <Button asChild size="lg" className="shimmer-gold-hover">
                   <a href="/marketplace">Continue Shopping</a>
                 </Button>
               </CardContent>
@@ -124,9 +125,9 @@ export default function CartPage() {
         ) : (
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-4">
-              {items.map((item) => (
-                <Transform3DCard key={item.id}>
-                  <PremiumGlassCard className="cart-item-card">
+              {items.map((item, index) => (
+                <Transform3DCard key={item.id} className="entrance-slide-right" style={{ animationDelay: `${index * 0.1}s` }}>
+                  <PremiumGlassCard className="cart-item-card elevation-2 mouse-track-glow">
                     <CardContent className="p-6">
                       <div className="flex gap-6">
                         {item.product.imageUrl ? (

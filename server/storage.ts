@@ -19,6 +19,18 @@ import {
   gmbSyncHistory,
   gmbReviews,
   apiKeys,
+  // Blog tables
+  blogPosts,
+  blogCategories,
+  blogTags,
+  blogPostTags,
+  blogComments,
+  blogReactions,
+  blogBookmarks,
+  blogReadingLists,
+  blogSubscriptions,
+  blogAnalytics,
+  blogRevisions,
   type User,
   type UpsertUser,
   type Business,
@@ -53,6 +65,25 @@ import {
   type InsertGmbReview,
   type ApiKey,
   type InsertApiKey,
+  // Blog types
+  type BlogPost,
+  type InsertBlogPost,
+  type UpdateBlogPost,
+  type BlogCategory,
+  type InsertBlogCategory,
+  type BlogTag,
+  type InsertBlogTag,
+  type BlogComment,
+  type InsertBlogComment,
+  type UpdateBlogComment,
+  type BlogReaction,
+  type InsertBlogReaction,
+  type BlogBookmark,
+  type InsertBlogBookmark,
+  type BlogSubscription,
+  type InsertBlogSubscription,
+  type BlogAnalytics,
+  type InsertBlogAnalytics,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, sql, and, or, like, inArray } from "drizzle-orm";
@@ -158,11 +189,21 @@ export interface IStorage {
   getMonthlyVoteCounts(month: string): Promise<Array<{ businessId: string, voteCount: number }>>;
   hasUserVoted(userId: string, month: string): Promise<boolean>;
   getUserVoteForMonth(userId: string, month: string): Promise<SpotlightVote | undefined>;
+  getEligibleForVoting(limit?: number): Promise<any[]>;
+  getVotingStats(month: string): Promise<any>;
+  getUserVotes(userId: string, month: string): Promise<SpotlightVote[]>;
   
   // Rotation management
   rotateSpotlights(): Promise<void>;
   canPerformManualRotation(): Promise<{ canRotate: boolean; reason?: string }>;
   archiveExpiredSpotlights(): Promise<void>;
+
+  // Community Leaderboards
+  getTopBusinesses(limit?: number): Promise<any[]>;
+  getTopVoters(limit?: number): Promise<any[]>;
+  getTopReviewers(limit?: number): Promise<any[]>;
+  getTopBuyers(limit?: number): Promise<any[]>;
+  getTrendingBusinesses(limit?: number): Promise<any[]>;
   
   // Cart operations
   addToCart(userId: string, productId: string, quantity: number): Promise<CartItem>;
@@ -2010,6 +2051,269 @@ export class DatabaseStorage implements IStorage {
     return vote;
   }
 
+  // Get eligible businesses for voting with vote counts and trend data
+  async getEligibleForVoting(limit: number = 20): Promise<any[]> {
+    const currentMonth = new Date().toISOString().slice(0, 7);
+
+    // Get all eligible businesses (monthly type = no cooldown restrictions for voting)
+    const eligible = await this.getEligibleBusinesses('monthly');
+
+    // Get vote counts for this month
+    const voteCounts = await this.getMonthlyVoteCounts(currentMonth);
+    const voteMap = new Map(voteCounts.map(v => [v.businessId, v.voteCount]));
+
+    // Enrich businesses with vote counts and calculate trend scores
+    const enrichedBusinesses = await Promise.all(
+      eligible.slice(0, limit).map(async (business) => {
+        const voteCount = voteMap.get(business.id) || 0;
+
+        // Calculate trend score based on recent activity (simplified version)
+        // In production, this would use more sophisticated metrics
+        const trendScore = Math.min(100, (voteCount * 10) + (business.averageRating || 0) * 15);
+
+        return {
+          ...business,
+          voteCount,
+          trendScore,
+          isEligible: true,
+        };
+      })
+    );
+
+    // Sort by vote count descending
+    return enrichedBusinesses.sort((a, b) => b.voteCount - a.voteCount);
+  }
+
+  // Get voting statistics for the current month
+  async getVotingStats(month: string): Promise<any> {
+    const voteCounts = await this.getMonthlyVoteCounts(month);
+
+    // Get total unique voters
+    const [totalVotersRow] = await db
+      .select({ count: sql<number>`count(distinct ${spotlightVotes.userId})` })
+      .from(spotlightVotes)
+      .where(eq(spotlightVotes.month, month));
+
+    const totalVotes = voteCounts.reduce((sum, v) => sum + v.voteCount, 0);
+    const totalVoters = totalVotersRow?.count || 0;
+    const participatingBusinesses = voteCounts.length;
+
+    // Calculate days remaining in month
+    const now = new Date();
+    const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const daysRemaining = Math.max(0, Math.ceil((lastDayOfMonth.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+
+    return {
+      totalVotes,
+      totalVoters,
+      participatingBusinesses,
+      daysRemaining,
+      month,
+      topBusinesses: voteCounts.slice(0, 3).map((v, index) => ({
+        businessId: v.businessId,
+        voteCount: v.voteCount,
+        rank: index + 1,
+      })),
+    };
+  }
+
+  // Get all votes by a specific user for a month
+  async getUserVotes(userId: string, month: string): Promise<SpotlightVote[]> {
+    return await db
+      .select()
+      .from(spotlightVotes)
+      .where(
+        and(
+          eq(spotlightVotes.userId, userId),
+          eq(spotlightVotes.month, month)
+        )
+      );
+  }
+
+  // Community Leaderboard Methods
+  async getTopBusinesses(limit: number = 10): Promise<any[]> {
+    // Get top businesses by a composite score of ratings, reviews, orders, and engagement
+    const topBusinesses = await db
+      .select({
+        id: businesses.id,
+        name: businesses.name,
+        logoUrl: businesses.logoUrl,
+        description: businesses.description,
+        averageRating: businesses.averageRating,
+        totalReviews: businesses.totalReviews,
+        totalOrders: businesses.totalOrders,
+        followers: businesses.followers,
+        city: businesses.city,
+        state: businesses.state,
+      })
+      .from(businesses)
+      .where(
+        and(
+          eq(businesses.isActive, true),
+          sql`${businesses.averageRating} > 0`
+        )
+      )
+      .orderBy(
+        desc(sql`
+          (${businesses.averageRating} * 20) +
+          (LEAST(${businesses.totalReviews}, 100) * 0.5) +
+          (LEAST(${businesses.totalOrders}, 50) * 1.0) +
+          (LEAST(${businesses.followers}, 200) * 0.3)
+        `)
+      )
+      .limit(limit);
+
+    // Add rank and score
+    return topBusinesses.map((business, index) => ({
+      ...business,
+      rank: index + 1,
+      score: (business.averageRating || 0) * 20 +
+             Math.min(business.totalReviews || 0, 100) * 0.5 +
+             Math.min(business.totalOrders || 0, 50) * 1.0 +
+             Math.min(business.followers || 0, 200) * 0.3,
+    }));
+  }
+
+  async getTopVoters(limit: number = 10): Promise<any[]> {
+    // Get users with most spotlight votes
+    const topVoters = await db
+      .select({
+        userId: spotlightVotes.userId,
+        voteCount: sql<number>`count(*)`.as('voteCount'),
+        user: {
+          firstName: users.firstName,
+          lastName: users.lastName,
+          profileImage: users.profileImage,
+        },
+      })
+      .from(spotlightVotes)
+      .leftJoin(users, eq(spotlightVotes.userId, users.id))
+      .groupBy(spotlightVotes.userId, users.id)
+      .orderBy(desc(sql`count(*)`))
+      .limit(limit);
+
+    return topVoters.map((voter, index) => ({
+      id: voter.userId,
+      name: `${voter.user?.firstName || 'Unknown'} ${voter.user?.lastName || 'User'}`,
+      avatar: voter.user?.profileImage,
+      count: voter.voteCount,
+      rank: index + 1,
+    }));
+  }
+
+  async getTopReviewers(limit: number = 10): Promise<any[]> {
+    // Get users with most reviews
+    const topReviewers = await db
+      .select({
+        userId: businessReviews.userId,
+        reviewCount: sql<number>`count(*)`.as('reviewCount'),
+        avgRating: sql<number>`avg(${businessReviews.rating})`.as('avgRating'),
+        user: {
+          firstName: users.firstName,
+          lastName: users.lastName,
+          profileImage: users.profileImage,
+        },
+      })
+      .from(businessReviews)
+      .leftJoin(users, eq(businessReviews.userId, users.id))
+      .groupBy(businessReviews.userId, users.id)
+      .orderBy(desc(sql`count(*)`))
+      .limit(limit);
+
+    return topReviewers.map((reviewer, index) => ({
+      id: reviewer.userId,
+      name: `${reviewer.user?.firstName || 'Unknown'} ${reviewer.user?.lastName || 'User'}`,
+      avatar: reviewer.user?.profileImage,
+      count: reviewer.reviewCount,
+      avgRating: reviewer.avgRating ? Number(reviewer.avgRating).toFixed(1) : '0.0',
+      rank: index + 1,
+    }));
+  }
+
+  async getTopBuyers(limit: number = 10): Promise<any[]> {
+    // Get users with most orders
+    const topBuyers = await db
+      .select({
+        userId: orders.userId,
+        orderCount: sql<number>`count(distinct ${orders.id})`.as('orderCount'),
+        totalSpent: sql<number>`sum(${orders.total})`.as('totalSpent'),
+        user: {
+          firstName: users.firstName,
+          lastName: users.lastName,
+          profileImage: users.profileImage,
+        },
+      })
+      .from(orders)
+      .leftJoin(users, eq(orders.userId, users.id))
+      .where(eq(orders.status, 'completed'))
+      .groupBy(orders.userId, users.id)
+      .orderBy(desc(sql`sum(${orders.total})`))
+      .limit(limit);
+
+    return topBuyers.map((buyer, index) => ({
+      id: buyer.userId,
+      name: `${buyer.user?.firstName || 'Unknown'} ${buyer.user?.lastName || 'User'}`,
+      avatar: buyer.user?.profileImage,
+      count: buyer.orderCount,
+      totalSpent: buyer.totalSpent ? Number(buyer.totalSpent).toFixed(2) : '0.00',
+      rank: index + 1,
+    }));
+  }
+
+  async getTrendingBusinesses(limit: number = 10): Promise<any[]> {
+    // Calculate trending score based on recent activity (last 7 days)
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    // Get businesses with their recent activity metrics
+    const trendingBusinesses = await db
+      .select({
+        id: businesses.id,
+        name: businesses.name,
+        logoUrl: businesses.logoUrl,
+        description: businesses.description,
+        category: businesses.category,
+        averageRating: businesses.averageRating,
+        totalReviews: businesses.totalReviews,
+        totalOrders: businesses.totalOrders,
+        followers: businesses.followers,
+        city: businesses.city,
+        state: businesses.state,
+        createdAt: businesses.createdAt,
+      })
+      .from(businesses)
+      .where(eq(businesses.isActive, true))
+      .orderBy(
+        desc(sql`
+          (CASE WHEN ${businesses.createdAt} > ${sevenDaysAgo} THEN 50 ELSE 0 END) +
+          (${businesses.averageRating} * 15) +
+          (LEAST(${businesses.totalReviews}, 50) * 0.8) +
+          (LEAST(${businesses.totalOrders}, 30) * 1.2) +
+          (LEAST(${businesses.followers}, 100) * 0.5)
+        `)
+      )
+      .limit(limit);
+
+    // Calculate trend scores
+    return trendingBusinesses.map((business, index) => {
+      const isNew = business.createdAt && new Date(business.createdAt) > sevenDaysAgo;
+      const trendScore = Math.min(100, Math.round(
+        (isNew ? 50 : 0) +
+        (business.averageRating || 0) * 15 +
+        Math.min(business.totalReviews || 0, 50) * 0.8 +
+        Math.min(business.totalOrders || 0, 30) * 1.2 +
+        Math.min(business.followers || 0, 100) * 0.5
+      ));
+
+      return {
+        ...business,
+        trendScore,
+        isNew,
+        rank: index + 1,
+      };
+    });
+  }
+
   // SECURITY: Enhanced rotation management with guards and frequency controls
   private rotationInProgress = new Set<string>();
   private lastRotationTimes = new Map<string, number>();
@@ -2178,6 +2482,733 @@ export class DatabaseStorage implements IStorage {
         updatedAt: new Date(),
       })
       .where(eq(apiKeys.id, keyId));
+  }
+
+  // ========================================
+  // ADMIN METHODS - Platform Management
+  // ========================================
+
+  async getAllUsers(): Promise<User[]> {
+    return await db
+      .select()
+      .from(users)
+      .orderBy(desc(users.createdAt));
+  }
+
+  async getAllBusinesses(): Promise<Business[]> {
+    return await db
+      .select()
+      .from(businesses)
+      .orderBy(desc(businesses.createdAt));
+  }
+
+  async getAllOrders(): Promise<Order[]> {
+    return await db
+      .select()
+      .from(orders)
+      .orderBy(desc(orders.createdAt));
+  }
+
+  async getAllPosts(): Promise<Post[]> {
+    return await db
+      .select()
+      .from(posts)
+      .orderBy(desc(posts.createdAt));
+  }
+
+  async getAllProducts(): Promise<Product[]> {
+    return await db
+      .select()
+      .from(products)
+      .orderBy(desc(products.createdAt));
+  }
+
+  async updateUser(userId: string, updates: Partial<UpsertUser>): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({
+        ...updates,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
+
+  // ====================================================================
+  // PHASE 4: BLOG STORAGE METHODS
+  // ====================================================================
+
+  // Blog Posts
+  async getBlogPosts(filters: any): Promise<BlogPost[]> {
+    const {
+      status = 'published',
+      categoryId,
+      tag,
+      authorId,
+      featured,
+      limit = 20,
+      offset = 0,
+      orderBy = 'publishedAt',
+      order = 'desc',
+    } = filters;
+
+    let query = db
+      .select({
+        post: blogPosts,
+        author: {
+          id: users.id,
+          firstName: users.firstName,
+          lastName: users.lastName,
+          profileImageUrl: users.profileImageUrl,
+        },
+        category: {
+          id: blogCategories.id,
+          name: blogCategories.name,
+          slug: blogCategories.slug,
+          color: blogCategories.color,
+        },
+      })
+      .from(blogPosts)
+      .leftJoin(users, eq(blogPosts.authorId, users.id))
+      .leftJoin(blogCategories, eq(blogPosts.categoryId, blogCategories.id))
+      .$dynamic();
+
+    // Apply filters
+    const conditions = [];
+
+    if (status) {
+      conditions.push(eq(blogPosts.status, status));
+    }
+
+    if (categoryId) {
+      conditions.push(eq(blogPosts.categoryId, categoryId));
+    }
+
+    if (authorId) {
+      conditions.push(eq(blogPosts.authorId, authorId));
+    }
+
+    if (featured !== undefined) {
+      conditions.push(eq(blogPosts.isFeatured, featured));
+    }
+
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions));
+    }
+
+    // Apply sorting
+    const orderColumn = orderBy === 'publishedAt' ? blogPosts.publishedAt :
+                       orderBy === 'viewCount' ? blogPosts.viewCount :
+                       orderBy === 'likeCount' ? blogPosts.likeCount :
+                       blogPosts.createdAt;
+
+    query = query.orderBy(order === 'desc' ? desc(orderColumn) : orderColumn);
+
+    // Apply pagination
+    query = query.limit(limit).offset(offset);
+
+    const results = await query;
+
+    return results.map((r: any) => ({
+      ...r.post,
+      author: r.author,
+      category: r.category,
+    }));
+  }
+
+  async getBlogPost(id: string): Promise<BlogPost | null> {
+    const results = await db
+      .select({
+        post: blogPosts,
+        author: {
+          id: users.id,
+          firstName: users.firstName,
+          lastName: users.lastName,
+          profileImageUrl: users.profileImageUrl,
+        },
+        category: {
+          id: blogCategories.id,
+          name: blogCategories.name,
+          slug: blogCategories.slug,
+          color: blogCategories.color,
+        },
+      })
+      .from(blogPosts)
+      .leftJoin(users, eq(blogPosts.authorId, users.id))
+      .leftJoin(blogCategories, eq(blogPosts.categoryId, blogCategories.id))
+      .where(eq(blogPosts.id, id))
+      .limit(1);
+
+    if (results.length === 0) return null;
+
+    const result = results[0];
+    return {
+      ...result.post,
+      author: result.author,
+      category: result.category,
+    } as any;
+  }
+
+  async getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
+    const results = await db
+      .select({
+        post: blogPosts,
+        author: {
+          id: users.id,
+          firstName: users.firstName,
+          lastName: users.lastName,
+          profileImageUrl: users.profileImageUrl,
+        },
+        category: {
+          id: blogCategories.id,
+          name: blogCategories.name,
+          slug: blogCategories.slug,
+          color: blogCategories.color,
+        },
+      })
+      .from(blogPosts)
+      .leftJoin(users, eq(blogPosts.authorId, users.id))
+      .leftJoin(blogCategories, eq(blogPosts.categoryId, blogCategories.id))
+      .where(eq(blogPosts.slug, slug))
+      .limit(1);
+
+    if (results.length === 0) return null;
+
+    const result = results[0];
+    return {
+      ...result.post,
+      author: result.author,
+      category: result.category,
+    } as any;
+  }
+
+  async createBlogPost(data: InsertBlogPost): Promise<BlogPost> {
+    const [post] = await db
+      .insert(blogPosts)
+      .values({
+        ...data,
+        publishedAt: data.status === 'published' ? new Date() : data.publishedAt,
+      })
+      .returning();
+
+    return post;
+  }
+
+  async updateBlogPost(id: string, data: Partial<UpdateBlogPost>): Promise<BlogPost> {
+    const [post] = await db
+      .update(blogPosts)
+      .set({
+        ...data,
+        updatedAt: new Date(),
+      })
+      .where(eq(blogPosts.id, id))
+      .returning();
+
+    return post;
+  }
+
+  async deleteBlogPost(id: string): Promise<void> {
+    await db.delete(blogPosts).where(eq(blogPosts.id, id));
+  }
+
+  async getRelatedBlogPosts(postId: string, limit: number): Promise<BlogPost[]> {
+    // Get the current post to find its category and tags
+    const post = await this.getBlogPost(postId);
+    if (!post) return [];
+
+    // Get tags for this post
+    const postTags = await db
+      .select({ tagId: blogPostTags.tagId })
+      .from(blogPostTags)
+      .where(eq(blogPostTags.postId, postId));
+
+    const tagIds = postTags.map(pt => pt.tagId);
+
+    // Find posts with same category or shared tags
+    let query = db
+      .select({
+        post: blogPosts,
+        author: {
+          id: users.id,
+          firstName: users.firstName,
+          lastName: users.lastName,
+          profileImageUrl: users.profileImageUrl,
+        },
+      })
+      .from(blogPosts)
+      .leftJoin(users, eq(blogPosts.authorId, users.id))
+      .where(
+        and(
+          eq(blogPosts.status, 'published'),
+          sql`${blogPosts.id} != ${postId}`, // Exclude current post
+          or(
+            eq(blogPosts.categoryId, post.categoryId),
+            tagIds.length > 0
+              ? sql`${blogPosts.id} IN (
+                  SELECT ${blogPostTags.postId}
+                  FROM ${blogPostTags}
+                  WHERE ${blogPostTags.tagId} IN ${tagIds}
+                )`
+              : undefined
+          )
+        )
+      )
+      .orderBy(desc(blogPosts.publishedAt))
+      .limit(limit);
+
+    const results = await query;
+
+    return results.map((r: any) => ({
+      ...r.post,
+      author: r.author,
+    }));
+  }
+
+  async addTagsToBlogPost(postId: string, tags: string[]): Promise<void> {
+    for (const tagName of tags) {
+      const slug = tagName.toLowerCase().replace(/\s+/g, '-');
+
+      // Find or create tag
+      let [tag] = await db
+        .select()
+        .from(blogTags)
+        .where(eq(blogTags.slug, slug))
+        .limit(1);
+
+      if (!tag) {
+        [tag] = await db
+          .insert(blogTags)
+          .values({ name: tagName, slug })
+          .returning();
+      }
+
+      // Link tag to post (ignore if already linked)
+      try {
+        await db
+          .insert(blogPostTags)
+          .values({ postId, tagId: tag.id });
+
+        // Increment tag post count
+        await db
+          .update(blogTags)
+          .set({ postCount: sql`${blogTags.postCount} + 1` })
+          .where(eq(blogTags.id, tag.id));
+      } catch (error) {
+        // Ignore duplicate key errors
+      }
+    }
+  }
+
+  async updateBlogPostTags(postId: string, tags: string[]): Promise<void> {
+    // Get current tags
+    const currentTags = await db
+      .select({ tagId: blogPostTags.tagId })
+      .from(blogPostTags)
+      .where(eq(blogPostTags.postId, postId));
+
+    const currentTagIds = currentTags.map(t => t.tagId);
+
+    // Delete all current tag associations
+    if (currentTagIds.length > 0) {
+      await db
+        .delete(blogPostTags)
+        .where(eq(blogPostTags.postId, postId));
+
+      // Decrement post counts for old tags
+      await db
+        .update(blogTags)
+        .set({ postCount: sql`${blogTags.postCount} - 1` })
+        .where(inArray(blogTags.id, currentTagIds));
+    }
+
+    // Add new tags
+    await this.addTagsToBlogPost(postId, tags);
+  }
+
+  // Categories
+  async getBlogCategories(): Promise<BlogCategory[]> {
+    return await db
+      .select()
+      .from(blogCategories)
+      .where(eq(blogCategories.isActive, true))
+      .orderBy(blogCategories.name);
+  }
+
+  async createBlogCategory(data: InsertBlogCategory): Promise<BlogCategory> {
+    const [category] = await db
+      .insert(blogCategories)
+      .values(data)
+      .returning();
+
+    return category;
+  }
+
+  // Tags
+  async getBlogTags(filters: any): Promise<BlogTag[]> {
+    const { limit = 50, popular = false } = filters;
+
+    let query = db
+      .select()
+      .from(blogTags)
+      .$dynamic();
+
+    if (popular) {
+      query = query.orderBy(desc(blogTags.postCount));
+    } else {
+      query = query.orderBy(blogTags.name);
+    }
+
+    return await query.limit(limit);
+  }
+
+  // Comments
+  async getBlogComments(postId: string): Promise<BlogComment[]> {
+    const results = await db
+      .select({
+        comment: blogComments,
+        author: {
+          id: users.id,
+          firstName: users.firstName,
+          lastName: users.lastName,
+          profileImageUrl: users.profileImageUrl,
+        },
+      })
+      .from(blogComments)
+      .leftJoin(users, eq(blogComments.authorId, users.id))
+      .where(eq(blogComments.postId, postId))
+      .orderBy(blogComments.createdAt);
+
+    return results.map((r: any) => ({
+      ...r.comment,
+      author: r.author,
+    }));
+  }
+
+  async getBlogComment(id: string): Promise<BlogComment | null> {
+    const [comment] = await db
+      .select()
+      .from(blogComments)
+      .where(eq(blogComments.id, id))
+      .limit(1);
+
+    return comment || null;
+  }
+
+  async createBlogComment(data: InsertBlogComment): Promise<BlogComment> {
+    const [comment] = await db
+      .insert(blogComments)
+      .values(data)
+      .returning();
+
+    // Increment post comment count
+    await db
+      .update(blogPosts)
+      .set({ commentCount: sql`${blogPosts.commentCount} + 1` })
+      .where(eq(blogPosts.id, data.postId));
+
+    // If this is a reply, increment parent comment's reply count
+    if (data.parentCommentId) {
+      await db
+        .update(blogComments)
+        .set({ replyCount: sql`${blogComments.replyCount} + 1` })
+        .where(eq(blogComments.id, data.parentCommentId));
+    }
+
+    return comment;
+  }
+
+  async updateBlogComment(id: string, data: Partial<UpdateBlogComment>): Promise<BlogComment> {
+    const [comment] = await db
+      .update(blogComments)
+      .set({
+        ...data,
+        updatedAt: new Date(),
+      })
+      .where(eq(blogComments.id, id))
+      .returning();
+
+    return comment;
+  }
+
+  async deleteBlogComment(id: string): Promise<void> {
+    const comment = await this.getBlogComment(id);
+    if (!comment) return;
+
+    // Decrement post comment count
+    await db
+      .update(blogPosts)
+      .set({ commentCount: sql`${blogPosts.commentCount} - 1` })
+      .where(eq(blogPosts.id, comment.postId));
+
+    // If this is a reply, decrement parent comment's reply count
+    if (comment.parentCommentId) {
+      await db
+        .update(blogComments)
+        .set({ replyCount: sql`${blogComments.replyCount} - 1` })
+        .where(eq(blogComments.id, comment.parentCommentId));
+    }
+
+    await db.delete(blogComments).where(eq(blogComments.id, id));
+  }
+
+  // Reactions
+  async getBlogReactions(postId: string): Promise<BlogReaction[]> {
+    return await db
+      .select()
+      .from(blogReactions)
+      .where(eq(blogReactions.postId, postId));
+  }
+
+  async upsertBlogReaction(data: InsertBlogReaction): Promise<BlogReaction> {
+    // Try to find existing reaction
+    const [existing] = await db
+      .select()
+      .from(blogReactions)
+      .where(
+        and(
+          eq(blogReactions.postId, data.postId),
+          eq(blogReactions.userId, data.userId),
+          eq(blogReactions.reactionType, data.reactionType)
+        )
+      )
+      .limit(1);
+
+    if (existing) {
+      // Update count
+      const [updated] = await db
+        .update(blogReactions)
+        .set({
+          count: data.count || (existing.count + 1),
+          updatedAt: new Date(),
+        })
+        .where(eq(blogReactions.id, existing.id))
+        .returning();
+
+      return updated;
+    } else {
+      // Create new reaction
+      const [reaction] = await db
+        .insert(blogReactions)
+        .values(data)
+        .returning();
+
+      // Increment post like count
+      await db
+        .update(blogPosts)
+        .set({ likeCount: sql`${blogPosts.likeCount} + 1` })
+        .where(eq(blogPosts.id, data.postId));
+
+      return reaction;
+    }
+  }
+
+  async deleteBlogReaction(postId: string, userId: string, reactionType: string): Promise<void> {
+    await db
+      .delete(blogReactions)
+      .where(
+        and(
+          eq(blogReactions.postId, postId),
+          eq(blogReactions.userId, userId),
+          eq(blogReactions.reactionType, reactionType)
+        )
+      );
+
+    // Decrement post like count
+    await db
+      .update(blogPosts)
+      .set({ likeCount: sql`${blogPosts.likeCount} - 1` })
+      .where(eq(blogPosts.id, postId));
+  }
+
+  // Bookmarks
+  async getBlogBookmarks(userId: string): Promise<any[]> {
+    const results = await db
+      .select({
+        bookmark: blogBookmarks,
+        post: {
+          id: blogPosts.id,
+          title: blogPosts.title,
+          slug: blogPosts.slug,
+          excerpt: blogPosts.excerpt,
+          featuredImageUrl: blogPosts.featuredImageUrl,
+          publishedAt: blogPosts.publishedAt,
+        },
+      })
+      .from(blogBookmarks)
+      .leftJoin(blogPosts, eq(blogBookmarks.postId, blogPosts.id))
+      .where(eq(blogBookmarks.userId, userId))
+      .orderBy(desc(blogBookmarks.createdAt));
+
+    return results.map((r: any) => ({
+      ...r.bookmark,
+      post: r.post,
+    }));
+  }
+
+  async createBlogBookmark(data: InsertBlogBookmark): Promise<BlogBookmark> {
+    const [bookmark] = await db
+      .insert(blogBookmarks)
+      .values(data)
+      .returning();
+
+    // Increment post bookmark count
+    await db
+      .update(blogPosts)
+      .set({ bookmarkCount: sql`${blogPosts.bookmarkCount} + 1` })
+      .where(eq(blogPosts.id, data.postId));
+
+    return bookmark;
+  }
+
+  async deleteBlogBookmark(postId: string, userId: string): Promise<void> {
+    await db
+      .delete(blogBookmarks)
+      .where(
+        and(
+          eq(blogBookmarks.postId, postId),
+          eq(blogBookmarks.userId, userId)
+        )
+      );
+
+    // Decrement post bookmark count
+    await db
+      .update(blogPosts)
+      .set({ bookmarkCount: sql`${blogPosts.bookmarkCount} - 1` })
+      .where(eq(blogPosts.id, postId));
+  }
+
+  // Subscriptions
+  async createBlogSubscription(data: InsertBlogSubscription): Promise<BlogSubscription> {
+    const [subscription] = await db
+      .insert(blogSubscriptions)
+      .values(data)
+      .returning();
+
+    return subscription;
+  }
+
+  async unsubscribeBlog(token: string): Promise<void> {
+    await db
+      .update(blogSubscriptions)
+      .set({ isActive: false, updatedAt: new Date() })
+      .where(eq(blogSubscriptions.unsubscribeToken, token));
+  }
+
+  // Analytics
+  async trackBlogAnalytics(data: InsertBlogAnalytics): Promise<void> {
+    // Insert analytics record
+    await db.insert(blogAnalytics).values(data);
+
+    // Update post view counts
+    if (data.viewType === 'page_view') {
+      await db
+        .update(blogPosts)
+        .set({ viewCount: sql`${blogPosts.viewCount} + 1` })
+        .where(eq(blogPosts.id, data.postId));
+
+      // Update unique view count if this is first view from this session
+      if (data.sessionId) {
+        const existingViews = await db
+          .select()
+          .from(blogAnalytics)
+          .where(
+            and(
+              eq(blogAnalytics.postId, data.postId),
+              eq(blogAnalytics.sessionId, data.sessionId)
+            )
+          )
+          .limit(1);
+
+        if (existingViews.length === 0) {
+          await db
+            .update(blogPosts)
+            .set({ uniqueViewCount: sql`${blogPosts.uniqueViewCount} + 1` })
+            .where(eq(blogPosts.id, data.postId));
+        }
+      }
+    }
+  }
+
+  async getBlogPostAnalytics(postId: string): Promise<any> {
+    // Get basic post stats
+    const [post] = await db
+      .select({
+        viewCount: blogPosts.viewCount,
+        uniqueViewCount: blogPosts.uniqueViewCount,
+        likeCount: blogPosts.likeCount,
+        commentCount: blogPosts.commentCount,
+        bookmarkCount: blogPosts.bookmarkCount,
+        shareCount: blogPosts.shareCount,
+        readCompletionRate: blogPosts.readCompletionRate,
+      })
+      .from(blogPosts)
+      .where(eq(blogPosts.id, postId))
+      .limit(1);
+
+    // Get detailed analytics
+    const analyticsData = await db
+      .select()
+      .from(blogAnalytics)
+      .where(eq(blogAnalytics.postId, postId));
+
+    // Calculate metrics
+    const totalViews = analyticsData.filter(a => a.viewType === 'page_view').length;
+    const avgReadTime = analyticsData.reduce((sum, a) => sum + (a.timeSpentSeconds || 0), 0) / (totalViews || 1);
+
+    // Group by traffic source
+    const trafficSources: Record<string, number> = {};
+    analyticsData.forEach(a => {
+      const source = a.utmSource || a.referrer || 'direct';
+      trafficSources[source] = (trafficSources[source] || 0) + 1;
+    });
+
+    const trafficSourcesArray = Object.entries(trafficSources).map(([source, visits]) => ({
+      source,
+      visits,
+      percentage: (visits / totalViews) * 100,
+    })).sort((a, b) => b.visits - a.visits);
+
+    // Device breakdown
+    const deviceBreakdown = {
+      desktop: analyticsData.filter(a => a.deviceType === 'desktop').length,
+      mobile: analyticsData.filter(a => a.deviceType === 'mobile').length,
+      tablet: analyticsData.filter(a => a.deviceType === 'tablet').length,
+    };
+
+    // Geographic data
+    const geographicData: Record<string, number> = {};
+    analyticsData.forEach(a => {
+      if (a.country) {
+        geographicData[a.country] = (geographicData[a.country] || 0) + 1;
+      }
+    });
+
+    const geographicDataArray = Object.entries(geographicData).map(([country, visits]) => ({
+      country,
+      visits,
+    })).sort((a, b) => b.visits - a.visits);
+
+    return {
+      overview: {
+        totalViews: post.viewCount,
+        uniqueViews: post.uniqueViewCount,
+        avgReadTime: Math.floor(avgReadTime),
+        readCompletionRate: post.readCompletionRate,
+        totalReactions: post.likeCount,
+        totalComments: post.commentCount,
+        totalBookmarks: post.bookmarkCount,
+        totalShares: post.shareCount,
+      },
+      trafficSources: trafficSourcesArray,
+      deviceBreakdown,
+      geographicData: geographicDataArray,
+      engagementMetrics: {
+        avgScrollDepth: 0, // TODO: Calculate from scroll events
+        bounceRate: 0, // TODO: Calculate
+        avgTimeOnPage: Math.floor(avgReadTime),
+      },
+    };
   }
 }
 

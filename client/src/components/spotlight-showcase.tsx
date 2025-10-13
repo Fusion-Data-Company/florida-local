@@ -83,28 +83,28 @@ export default function SpotlightShowcase() {
   };
 
   return (
-    <section className="py-20 relative overflow-hidden spotlight-section">
+    <section className="py-12 lg:py-20 relative overflow-hidden spotlight-section gradient-shift">
       {/* Floating Gradient Orbs - Limited to 2 for performance */}
-      <div className="absolute top-10 right-20 w-96 h-96 gradient-iridescent float-dynamic rounded-full opacity-[0.08] blur-3xl will-change-transform"></div>
-      <div className="absolute bottom-10 left-20 w-80 h-80 gradient-iridescent float-gentle rounded-full opacity-[0.08] blur-3xl will-change-transform"></div>
+      <div className="absolute top-10 right-20 w-96 h-96 gradient-iridescent float-dynamic rounded-full opacity-[0.08] blur-3xl will-change-transform premium-pop stagger-1"></div>
+      <div className="absolute bottom-10 left-20 w-80 h-80 gradient-iridescent float-gentle rounded-full opacity-[0.08] blur-3xl will-change-transform premium-pop stagger-2"></div>
       
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         {/* Section Header - ELITE LUXURY */}
         <div className="text-center mb-16">
-          <GlowHero 
+          <GlowHero
             glowText="Community Spotlight"
             glowTextSize="lg"
-            className="mb-6"
+            className="mb-6 entrance-fade-up"
           />
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Celebrating the businesses that make Florida communities thrive. 
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed entrance-fade-up stagger-1">
+            Celebrating the businesses that make Florida communities thrive.
             Discover featured entrepreneurs selected by our intelligent promotion algorithms.
           </p>
-          <div className="mt-8 flex justify-center gap-4">
-            <Button 
-              onClick={() => refetch()} 
+          <div className="mt-8 flex justify-center gap-4 entrance-scale-fade stagger-2">
+            <Button
+              onClick={() => refetch()}
               variant="outline"
-              className="flex items-center gap-2 glass-panel border-border/30 hover:border-primary/50 hover-lift btn-press group"
+              className="flex items-center gap-2 glass-panel border-border/30 hover:border-primary/50 hover-lift btn-press group ambient-glow-cyan shimmer-on-hover"
               data-testid="button-refresh-spotlight"
             >
               <TrendingUp className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />

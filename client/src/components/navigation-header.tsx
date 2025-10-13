@@ -54,6 +54,8 @@ export default function NavigationHeader() {
   const navigationItems = [
     { href: "/", label: "Discover", icon: "✨", testId: "nav-discover" },
     { href: "/marketplace", label: "Marketplace", icon: "🏪", testId: "nav-marketplace" },
+    { href: "/florida-local", label: "Florida Local", icon: "🌴", testId: "nav-florida-local" },
+    { href: "/registry", label: "Registry", icon: "📜", testId: "nav-registry" },
     { href: "/messages", label: "Messages", icon: "💬", testId: "nav-messages" },
     { href: "/cart", label: "Cart", icon: "🛒", testId: "nav-cart" },
     { href: "/orders", label: "Orders", icon: "📋", testId: "nav-orders" },

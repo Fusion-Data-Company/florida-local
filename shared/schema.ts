@@ -11,6 +11,7 @@ import {
   decimal,
   boolean,
   uuid,
+  date,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -383,6 +384,237 @@ export const apiKeys = pgTable("api_keys", {
 ]);
 
 // ====================================================================
+// PHASE 4: BLOGGING & CONTENT PLATFORM SCHEMAS
+// ====================================================================
+
+// Blog Categories
+export const blogCategories = pgTable("blog_categories", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 100 }).notNull().unique(),
+  slug: varchar("slug", { length: 100 }).notNull().unique(),
+  description: text("description"),
+  color: varchar("color", { length: 7 }), // Hex color for UI
+  icon: varchar("icon", { length: 50 }), // Icon name
+  postCount: integer("post_count").default(0),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_blog_categories_slug").on(table.slug)
+]);
+
+// Blog Tags
+export const blogTags = pgTable("blog_tags", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 50 }).notNull().unique(),
+  slug: varchar("slug", { length: 50 }).notNull().unique(),
+  postCount: integer("post_count").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("idx_blog_tags_slug").on(table.slug)
+]);
+
+// Blog Posts
+export const blogPosts = pgTable("blog_posts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  authorId: varchar("author_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  businessId: uuid("business_id").references(() => businesses.id, { onDelete: 'cascade' }), // Optional: business attribution
+  title: varchar("title", { length: 255 }).notNull(),
+  slug: varchar("slug", { length: 255 }).notNull().unique(),
+  excerpt: varchar("excerpt", { length: 500 }),
+  content: text("content").notNull(), // Rich text HTML from TipTap
+  featuredImageUrl: varchar("featured_image_url"),
+  categoryId: uuid("category_id").references(() => blogCategories.id, { onDelete: 'set null' }),
+
+  // SEO Fields
+  metaTitle: varchar("meta_title", { length: 60 }),
+  metaDescription: varchar("meta_description", { length: 160 }),
+  metaKeywords: jsonb("meta_keywords"), // Array of keywords
+  canonicalUrl: varchar("canonical_url", { length: 500 }),
+  ogImage: varchar("og_image"), // Open Graph image
+
+  // Status & Publishing
+  status: varchar("status", { length: 20 }).notNull().default("draft"), // draft, scheduled, published, archived
+  publishedAt: timestamp("published_at"),
+  scheduledAt: timestamp("scheduled_at"),
+
+  // Engagement Metrics
+  viewCount: integer("view_count").default(0),
+  uniqueViewCount: integer("unique_view_count").default(0),
+  likeCount: integer("like_count").default(0),
+  commentCount: integer("comment_count").default(0),
+  shareCount: integer("share_count").default(0),
+  bookmarkCount: integer("bookmark_count").default(0),
+  readCompletionRate: decimal("read_completion_rate", { precision: 5, scale: 2 }).default("0"), // Percentage
+  avgReadTimeSeconds: integer("avg_read_time_seconds"),
+
+  // Features
+  isFeatured: boolean("is_featured").default(false),
+  isPinned: boolean("is_pinned").default(false),
+  allowComments: boolean("allow_comments").default(true),
+
+  // Revision History
+  version: integer("version").default(1),
+  lastEditedBy: varchar("last_edited_by").references(() => users.id),
+  lastEditedAt: timestamp("last_edited_at"),
+
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_blog_posts_slug").on(table.slug),
+  index("idx_blog_posts_author").on(table.authorId),
+  index("idx_blog_posts_business").on(table.businessId),
+  index("idx_blog_posts_category").on(table.categoryId),
+  index("idx_blog_posts_status").on(table.status),
+  index("idx_blog_posts_published").on(table.publishedAt),
+  index("idx_blog_posts_view_count").on(table.viewCount)
+]);
+
+// Blog Post Tags (many-to-many)
+export const blogPostTags = pgTable("blog_post_tags", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  postId: uuid("post_id").notNull().references(() => blogPosts.id, { onDelete: 'cascade' }),
+  tagId: uuid("tag_id").notNull().references(() => blogTags.id, { onDelete: 'cascade' }),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  uniqueIndex("idx_unique_post_tag").on(table.postId, table.tagId)
+]);
+
+// Blog Comments (nested/threaded)
+export const blogComments = pgTable("blog_comments", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  postId: uuid("post_id").notNull().references(() => blogPosts.id, { onDelete: 'cascade' }),
+  authorId: varchar("author_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  parentCommentId: uuid("parent_comment_id").references(() => blogComments.id, { onDelete: 'cascade' }), // For nested replies
+  content: text("content").notNull(),
+  isEdited: boolean("is_edited").default(false),
+  editedAt: timestamp("edited_at"),
+  likeCount: integer("like_count").default(0),
+  replyCount: integer("reply_count").default(0),
+  isApproved: boolean("is_approved").default(true), // Moderation
+  isFlagged: boolean("is_flagged").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_blog_comments_post").on(table.postId),
+  index("idx_blog_comments_author").on(table.authorId),
+  index("idx_blog_comments_parent").on(table.parentCommentId)
+]);
+
+// Blog Reactions (Clap/Like system)
+export const blogReactions = pgTable("blog_reactions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  postId: uuid("post_id").notNull().references(() => blogPosts.id, { onDelete: 'cascade' }),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  reactionType: varchar("reaction_type", { length: 20 }).notNull().default("like"), // like, love, clap, insightful
+  count: integer("count").default(1), // Allow multiple claps from same user
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  uniqueIndex("idx_unique_post_user_reaction").on(table.postId, table.userId, table.reactionType)
+]);
+
+// Blog Bookmarks
+export const blogBookmarks = pgTable("blog_bookmarks", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  postId: uuid("post_id").notNull().references(() => blogPosts.id, { onDelete: 'cascade' }),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  readingListId: uuid("reading_list_id").references(() => blogReadingLists.id, { onDelete: 'cascade' }), // Optional: organize into lists
+  notes: text("notes"), // Personal notes on the bookmark
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  uniqueIndex("idx_unique_post_user_bookmark").on(table.postId, table.userId)
+]);
+
+// Blog Reading Lists (Collections)
+export const blogReadingLists = pgTable("blog_reading_lists", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  name: varchar("name", { length: 100 }).notNull(),
+  description: text("description"),
+  isPublic: boolean("is_public").default(false),
+  bookmarkCount: integer("bookmark_count").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_reading_lists_user").on(table.userId)
+]);
+
+// Blog Email Subscriptions
+export const blogSubscriptions = pgTable("blog_subscriptions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: varchar("user_id").references(() => users.id, { onDelete: 'cascade' }), // Optional: for logged-in users
+  email: varchar("email", { length: 255 }).notNull(), // For guest subscriptions
+  subscribedToAll: boolean("subscribed_to_all").default(true), // All new posts
+  subscribedCategories: jsonb("subscribed_categories"), // Array of category IDs
+  subscribedAuthors: jsonb("subscribed_authors"), // Array of author IDs
+  frequency: varchar("frequency", { length: 20 }).default("instant"), // instant, daily, weekly
+  isActive: boolean("is_active").default(true),
+  unsubscribeToken: varchar("unsubscribe_token", { length: 64 }).unique(), // For one-click unsubscribe
+  confirmedAt: timestamp("confirmed_at"), // Email verification
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  uniqueIndex("idx_unique_blog_subscription_email").on(table.email),
+  index("idx_blog_subscriptions_user").on(table.userId)
+]);
+
+// Blog Analytics (View tracking)
+export const blogAnalytics = pgTable("blog_analytics", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  postId: uuid("post_id").notNull().references(() => blogPosts.id, { onDelete: 'cascade' }),
+  userId: varchar("user_id").references(() => users.id, { onDelete: 'set null' }), // Null for anonymous
+  sessionId: varchar("session_id", { length: 64 }), // For tracking unique views
+
+  // View Data
+  viewType: varchar("view_type", { length: 20 }).notNull().default("page_view"), // page_view, scroll_50, scroll_100, read_complete
+  scrollDepth: integer("scroll_depth"), // Percentage scrolled
+  timeSpentSeconds: integer("time_spent_seconds"),
+
+  // Traffic Source
+  referrer: varchar("referrer", { length: 500 }),
+  utmSource: varchar("utm_source", { length: 100 }),
+  utmMedium: varchar("utm_medium", { length: 100 }),
+  utmCampaign: varchar("utm_campaign", { length: 100 }),
+
+  // Device Info
+  deviceType: varchar("device_type", { length: 20 }), // desktop, mobile, tablet
+  browser: varchar("browser", { length: 50 }),
+  os: varchar("os", { length: 50 }),
+  country: varchar("country", { length: 2 }), // ISO country code
+  city: varchar("city", { length: 100 }),
+
+  viewedAt: timestamp("viewed_at").defaultNow(),
+}, (table) => [
+  index("idx_blog_analytics_post").on(table.postId),
+  index("idx_blog_analytics_user").on(table.userId),
+  index("idx_blog_analytics_session").on(table.sessionId),
+  index("idx_blog_analytics_viewed_at").on(table.viewedAt)
+]);
+
+// Blog Revisions (Version history)
+export const blogRevisions = pgTable("blog_revisions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  postId: uuid("post_id").notNull().references(() => blogPosts.id, { onDelete: 'cascade' }),
+  version: integer("version").notNull(),
+  editedBy: varchar("edited_by").notNull().references(() => users.id, { onDelete: 'cascade' }),
+
+  // Snapshot of content at this version
+  title: varchar("title", { length: 255 }).notNull(),
+  content: text("content").notNull(),
+  excerpt: varchar("excerpt", { length: 500 }),
+
+  // Changes metadata
+  changesSummary: text("changes_summary"), // Auto-generated or manual description
+  changeType: varchar("change_type", { length: 20 }).default("edit"), // edit, major_update, minor_fix
+
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("idx_blog_revisions_post").on(table.postId),
+  uniqueIndex("idx_unique_post_version").on(table.postId, table.version)
+]);
+
+// ====================================================================
 // PHASE 2: ENTREPRENEUR-FIRST PLATFORM SCHEMAS
 // ====================================================================
 
@@ -615,6 +847,13 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   entrepreneur: one(entrepreneurs), // Phase 2
   timelineShowcases: many(timelineShowcases), // Phase 2
   timelineShowcaseVotes: many(timelineShowcaseVotes), // Phase 2
+  // Phase 4: Blog relations
+  blogPosts: many(blogPosts),
+  blogComments: many(blogComments),
+  blogReactions: many(blogReactions),
+  blogBookmarks: many(blogBookmarks),
+  blogReadingLists: many(blogReadingLists),
+  blogSubscriptions: many(blogSubscriptions),
 }));
 
 export const businessesRelations = relations(businesses, ({ one, many }) => ({
@@ -641,6 +880,8 @@ export const businessesRelations = relations(businesses, ({ one, many }) => ({
   recentPurchases: many(recentPurchases),
   adCampaigns: many(adCampaigns),
   premiumFeatures: many(premiumFeatures),
+  // Phase 4: Blog relations
+  blogPosts: many(blogPosts),
 }));
 
 export const productsRelations = relations(products, ({ one, many }) => ({
@@ -938,6 +1179,133 @@ export const premiumFeaturesRelations = relations(premiumFeatures, ({ one }) => 
   }),
 }));
 
+// Phase 4: Blog Relations
+export const blogCategoriesRelations = relations(blogCategories, ({ many }) => ({
+  posts: many(blogPosts),
+}));
+
+export const blogTagsRelations = relations(blogTags, ({ many }) => ({
+  blogPostTags: many(blogPostTags),
+}));
+
+export const blogPostsRelations = relations(blogPosts, ({ one, many }) => ({
+  author: one(users, {
+    fields: [blogPosts.authorId],
+    references: [users.id],
+  }),
+  business: one(businesses, {
+    fields: [blogPosts.businessId],
+    references: [businesses.id],
+  }),
+  category: one(blogCategories, {
+    fields: [blogPosts.categoryId],
+    references: [blogCategories.id],
+  }),
+  lastEditor: one(users, {
+    fields: [blogPosts.lastEditedBy],
+    references: [users.id],
+  }),
+  tags: many(blogPostTags),
+  comments: many(blogComments),
+  reactions: many(blogReactions),
+  bookmarks: many(blogBookmarks),
+  analytics: many(blogAnalytics),
+  revisions: many(blogRevisions),
+}));
+
+export const blogPostTagsRelations = relations(blogPostTags, ({ one }) => ({
+  post: one(blogPosts, {
+    fields: [blogPostTags.postId],
+    references: [blogPosts.id],
+  }),
+  tag: one(blogTags, {
+    fields: [blogPostTags.tagId],
+    references: [blogTags.id],
+  }),
+}));
+
+export const blogCommentsRelations = relations(blogComments, ({ one, many }) => ({
+  post: one(blogPosts, {
+    fields: [blogComments.postId],
+    references: [blogPosts.id],
+  }),
+  author: one(users, {
+    fields: [blogComments.authorId],
+    references: [users.id],
+  }),
+  parentComment: one(blogComments, {
+    fields: [blogComments.parentCommentId],
+    references: [blogComments.id],
+    relationName: "replies",
+  }),
+  replies: many(blogComments, {
+    relationName: "replies",
+  }),
+}));
+
+export const blogReactionsRelations = relations(blogReactions, ({ one }) => ({
+  post: one(blogPosts, {
+    fields: [blogReactions.postId],
+    references: [blogPosts.id],
+  }),
+  user: one(users, {
+    fields: [blogReactions.userId],
+    references: [users.id],
+  }),
+}));
+
+export const blogBookmarksRelations = relations(blogBookmarks, ({ one }) => ({
+  post: one(blogPosts, {
+    fields: [blogBookmarks.postId],
+    references: [blogPosts.id],
+  }),
+  user: one(users, {
+    fields: [blogBookmarks.userId],
+    references: [users.id],
+  }),
+  readingList: one(blogReadingLists, {
+    fields: [blogBookmarks.readingListId],
+    references: [blogReadingLists.id],
+  }),
+}));
+
+export const blogReadingListsRelations = relations(blogReadingLists, ({ one, many }) => ({
+  user: one(users, {
+    fields: [blogReadingLists.userId],
+    references: [users.id],
+  }),
+  bookmarks: many(blogBookmarks),
+}));
+
+export const blogSubscriptionsRelations = relations(blogSubscriptions, ({ one }) => ({
+  user: one(users, {
+    fields: [blogSubscriptions.userId],
+    references: [users.id],
+  }),
+}));
+
+export const blogAnalyticsRelations = relations(blogAnalytics, ({ one }) => ({
+  post: one(blogPosts, {
+    fields: [blogAnalytics.postId],
+    references: [blogPosts.id],
+  }),
+  user: one(users, {
+    fields: [blogAnalytics.userId],
+    references: [users.id],
+  }),
+}));
+
+export const blogRevisionsRelations = relations(blogRevisions, ({ one }) => ({
+  post: one(blogPosts, {
+    fields: [blogRevisions.postId],
+    references: [blogPosts.id],
+  }),
+  editor: one(users, {
+    fields: [blogRevisions.editedBy],
+    references: [users.id],
+  }),
+}));
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -1180,3 +1548,1361 @@ export type AdImpression = typeof adImpressions.$inferSelect;
 export type InsertAdImpression = z.infer<typeof insertAdImpressionSchema>;
 export type PremiumFeature = typeof premiumFeatures.$inferSelect;
 export type InsertPremiumFeature = z.infer<typeof insertPremiumFeatureSchema>;
+
+// Phase 4: Blog Insert Schemas
+export const insertBlogCategorySchema = createInsertSchema(blogCategories).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  postCount: true,
+});
+
+export const insertBlogTagSchema = createInsertSchema(blogTags).omit({
+  id: true,
+  createdAt: true,
+  postCount: true,
+});
+
+export const insertBlogPostSchema = createInsertSchema(blogPosts).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  viewCount: true,
+  uniqueViewCount: true,
+  likeCount: true,
+  commentCount: true,
+  shareCount: true,
+  bookmarkCount: true,
+  readCompletionRate: true,
+  avgReadTimeSeconds: true,
+  version: true,
+});
+
+export const updateBlogPostSchema = insertBlogPostSchema.omit({
+  authorId: true,
+});
+
+export const insertBlogPostTagSchema = createInsertSchema(blogPostTags).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertBlogCommentSchema = createInsertSchema(blogComments).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  likeCount: true,
+  replyCount: true,
+  isEdited: true,
+  editedAt: true,
+});
+
+export const updateBlogCommentSchema = insertBlogCommentSchema.omit({
+  authorId: true,
+  postId: true,
+});
+
+export const insertBlogReactionSchema = createInsertSchema(blogReactions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertBlogBookmarkSchema = createInsertSchema(blogBookmarks).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertBlogReadingListSchema = createInsertSchema(blogReadingLists).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  bookmarkCount: true,
+});
+
+export const insertBlogSubscriptionSchema = createInsertSchema(blogSubscriptions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertBlogAnalyticsSchema = createInsertSchema(blogAnalytics).omit({
+  id: true,
+  viewedAt: true,
+});
+
+export const insertBlogRevisionSchema = createInsertSchema(blogRevisions).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Phase 4: Blog Types
+export type BlogCategory = typeof blogCategories.$inferSelect;
+export type InsertBlogCategory = z.infer<typeof insertBlogCategorySchema>;
+export type BlogTag = typeof blogTags.$inferSelect;
+export type InsertBlogTag = z.infer<typeof insertBlogTagSchema>;
+export type BlogPost = typeof blogPosts.$inferSelect;
+export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
+export type UpdateBlogPost = z.infer<typeof updateBlogPostSchema>;
+export type BlogPostTag = typeof blogPostTags.$inferSelect;
+export type InsertBlogPostTag = z.infer<typeof insertBlogPostTagSchema>;
+export type BlogComment = typeof blogComments.$inferSelect;
+export type InsertBlogComment = z.infer<typeof insertBlogCommentSchema>;
+export type UpdateBlogComment = z.infer<typeof updateBlogCommentSchema>;
+export type BlogReaction = typeof blogReactions.$inferSelect;
+export type InsertBlogReaction = z.infer<typeof insertBlogReactionSchema>;
+export type BlogBookmark = typeof blogBookmarks.$inferSelect;
+export type InsertBlogBookmark = z.infer<typeof insertBlogBookmarkSchema>;
+export type BlogReadingList = typeof blogReadingLists.$inferSelect;
+export type InsertBlogReadingList = z.infer<typeof insertBlogReadingListSchema>;
+export type BlogSubscription = typeof blogSubscriptions.$inferSelect;
+export type InsertBlogSubscription = z.infer<typeof insertBlogSubscriptionSchema>;
+export type BlogAnalytics = typeof blogAnalytics.$inferSelect;
+export type InsertBlogAnalytics = z.infer<typeof insertBlogAnalyticsSchema>;
+export type BlogRevision = typeof blogRevisions.$inferSelect;
+export type InsertBlogRevision = z.infer<typeof insertBlogRevisionSchema>;
+
+// ========================================
+// PHASE 5: MARKETING AUTOMATION
+// ========================================
+
+// Marketing Campaigns table
+export const marketingCampaigns = pgTable("marketing_campaigns", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  type: varchar("type", { length: 50 }).notNull(), // 'email', 'sms', 'push', 'multi-channel'
+  status: varchar("status", { length: 20 }).notNull().default("draft"), // 'draft', 'scheduled', 'active', 'paused', 'completed', 'archived'
+  targetSegmentId: uuid("target_segment_id").references(() => customerSegments.id, { onDelete: 'set null' }),
+
+  // Campaign Content
+  subject: varchar("subject", { length: 255 }), // For email
+  preheaderText: varchar("preheader_text", { length: 150 }), // For email
+  senderName: varchar("sender_name", { length: 100 }),
+  senderEmail: varchar("sender_email", { length: 255 }), // For email
+  senderPhone: varchar("sender_phone", { length: 20 }), // For SMS
+  content: text("content").notNull(), // HTML for email, plain text for SMS
+  plainTextContent: text("plain_text_content"), // Email fallback
+
+  // Scheduling
+  scheduledAt: timestamp("scheduled_at"),
+  sendAt: varchar("send_at", { length: 50 }).default("immediate"), // 'immediate', 'scheduled', 'optimal'
+  timezone: varchar("timezone", { length: 50 }).default("America/New_York"),
+
+  // Tracking Counts
+  totalRecipients: integer("total_recipients").default(0),
+  sentCount: integer("sent_count").default(0),
+  deliveredCount: integer("delivered_count").default(0),
+  openedCount: integer("opened_count").default(0),
+  clickedCount: integer("clicked_count").default(0),
+  bouncedCount: integer("bounced_count").default(0),
+  unsubscribedCount: integer("unsubscribed_count").default(0),
+  spamCount: integer("spam_count").default(0),
+
+  // Calculated Rates
+  deliveryRate: decimal("delivery_rate", { precision: 5, scale: 2 }),
+  openRate: decimal("open_rate", { precision: 5, scale: 2 }),
+  clickRate: decimal("click_rate", { precision: 5, scale: 2 }),
+  conversionRate: decimal("conversion_rate", { precision: 5, scale: 2 }),
+
+  // Settings
+  trackOpens: boolean("track_opens").default(true),
+  trackClicks: boolean("track_clicks").default(true),
+  allowUnsubscribe: boolean("allow_unsubscribe").default(true),
+  testMode: boolean("test_mode").default(false),
+
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  sentAt: timestamp("sent_at"),
+  completedAt: timestamp("completed_at"),
+});
+
+// Campaign Recipients table
+export const campaignRecipients = pgTable("campaign_recipients", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  campaignId: uuid("campaign_id").notNull().references(() => marketingCampaigns.id, { onDelete: 'cascade' }),
+  userId: varchar("user_id").references(() => users.id, { onDelete: 'set null' }),
+  email: varchar("email", { length: 255 }),
+  phone: varchar("phone", { length: 20 }),
+  firstName: varchar("first_name", { length: 100 }),
+  lastName: varchar("last_name", { length: 100 }),
+
+  // Status Tracking
+  status: varchar("status", { length: 20 }).notNull().default("pending"), // 'pending', 'sent', 'delivered', 'opened', 'clicked', 'bounced', 'unsubscribed', 'spam', 'failed'
+  sentAt: timestamp("sent_at"),
+  deliveredAt: timestamp("delivered_at"),
+  openedAt: timestamp("opened_at"),
+  firstClickedAt: timestamp("first_clicked_at"),
+  bouncedAt: timestamp("bounced_at"),
+
+  // Engagement Metrics
+  openCount: integer("open_count").default(0),
+  clickCount: integer("click_count").default(0),
+  lastOpenedAt: timestamp("last_opened_at"),
+  lastClickedAt: timestamp("last_clicked_at"),
+
+  // Error Tracking
+  errorMessage: text("error_message"),
+  bounceType: varchar("bounce_type", { length: 50 }), // 'hard', 'soft', 'spam'
+
+  // External IDs (for provider tracking)
+  externalMessageId: varchar("external_message_id", { length: 255 }),
+  externalStatus: varchar("external_status", { length: 100 }),
+
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => ({
+  campaignIdx: index("campaign_recipients_campaign_idx").on(table.campaignId),
+  userIdx: index("campaign_recipients_user_idx").on(table.userId),
+  emailIdx: index("campaign_recipients_email_idx").on(table.email),
+}));
+
+// Campaign Links table (for click tracking)
+export const campaignLinks = pgTable("campaign_links", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  campaignId: uuid("campaign_id").notNull().references(() => marketingCampaigns.id, { onDelete: 'cascade' }),
+  originalUrl: text("original_url").notNull(),
+  shortCode: varchar("short_code", { length: 20 }).notNull().unique(),
+  trackingUrl: text("tracking_url").notNull(),
+
+  // Analytics
+  clickCount: integer("click_count").default(0),
+  uniqueClickCount: integer("unique_click_count").default(0),
+
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => ({
+  campaignIdx: index("campaign_links_campaign_idx").on(table.campaignId),
+}));
+
+// Campaign Clicks table
+export const campaignClicks = pgTable("campaign_clicks", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  campaignId: uuid("campaign_id").notNull().references(() => marketingCampaigns.id, { onDelete: 'cascade' }),
+  recipientId: uuid("recipient_id").notNull().references(() => campaignRecipients.id, { onDelete: 'cascade' }),
+  linkId: uuid("link_id").notNull().references(() => campaignLinks.id, { onDelete: 'cascade' }),
+
+  // Click Details
+  clickedAt: timestamp("clicked_at").defaultNow(),
+  ipAddress: varchar("ip_address", { length: 45 }),
+  userAgent: text("user_agent"),
+  deviceType: varchar("device_type", { length: 50 }),
+  browser: varchar("browser", { length: 100 }),
+  os: varchar("os", { length: 100 }),
+  country: varchar("country", { length: 100 }),
+  city: varchar("city", { length: 100 }),
+}, (table) => ({
+  campaignIdx: index("campaign_clicks_campaign_idx").on(table.campaignId),
+  recipientIdx: index("campaign_clicks_recipient_idx").on(table.recipientId),
+  linkIdx: index("campaign_clicks_link_idx").on(table.linkId),
+}));
+
+// Customer Segments table
+export const customerSegments = pgTable("customer_segments", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+
+  // Segment Criteria (JSON)
+  criteria: jsonb("criteria").notNull(),
+  /* Example structure:
+    {
+      "rules": [
+        { "field": "totalSpent", "operator": "greater_than", "value": 100 },
+        { "field": "lastPurchaseDate", "operator": "within_days", "value": 30 },
+        { "field": "location", "operator": "in", "value": ["Miami", "Tampa"] }
+      ],
+      "logic": "AND"
+    }
+  */
+
+  // Segment Stats
+  memberCount: integer("member_count").default(0),
+  autoUpdate: boolean("auto_update").default(true),
+  lastCalculatedAt: timestamp("last_calculated_at"),
+
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => ({
+  businessIdx: index("customer_segments_business_idx").on(table.businessId),
+}));
+
+// Segment Members table
+export const segmentMembers = pgTable("segment_members", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  segmentId: uuid("segment_id").notNull().references(() => customerSegments.id, { onDelete: 'cascade' }),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  addedAt: timestamp("added_at").defaultNow(),
+  source: varchar("source", { length: 100 }).default("automatic"), // 'automatic', 'manual', 'import'
+}, (table) => ({
+  segmentIdx: index("segment_members_segment_idx").on(table.segmentId),
+  userIdx: index("segment_members_user_idx").on(table.userId),
+  uniqueMember: index("segment_members_unique").on(table.segmentId, table.userId),
+}));
+
+// Marketing Workflows table
+export const marketingWorkflows = pgTable("marketing_workflows", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+
+  // Workflow Configuration
+  triggerType: varchar("trigger_type", { length: 100 }).notNull(),
+  /* e.g., "user_signup", "purchase_made", "cart_abandoned",
+          "lead_created", "date_based", "segment_entry" */
+  triggerConfig: jsonb("trigger_config"),
+  /* Example:
+    {
+      "eventType": "cart_abandoned",
+      "conditions": { "cartValue": { "min": 50 } },
+      "delay": { "value": 1, "unit": "hours" }
+    }
+  */
+
+  // Workflow Steps (JSON array)
+  steps: jsonb("steps").notNull(),
+  /* Example:
+    [
+      {
+        "id": "step-1",
+        "type": "delay",
+        "config": { "value": 1, "unit": "hours" }
+      },
+      {
+        "id": "step-2",
+        "type": "send_email",
+        "config": { "templateId": "uuid", "subject": "..." }
+      },
+      {
+        "id": "step-3",
+        "type": "condition",
+        "config": { "field": "email_opened", "operator": "equals", "value": true },
+        "trueStep": "step-4",
+        "falseStep": "step-5"
+      }
+    ]
+  */
+
+  // Status
+  status: varchar("status", { length: 20 }).notNull().default("draft"), // 'draft', 'active', 'paused', 'archived'
+
+  // Metrics
+  totalEnrolled: integer("total_enrolled").default(0),
+  activeEnrollments: integer("active_enrollments").default(0),
+  completedEnrollments: integer("completed_enrollments").default(0),
+
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  activatedAt: timestamp("activated_at"),
+}, (table) => ({
+  businessIdx: index("marketing_workflows_business_idx").on(table.businessId),
+}));
+
+// Workflow Enrollments table
+export const workflowEnrollments = pgTable("workflow_enrollments", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  workflowId: uuid("workflow_id").notNull().references(() => marketingWorkflows.id, { onDelete: 'cascade' }),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+
+  // Enrollment Status
+  status: varchar("status", { length: 20 }).notNull().default("active"), // 'active', 'completed', 'exited', 'failed'
+  currentStepId: varchar("current_step_id", { length: 100 }),
+  currentStepStartedAt: timestamp("current_step_started_at"),
+
+  // Tracking
+  enrolledAt: timestamp("enrolled_at").defaultNow(),
+  completedAt: timestamp("completed_at"),
+  exitedAt: timestamp("exited_at"),
+  exitReason: text("exit_reason"),
+
+  // Enrollment Data (context for personalization)
+  enrollmentData: jsonb("enrollment_data"),
+}, (table) => ({
+  workflowIdx: index("workflow_enrollments_workflow_idx").on(table.workflowId),
+  userIdx: index("workflow_enrollments_user_idx").on(table.userId),
+}));
+
+// Workflow Step Logs table
+export const workflowStepLogs = pgTable("workflow_step_logs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  enrollmentId: uuid("enrollment_id").notNull().references(() => workflowEnrollments.id, { onDelete: 'cascade' }),
+  workflowId: uuid("workflow_id").notNull().references(() => marketingWorkflows.id, { onDelete: 'cascade' }),
+  stepId: varchar("step_id", { length: 100 }).notNull(),
+
+  // Step Execution
+  stepType: varchar("step_type", { length: 100 }).notNull(), // 'send_email', 'send_sms', 'delay', 'condition'
+  status: varchar("status", { length: 20 }).notNull().default("pending"), // 'pending', 'in_progress', 'completed', 'failed', 'skipped'
+
+  // Details
+  startedAt: timestamp("started_at").defaultNow(),
+  completedAt: timestamp("completed_at"),
+  errorMessage: text("error_message"),
+
+  // Results (e.g., email sent, SMS delivered, condition result)
+  result: jsonb("result"),
+}, (table) => ({
+  enrollmentIdx: index("workflow_step_logs_enrollment_idx").on(table.enrollmentId),
+  workflowIdx: index("workflow_step_logs_workflow_idx").on(table.workflowId),
+}));
+
+// Lead Capture Forms table
+export const leadCaptureForms = pgTable("lead_capture_forms", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+
+  // Form Configuration
+  fields: jsonb("fields").notNull(),
+  /* Example:
+    [
+      { "name": "email", "type": "email", "required": true, "label": "Email Address" },
+      { "name": "firstName", "type": "text", "required": true, "label": "First Name" },
+      { "name": "phone", "type": "tel", "required": false, "label": "Phone Number" },
+      { "name": "interests", "type": "checkbox", "options": ["Product A", "Product B"] }
+    ]
+  */
+
+  // Settings
+  successMessage: text("success_message").notNull().default("Thank you for your submission!"),
+  redirectUrl: varchar("redirect_url", { length: 500 }),
+  addToSegmentId: uuid("add_to_segment_id").references(() => customerSegments.id, { onDelete: 'set null' }),
+  enrollInWorkflowId: uuid("enroll_in_workflow_id").references(() => marketingWorkflows.id, { onDelete: 'set null' }),
+
+  // Tracking
+  submissionCount: integer("submission_count").default(0),
+  conversionRate: decimal("conversion_rate", { precision: 5, scale: 2 }),
+
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => ({
+  businessIdx: index("lead_capture_forms_business_idx").on(table.businessId),
+}));
+
+// Lead Submissions table
+export const leadSubmissions = pgTable("lead_submissions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  formId: uuid("form_id").notNull().references(() => leadCaptureForms.id, { onDelete: 'cascade' }),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  userId: varchar("user_id").references(() => users.id, { onDelete: 'set null' }),
+
+  // Submission Data
+  formData: jsonb("form_data").notNull(), // All form field values
+  email: varchar("email", { length: 255 }),
+  phone: varchar("phone", { length: 20 }),
+
+  // Source Tracking
+  ipAddress: varchar("ip_address", { length: 45 }),
+  userAgent: text("user_agent"),
+  referrer: text("referrer"),
+  utmSource: varchar("utm_source", { length: 100 }),
+  utmMedium: varchar("utm_medium", { length: 100 }),
+  utmCampaign: varchar("utm_campaign", { length: 100 }),
+
+  // Status
+  status: varchar("status", { length: 20 }).notNull().default("new"), // 'new', 'contacted', 'qualified', 'converted', 'archived'
+
+  submittedAt: timestamp("submitted_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => ({
+  formIdx: index("lead_submissions_form_idx").on(table.formId),
+  businessIdx: index("lead_submissions_business_idx").on(table.businessId),
+  emailIdx: index("lead_submissions_email_idx").on(table.email),
+}));
+
+// Relations for marketing automation
+
+export const marketingCampaignsRelations = relations(marketingCampaigns, ({ one, many }) => ({
+  business: one(businesses, {
+    fields: [marketingCampaigns.businessId],
+    references: [businesses.id],
+  }),
+  targetSegment: one(customerSegments, {
+    fields: [marketingCampaigns.targetSegmentId],
+    references: [customerSegments.id],
+  }),
+  recipients: many(campaignRecipients),
+  links: many(campaignLinks),
+  clicks: many(campaignClicks),
+}));
+
+export const campaignRecipientsRelations = relations(campaignRecipients, ({ one, many }) => ({
+  campaign: one(marketingCampaigns, {
+    fields: [campaignRecipients.campaignId],
+    references: [marketingCampaigns.id],
+  }),
+  user: one(users, {
+    fields: [campaignRecipients.userId],
+    references: [users.id],
+  }),
+  clicks: many(campaignClicks),
+}));
+
+export const campaignLinksRelations = relations(campaignLinks, ({ one, many }) => ({
+  campaign: one(marketingCampaigns, {
+    fields: [campaignLinks.campaignId],
+    references: [marketingCampaigns.id],
+  }),
+  clicks: many(campaignClicks),
+}));
+
+export const campaignClicksRelations = relations(campaignClicks, ({ one }) => ({
+  campaign: one(marketingCampaigns, {
+    fields: [campaignClicks.campaignId],
+    references: [marketingCampaigns.id],
+  }),
+  recipient: one(campaignRecipients, {
+    fields: [campaignClicks.recipientId],
+    references: [campaignRecipients.id],
+  }),
+  link: one(campaignLinks, {
+    fields: [campaignClicks.linkId],
+    references: [campaignLinks.id],
+  }),
+}));
+
+export const customerSegmentsRelations = relations(customerSegments, ({ one, many }) => ({
+  business: one(businesses, {
+    fields: [customerSegments.businessId],
+    references: [businesses.id],
+  }),
+  members: many(segmentMembers),
+  campaigns: many(marketingCampaigns),
+  leadForms: many(leadCaptureForms),
+}));
+
+export const segmentMembersRelations = relations(segmentMembers, ({ one }) => ({
+  segment: one(customerSegments, {
+    fields: [segmentMembers.segmentId],
+    references: [customerSegments.id],
+  }),
+  user: one(users, {
+    fields: [segmentMembers.userId],
+    references: [users.id],
+  }),
+}));
+
+export const marketingWorkflowsRelations = relations(marketingWorkflows, ({ one, many }) => ({
+  business: one(businesses, {
+    fields: [marketingWorkflows.businessId],
+    references: [businesses.id],
+  }),
+  enrollments: many(workflowEnrollments),
+  stepLogs: many(workflowStepLogs),
+  leadForms: many(leadCaptureForms),
+}));
+
+export const workflowEnrollmentsRelations = relations(workflowEnrollments, ({ one, many }) => ({
+  workflow: one(marketingWorkflows, {
+    fields: [workflowEnrollments.workflowId],
+    references: [marketingWorkflows.id],
+  }),
+  user: one(users, {
+    fields: [workflowEnrollments.userId],
+    references: [users.id],
+  }),
+  stepLogs: many(workflowStepLogs),
+}));
+
+export const workflowStepLogsRelations = relations(workflowStepLogs, ({ one }) => ({
+  enrollment: one(workflowEnrollments, {
+    fields: [workflowStepLogs.enrollmentId],
+    references: [workflowEnrollments.id],
+  }),
+  workflow: one(marketingWorkflows, {
+    fields: [workflowStepLogs.workflowId],
+    references: [marketingWorkflows.id],
+  }),
+}));
+
+export const leadCaptureFormsRelations = relations(leadCaptureForms, ({ one, many }) => ({
+  business: one(businesses, {
+    fields: [leadCaptureForms.businessId],
+    references: [businesses.id],
+  }),
+  addToSegment: one(customerSegments, {
+    fields: [leadCaptureForms.addToSegmentId],
+    references: [customerSegments.id],
+  }),
+  enrollInWorkflow: one(marketingWorkflows, {
+    fields: [leadCaptureForms.enrollInWorkflowId],
+    references: [marketingWorkflows.id],
+  }),
+  submissions: many(leadSubmissions),
+}));
+
+export const leadSubmissionsRelations = relations(leadSubmissions, ({ one }) => ({
+  form: one(leadCaptureForms, {
+    fields: [leadSubmissions.formId],
+    references: [leadCaptureForms.id],
+  }),
+  business: one(businesses, {
+    fields: [leadSubmissions.businessId],
+    references: [businesses.id],
+  }),
+  user: one(users, {
+    fields: [leadSubmissions.userId],
+    references: [users.id],
+  }),
+}));
+
+// Update businesses relations to include marketing automation
+export const businessesMarketingRelations = relations(businesses, ({ many }) => ({
+  marketingCampaigns: many(marketingCampaigns),
+  customerSegments: many(customerSegments),
+  marketingWorkflows: many(marketingWorkflows),
+  leadCaptureForms: many(leadCaptureForms),
+  leadSubmissions: many(leadSubmissions),
+}));
+
+// Update users relations to include marketing automation
+export const usersMarketingRelations = relations(users, ({ many }) => ({
+  campaignRecipients: many(campaignRecipients),
+  segmentMemberships: many(segmentMembers),
+  workflowEnrollments: many(workflowEnrollments),
+  leadSubmissions: many(leadSubmissions),
+}));
+
+// Zod schemas for marketing automation
+
+export const insertMarketingCampaignSchema = createInsertSchema(marketingCampaigns);
+export const updateMarketingCampaignSchema = insertMarketingCampaignSchema.partial();
+
+export const insertCampaignRecipientSchema = createInsertSchema(campaignRecipients);
+export const updateCampaignRecipientSchema = insertCampaignRecipientSchema.partial();
+
+export const insertCampaignLinkSchema = createInsertSchema(campaignLinks);
+
+export const insertCampaignClickSchema = createInsertSchema(campaignClicks);
+
+export const insertCustomerSegmentSchema = createInsertSchema(customerSegments);
+export const updateCustomerSegmentSchema = insertCustomerSegmentSchema.partial();
+
+export const insertSegmentMemberSchema = createInsertSchema(segmentMembers);
+
+export const insertMarketingWorkflowSchema = createInsertSchema(marketingWorkflows);
+export const updateMarketingWorkflowSchema = insertMarketingWorkflowSchema.partial();
+
+export const insertWorkflowEnrollmentSchema = createInsertSchema(workflowEnrollments);
+export const updateWorkflowEnrollmentSchema = insertWorkflowEnrollmentSchema.partial();
+
+export const insertWorkflowStepLogSchema = createInsertSchema(workflowStepLogs);
+export const updateWorkflowStepLogSchema = insertWorkflowStepLogSchema.partial();
+
+export const insertLeadCaptureFormSchema = createInsertSchema(leadCaptureForms);
+export const updateLeadCaptureFormSchema = insertLeadCaptureFormSchema.partial();
+
+export const insertLeadSubmissionSchema = createInsertSchema(leadSubmissions);
+export const updateLeadSubmissionSchema = insertLeadSubmissionSchema.partial();
+
+// TypeScript types for marketing automation
+
+export type MarketingCampaign = typeof marketingCampaigns.$inferSelect;
+export type InsertMarketingCampaign = z.infer<typeof insertMarketingCampaignSchema>;
+export type UpdateMarketingCampaign = z.infer<typeof updateMarketingCampaignSchema>;
+
+export type CampaignRecipient = typeof campaignRecipients.$inferSelect;
+export type InsertCampaignRecipient = z.infer<typeof insertCampaignRecipientSchema>;
+export type UpdateCampaignRecipient = z.infer<typeof updateCampaignRecipientSchema>;
+
+export type CampaignLink = typeof campaignLinks.$inferSelect;
+export type InsertCampaignLink = z.infer<typeof insertCampaignLinkSchema>;
+
+export type CampaignClick = typeof campaignClicks.$inferSelect;
+export type InsertCampaignClick = z.infer<typeof insertCampaignClickSchema>;
+
+export type CustomerSegment = typeof customerSegments.$inferSelect;
+export type InsertCustomerSegment = z.infer<typeof insertCustomerSegmentSchema>;
+export type UpdateCustomerSegment = z.infer<typeof updateCustomerSegmentSchema>;
+
+export type SegmentMember = typeof segmentMembers.$inferSelect;
+export type InsertSegmentMember = z.infer<typeof insertSegmentMemberSchema>;
+
+export type MarketingWorkflow = typeof marketingWorkflows.$inferSelect;
+export type InsertMarketingWorkflow = z.infer<typeof insertMarketingWorkflowSchema>;
+export type UpdateMarketingWorkflow = z.infer<typeof updateMarketingWorkflowSchema>;
+
+export type WorkflowEnrollment = typeof workflowEnrollments.$inferSelect;
+export type InsertWorkflowEnrollment = z.infer<typeof insertWorkflowEnrollmentSchema>;
+export type UpdateWorkflowEnrollment = z.infer<typeof updateWorkflowEnrollmentSchema>;
+
+export type WorkflowStepLog = typeof workflowStepLogs.$inferSelect;
+export type InsertWorkflowStepLog = z.infer<typeof insertWorkflowStepLogSchema>;
+export type UpdateWorkflowStepLog = z.infer<typeof updateWorkflowStepLogSchema>;
+
+export type LeadCaptureForm = typeof leadCaptureForms.$inferSelect;
+export type InsertLeadCaptureForm = z.infer<typeof insertLeadCaptureFormSchema>;
+export type UpdateLeadCaptureForm = z.infer<typeof updateLeadCaptureFormSchema>;
+
+export type LeadSubmission = typeof leadSubmissions.$inferSelect;
+export type InsertLeadSubmission = z.infer<typeof insertLeadSubmissionSchema>;
+export type UpdateLeadSubmission = z.infer<typeof updateLeadSubmissionSchema>;
+
+// ============================================
+// PHASE 6: LOYALTY & REWARDS SYSTEM
+// ============================================
+
+// Loyalty tiers (Bronze, Silver, Gold, Platinum)
+export const loyaltyTiers = pgTable("loyalty_tiers", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 50 }).notNull(), // Bronze, Silver, Gold, Platinum
+  level: integer("level").notNull(), // 1, 2, 3, 4
+  pointsRequired: integer("points_required").notNull(), // Minimum points to reach tier
+  benefits: jsonb("benefits"), // Array of benefits
+  discountPercentage: decimal("discount_percentage", { precision: 5, scale: 2 }).default("0"), // Tier-specific discount
+  freeShippingThreshold: decimal("free_shipping_threshold", { precision: 10, scale: 2 }), // Free shipping above this amount
+  prioritySupport: boolean("priority_support").default(false), // Access to priority support
+  earlyAccess: boolean("early_access").default(false), // Early access to new products
+  color: varchar("color", { length: 50 }), // Badge color (bronze, silver, gold, platinum)
+  icon: varchar("icon", { length: 100 }), // Icon name or emoji
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// User loyalty points balance and tier
+export const loyaltyAccounts = pgTable("loyalty_accounts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }).unique(),
+  currentPoints: integer("current_points").notNull().default(0),
+  lifetimePoints: integer("lifetime_points").notNull().default(0), // Total points ever earned
+  tierId: uuid("tier_id").references(() => loyaltyTiers.id),
+  tierName: varchar("tier_name", { length: 50 }).default("Bronze"), // Denormalized for quick access
+  tierLevel: integer("tier_level").default(1),
+  enrolledAt: timestamp("enrolled_at").defaultNow(),
+  lastActivityAt: timestamp("last_activity_at").defaultNow(),
+  pointsExpiringNext30Days: integer("points_expiring_next_30_days").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Points earning/spending transactions
+export const loyaltyTransactions = pgTable("loyalty_transactions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  accountId: uuid("account_id").notNull().references(() => loyaltyAccounts.id, { onDelete: 'cascade' }),
+  type: varchar("type", { length: 50 }).notNull(), // earned, redeemed, expired, transferred_in, transferred_out, adjusted, bonus
+  points: integer("points").notNull(), // Positive for earned, negative for spent
+  balanceAfter: integer("balance_after").notNull(),
+  source: varchar("source", { length: 100 }).notNull(), // purchase, review, referral, signup_bonus, reward_redemption, etc.
+  sourceId: varchar("source_id"), // Order ID, review ID, referral ID, etc.
+  description: text("description"),
+  metadata: jsonb("metadata"), // Additional data
+  expiresAt: timestamp("expires_at"), // When these points expire (typically 1 year)
+  isExpired: boolean("is_expired").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("loyalty_transactions_user_idx").on(table.userId),
+  index("loyalty_transactions_account_idx").on(table.accountId),
+  index("loyalty_transactions_type_idx").on(table.type),
+  index("loyalty_transactions_created_idx").on(table.createdAt),
+]);
+
+// Points earning rules
+export const loyaltyRules = pgTable("loyalty_rules", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  eventType: varchar("event_type", { length: 100 }).notNull(), // purchase, review, referral, signup, share, etc.
+  pointsAwarded: integer("points_awarded").notNull(),
+  calculationType: varchar("calculation_type", { length: 50 }).default("fixed"), // fixed, percentage, tiered
+  calculationValue: decimal("calculation_value", { precision: 10, scale: 2 }), // For percentage-based (e.g., 1% = 1 point per $1)
+  minAmount: decimal("min_amount", { precision: 10, scale: 2 }), // Minimum purchase amount to qualify
+  maxPoints: integer("max_points"), // Maximum points per transaction
+  tierMultipliers: jsonb("tier_multipliers"), // { "Bronze": 1, "Silver": 1.25, "Gold": 1.5, "Platinum": 2 }
+  isActive: boolean("is_active").default(true),
+  startDate: timestamp("start_date"),
+  endDate: timestamp("end_date"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Rewards catalog (what users can redeem points for)
+export const rewards = pgTable("rewards", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").references(() => businesses.id, { onDelete: 'cascade' }), // null for platform-wide rewards
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  imageUrl: varchar("image_url", { length: 500 }),
+  pointsCost: integer("points_cost").notNull(),
+  rewardType: varchar("reward_type", { length: 50 }).notNull(), // discount, free_product, free_shipping, gift_card, experience
+  rewardValue: decimal("reward_value", { precision: 10, scale: 2 }), // Monetary value
+  discountType: varchar("discount_type", { length: 50 }), // percentage, fixed_amount
+  discountAmount: decimal("discount_amount", { precision: 10, scale: 2 }),
+  productId: uuid("product_id").references(() => products.id), // For free_product rewards
+  category: varchar("category", { length: 100 }),
+  termsConditions: text("terms_conditions"),
+  stockQuantity: integer("stock_quantity"), // null for unlimited
+  maxRedemptionsPerUser: integer("max_redemptions_per_user"), // null for unlimited
+  validFrom: timestamp("valid_from"),
+  validUntil: timestamp("valid_until"),
+  isActive: boolean("is_active").default(true),
+  isFeatured: boolean("is_featured").default(false),
+  tierRestriction: integer("tier_restriction"), // Minimum tier level required (1-4)
+  redemptionCount: integer("redemption_count").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("rewards_business_idx").on(table.businessId),
+  index("rewards_active_idx").on(table.isActive),
+  index("rewards_featured_idx").on(table.isFeatured),
+]);
+
+// User reward redemptions
+export const rewardRedemptions = pgTable("reward_redemptions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  rewardId: uuid("reward_id").notNull().references(() => rewards.id, { onDelete: 'cascade' }),
+  transactionId: uuid("transaction_id").notNull().references(() => loyaltyTransactions.id),
+  pointsSpent: integer("points_spent").notNull(),
+  status: varchar("status", { length: 50 }).default("pending"), // pending, fulfilled, cancelled, expired
+  redemptionCode: varchar("redemption_code", { length: 100 }).unique(), // Unique code for redemption
+  redeemedAt: timestamp("redeemed_at").defaultNow(),
+  fulfilledAt: timestamp("fulfilled_at"),
+  expiresAt: timestamp("expires_at"), // When the reward expires if not used
+  orderId: uuid("order_id").references(() => orders.id), // If used in an order
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("reward_redemptions_user_idx").on(table.userId),
+  index("reward_redemptions_reward_idx").on(table.rewardId),
+  index("reward_redemptions_status_idx").on(table.status),
+]);
+
+// Referral system
+export const referrals = pgTable("referrals", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  referrerId: varchar("referrer_id").notNull().references(() => users.id, { onDelete: 'cascade' }), // User who sent referral
+  refereeId: varchar("referee_id").references(() => users.id, { onDelete: 'cascade' }), // User who was referred (null until signup)
+  referralCode: varchar("referral_code", { length: 50 }).notNull().unique(),
+  email: varchar("email", { length: 255 }), // Email of person being referred
+  status: varchar("status", { length: 50 }).default("pending"), // pending, signed_up, completed, rewarded
+  referrerRewardPoints: integer("referrer_reward_points").default(0), // Points given to referrer
+  refereeRewardPoints: integer("referee_reward_points").default(0), // Points given to referee
+  referrerRewarded: boolean("referrer_rewarded").default(false),
+  refereeRewarded: boolean("referee_rewarded").default(false),
+  refereeFirstPurchaseAt: timestamp("referee_first_purchase_at"), // When referee made first purchase
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+  signedUpAt: timestamp("signed_up_at"),
+  completedAt: timestamp("completed_at"),
+}, (table) => [
+  index("referrals_referrer_idx").on(table.referrerId),
+  index("referrals_referee_idx").on(table.refereeId),
+  index("referrals_code_idx").on(table.referralCode),
+  index("referrals_status_idx").on(table.status),
+]);
+
+// Insert schemas for loyalty system
+export const insertLoyaltyTierSchema = createInsertSchema(loyaltyTiers);
+export const insertLoyaltyAccountSchema = createInsertSchema(loyaltyAccounts);
+export const insertLoyaltyTransactionSchema = createInsertSchema(loyaltyTransactions);
+export const insertLoyaltyRuleSchema = createInsertSchema(loyaltyRules);
+export const insertRewardSchema = createInsertSchema(rewards);
+export const insertRewardRedemptionSchema = createInsertSchema(rewardRedemptions);
+export const insertReferralSchema = createInsertSchema(referrals);
+
+// TypeScript types for loyalty system
+export type LoyaltyTier = typeof loyaltyTiers.$inferSelect;
+export type InsertLoyaltyTier = z.infer<typeof insertLoyaltyTierSchema>;
+
+export type LoyaltyAccount = typeof loyaltyAccounts.$inferSelect;
+export type InsertLoyaltyAccount = z.infer<typeof insertLoyaltyAccountSchema>;
+
+export type LoyaltyTransaction = typeof loyaltyTransactions.$inferSelect;
+export type InsertLoyaltyTransaction = z.infer<typeof insertLoyaltyTransactionSchema>;
+
+export type LoyaltyRule = typeof loyaltyRules.$inferSelect;
+export type InsertLoyaltyRule = z.infer<typeof insertLoyaltyRuleSchema>;
+
+export type Reward = typeof rewards.$inferSelect;
+export type InsertReward = z.infer<typeof insertRewardSchema>;
+
+export type RewardRedemption = typeof rewardRedemptions.$inferSelect;
+export type InsertRewardRedemption = z.infer<typeof insertRewardRedemptionSchema>;
+
+export type Referral = typeof referrals.$inferSelect;
+export type InsertReferral = z.infer<typeof insertReferralSchema>;
+
+// ========================================
+// ANALYTICS & BUSINESS INTELLIGENCE
+// ========================================
+
+// Daily metrics aggregation for fast analytics queries
+export const dailyMetrics = pgTable("daily_metrics", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  date: timestamp("date").notNull(), // Date for these metrics (start of day UTC)
+
+  // Revenue metrics
+  totalRevenue: decimal("total_revenue", { precision: 12, scale: 2 }).default("0"),
+  orderCount: integer("order_count").default(0),
+  averageOrderValue: decimal("average_order_value", { precision: 12, scale: 2 }).default("0"),
+
+  // User metrics
+  newUsers: integer("new_users").default(0),
+  activeUsers: integer("active_users").default(0),
+  returningUsers: integer("returning_users").default(0),
+
+  // Business metrics
+  newBusinesses: integer("new_businesses").default(0),
+  activeBusinesses: integer("active_businesses").default(0),
+
+  // Product metrics
+  productsListed: integer("products_listed").default(0),
+  productsSold: integer("products_sold").default(0),
+
+  // Loyalty metrics
+  pointsEarned: integer("points_earned").default(0),
+  pointsRedeemed: integer("points_redeemed").default(0),
+  rewardsRedeemed: integer("rewards_redeemed").default(0),
+
+  // Engagement metrics
+  reviewsCreated: integer("reviews_created").default(0),
+  messagesExchanged: integer("messages_exchanged").default(0),
+  socialShares: integer("social_shares").default(0),
+
+  // Referral metrics
+  referralsSent: integer("referrals_sent").default(0),
+  referralsCompleted: integer("referrals_completed").default(0),
+
+  // Metadata
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  uniqueIndex("daily_metrics_date_idx").on(table.date),
+]);
+
+// Business-level analytics
+export const businessMetrics = pgTable("business_metrics", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  date: timestamp("date").notNull(),
+
+  // Performance metrics
+  views: integer("views").default(0),
+  uniqueVisitors: integer("unique_visitors").default(0),
+  clicks: integer("clicks").default(0),
+
+  // Sales metrics
+  revenue: decimal("revenue", { precision: 12, scale: 2 }).default("0"),
+  orders: integer("orders").default(0),
+  productsListedCount: integer("products_listed_count").default(0),
+  productsSoldCount: integer("products_sold_count").default(0),
+
+  // Customer metrics
+  newCustomers: integer("new_customers").default(0),
+  returningCustomers: integer("returning_customers").default(0),
+  averageOrderValue: decimal("average_order_value", { precision: 12, scale: 2 }).default("0"),
+
+  // Engagement metrics
+  reviewsReceived: integer("reviews_received").default(0),
+  averageRating: decimal("average_rating", { precision: 3, scale: 2 }).default("0"),
+  messagesReceived: integer("messages_received").default(0),
+  messagesReplied: integer("messages_replied").default(0),
+
+  // Spotlight metrics
+  spotlightVotes: integer("spotlight_votes").default(0),
+  spotlightWins: integer("spotlight_wins").default(0),
+
+  // Metadata
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("business_metrics_business_idx").on(table.businessId),
+  index("business_metrics_date_idx").on(table.date),
+  uniqueIndex("business_metrics_unique_idx").on(table.businessId, table.date),
+]);
+
+// User behavior analytics
+export const userMetrics = pgTable("user_metrics", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  date: timestamp("date").notNull(),
+
+  // Activity metrics
+  pageViews: integer("page_views").default(0),
+  sessionDuration: integer("session_duration").default(0), // seconds
+  actionsCount: integer("actions_count").default(0),
+
+  // Purchase metrics
+  ordersPlaced: integer("orders_placed").default(0),
+  totalSpent: decimal("total_spent", { precision: 12, scale: 2 }).default("0"),
+
+  // Engagement metrics
+  reviewsWritten: integer("reviews_written").default(0),
+  messagesSent: integer("messages_sent").default(0),
+  socialShares: integer("social_shares").default(0),
+
+  // Loyalty metrics
+  pointsEarned: integer("points_earned").default(0),
+  pointsSpent: integer("points_spent").default(0),
+  rewardsRedeemed: integer("rewards_redeemed").default(0),
+
+  // Metadata
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("user_metrics_user_idx").on(table.userId),
+  index("user_metrics_date_idx").on(table.date),
+  uniqueIndex("user_metrics_unique_idx").on(table.userId, table.date),
+]);
+
+// Product performance analytics
+export const productMetrics = pgTable("product_metrics", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  productId: uuid("product_id").notNull().references(() => products.id, { onDelete: 'cascade' }),
+  date: timestamp("date").notNull(),
+
+  // Visibility metrics
+  views: integer("views").default(0),
+  uniqueViewers: integer("unique_viewers").default(0),
+  searchAppearances: integer("search_appearances").default(0),
+
+  // Sales metrics
+  unitsSold: integer("units_sold").default(0),
+  revenue: decimal("revenue", { precision: 12, scale: 2 }).default("0"),
+  ordersCount: integer("orders_count").default(0),
+
+  // Conversion metrics
+  addToCartCount: integer("add_to_cart_count").default(0),
+  checkoutCount: integer("checkout_count").default(0),
+  purchaseCount: integer("purchase_count").default(0),
+
+  // Engagement metrics
+  likesCount: integer("likes_count").default(0),
+  sharesCount: integer("shares_count").default(0),
+
+  // Inventory metrics
+  stockLevel: integer("stock_level").default(0),
+  restockCount: integer("restock_count").default(0),
+
+  // Metadata
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("product_metrics_product_idx").on(table.productId),
+  index("product_metrics_date_idx").on(table.date),
+  uniqueIndex("product_metrics_unique_idx").on(table.productId, table.date),
+]);
+
+// Real-time event tracking
+export const analyticsEvents = pgTable("analytics_events", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  eventType: varchar("event_type", { length: 100 }).notNull(), // page_view, click, purchase, etc.
+  eventCategory: varchar("event_category", { length: 100 }), // user_action, business_action, system_event
+
+  // Context
+  userId: varchar("user_id").references(() => users.id, { onDelete: 'set null' }),
+  businessId: uuid("business_id").references(() => businesses.id, { onDelete: 'set null' }),
+  productId: uuid("product_id").references(() => products.id, { onDelete: 'set null' }),
+  orderId: uuid("order_id").references(() => orders.id, { onDelete: 'set null' }),
+
+  // Session info
+  sessionId: varchar("session_id", { length: 255 }),
+  ipAddress: varchar("ip_address", { length: 45 }),
+  userAgent: text("user_agent"),
+
+  // Event details
+  eventData: jsonb("event_data"),
+
+  // Timing
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+  processingTime: integer("processing_time"), // milliseconds
+
+  // Metadata
+  metadata: jsonb("metadata"),
+}, (table) => [
+  index("analytics_events_type_idx").on(table.eventType),
+  index("analytics_events_user_idx").on(table.userId),
+  index("analytics_events_business_idx").on(table.businessId),
+  index("analytics_events_timestamp_idx").on(table.timestamp),
+]);
+
+// Customer cohorts for cohort analysis
+export const customerCohorts = pgTable("customer_cohorts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  cohortName: varchar("cohort_name", { length: 100 }).notNull(),
+  cohortType: varchar("cohort_type", { length: 50 }).notNull(), // signup_month, first_purchase_month, tier_based
+  cohortDate: timestamp("cohort_date").notNull(), // Start date of cohort (e.g., 2025-01-01 for Jan 2025 cohort)
+
+  // Cohort metrics
+  userCount: integer("user_count").default(0),
+  activeUsers: integer("active_users").default(0),
+  retentionRate: decimal("retention_rate", { precision: 5, scale: 2 }).default("0"),
+
+  // Revenue metrics
+  totalRevenue: decimal("total_revenue", { precision: 12, scale: 2 }).default("0"),
+  averageRevenuePerUser: decimal("average_revenue_per_user", { precision: 12, scale: 2 }).default("0"),
+
+  // Engagement metrics
+  averageOrdersPerUser: decimal("average_orders_per_user", { precision: 8, scale: 2 }).default("0"),
+  averageLifetimeValue: decimal("average_lifetime_value", { precision: 12, scale: 2 }).default("0"),
+
+  // Metadata
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("cohorts_date_idx").on(table.cohortDate),
+  index("cohorts_type_idx").on(table.cohortType),
+  uniqueIndex("cohorts_unique_idx").on(table.cohortName, table.cohortDate),
+]);
+
+// Funnel analytics for conversion tracking
+export const conversionFunnels = pgTable("conversion_funnels", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  funnelName: varchar("funnel_name", { length: 100 }).notNull(),
+  date: timestamp("date").notNull(),
+
+  // Funnel steps (generic for flexibility)
+  step1Count: integer("step1_count").default(0),
+  step2Count: integer("step2_count").default(0),
+  step3Count: integer("step3_count").default(0),
+  step4Count: integer("step4_count").default(0),
+  step5Count: integer("step5_count").default(0),
+
+  // Conversion rates
+  step1ToStep2Rate: decimal("step1_to_step2_rate", { precision: 5, scale: 2 }).default("0"),
+  step2ToStep3Rate: decimal("step2_to_step3_rate", { precision: 5, scale: 2 }).default("0"),
+  step3ToStep4Rate: decimal("step3_to_step4_rate", { precision: 5, scale: 2 }).default("0"),
+  step4ToStep5Rate: decimal("step4_to_step5_rate", { precision: 5, scale: 2 }).default("0"),
+  overallConversionRate: decimal("overall_conversion_rate", { precision: 5, scale: 2 }).default("0"),
+
+  // Metadata (store step names, etc.)
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("funnels_name_idx").on(table.funnelName),
+  index("funnels_date_idx").on(table.date),
+  uniqueIndex("funnels_unique_idx").on(table.funnelName, table.date),
+]);
+
+// Insert schemas for analytics
+export const insertDailyMetricsSchema = createInsertSchema(dailyMetrics);
+export const insertBusinessMetricsSchema = createInsertSchema(businessMetrics);
+export const insertUserMetricsSchema = createInsertSchema(userMetrics);
+export const insertProductMetricsSchema = createInsertSchema(productMetrics);
+export const insertAnalyticsEventSchema = createInsertSchema(analyticsEvents);
+export const insertCustomerCohortSchema = createInsertSchema(customerCohorts);
+export const insertConversionFunnelSchema = createInsertSchema(conversionFunnels);
+
+// TypeScript types for analytics
+export type DailyMetrics = typeof dailyMetrics.$inferSelect;
+export type InsertDailyMetrics = z.infer<typeof insertDailyMetricsSchema>;
+
+// ============================================
+// SOCIAL MEDIA INTEGRATION TABLES
+// ============================================
+
+export const socialAccounts = pgTable("social_accounts", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull().references(() => users.id),
+  businessId: text("business_id").references(() => businesses.id),
+  platform: text("platform").notNull(), // facebook, instagram, twitter, linkedin, tiktok, pinterest, youtube
+  accountId: text("account_id").notNull(), // Platform-specific account ID
+  accountName: text("account_name"),
+  accountHandle: text("account_handle"),
+  profileUrl: text("profile_url"),
+  profileImageUrl: text("profile_image_url"),
+  isActive: boolean("is_active").default(true),
+  metadata: jsonb("metadata"), // Platform-specific metadata
+  lastSyncedAt: timestamp("last_synced_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("social_accounts_user_idx").on(table.userId),
+  index("social_accounts_business_idx").on(table.businessId),
+  index("social_accounts_platform_idx").on(table.platform),
+  uniqueIndex("social_accounts_unique_idx").on(table.userId, table.platform, table.accountId),
+]);
+
+export const socialTokens = pgTable("social_tokens", {
+  id: text("id").primaryKey(),
+  socialAccountId: text("social_account_id").notNull().references(() => socialAccounts.id, { onDelete: "cascade" }),
+  accessToken: text("access_token").notNull(),
+  refreshToken: text("refresh_token"),
+  expiresAt: timestamp("expires_at"),
+  scopes: jsonb("scopes").$type<string[]>(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  uniqueIndex("social_tokens_account_idx").on(table.socialAccountId),
+]);
+
+export const socialPosts = pgTable("social_posts", {
+  id: text("id").primaryKey(),
+  socialAccountId: text("social_account_id").notNull().references(() => socialAccounts.id),
+  businessId: text("business_id").references(() => businesses.id),
+  platformPostId: text("platform_post_id"), // ID on the social platform
+  platform: text("platform").notNull(),
+  postType: text("post_type").notNull(), // post, story, reel, video, etc.
+  content: text("content"),
+  mediaUrls: jsonb("media_urls").$type<string[]>(),
+  hashtags: jsonb("hashtags").$type<string[]>(),
+  mentions: jsonb("mentions").$type<string[]>(),
+  scheduledFor: timestamp("scheduled_for"),
+  publishedAt: timestamp("published_at"),
+  status: text("status").notNull(), // draft, scheduled, published, failed
+  metrics: jsonb("metrics"), // likes, comments, shares, views, etc.
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("social_posts_account_idx").on(table.socialAccountId),
+  index("social_posts_business_idx").on(table.businessId),
+  index("social_posts_status_idx").on(table.status),
+  index("social_posts_scheduled_idx").on(table.scheduledFor),
+]);
+
+export const socialAnalytics = pgTable("social_analytics", {
+  id: text("id").primaryKey(),
+  socialAccountId: text("social_account_id").notNull().references(() => socialAccounts.id),
+  businessId: text("business_id").references(() => businesses.id),
+  platform: text("platform").notNull(),
+  date: date("date").notNull(),
+  metrics: jsonb("metrics").notNull(), // Platform-specific metrics
+  insights: jsonb("insights"), // AI-generated insights
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("social_analytics_account_idx").on(table.socialAccountId),
+  index("social_analytics_date_idx").on(table.date),
+  uniqueIndex("social_analytics_unique_idx").on(table.socialAccountId, table.date),
+]);
+
+// Insert schemas for social media
+export const insertSocialAccountSchema = createInsertSchema(socialAccounts);
+export const insertSocialTokenSchema = createInsertSchema(socialTokens);
+export const insertSocialPostSchema = createInsertSchema(socialPosts);
+export const insertSocialAnalyticsSchema = createInsertSchema(socialAnalytics);
+
+// TypeScript types for social media
+export type SocialAccount = typeof socialAccounts.$inferSelect;
+export type InsertSocialAccount = z.infer<typeof insertSocialAccountSchema>;
+export type SocialToken = typeof socialTokens.$inferSelect;
+export type InsertSocialToken = z.infer<typeof insertSocialTokenSchema>;
+export type SocialPost = typeof socialPosts.$inferSelect;
+export type InsertSocialPost = z.infer<typeof insertSocialPostSchema>;
+export type SocialAnalytics = typeof socialAnalytics.$inferSelect;
+export type InsertSocialAnalytics = z.infer<typeof insertSocialAnalyticsSchema>;
+
+export type BusinessMetrics = typeof businessMetrics.$inferSelect;
+export type InsertBusinessMetrics = z.infer<typeof insertBusinessMetricsSchema>;
+
+export type UserMetrics = typeof userMetrics.$inferSelect;
+export type InsertUserMetrics = z.infer<typeof insertUserMetricsSchema>;
+
+export type ProductMetrics = typeof productMetrics.$inferSelect;
+export type InsertProductMetrics = z.infer<typeof insertProductMetricsSchema>;
+
+export type AnalyticsEvent = typeof analyticsEvents.$inferSelect;
+export type InsertAnalyticsEvent = z.infer<typeof insertAnalyticsEventSchema>;
+
+export type CustomerCohort = typeof customerCohorts.$inferSelect;
+export type InsertCustomerCohort = z.infer<typeof insertCustomerCohortSchema>;
+
+export type ConversionFunnel = typeof conversionFunnels.$inferSelect;
+export type InsertConversionFunnel = z.infer<typeof insertConversionFunnelSchema>;
+
+// ============================================
+// ADMIN AUDIT LOGS & RBAC SYSTEM (Phase 1: Enterprise Features)
+// ============================================
+
+// Admin Roles (Super Admin, Content Moderator, Support Agent, etc.)
+export const adminRoles = pgTable("admin_roles", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 100 }).notNull().unique(),
+  description: text("description"),
+  permissions: jsonb("permissions").$type<string[]>().notNull(), // Array of permission strings
+  isSystemRole: boolean("is_system_role").default(false), // Cannot be deleted/modified
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// User role assignments (many-to-many: users can have multiple roles)
+export const userRoles = pgTable("user_roles", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  roleId: uuid("role_id").notNull().references(() => adminRoles.id, { onDelete: 'cascade' }),
+  assignedBy: varchar("assigned_by").notNull().references(() => users.id), // Admin who assigned the role
+  assignedAt: timestamp("assigned_at").defaultNow(),
+}, (table) => [
+  index("user_roles_user_idx").on(table.userId),
+  index("user_roles_role_idx").on(table.roleId),
+  uniqueIndex("user_roles_unique_idx").on(table.userId, table.roleId),
+]);
+
+// Admin Audit Logs (immutable record of all admin actions)
+export const adminAuditLogs = pgTable("admin_audit_logs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  adminId: varchar("admin_id").notNull().references(() => users.id), // Admin who performed action
+  action: varchar("action", { length: 100 }).notNull(), // user.promote, business.verify, content.moderate, etc.
+  entityType: varchar("entity_type", { length: 50 }).notNull(), // user, business, post, product, etc.
+  entityId: varchar("entity_id", { length: 255 }).notNull(), // ID of affected entity
+  changes: jsonb("changes"), // Before/after state
+  reason: text("reason"), // Optional reason for action
+  ipAddress: varchar("ip_address", { length: 45 }), // IPv4 or IPv6
+  userAgent: text("user_agent"),
+  sessionId: varchar("session_id", { length: 255 }),
+  status: varchar("status", { length: 20 }).default("success"), // success, failed, partial
+  errorMessage: text("error_message"), // If status is failed
+  metadata: jsonb("metadata"), // Additional context
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+}, (table) => [
+  index("audit_logs_admin_idx").on(table.adminId),
+  index("audit_logs_action_idx").on(table.action),
+  index("audit_logs_entity_idx").on(table.entityType, table.entityId),
+  index("audit_logs_timestamp_idx").on(table.timestamp),
+]);
+
+// Error Tracking (aggregated from errorHandler)
+export const errorLogs = pgTable("error_logs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  errorHash: varchar("error_hash", { length: 64 }).notNull(), // Hash of error type + message
+  message: text("message").notNull(),
+  stack: text("stack"),
+  category: varchar("category", { length: 50 }).notNull(), // From ErrorCategory enum
+  severity: varchar("severity", { length: 20 }).notNull(), // From ErrorSeverity enum
+  userId: varchar("user_id"), // User who encountered error (if authenticated)
+  requestPath: varchar("request_path", { length: 500 }),
+  requestMethod: varchar("request_method", { length: 10 }),
+  ipAddress: varchar("ip_address", { length: 45 }),
+  userAgent: text("user_agent"),
+  count: integer("count").default(1), // Number of occurrences
+  firstSeenAt: timestamp("first_seen_at").defaultNow().notNull(),
+  lastSeenAt: timestamp("last_seen_at").defaultNow().notNull(),
+  resolved: boolean("resolved").default(false),
+  resolvedBy: varchar("resolved_by").references(() => users.id),
+  resolvedAt: timestamp("resolved_at"),
+  notes: text("notes"), // Admin notes on resolution
+}, (table) => [
+  index("error_logs_hash_idx").on(table.errorHash),
+  index("error_logs_category_idx").on(table.category),
+  index("error_logs_severity_idx").on(table.severity),
+  index("error_logs_resolved_idx").on(table.resolved),
+  index("error_logs_last_seen_idx").on(table.lastSeenAt),
+]);
+
+// Insert schemas
+export const insertAdminRoleSchema = createInsertSchema(adminRoles);
+export const insertUserRoleSchema = createInsertSchema(userRoles);
+export const insertAdminAuditLogSchema = createInsertSchema(adminAuditLogs);
+export const insertErrorLogSchema = createInsertSchema(errorLogs);
+
+// TypeScript types
+export type AdminRole = typeof adminRoles.$inferSelect;
+export type InsertAdminRole = z.infer<typeof insertAdminRoleSchema>;
+export type UserRole = typeof userRoles.$inferSelect;
+export type InsertUserRole = z.infer<typeof insertUserRoleSchema>;
+export type AdminAuditLog = typeof adminAuditLogs.$inferSelect;
+export type InsertAdminAuditLog = z.infer<typeof insertAdminAuditLogSchema>;
+export type ErrorLog = typeof errorLogs.$inferSelect;
+export type InsertErrorLog = z.infer<typeof insertErrorLogSchema>;

@@ -3414,7 +3414,7 @@ textarea:focus-visible {
 
 /* === LUXURY UTILITY CLASSES === */
 
-/* Miami Glass Morphism */
+/* Miami Glass Morphism (Legacy - use glass-elevated for new code) */
 .miami-glass {
   background: linear-gradient(135deg, 
     rgba(255, 255, 255, 0.25) 0%,
@@ -3443,7 +3443,7 @@ textarea:focus-visible {
   pointer-events: none;
 }
 
-/* Glass Panel Effect for Light Theme (legacy) */
+/* Glass Panel Effect for Light Theme (Legacy - use glass-elevated for new code) */
 .glass-panel {
   background: linear-gradient(135deg, 
     rgba(255, 255, 255, 0.85) 0%,
@@ -3470,6 +3470,129 @@ textarea:focus-visible {
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite: exclude;
   pointer-events: none;
+}
+
+/* === STANDARDIZED GLASS MORPHISM CLASSES === */
+/* Use these three standardized classes for all new components */
+
+/* Glass Subtle - Light backdrop blur for backgrounds and sections */
+.glass-subtle {
+  background: linear-gradient(135deg,
+    rgba(255, 255, 255, 0.20) 0%,
+    rgba(255, 255, 255, 0.08) 100%);
+  backdrop-filter: blur(12px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  position: relative;
+}
+
+/* Glass Elevated - Medium blur for cards and panels (matches miami-glass/glass-panel) */
+.glass-elevated {
+  background: linear-gradient(135deg,
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(255, 255, 255, 0.10) 100%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 0 0 1px rgba(212, 175, 55, 0.1);
+  position: relative;
+}
+
+.glass-elevated::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.3), rgba(255, 215, 0, 0.2));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Glass Intense - Strong blur for modals, dropdowns, and overlays */
+.glass-intense {
+  background: linear-gradient(135deg,
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0.15) 100%);
+  backdrop-filter: blur(30px) saturate(200%);
+  -webkit-backdrop-filter: blur(30px) saturate(200%);
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  box-shadow:
+    0 12px 48px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 0 0 1.5px rgba(212, 175, 55, 0.15);
+  position: relative;
+}
+
+.glass-intense::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.4), rgba(255, 215, 0, 0.3));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Legacy classes kept for backward compatibility - use standardized classes above for new code */
+
+/* === ELEVATION SHADOW SYSTEM === */
+/* Consistent shadow depth system for luxury layering */
+
+/* Elevation 1 - Base cards, resting state */
+.elevation-1 {
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 0 0 1px rgba(212, 175, 55, 0.05);
+}
+
+/* Elevation 2 - Interactive cards, hover state */
+.elevation-2 {
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    0 2px 6px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(212, 175, 55, 0.08),
+    0 0 20px rgba(212, 175, 55, 0.1);
+}
+
+/* Elevation 3 - Prominent elements, raised cards */
+.elevation-3 {
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.12),
+    0 4px 12px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(212, 175, 55, 0.1),
+    0 0 30px rgba(212, 175, 55, 0.15);
+}
+
+/* Elevation 4 - Modals, dropdowns, highest level */
+.elevation-4 {
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.15),
+    0 8px 24px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(212, 175, 55, 0.12),
+    0 0 40px rgba(212, 175, 55, 0.2);
+}
+
+/* Elevation Inset - For containers and wells */
+.elevation-inset {
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.06),
+    inset 0 1px 2px rgba(0, 0, 0, 0.04),
+    0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 /* Metallic Surface */
@@ -4850,6 +4973,528 @@ textarea:focus-visible,
   opacity: 1;
 }
 
+.ambient-glow-gold {
+  position: relative;
+}
+
+.ambient-glow-gold::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(circle at 50% 50%,
+    rgba(212, 175, 55, 0.25) 0%,
+    rgba(255, 215, 0, 0.15) 30%,
+    transparent 70%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.ambient-glow-gold:hover::before {
+  opacity: 1;
+}
+
+.ambient-glow-teal {
+  position: relative;
+}
+
+.ambient-glow-teal::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(circle at 50% 50%,
+    rgba(0, 139, 139, 0.2) 0%,
+    rgba(0, 168, 168, 0.1) 30%,
+    transparent 70%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.ambient-glow-teal:hover::before {
+  opacity: 1;
+}
+
+.ambient-glow-orange {
+  position: relative;
+}
+
+.ambient-glow-orange::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(circle at 50% 50%,
+    rgba(255, 152, 67, 0.2) 0%,
+    rgba(255, 152, 67, 0.1) 30%,
+    transparent 70%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.ambient-glow-orange:hover::before {
+  opacity: 1;
+}
+
+.ambient-glow-pink {
+  position: relative;
+}
+
+.ambient-glow-pink::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(circle at 50% 50%,
+    rgba(236, 72, 153, 0.2) 0%,
+    rgba(236, 72, 153, 0.1) 30%,
+    transparent 70%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.ambient-glow-pink:hover::before {
+  opacity: 1;
+}
+
+/* Hover-Activated Particle Effects */
+.hover-particles {
+  position: relative;
+  overflow: hidden;
+}
+
+.hover-particles::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.8), transparent);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  animation: hover-particle-burst 1.5s ease-out infinite;
+}
+
+@keyframes hover-particle-burst {
+  0% {
+    transform: translate(0, 0) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--particle-x, 50px), var(--particle-y, -100px)) scale(0);
+    opacity: 0;
+  }
+}
+
+.hover-particles:hover::after {
+  opacity: 1;
+}
+
+/* Particle Trail Effect for Interactive Elements */
+.particle-trail {
+  position: relative;
+}
+
+.particle-trail::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center,
+    rgba(212, 175, 55, 0.1),
+    rgba(25, 182, 246, 0.05),
+    transparent);
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+  filter: blur(8px);
+}
+
+.particle-trail:hover::before {
+  opacity: 1;
+  animation: trail-pulse 2s ease-in-out infinite;
+}
+
+@keyframes trail-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.6;
+  }
+}
+
+/* Interactive Shimmer Effects */
+.shimmer-on-hover {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-on-hover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.5) 50%,
+    transparent 100%
+  );
+  transform: skewX(-15deg);
+  transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.shimmer-on-hover:hover::after {
+  left: 100%;
+}
+
+/* Gold Shimmer for Luxury Elements */
+.shimmer-gold-hover {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-gold-hover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(212, 175, 55, 0.4) 50%,
+    transparent 100%
+  );
+  transform: skewX(-15deg);
+  transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.shimmer-gold-hover:hover::after {
+  left: 100%;
+}
+
+/* Continuous Shimmer Animation */
+.shimmer-continuous {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-continuous::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
+  transform: skewX(-15deg);
+  animation: shimmer-slide 3s infinite;
+  pointer-events: none;
+}
+
+@keyframes shimmer-slide {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* === PHASE 3: ADVANCED MAGIC MCP EFFECTS === */
+
+/* Mouse-Tracking Ambient Effects */
+.mouse-track-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.mouse-track-glow::before {
+  content: '';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle,
+    rgba(212, 175, 55, 0.15) 0%,
+    rgba(255, 215, 0, 0.08) 30%,
+    transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.mouse-track-glow:hover::before {
+  opacity: 1;
+}
+
+/* Mouse-Tracking Spotlight Effect */
+.mouse-spotlight {
+  position: relative;
+  overflow: hidden;
+}
+
+.mouse-spotlight::after {
+  content: '';
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(212, 175, 55, 0.05) 40%,
+    transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: overlay;
+}
+
+.mouse-spotlight:hover::after {
+  opacity: 1;
+}
+
+/* Cursor Glow Trail */
+.cursor-glow {
+  position: relative;
+}
+
+.cursor-glow::before {
+  content: '';
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle,
+    rgba(25, 182, 246, 0.2) 0%,
+    rgba(25, 182, 246, 0.05) 50%,
+    transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.5s ease;
+  filter: blur(20px);
+}
+
+.cursor-glow:hover::before {
+  opacity: 1;
+}
+
+/* Dynamic Interactive Gradient */
+.dynamic-gradient-bg {
+  position: relative;
+  background: linear-gradient(135deg,
+    rgba(25, 182, 246, 0.05) 0%,
+    rgba(212, 175, 55, 0.05) 100%);
+  transition: background 0.6s ease;
+}
+
+.dynamic-gradient-bg:hover {
+  background: linear-gradient(135deg,
+    rgba(25, 182, 246, 0.12) 0%,
+    rgba(255, 152, 67, 0.08) 50%,
+    rgba(212, 175, 55, 0.12) 100%);
+}
+
+/* Gradient Shift on Interaction */
+.gradient-shift {
+  background: linear-gradient(135deg,
+    var(--gradient-start, rgba(25, 182, 246, 0.1)),
+    var(--gradient-mid, rgba(212, 175, 55, 0.05)),
+    var(--gradient-end, rgba(255, 152, 67, 0.1)));
+  background-size: 200% 200%;
+  animation: gradient-shift-animation 8s ease infinite;
+  transition: background-position 0.5s ease;
+}
+
+@keyframes gradient-shift-animation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.gradient-shift:hover {
+  animation-play-state: paused;
+  background-position: 75% 50%;
+}
+
+/* Floating Animation System */
+.float-gentle {
+  animation: float-gentle 6s ease-in-out infinite;
+}
+
+@keyframes float-gentle {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-15px) rotate(2deg);
+  }
+}
+
+.float-medium {
+  animation: float-medium 5s ease-in-out infinite;
+}
+
+@keyframes float-medium {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-20px) scale(1.02);
+  }
+}
+
+.float-dynamic {
+  animation: float-dynamic 7s ease-in-out infinite;
+}
+
+@keyframes float-dynamic {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+  }
+  33% {
+    transform: translateY(-12px) translateX(8px);
+  }
+  66% {
+    transform: translateY(-8px) translateX(-8px);
+  }
+}
+
+/* Elite Entrance Animations with Stagger */
+.entrance-fade-up {
+  animation: entrance-fade-up 0.8s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+@keyframes entrance-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.entrance-slide-right {
+  animation: entrance-slide-right 0.8s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+@keyframes entrance-slide-right {
+  from {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.entrance-scale-fade {
+  animation: entrance-scale-fade 0.8s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+@keyframes entrance-scale-fade {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.entrance-rotate-fade {
+  animation: entrance-rotate-fade 1s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+@keyframes entrance-rotate-fade {
+  from {
+    opacity: 0;
+    transform: rotate(-10deg) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+}
+
+/* Stagger Delay Classes */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+.stagger-6 { animation-delay: 0.6s; }
+.stagger-7 { animation-delay: 0.7s; }
+.stagger-8 { animation-delay: 0.8s; }
+
+/* Luxury Card Entrance */
+.card-entrance {
+  animation: card-entrance 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes card-entrance {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Premium Element Pop-in */
+.premium-pop {
+  animation: premium-pop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) both;
+}
+
+@keyframes premium-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 /* Magic MCP Interactive Hover Effects */
 .magic-hover-lift {
   transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
@@ -5631,6 +6276,7 @@ textarea:focus-visible,
 }
 
 /* === 2. ADVANCED BACKDROP FILTER CLASSES === */
+/* Note: These are legacy backdrop utilities. Prefer using glass-subtle, glass-elevated, or glass-intense */
 
 .backdrop-luxury {
   backdrop-filter: blur(40px) saturate(180%) contrast(120%) brightness(1.1);

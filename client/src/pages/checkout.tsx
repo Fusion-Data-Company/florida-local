@@ -108,8 +108,8 @@ function CheckoutForm({ clientSecret, orderId }: { clientSecret: string; orderId
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="p-4 border rounded-lg">
+    <form onSubmit={handleSubmit} className="space-y-6 entrance-fade-up">
+      <div className="p-4 border rounded-lg glass-elevated mouse-spotlight">
         <div className="flex items-center gap-2 mb-4">
           <CreditCard className="h-5 w-5" />
           <h3 className="font-semibold">Payment Information</h3>
@@ -117,12 +117,12 @@ function CheckoutForm({ clientSecret, orderId }: { clientSecret: string; orderId
         </div>
         <PaymentElement />
       </div>
-      
+
       <StardustButton
         type="submit"
         disabled={!stripe || isProcessing}
         variant="gold"
-        className="w-full"
+        className="w-full shimmer-gold-hover"
         size="lg"
         data-testid="button-complete-payment"
       >
@@ -211,13 +211,13 @@ export default function Checkout() {
         <AuroraAmbient intensity="low" />
         <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-12 text-center relative z-10">
-          <Transform3DCard>
-            <PremiumGlassCard>
+          <Transform3DCard className="entrance-scale-fade">
+            <PremiumGlassCard className="ambient-glow-teal elevation-3">
               <CardContent className="py-16">
                 <Lock className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
                 <h1 className="text-3xl font-bold mb-4">Please log in to checkout</h1>
                 <p className="text-muted-foreground mb-6">Access your cart and complete your purchase</p>
-                <Button asChild size="lg">
+                <Button asChild size="lg" className="shimmer-gold-hover">
                   <Link href="/api/login" data-testid="button-login">
                     Log In
                   </Link>
@@ -253,13 +253,13 @@ export default function Checkout() {
         <AuroraAmbient intensity="low" />
         <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-12 text-center relative z-10">
-          <Transform3DCard>
-            <PremiumGlassCard>
+          <Transform3DCard className="entrance-scale-fade">
+            <PremiumGlassCard className="ambient-glow-purple elevation-3">
               <CardContent className="py-16">
                 <ShoppingBag className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
                 <h1 className="text-3xl font-bold mb-4">Your cart is empty</h1>
                 <p className="text-muted-foreground mb-6">Add some items to your cart before checking out</p>
-                <Button asChild size="lg">
+                <Button asChild size="lg" className="shimmer-gold-hover">
                   <Link href="/marketplace" data-testid="link-marketplace">
                     Browse Products
                   </Link>

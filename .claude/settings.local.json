@@ -22,7 +22,17 @@
       "Bash(xargs ps:*)",
       "Bash(for:*)",
       "Bash(do)",
-      "Bash(echo \"Updated: $file\")"
+      "Bash(echo \"Updated: $file\")",
+      "Bash(xargs:*)",
+      "Bash(npm run build:client:*)",
+      "Bash(npm install:*)",
+      "Bash(tsx scripts/seed-blog-data.ts:*)",
+      "Bash(npm run check:*)",
+      "Bash(npx tsc:*)",
+      "Read(//home/runner/.cursor/**)",
+      "Bash(npm run:*)",
+      "Bash(timeout 30 npm run dev)",
+      "Bash(tsx scripts/seed-loyalty-data.ts:*)"
     ],
     "deny": [],
     "ask": []

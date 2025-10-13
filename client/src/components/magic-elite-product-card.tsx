@@ -7,11 +7,12 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { 
-  Heart, 
-  Star, 
-  Loader2, 
-  ShoppingCart, 
+import { VerifiedBadge, getVerificationTier } from "@/components/ui/verified-badge";
+import {
+  Heart,
+  Star,
+  Loader2,
+  ShoppingCart,
   Eye,
   TrendingUp
 } from "lucide-react";
@@ -193,9 +194,28 @@ export default function MagicEliteProductCard({ product, index = 0 }: MagicElite
             }}
           />
 
-          {/* Product Badge */}
-          <div className="absolute top-3 left-3 z-20">
+          {/* Product Badge & Verification */}
+          <div className="absolute top-3 left-3 z-20 flex flex-col gap-2">
             {getBadgeForProduct()}
+            {product.business && getVerificationTier({
+              gmbConnected: product.business.gmbConnected,
+              averageRating: product.business.rating,
+              totalReviews: product.business.reviewCount,
+              monthlyEngagement: (product.business.followerCount || 0) + (product.business.postCount || 0) * 10,
+              isSpotlightFeatured: product.business.isVerified
+            }) && (
+              <VerifiedBadge
+                type={getVerificationTier({
+                  gmbConnected: product.business.gmbConnected,
+                  averageRating: product.business.rating,
+                  totalReviews: product.business.reviewCount,
+                  monthlyEngagement: (product.business.followerCount || 0) + (product.business.postCount || 0) * 10,
+                  isSpotlightFeatured: product.business.isVerified
+                })!}
+                size="sm"
+                showLabel
+              />
+            )}
           </div>
 
           {/* Price Badge */}

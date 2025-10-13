@@ -390,9 +390,9 @@ export default function VendorPayoutsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button 
+            <Button
+              variant="fl-gold"
               onClick={() => window.location.href = '/create-business'}
-              className="btn-miami-primary"
             >
               Create Business
             </Button>
@@ -469,9 +469,10 @@ export default function VendorPayoutsPage() {
               </CardHeader>
               <CardContent className="marble-content">
                 <Button
+                  variant="fl-gold"
                   onClick={() => createConnectAccount.mutate()}
                   disabled={createConnectAccount.isPending}
-                  className="btn-miami-primary gap-2"
+                  className="gap-2"
                   data-testid="button-setup-payouts"
                 >
                   {createConnectAccount.isPending ? (
@@ -519,9 +520,10 @@ export default function VendorPayoutsPage() {
                   </Alert>
                 )}
                 <Button
+                  variant="fl-gold"
                   onClick={() => resumeOnboarding.mutate()}
                   disabled={resumeOnboarding.isPending}
-                  className="btn-miami-primary gap-2"
+                  className="gap-2"
                   data-testid="button-resume-onboarding"
                 >
                   {resumeOnboarding.isPending ? (
@@ -708,9 +710,10 @@ export default function VendorPayoutsPage() {
                           )}
                         />
                         <Button
+                          variant="fl-gold"
                           type="submit"
                           disabled={!payoutForm.formState.isValid || createPayout.isPending}
-                          className="btn-miami-primary w-full gap-2"
+                          className="w-full gap-2"
                           data-testid="button-request-payout"
                         >
                           {createPayout.isPending ? (

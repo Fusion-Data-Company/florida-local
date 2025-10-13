@@ -20,6 +20,9 @@ import { dataSyncService } from "./dataSyncService";
 // Stripe Connect Services
 import * as stripeConnect from "./stripeConnect";
 
+// Social Media OAuth Services
+import { registerSocialAuthRoutes } from "./socialAuthRoutes";
+
 // Initialize Stripe optionally; if key missing, endpoints will short-circuit
 const stripeKey = process.env.STRIPE_SECRET_KEY;
 const stripe = stripeKey
@@ -1113,7 +1116,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/spotlight/eligible/:type', async (req, res) => {
     try {
       const { type } = req.params;
-      
+
       if (!['daily', 'weekly', 'monthly'].includes(type)) {
         return res.status(400).json({ message: "Invalid spotlight type. Use daily, weekly, or monthly" });
       }
@@ -1123,6 +1126,101 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching eligible businesses:", error);
       res.status(500).json({ message: "Failed to fetch eligible businesses" });
+    }
+  });
+
+  // Voting Interface Endpoints
+  app.get('/api/spotlight/voting/eligible', async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 20;
+
+      // Get businesses eligible for monthly spotlight voting
+      // These should be active, verified businesses with good standing
+      const businesses = await storage.getEligibleForVoting(limit);
+      res.json(businesses);
+    } catch (error) {
+      console.error("Error fetching eligible voting businesses:", error);
+      res.status(500).json({ message: "Failed to fetch eligible businesses" });
+    }
+  });
+
+  app.get('/api/spotlight/voting/stats', async (req, res) => {
+    try {
+      const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM format
+      const stats = await storage.getVotingStats(currentMonth);
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching voting stats:", error);
+      res.status(500).json({ message: "Failed to fetch voting stats" });
+    }
+  });
+
+  app.get('/api/spotlight/voting/my-votes', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const currentMonth = new Date().toISOString().slice(0, 7);
+      const votes = await storage.getUserVotes(userId, currentMonth);
+      res.json(votes);
+    } catch (error) {
+      console.error("Error fetching user votes:", error);
+      res.status(500).json({ message: "Failed to fetch user votes" });
+    }
+  });
+
+  // Trending Businesses Endpoint
+  app.get('/api/businesses/trending', async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const trending = await storage.getTrendingBusinesses(limit);
+      res.json(trending);
+    } catch (error) {
+      console.error("Error fetching trending businesses:", error);
+      res.status(500).json({ message: "Failed to fetch trending businesses" });
+    }
+  });
+
+  // Community Leaderboard Endpoints
+  app.get('/api/leaderboard/businesses', async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const leaderboard = await storage.getTopBusinesses(limit);
+      res.json(leaderboard);
+    } catch (error) {
+      console.error("Error fetching business leaderboard:", error);
+      res.status(500).json({ message: "Failed to fetch business leaderboard" });
+    }
+  });
+
+  app.get('/api/leaderboard/voters', async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const leaderboard = await storage.getTopVoters(limit);
+      res.json(leaderboard);
+    } catch (error) {
+      console.error("Error fetching voters leaderboard:", error);
+      res.status(500).json({ message: "Failed to fetch voters leaderboard" });
+    }
+  });
+
+  app.get('/api/leaderboard/reviewers', async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const leaderboard = await storage.getTopReviewers(limit);
+      res.json(leaderboard);
+    } catch (error) {
+      console.error("Error fetching reviewers leaderboard:", error);
+      res.status(500).json({ message: "Failed to fetch reviewers leaderboard" });
+    }
+  });
+
+  app.get('/api/leaderboard/buyers', async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const leaderboard = await storage.getTopBuyers(limit);
+      res.json(leaderboard);
+    } catch (error) {
+      console.error("Error fetching buyers leaderboard:", error);
+      res.status(500).json({ message: "Failed to fetch buyers leaderboard" });
     }
   });
 
@@ -2310,11 +2408,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (paymentIntent.status === "succeeded") {
         // Update order status
         await storage.updateOrderStatus(orderId, "processing");
-        
+
         // Update payment status
         const payment = await storage.getPaymentByStripeId(paymentIntentId);
         if (payment) {
           await storage.updatePaymentStatus(payment.id, "succeeded", new Date());
+        }
+
+        // Award loyalty points for purchase
+        try {
+          const { loyaltyStorage } = await import("./loyaltyStorage");
+          await loyaltyStorage.awardPointsForEvent(
+            userId,
+            "purchase",
+            orderId
+          );
+        } catch (loyaltyError) {
+          console.error("Error awarding loyalty points:", loyaltyError);
+          // Don't fail the order completion if loyalty points fail
         }
 
         // Clear user's cart
@@ -2676,6 +2787,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // AI CONTENT GENERATOR - THE KILLER FEATURE
+  app.post('/api/ai/generate-content', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { businessId, platform, idea, tone } = req.body;
+
+      // Validate inputs
+      if (!businessId || !platform || !idea) {
+        return res.status(400).json({ message: "Missing required fields: businessId, platform, idea" });
+      }
+
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business || business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized to generate content for this business" });
+      }
+
+      // Generate platform-specific content with business data injected
+      const { generatePlatformContent } = await import("./aiService");
+      const generatedContent = await generatePlatformContent({
+        business,
+        platform,
+        idea,
+        tone: tone || 'professional',
+      });
+
+      res.json(generatedContent);
+    } catch (error: any) {
+      console.error("Error generating AI content:", error);
+      res.status(500).json({ message: error.message || "Failed to generate content" });
+    }
+  });
+
   // Tax endpoints
   app.post('/api/tax/calculate', isAuthenticated, async (req: any, res) => {
     try {
@@ -2766,11 +2910,524 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ========================================
+  // ADMIN ROUTES - Platform Management
+  // ========================================
+
+  // Get admin statistics
+  app.get('/api/admin/stats', adminRateLimit, isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      // Get all stats for admin dashboard
+      const allUsers = await storage.getAllUsers();
+      const allBusinesses = await storage.getAllBusinesses();
+      const allOrders = await storage.getAllOrders();
+
+      // Calculate total revenue
+      const totalRevenue = allOrders.reduce((sum, order) => {
+        const total = parseFloat(order.total || "0");
+        return sum + (total * 100); // Convert to cents
+      }, 0);
+
+      // Count pending approvals (businesses not verified)
+      const pendingApprovals = allBusinesses.filter(b => !b.isVerified).length;
+
+      // Count active users (logged in within last 24 hours)
+      const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const activeUsers = allUsers.filter(u => {
+        const lastSeen = u.lastSeenAt ? new Date(u.lastSeenAt) : null;
+        return lastSeen && lastSeen > oneDayAgo;
+      }).length;
+
+      res.json({
+        totalUsers: allUsers.length,
+        totalBusinesses: allBusinesses.length,
+        totalOrders: allOrders.length,
+        totalRevenue,
+        pendingApprovals,
+        activeUsers,
+      });
+    } catch (error: any) {
+      console.error("Error getting admin stats:", error);
+      res.status(500).json({ message: error.message || "Failed to get admin stats" });
+    }
+  });
+
+  // Get all users (admin only)
+  app.get('/api/admin/users', adminRateLimit, isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      res.json(users);
+    } catch (error: any) {
+      console.error("Error getting all users:", error);
+      res.status(500).json({ message: error.message || "Failed to get users" });
+    }
+  });
+
+  // Get all businesses (admin only)
+  app.get('/api/admin/businesses', adminRateLimit, isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const businesses = await storage.getAllBusinesses();
+      res.json(businesses);
+    } catch (error: any) {
+      console.error("Error getting all businesses:", error);
+      res.status(500).json({ message: error.message || "Failed to get businesses" });
+    }
+  });
+
+  // Get all orders (admin only)
+  app.get('/api/admin/orders', adminRateLimit, isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const orders = await storage.getAllOrders();
+      res.json(orders);
+    } catch (error: any) {
+      console.error("Error getting all orders:", error);
+      res.status(500).json({ message: error.message || "Failed to get orders" });
+    }
+  });
+
+  // Admin user actions
+  app.post('/api/admin/users/:userId/:action', adminRateLimit, isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const { userId, action } = req.params;
+      const adminId = req.user.claims.sub;
+
+      // Prevent self-modification
+      if (userId === adminId && (action === 'ban' || action === 'promote')) {
+        return res.status(400).json({ message: "Cannot perform this action on yourself" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      switch (action) {
+        case 'promote':
+          // Toggle admin status
+          await storage.updateUser(userId, { isAdmin: !user.isAdmin });
+          res.json({ message: `User ${user.isAdmin ? 'demoted from' : 'promoted to'} admin` });
+          break;
+
+        case 'ban':
+          // In a real system, you'd have a 'banned' field
+          // For now, we'll just return success
+          res.json({ message: "User ban functionality to be implemented" });
+          break;
+
+        case 'view':
+          res.json(user);
+          break;
+
+        default:
+          res.status(400).json({ message: "Invalid action" });
+      }
+    } catch (error: any) {
+      console.error("Error performing user action:", error);
+      res.status(500).json({ message: error.message || "Failed to perform action" });
+    }
+  });
+
+  // Admin business actions
+  app.post('/api/admin/businesses/:businessId/:action', adminRateLimit, isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const { businessId, action } = req.params;
+
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+
+      switch (action) {
+        case 'verify':
+          // Toggle verification status
+          await storage.updateBusiness(businessId, { isVerified: !business.isVerified });
+          res.json({ message: `Business ${business.isVerified ? 'unverified' : 'verified'}` });
+          break;
+
+        case 'activate':
+          await storage.updateBusiness(businessId, { isActive: true });
+          res.json({ message: "Business activated" });
+          break;
+
+        case 'deactivate':
+          await storage.updateBusiness(businessId, { isActive: false });
+          res.json({ message: "Business deactivated" });
+          break;
+
+        case 'view':
+          res.json(business);
+          break;
+
+        case 'delete':
+          // In production, you'd likely soft-delete or archive
+          res.json({ message: "Business deletion to be implemented" });
+          break;
+
+        default:
+          res.status(400).json({ message: "Invalid action" });
+      }
+    } catch (error: any) {
+      console.error("Error performing business action:", error);
+      res.status(500).json({ message: error.message || "Failed to perform action" });
+    }
+  });
+
+  // Get detailed user information for admin (with all related data)
+  app.get('/api/admin/users/:userId/details', adminRateLimit, isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const { userId } = req.params;
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Get user's businesses
+      const businesses = await storage.getBusinessesByOwner(userId);
+
+      // Get user's orders
+      const orders = await storage.getOrdersByUser(userId);
+
+      // Get loyalty account
+      const { LoyaltyStorage } = await import("./loyaltyStorage");
+      const loyaltyStorage = new LoyaltyStorage();
+      const loyaltyAccount = await loyaltyStorage.getLoyaltyAccount(userId);
+
+      // Get recent loyalty transactions
+      const loyaltyTransactions = loyaltyAccount
+        ? await loyaltyStorage.getTransactionHistory(userId, { limit: 10 })
+        : [];
+
+      // Get referrals made by user
+      const referrals = loyaltyAccount
+        ? await loyaltyStorage.getUserReferrals(userId)
+        : [];
+
+      res.json({
+        user,
+        businesses,
+        orders,
+        loyaltyAccount,
+        loyaltyTransactions,
+        referrals,
+        stats: {
+          totalBusinesses: businesses.length,
+          totalOrders: orders.length,
+          totalSpent: orders.reduce((sum, order) => sum + parseFloat(order.total || "0"), 0),
+          loyaltyPoints: loyaltyAccount?.currentPoints || 0,
+          referralCount: referrals.length,
+        }
+      });
+    } catch (error: any) {
+      console.error("Error getting user details:", error);
+      res.status(500).json({ message: error.message || "Failed to get user details" });
+    }
+  });
+
+  // Get detailed business information for admin (with all related data)
+  app.get('/api/admin/businesses/:businessId/details', adminRateLimit, isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const { businessId } = req.params;
+
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+
+      // Get business owner
+      const owner = await storage.getUser(business.ownerId);
+
+      // Get products
+      const products = await storage.getProductsByBusiness(businessId);
+
+      // Get posts
+      const posts = await storage.getPostsByBusiness(businessId);
+
+      // Get orders for this business
+      const allOrders = await storage.getAllOrders();
+      const businessOrders = allOrders.filter(order => {
+        // Filter orders that contain products from this business
+        return order.items?.some((item: any) =>
+          products.some(p => p.id === item.productId)
+        );
+      });
+
+      // Calculate revenue
+      const totalRevenue = businessOrders.reduce((sum, order) =>
+        sum + parseFloat(order.total || "0"), 0
+      );
+
+      // Get GMB sync status if connected
+      let gmbStatus = null;
+      if (business.gmbConnected) {
+        gmbStatus = {
+          connected: business.gmbConnected,
+          verified: business.gmbVerified,
+          syncStatus: business.gmbSyncStatus,
+          lastSyncAt: business.gmbLastSyncAt,
+          lastError: business.gmbLastError,
+        };
+      }
+
+      // Get Stripe status if connected
+      let stripeStatus = null;
+      if (business.stripeAccountId) {
+        stripeStatus = {
+          accountId: business.stripeAccountId,
+          onboardingStatus: business.stripeOnboardingStatus,
+          chargesEnabled: business.stripeChargesEnabled,
+          payoutsEnabled: business.stripePayoutsEnabled,
+        };
+      }
+
+      res.json({
+        business,
+        owner,
+        products,
+        posts,
+        orders: businessOrders,
+        gmbStatus,
+        stripeStatus,
+        stats: {
+          totalProducts: products.length,
+          totalPosts: posts.length,
+          totalOrders: businessOrders.length,
+          totalRevenue,
+          avgRating: parseFloat(business.rating || "0"),
+          reviewCount: business.reviewCount || 0,
+          followerCount: business.followerCount || 0,
+        }
+      });
+    } catch (error: any) {
+      console.error("Error getting business details:", error);
+      res.status(500).json({ message: error.message || "Failed to get business details" });
+    }
+  });
+
+  // Get content moderation data (blog posts, posts, products)
+  app.get('/api/admin/content', adminRateLimit, isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const { type, status, limit = 50, offset = 0 } = req.query;
+
+      // Get blog posts
+      const blogPosts = await storage.getBlogPosts({
+        status: status as string || 'all',
+        limit: Number(limit),
+        offset: Number(offset),
+      });
+
+      // Get business posts
+      const allPosts = await storage.getAllPosts();
+
+      // Get products
+      const allProducts = await storage.getAllProducts();
+
+      res.json({
+        blogPosts: {
+          items: blogPosts,
+          total: blogPosts.length,
+        },
+        posts: {
+          items: allPosts.slice(Number(offset), Number(offset) + Number(limit)),
+          total: allPosts.length,
+        },
+        products: {
+          items: allProducts.slice(Number(offset), Number(offset) + Number(limit)),
+          total: allProducts.length,
+        }
+      });
+    } catch (error: any) {
+      console.error("Error getting content:", error);
+      res.status(500).json({ message: error.message || "Failed to get content" });
+    }
+  });
+
+  // Get marketing overview for admin
+  app.get('/api/admin/marketing', adminRateLimit, isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const { MarketingStorage } = await import("./marketingStorage");
+      const marketingStorage = new MarketingStorage();
+
+      // Get all campaigns across all businesses
+      const campaigns = await marketingStorage.getAllCampaigns({ limit: 100 });
+
+      // Get all segments
+      const segments = await marketingStorage.getAllSegments({ limit: 100 });
+
+      // Calculate stats
+      const campaignStats = {
+        total: campaigns.length,
+        active: campaigns.filter(c => c.status === 'active').length,
+        completed: campaigns.filter(c => c.status === 'completed').length,
+        draft: campaigns.filter(c => c.status === 'draft').length,
+      };
+
+      const segmentStats = {
+        total: segments.length,
+        avgSize: segments.reduce((sum, s) => sum + (s.memberCount || 0), 0) / segments.length || 0,
+      };
+
+      res.json({
+        campaigns: {
+          items: campaigns.slice(0, 20),
+          stats: campaignStats,
+        },
+        segments: {
+          items: segments.slice(0, 20),
+          stats: segmentStats,
+        }
+      });
+    } catch (error: any) {
+      console.error("Error getting marketing data:", error);
+      res.status(500).json({ message: error.message || "Failed to get marketing data" });
+    }
+  });
+
+  // Get loyalty overview for admin
+  app.get('/api/admin/loyalty', adminRateLimit, isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const { LoyaltyStorage } = await import("./loyaltyStorage");
+      const loyaltyStorage = new LoyaltyStorage();
+
+      // Get all loyalty accounts
+      const accounts = await loyaltyStorage.getAllAccounts({ limit: 1000 });
+
+      // Get all tiers
+      const tiers = await loyaltyStorage.getAllTiers();
+
+      // Get all rewards
+      const rewards = await loyaltyStorage.getAllRewards({ limit: 100 });
+
+      // Get recent redemptions
+      const redemptions = await loyaltyStorage.getRecentRedemptions({ limit: 50 });
+
+      // Calculate distribution by tier
+      const tierDistribution = tiers.map(tier => ({
+        tier: tier.name,
+        count: accounts.filter(a => a.tierId === tier.id).length,
+      }));
+
+      // Calculate stats
+      const totalPointsIssued = accounts.reduce((sum, a) => sum + (a.lifetimePoints || 0), 0);
+      const totalPointsAvailable = accounts.reduce((sum, a) => sum + (a.currentPoints || 0), 0);
+
+      res.json({
+        accounts: {
+          total: accounts.length,
+          items: accounts.slice(0, 20),
+        },
+        tiers: {
+          items: tiers,
+          distribution: tierDistribution,
+        },
+        rewards: {
+          items: rewards,
+          total: rewards.length,
+        },
+        redemptions: {
+          items: redemptions,
+          pending: redemptions.filter(r => r.status === 'pending').length,
+          completed: redemptions.filter(r => r.status === 'completed').length,
+        },
+        stats: {
+          totalPointsIssued,
+          totalPointsAvailable,
+          activeMembers: accounts.length,
+        }
+      });
+    } catch (error: any) {
+      console.error("Error getting loyalty data:", error);
+      res.status(500).json({ message: error.message || "Failed to get loyalty data" });
+    }
+  });
+
+  // Get system health and monitoring data
+  app.get('/api/admin/system', adminRateLimit, isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      // Check Redis connection
+      const redisStatus = await checkRedisConnection();
+
+      // Get database stats
+      const allUsers = await storage.getAllUsers();
+      const allBusinesses = await storage.getAllBusinesses();
+      const allOrders = await storage.getAllOrders();
+
+      // Calculate platform metrics
+      const platformMetrics = {
+        totalUsers: allUsers.length,
+        totalBusinesses: allBusinesses.length,
+        totalOrders: allOrders.length,
+        verifiedBusinesses: allBusinesses.filter(b => b.isVerified).length,
+        activeBusinesses: allBusinesses.filter(b => b.isActive).length,
+      };
+
+      // System health
+      const systemHealth = {
+        redis: redisStatus ? 'healthy' : 'unhealthy',
+        database: 'healthy', // If we got here, DB is working
+        timestamp: new Date().toISOString(),
+      };
+
+      res.json({
+        health: systemHealth,
+        metrics: platformMetrics,
+        uptime: process.uptime(),
+        memory: process.memoryUsage(),
+      });
+    } catch (error: any) {
+      console.error("Error getting system data:", error);
+      res.status(500).json({
+        message: error.message || "Failed to get system data",
+        health: {
+          redis: 'unknown',
+          database: 'unhealthy',
+          timestamp: new Date().toISOString(),
+        }
+      });
+    }
+  });
+
+  // Register blog routes (Phase 4)
+  const { registerBlogRoutes } = await import("./blogRoutes");
+  registerBlogRoutes(app);
+
+  // Register marketing automation routes (Phase 5)
+  const { registerMarketingRoutes } = await import("./marketingRoutes");
+  registerMarketingRoutes(app);
+
+  // Register AI-enhanced marketing routes (Phase 5 - Enterprise AI)
+  const { registerAIMarketingRoutes } = await import("./aiMarketingRoutes");
+  registerAIMarketingRoutes(app);
+
+  // Register marketplace AI agent routes (Phase 5.2 - Marketplace Intelligence)
+  const { registerMarketplaceAgentRoutes } = await import("./marketplaceAgentRoutes");
+  registerMarketplaceAgentRoutes(app);
+
+  // Register loyalty & rewards routes (Phase 6 - Loyalty System)
+  const { registerLoyaltyRoutes } = await import("./loyaltyRoutes");
+  registerLoyaltyRoutes(app);
+
+  // Register analytics & BI routes (Phase 7 - Advanced Analytics)
+  const { registerAnalyticsRoutes } = await import("./analyticsRoutes");
+  registerAnalyticsRoutes(app);
+
+  // Register enterprise monitoring and health check routes
+  const { registerMonitoringRoutes } = await import("./monitoringRoutes");
+  registerMonitoringRoutes(app);
+
+  // Register enterprise error handling and performance monitoring (must be last)
+  const { errorHandlerMiddleware, performanceMiddleware } = await import("./errorHandler");
+  app.use(performanceMiddleware);
+  app.use(errorHandlerMiddleware);
+
+  // Register social media OAuth routes
+  registerSocialAuthRoutes(app);
+
   const httpServer = createServer(app);
-  
+
   // Initialize WebSocket server
   const { initWebSocket } = await import("./websocket");
   initWebSocket(httpServer);
-  
+
   return httpServer;
 }

@@ -71,20 +71,20 @@ export default function MarketplaceSection() {
   };
 
   return (
-    <section className="py-20 bg-background miami-marketplace-section relative overflow-hidden">
+    <section className="py-12 lg:py-20 bg-background miami-marketplace-section relative overflow-hidden dynamic-gradient-bg">
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         <div className="flex flex-col lg:flex-row items-center justify-between mb-16">
           <div className="lg:w-1/2 mb-8 lg:mb-0">
-            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 miami-gradient-text">
+            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 miami-gradient-text entrance-slide-right">
               Local Marketplace
             </h2>
-            <p className="text-xl text-muted-foreground leading-relaxed mb-6 miami-body-text">
-              Discover unique products and services from Florida's most innovative businesses. 
+            <p className="text-xl text-muted-foreground leading-relaxed mb-6 miami-body-text entrance-fade-up stagger-1">
+              Discover unique products and services from Florida's most innovative businesses.
               Support local entrepreneurs while finding exactly what you need.
             </p>
             <Link href="/marketplace">
-              <Button 
-                className="gradient-metallic-gold border-animated-gradient miami-hover-lift px-8 py-4 font-semibold group transition-all duration-300 transform-3d-float shadow-lg"
+              <Button
+                className="gradient-metallic-gold border-animated-gradient miami-hover-lift px-8 py-4 font-semibold group transition-all duration-300 transform-3d-float shadow-lg ambient-glow-gold shimmer-gold-hover entrance-scale-fade stagger-2"
                 data-testid="button-explore-marketplace"
               >
                 <ShoppingBag className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform duration-300" />
@@ -96,7 +96,7 @@ export default function MarketplaceSection() {
           
           <div className="lg:w-1/2">
             {/* Premium Search and Filter Bar - ELITE LUXURY TRANSFORMATION */}
-            <div className="search-panel-container premium-search-panel rounded-2xl p-8 transition-all duration-300">
+            <div className="search-panel-container premium-search-panel rounded-2xl p-8 transition-all duration-300 entrance-fade-up stagger-3 mouse-spotlight elevation-2">
               <div className="relative z-10">
               <div className="flex flex-col md:flex-row gap-6 mb-6">
                 <div className="flex-1 relative luxury-search-input-wrapper">

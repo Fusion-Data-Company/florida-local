@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import AIGeneratedBadge from "@/components/ai-generated-badge";
 
 interface ActivityPostProps {
   post: Post;
@@ -187,10 +188,14 @@ export default function ActivityPost({ post }: ActivityPostProps) {
               </div>
               <div className="flex items-center space-x-2 ml-4">
                 {getPostBadge()}
+                {/* Show AI badge if post was AI-generated */}
+                {(post as any).isAiGenerated && (
+                  <AIGeneratedBadge variant="subtle" size="sm" />
+                )}
                 {isAuthenticated && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     className="elite-post-action-btn h-8 w-8 p-0"
                     data-testid={`button-follow-post-${post.id}`}
                   >

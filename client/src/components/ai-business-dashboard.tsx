@@ -303,7 +303,7 @@ export default function AIBusinessDashboard({ businessId }: { businessId: string
                   </div>
                 </div>
                 {insight.actionable && (
-                  <Button size="sm" className="mt-3 btn-miami-primary">
+                  <Button variant="fl-gold" size="sm" className="mt-3">
                     Take Action
                   </Button>
                 )}
@@ -333,7 +333,7 @@ export default function AIBusinessDashboard({ businessId }: { businessId: string
                 </div>
               </div>
             ))}
-            <Button className="w-full btn-miami-glass mt-4">
+            <Button variant="fl-glass" className="w-full mt-4">
               View All Recommendations
             </Button>
           </CardContent>

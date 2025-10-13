@@ -280,9 +280,10 @@ export default function MagicFormWizard({
                 <div className="flex gap-3">
                   {isLastStep ? (
                     <Button
+                      variant="fl-gold"
                       onClick={handleNext}
                       disabled={isValidating || loading}
-                      className="flex items-center gap-2 btn-miami-primary miami-hover-lift px-8"
+                      className="flex items-center gap-2 miami-hover-lift px-8"
                     >
                       {loading ? (
                         <>
@@ -298,9 +299,10 @@ export default function MagicFormWizard({
                     </Button>
                   ) : (
                     <Button
+                      variant="fl-gold"
                       onClick={handleNext}
                       disabled={isValidating}
-                      className="flex items-center gap-2 btn-miami-primary miami-hover-lift px-8"
+                      className="flex items-center gap-2 miami-hover-lift px-8"
                     >
                       {isValidating ? (
                         <>

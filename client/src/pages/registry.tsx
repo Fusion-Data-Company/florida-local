@@ -161,7 +161,7 @@ export default function Registry() {
     springConfig
   );
 
-  // Placeholder data for business owners
+  // Comprehensive data for business owners (Entrepreneurs Row 1)
   const businessOwners = [
     {
       name: "Maria Rodriguez",
@@ -193,9 +193,39 @@ export default function Registry() {
       image: "https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=600&h=600&fit=crop",
       link: "#",
     },
+    {
+      name: "David Martinez",
+      business: "Martinez Legal Group",
+      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&h=600&fit=crop",
+      link: "#",
+    },
+    {
+      name: "Rachel Kim",
+      business: "Sunshine Marketing Agency",
+      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=600&h=600&fit=crop",
+      link: "#",
+    },
+    {
+      name: "Anthony Blake",
+      business: "Blake Construction Co.",
+      image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&h=600&fit=crop",
+      link: "#",
+    },
+    {
+      name: "Jennifer Lopez",
+      business: "J-Lo Fashion Boutique",
+      image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&h=600&fit=crop",
+      link: "#",
+    },
+    {
+      name: "Marcus Williams",
+      business: "Williams Auto Group",
+      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&h=600&fit=crop",
+      link: "#",
+    },
   ];
 
-  // Placeholder data for business showcases
+  // Business showcases (Row 2 - scrolls left)
   const businessShowcases = [
     {
       title: "Sunshine Café",
@@ -227,8 +257,39 @@ export default function Registry() {
       image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&h=600&fit=crop",
       link: "#",
     },
+    {
+      title: "Tropical Fitness Studio",
+      category: "Health & Wellness",
+      image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&h=600&fit=crop",
+      link: "#",
+    },
+    {
+      title: "Coastal Legal Services",
+      category: "Professional Services",
+      image: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&h=600&fit=crop",
+      link: "#",
+    },
+    {
+      title: "Artisan Coffee Roasters",
+      category: "Food & Beverage",
+      image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&h=600&fit=crop",
+      link: "#",
+    },
+    {
+      title: "Elite Auto Detailing",
+      category: "Automotive",
+      image: "https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?w=600&h=600&fit=crop",
+      link: "#",
+    },
+    {
+      title: "Sunset Photography Studio",
+      category: "Creative Services",
+      image: "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=600&h=600&fit=crop",
+      link: "#",
+    },
   ];
 
+  // Additional entrepreneurs (Row 3 - scrolls right)
   const additionalOwners = [
     {
       name: "Robert Williams",
@@ -258,6 +319,36 @@ export default function Registry() {
       name: "Kevin O'Brien",
       business: "Sports Performance Center",
       image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&h=600&fit=crop",
+      link: "#",
+    },
+    {
+      name: "Sophia Patel",
+      business: "Patel Consulting Group",
+      image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=600&h=600&fit=crop",
+      link: "#",
+    },
+    {
+      name: "Brandon Scott",
+      business: "Scott Media Productions",
+      image: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=600&h=600&fit=crop",
+      link: "#",
+    },
+    {
+      name: "Victoria Chen",
+      business: "Chen Financial Planning",
+      image: "https://images.unsplash.com/photo-1573497019236-17f8177b81e8?w=600&h=600&fit=crop",
+      link: "#",
+    },
+    {
+      name: "Daniel Roberts",
+      business: "Roberts Insurance Agency",
+      image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&h=600&fit=crop",
+      link: "#",
+    },
+    {
+      name: "Nina Gonzalez",
+      business: "Gonzalez Event Planning",
+      image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&h=600&fit=crop",
       link: "#",
     },
   ];
@@ -295,11 +386,12 @@ export default function Registry() {
     },
   ];
 
-  const firstOwnerRow = businessOwners.slice(0, 5);
-  const secondShowcaseRow = businessShowcases.slice(0, 5);
-  const thirdOwnerRow = additionalOwners.slice(0, 5);
+  // Use all data for scrolling rows (no slicing - show full arrays)
+  const firstOwnerRow = businessOwners; // All 10 entrepreneurs
+  const secondShowcaseRow = businessShowcases; // All 10 businesses
+  const thirdOwnerRow = additionalOwners; // All 10 entrepreneurs
 
-  // Carousel data for business owners (people)
+  // Carousel data for business owners - Expanded
   const carouselOwners = [
     {
       title: "Maria Rodriguez",
@@ -321,9 +413,29 @@ export default function Registry() {
       button: "View Profile",
       src: "https://images.unsplash.com/photo-1556157382-97eda2d62296?w=600&h=600&fit=crop",
     },
+    {
+      title: "Elena Vasquez",
+      button: "View Profile",
+      src: "https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=600&h=600&fit=crop",
+    },
+    {
+      title: "David Martinez",
+      button: "View Profile",
+      src: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&h=600&fit=crop",
+    },
+    {
+      title: "Rachel Kim",
+      button: "View Profile",
+      src: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=600&h=600&fit=crop",
+    },
+    {
+      title: "Anthony Blake",
+      button: "View Profile",
+      src: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&h=600&fit=crop",
+    },
   ];
 
-  // Carousel data for business showcases (cards)
+  // Carousel data for business showcases - Expanded
   const carouselShowcases = [
     {
       title: "Sunshine Café",
@@ -341,9 +453,29 @@ export default function Registry() {
       src: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&h=600&fit=crop",
     },
     {
+      title: "Digital Marketing Pro",
+      button: "Explore Business",
+      src: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=600&h=600&fit=crop",
+    },
+    {
       title: "Luxury Spa & Retreat",
       button: "Explore Business",
       src: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=600&h=600&fit=crop",
+    },
+    {
+      title: "Elite Fitness Center",
+      button: "Explore Business",
+      src: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&h=600&fit=crop",
+    },
+    {
+      title: "Tropical Fitness Studio",
+      button: "Explore Business",
+      src: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&h=600&fit=crop",
+    },
+    {
+      title: "Artisan Coffee Roasters",
+      button: "Explore Business",
+      src: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&h=600&fit=crop",
     },
   ];
 

@@ -4,12 +4,25 @@ import { logger, trackEvent } from "./monitoring";
 import { cache } from "./redis";
 import { storage } from "./storage";
 
-// Initialize OpenAI
+// Initialize OpenAI for embeddings
 const openai = process.env.OPENAI_API_KEY
   ? new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     })
   : null;
+
+// Initialize OpenRouter (OpenAI-compatible API gateway for multiple AI models)
+const openRouterClient = process.env.OPENROUTER_API_KEY
+  ? new OpenAI({
+      apiKey: process.env.OPENROUTER_API_KEY,
+      baseURL: "https://openrouter.ai/api/v1",
+    })
+  : null;
+
+// Export openai client for aiAgentOrchestrator
+// Uses OpenRouter if available (for access to Claude, GPT-4, etc.), falls back to OpenAI
+const exportedOpenAI = (openRouterClient || openai) as OpenAI;
+export { exportedOpenAI as openai };
 
 // Initialize Pinecone
 const pinecone = process.env.PINECONE_API_KEY
@@ -486,6 +499,161 @@ async function getPopularItems(type: "business" | "product", limit: number): Pro
       reason: "Popular products",
       metadata: p,
     }));
+  }
+}
+
+// ===============================
+// AI CONTENT GENERATOR - PLATFORM-SPECIFIC CONTENT GENERATION
+// ===============================
+
+interface GeneratePlatformContentParams {
+  business: any;
+  platform: string;
+  idea: string;
+  tone: string;
+}
+
+interface GeneratedContent {
+  platform: string;
+  content: string;
+  hashtags?: string[];
+  metadata: {
+    characterCount: number;
+    wordCount: number;
+    estimatedReadTime?: string;
+  };
+}
+
+const platformPrompts: Record<string, string> = {
+  facebook: `Generate engaging Facebook post content. Use conversational tone, include relevant emojis,
+  and structure for maximum engagement. Facebook posts can be longer and should encourage comments and shares.
+  Include a clear call-to-action.`,
+
+  instagram: `Generate Instagram-optimized content. Keep it visual-focused, use line breaks for readability,
+  include 5-10 relevant hashtags at the end. Instagram content should be catchy, on-brand, and encourage
+  engagement. Maximum 2200 characters.`,
+
+  linkedin: `Generate professional LinkedIn content. Use a professional yet engaging tone, focus on
+  industry insights, business value, and networking. Structure with clear sections and thought leadership
+  angle. No emojis unless very relevant.`,
+
+  gmb: `Generate Google My Business update content. Focus on local SEO keywords, business updates,
+  special offers, events, or news. Keep it concise (under 1500 characters), include location-specific
+  information, and add a clear call-to-action.`,
+
+  email: `Generate email newsletter content. Include a compelling subject line, personalized greeting,
+  well-structured body with sections, and strong call-to-action buttons. Professional formatting with
+  clear value proposition.`
+};
+
+export async function generatePlatformContent(
+  params: GeneratePlatformContentParams
+): Promise<GeneratedContent> {
+  const { business, platform, idea, tone } = params;
+
+  if (!openai) {
+    throw new Error("OpenAI not configured. Please add OPENAI_API_KEY to environment variables.");
+  }
+
+  try {
+    // Build context from business data
+    const businessContext = `
+Business Name: ${business.name}
+Tagline: ${business.tagline || ''}
+Description: ${business.description || ''}
+Category: ${business.category || ''}
+Location: ${business.location || ''}
+Website: ${business.website || ''}
+Phone: ${business.phone || ''}
+`;
+
+    // Get platform-specific prompt
+    const platformPrompt = platformPrompts[platform] || platformPrompts.facebook;
+
+    // Build the full prompt with business context injection
+    const systemPrompt = `You are an expert social media content creator and copywriter specializing in
+${platform} content. Your task is to create engaging, platform-optimized content that naturally incorporates
+the business information provided.
+
+${platformPrompt}
+
+IMPORTANT INSTRUCTIONS:
+1. Automatically inject the business name, location, and relevant details naturally into the content
+2. Match the requested tone: ${tone}
+3. Make the content authentic and engaging, not salesy unless tone is "promotional"
+4. Include specific details from the business context when relevant
+5. Format appropriately for the platform
+6. Do not include placeholder text like [Business Name] - use the actual business name
+7. Generate ONLY the post content, no explanations or meta-commentary`;
+
+    const userPrompt = `Business Context:
+${businessContext}
+
+Post Idea/Topic: ${idea}
+
+Generate a ${platform} post with a ${tone} tone. Make it engaging and ready to publish.`;
+
+    // Call OpenAI API
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4-turbo-preview",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt }
+      ],
+      temperature: 0.8,
+      max_tokens: 1000,
+    });
+
+    let content = completion.choices[0].message.content || "";
+
+    // Extract hashtags for Instagram
+    let hashtags: string[] = [];
+    if (platform === 'instagram') {
+      const hashtagMatches = content.match(/#\w+/g);
+      if (hashtagMatches) {
+        hashtags = hashtagMatches.map(tag => tag.slice(1)); // Remove # symbol
+      }
+    }
+
+    // Calculate metadata
+    const characterCount = content.length;
+    const wordCount = content.split(/\s+/).filter(word => word.length > 0).length;
+    const estimatedReadTime = wordCount > 200
+      ? `${Math.ceil(wordCount / 200)} min read`
+      : undefined;
+
+    // Track usage
+    trackEvent("ai_content_generated", {
+      businessId: business.id,
+      platform,
+      tone,
+      characterCount,
+      wordCount,
+    });
+
+    // Cache the generated content for 1 hour
+    const cacheKey = `generated_content:${business.id}:${platform}:${Date.now()}`;
+    await cache.set(cacheKey, content, 3600);
+
+    logger.info("AI content generated successfully", {
+      businessId: business.id,
+      platform,
+      characterCount,
+    });
+
+    return {
+      platform,
+      content,
+      hashtags: hashtags.length > 0 ? hashtags : undefined,
+      metadata: {
+        characterCount,
+        wordCount,
+        estimatedReadTime,
+      },
+    };
+  } catch (error) {
+    logger.error("Error generating platform content", { error, businessId: business.id, platform });
+    throw new Error(`Failed to generate ${platform} content: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

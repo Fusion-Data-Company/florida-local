@@ -22,6 +22,41 @@ import VendorProducts from "@/pages/vendor-products";
 import VendorPayouts from "@/pages/vendor-payouts";
 import FloridaLocalElite from "@/pages/florida-local-elite";
 import Registry from "@/pages/registry";
+import AIContentGenerator from "@/pages/ai-content-generator";
+import AIAgentsPage from "@/pages/ai-agents";
+import AIToolsPage from "@/pages/ai-tools";
+import GMBHub from "@/pages/gmb-hub";
+import SpotlightVoting from "@/pages/spotlight-voting";
+import Community from "@/pages/community";
+import Loyalty from "@/pages/loyalty";
+import AdminAnalytics from "@/pages/admin-analytics";
+import BusinessAnalytics from "@/pages/business-analytics";
+import AdminDashboard from "@/pages/admin-dashboard";
+import BusinessDashboard from "@/pages/business-dashboard";
+
+// Marketing Pages
+import MarketingHub from "@/pages/marketing-hub";
+import SocialMediaHub from "@/pages/social-media-hub";
+
+// Entrepreneur Pages
+import EntrepreneurProfile from "@/pages/entrepreneur-profile";
+
+// Marketing Components
+import { WorkflowBuilder } from "@/components/marketing/WorkflowBuilder";
+import { LeadFormBuilder } from "@/components/marketing/LeadFormBuilder";
+
+// Blog Components - These exist but were never routed!
+import BlogEditor from "@/components/blog-editor";
+import BlogPostManagement from "@/components/blog-post-management";
+import BlogDiscovery from "@/components/blog-discovery";
+import BlogEngagement from "@/components/blog-engagement";
+import BlogAnalyticsDashboard from "@/components/blog-analytics-dashboard";
+
+// Admin Components
+import SystemMonitoring from "@/pages/admin/system-monitoring";
+
+// AI Components
+import AIBusinessCoachWidget from "@/components/ai-business-coach-widget";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -49,10 +84,56 @@ function Router() {
           <Route path="/orders" component={Orders} />
           <Route path="/vendor/products" component={VendorProducts} />
           <Route path="/vendor/payouts" component={VendorPayouts} />
+          <Route path="/ai/content-generator" component={AIContentGenerator} />
+          <Route path="/ai/agents" component={AIAgentsPage} />
+          <Route path="/ai/tools" component={AIToolsPage} />
+          <Route path="/integrations/gmb" component={GMBHub} />
+          <Route path="/spotlight/voting" component={SpotlightVoting} />
+          <Route path="/community" component={Community} />
+          <Route path="/loyalty" component={Loyalty} />
+
+          {/* Admin Routes */}
+          <Route path="/admin" component={AdminDashboard} />
+          <Route path="/admin/analytics" component={AdminAnalytics} />
+          <Route path="/admin/monitoring" component={SystemMonitoring} />
+
+          {/* Business Dashboard Routes */}
+          <Route path="/business-dashboard" component={BusinessDashboard} />
+          <Route path="/business-analytics" component={BusinessAnalytics} />
+
+          {/* Marketing Hub Routes - NOW CONNECTED! */}
+          <Route path="/marketing" component={MarketingHub} />
+          <Route path="/marketing/workflows" component={WorkflowBuilder} />
+          <Route path="/marketing/forms" component={LeadFormBuilder} />
+
+          {/* Social Media Hub */}
+          <Route path="/social-hub" component={SocialMediaHub} />
+
+          {/* Entrepreneur Platform */}
+          <Route path="/entrepreneur/:id" component={EntrepreneurProfile} />
+
+          {/* Blog Platform Routes - NOW CONNECTED! */}
+          <Route path="/blog" component={BlogDiscovery} />
+          <Route path="/blog/write" component={BlogEditor} />
+          <Route path="/blog/manage" component={BlogPostManagement} />
+          <Route path="/blog/engagement" component={BlogEngagement} />
+          <Route path="/blog/analytics" component={BlogAnalyticsDashboard} />
         </>
       )}
       <Route component={NotFound} />
     </Switch>
+  );
+}
+
+function AppContent() {
+  const { isAuthenticated } = useAuth();
+
+  return (
+    <>
+      <Toaster />
+      {isAuthenticated && <AIBusinessCoachWidget />}
+      <Router />
+    </>
   );
 }
 
@@ -62,8 +143,7 @@ function App() {
       <ThemeProvider>
         <TooltipProvider>
           <WebSocketProvider>
-            <Toaster />
-            <Router />
+            <AppContent />
           </WebSocketProvider>
         </TooltipProvider>
       </ThemeProvider>

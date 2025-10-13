@@ -610,7 +610,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 7. LOCALS | EAST ORLANDO FLAVOR - TURULL'S BOQUERIA */}
-      <section className="py-16 bg-gradient-to-br from-blue-50 via-purple-50 to-white">
+      <section className="py-12 lg:py-20 bg-gradient-to-br from-blue-50 via-purple-50 to-white">
         <div className="container mx-auto px-4 max-w-6xl">
           <h2 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
             Locals | East Orlando Flavor
@@ -712,7 +712,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 9. CENTRAL FLORIDA INSURANCE SCHOOL PROMOTION */}
-      <section className="py-16 bg-gradient-to-br from-blue-600 to-blue-800 text-white">
+      <section className="py-12 lg:py-20 bg-gradient-to-br from-blue-600 to-blue-800 text-white">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto text-center">
             <h2 className="text-5xl font-bold mb-8">
@@ -760,7 +760,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 10. IPOWERMOVES LIVE PODCAST */}
-      <section className="py-16 bg-gradient-to-br from-gray-900 to-blue-900 text-white relative overflow-hidden">
+      <section className="py-12 lg:py-20 bg-gradient-to-br from-gray-900 to-blue-900 text-white relative overflow-hidden">
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-10 text-4xl font-bold flex flex-wrap">
           {Array(20).fill("NEVER HUNT ALONE – Connect | Collaborate").map((text, i) => (
@@ -823,7 +823,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 11. ENTREPRENEURS, CREATORS & COLLABORATORS */}
-      <section className="py-16 bg-gradient-to-br from-green-50 via-blue-50 to-white">
+      <section className="py-12 lg:py-20 bg-gradient-to-br from-green-50 via-blue-50 to-white">
         <div className="container mx-auto px-4">
           <div className="flex justify-center mb-12">
             <MetallicBadge color="emerald" className="text-2xl px-10 py-5">
@@ -855,7 +855,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 12. IPOWER MOVES & CARIBBEAN LOCALS SLIDER */}
-      <section className="py-16 bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
+      <section className="py-12 lg:py-20 bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto mb-12">
             <Card className="rounded-3xl shadow-2xl overflow-hidden">
@@ -903,7 +903,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 13. DENTAL SPOTLIGHT - SIAN DENTAL STUDIO */}
-      <section className="py-16 bg-gradient-to-br from-blue-50 via-purple-50 to-white">
+      <section className="py-12 lg:py-20 bg-gradient-to-br from-blue-50 via-purple-50 to-white">
         <div className="container mx-auto px-4 max-w-6xl">
           <h2 className="text-5xl font-bold text-center mb-4">
             ORLANDO | Your SMILE Is Contagious
@@ -953,7 +953,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 14. THE FLORIDA LOCAL - FEATURED COLLABORATORS & FOODIE EXPERTS */}
-      <section className="py-16 bg-gradient-to-br from-green-50 via-purple-50 to-pink-50">
+      <section className="py-12 lg:py-20 bg-gradient-to-br from-green-50 via-purple-50 to-pink-50">
         <div className="container mx-auto px-4">
           <div className="flex justify-center mb-6">
             <MetallicBadge color="emerald" className="text-xl px-8 py-4">
@@ -1014,7 +1014,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 15. IPOWERMOVES - INDEPENDENT POWER MOVES */}
-      <section className="py-16 bg-gradient-to-br from-orange-50 via-pink-50 to-white">
+      <section className="py-12 lg:py-20 bg-gradient-to-br from-orange-50 via-pink-50 to-white">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <Card className="rounded-3xl shadow-2xl overflow-hidden">
@@ -1038,7 +1038,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 16. CILANTRILLO RESTAURANT MENU & FOODIE POSTS */}
-      <section className="py-16 bg-gradient-to-br from-purple-50 via-pink-50 to-white">
+      <section className="py-12 lg:py-20 bg-gradient-to-br from-purple-50 via-pink-50 to-white">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="grid md:grid-cols-2 gap-8">
             {/* Left: Foodie Posts */}
@@ -1108,7 +1108,7 @@ export default function FloridaLocalElite() {
       {/* 17. #EFFINTRENDY - MUSIC, FASHION & LIFESTYLE (Already included earlier, enhanced version) */}
 
       {/* 18. FEATURED ENTREPRENEURS - IFASTSOCIAL ENDORSEMENT */}
-      <section className="py-16 bg-gradient-to-br from-yellow-50 via-orange-50 to-white">
+      <section className="py-12 lg:py-20 bg-gradient-to-br from-yellow-50 via-orange-50 to-white">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <Card className="rounded-3xl shadow-2xl overflow-hidden">
@@ -1135,7 +1135,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 19. #IPOWERMOVES - ENTREPRENEUR SPOTLIGHT & CREATORS GRID */}
-      <section className="py-16 bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
+      <section className="py-12 lg:py-20 bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
         <div className="container mx-auto px-4">
           <div className="flex justify-center mb-12">
             <MetallicBadge color="platinum" className="text-2xl px-10 py-5">
@@ -1191,7 +1191,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 20. CATEGORIES & TAG CLUSTERS */}
-      <section className="py-16 bg-white">
+      <section className="py-12 lg:py-20 bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl font-bold text-center mb-12">Explore By Category</h2>
           
@@ -1221,7 +1221,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 21. DARK PURPLE ARTICLE LIST & FOOTER */}
-      <section className="py-12 bg-gradient-to-r from-purple-900 to-indigo-900 text-white">
+      <section className="py-12 lg:py-20 bg-gradient-to-r from-purple-900 to-indigo-900 text-white">
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="grid md:grid-cols-2 gap-4">
             {[

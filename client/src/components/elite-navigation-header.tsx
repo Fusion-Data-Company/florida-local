@@ -4,10 +4,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Menu, X, Home, MapPin, Store, MessageSquare, ShoppingCart, Package, Building2, ScrollText } from "lucide-react";
+import { ChevronDown, Menu, X, Home, MapPin, Store, MessageSquare, ShoppingCart, Package, Building2, ScrollText, Sparkles, Trophy, Users, Gift, Star, TrendingUp, BarChart3, Target, BookOpen, Monitor, Shield, Megaphone, Workflow, FileText, User, Briefcase, Rocket } from "lucide-react";
 import { useState, useEffect } from "react";
 import CartIcon from "@/components/cart-icon";
+import NotificationCenter from "@/components/notification-center";
+import { ConnectionIndicator } from "@/components/realtime/ConnectionIndicator";
 import type { Business } from "@shared/types";
+import { Link as WouterLink } from "wouter";
 
 export default function EliteNavigationHeader() {
   const { user, isAuthenticated } = useAuth();
@@ -18,6 +21,12 @@ export default function EliteNavigationHeader() {
   // Fetch user businesses
   const { data: userBusinesses = [] } = useQuery<Business[]>({
     queryKey: ['/api/businesses/my'],
+    enabled: isAuthenticated,
+  });
+
+  // Fetch loyalty account for points display
+  const { data: loyaltyAccount } = useQuery<{ currentPoints: number; tierName: string }>({
+    queryKey: ['/api/loyalty/account'],
     enabled: isAuthenticated,
   });
 
@@ -37,11 +46,11 @@ export default function EliteNavigationHeader() {
   // APPLE-STYLE NAVIGATION ITEMS - CLEAN & MINIMAL
   const navigationItems = [
     { href: "/", label: "Discover", icon: Home, testId: "nav-discover" },
-    { href: "/florida-elite", label: "Florida Local", icon: MapPin, testId: "nav-florida-elite" },
-    { href: "/registry", label: "Registry", icon: ScrollText, testId: "nav-registry" },
     { href: "/marketplace", label: "Marketplace", icon: Store, testId: "nav-marketplace" },
-    { href: "/messages", label: "Messages", icon: MessageSquare, testId: "nav-messages" },
-    { href: "/orders", label: "Orders", icon: Package, testId: "nav-orders" },
+    { href: "/community", label: "Community", icon: Users, testId: "nav-community" },
+    { href: "/florida-local", label: "Florida Local", icon: MapPin, testId: "nav-florida-local" },
+    { href: "/registry", label: "Registry", icon: ScrollText, testId: "nav-registry" },
+    { href: "/ai/tools", label: "AI Tools", icon: Sparkles, testId: "nav-ai-tools" },
   ];
 
   return (
@@ -95,19 +104,107 @@ export default function EliteNavigationHeader() {
                   <DropdownMenuContent className="elite-glass-dropdown w-52">
                     {userBusinesses.length > 0 ? (
                       <>
+                        {/* Profile Section */}
+                        <div className="px-2 py-1 text-xs font-bold text-gray-500">PROFILES</div>
                         <DropdownMenuItem asChild>
-                          <Link href={`/business/${userBusinesses[0].id}`}>View Profile</Link>
+                          <Link href={`/entrepreneur/${user?.id}`}>
+                            <User className="h-4 w-4 mr-2 inline text-purple-600" />
+                            Entrepreneur Profile
+                          </Link>
                         </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href={`/business/${userBusinesses[0].id}`}>
+                            <Building2 className="h-4 w-4 mr-2 inline" />
+                            Business Profile
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        {/* Management Section */}
+                        <div className="px-2 py-1 text-xs font-bold text-gray-500">MANAGEMENT</div>
+                        <DropdownMenuItem asChild>
+                          <Link href="/business-dashboard">
+                            <BarChart3 className="h-4 w-4 mr-2 inline" />
+                            Business Dashboard
+                          </Link>
+                        </DropdownMenuItem>
+                        {/* Marketing & Growth */}
+                        <DropdownMenuItem asChild>
+                          <Link href="/marketing">
+                            <Target className="h-4 w-4 mr-2 inline text-purple-600" />
+                            Marketing Hub
+                            <span className="ml-auto text-xs bg-purple-100 text-purple-600 px-1.5 py-0.5 rounded">NEW</span>
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href="/blog/manage">
+                            <BookOpen className="h-4 w-4 mr-2 inline text-green-600" />
+                            Blog Manager
+                            <span className="ml-auto text-xs bg-green-100 text-green-600 px-1.5 py-0.5 rounded">NEW</span>
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href="/social-hub">
+                            <Megaphone className="h-4 w-4 mr-2 inline text-blue-600" />
+                            Social Media Hub
+                            <span className="ml-auto text-xs bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded">NEW</span>
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        {/* Analytics & AI */}
+                        <DropdownMenuItem asChild>
+                          <Link href="/business-analytics">
+                            <TrendingUp className="h-4 w-4 mr-2 inline" />
+                            Business Analytics
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href="/ai/content-generator">
+                            <Sparkles className="h-4 w-4 mr-2 inline" />
+                            AI Content Generator
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        {/* Community & Growth */}
+                        <DropdownMenuItem asChild>
+                          <Link href="/spotlight/voting">
+                            <Trophy className="h-4 w-4 mr-2 inline text-amber-600" />
+                            Vote
+                            <span className="ml-auto text-xs">🔥</span>
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href="/loyalty">
+                            <Gift className="h-4 w-4 mr-2 inline text-purple-600" />
+                            Rewards
+                            <span className="ml-auto text-xs bg-purple-100 text-purple-600 px-1.5 py-0.5 rounded">NEW</span>
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        {/* Products & Store */}
+                        <DropdownMenuItem asChild>
+                          <Link href="/vendor/products">
+                            <Package className="h-4 w-4 mr-2 inline" />
+                            Manage Products
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href="/vendor/payouts">
+                            <ShoppingCart className="h-4 w-4 mr-2 inline" />
+                            Payouts & Billing
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        {/* Integrations */}
+                        <DropdownMenuItem asChild>
+                          <Link href="/integrations/gmb">
+                            <MapPin className="h-4 w-4 mr-2 inline" />
+                            GMB Integration
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
                         <DropdownMenuItem asChild>
                           <Link href={`/business/${userBusinesses[0].id}/edit`}>Edit Business</Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link href="/vendor/products">Manage Products</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link href="/vendor/payouts">Payouts & Billing</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
                         <DropdownMenuItem asChild>
                           <Link href="/create-business">Create Another</Link>
                         </DropdownMenuItem>
@@ -127,6 +224,22 @@ export default function EliteNavigationHeader() {
               {isAuthenticated ? (
                 <>
                   <div className="hidden md:flex items-center" style={{ gap: '8px' }}>
+                    <ConnectionIndicator />
+                    <NotificationCenter />
+                    {loyaltyAccount && (
+                      <WouterLink href="/loyalty">
+                        <Button
+                          variant="ghost"
+                          className="rounded-lg hover:bg-black/5 transition-all flex items-center gap-2"
+                          style={{ height: '40px', padding: '0 12px' }}
+                        >
+                          <Star className="h-4 w-4 text-yellow-600 fill-yellow-600" />
+                          <span className="font-semibold text-sm bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
+                            {loyaltyAccount.currentPoints.toLocaleString()}
+                          </span>
+                        </Button>
+                      </WouterLink>
+                    )}
                     <CartIcon />
                   </div>
 
@@ -153,9 +266,60 @@ export default function EliteNavigationHeader() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="elite-glass-dropdown w-52">
+                      {/* Personal Section */}
+                      <div className="px-2 py-1 text-xs font-bold text-gray-500">PERSONAL</div>
                       <DropdownMenuItem asChild>
-                        <Link href="/profile">Profile Settings</Link>
+                        <Link href={`/entrepreneur/${user?.id}`}>
+                          <User className="h-4 w-4 mr-2 inline" />
+                          My Entrepreneur Profile
+                        </Link>
                       </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/profile">
+                          <Briefcase className="h-4 w-4 mr-2 inline" />
+                          Account Settings
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/timeline">
+                          <Rocket className="h-4 w-4 mr-2 inline text-purple-600" />
+                          Timeline Feed
+                          <span className="ml-auto text-xs bg-purple-100 text-purple-600 px-1.5 py-0.5 rounded">NEW</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      {user?.id === "1" && (
+                        <>
+                          <DropdownMenuSeparator />
+                          <div className="px-2 py-1 text-xs font-bold text-gray-500">ADMIN</div>
+                          <DropdownMenuItem asChild>
+                            <Link href="/admin">
+                              <Shield className="h-4 w-4 mr-2 inline" />
+                              Admin Dashboard
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link href="/admin/monitoring">
+                              <Monitor className="h-4 w-4 mr-2 inline text-red-600" />
+                              System Monitoring
+                              <span className="ml-auto text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded">NEW</span>
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link href="/admin/analytics">
+                              <BarChart3 className="h-4 w-4 mr-2 inline" />
+                              Platform Analytics
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link href="/admin/marketing">
+                              <Target className="h-4 w-4 mr-2 inline text-purple-600" />
+                              Marketing Oversight
+                              <span className="ml-auto text-xs bg-purple-100 text-purple-600 px-1.5 py-0.5 rounded">NEW</span>
+                            </Link>
+                          </DropdownMenuItem>
+                        </>
+                      )}
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild>
                         <a href="/api/logout" className="text-red-600">Sign Out</a>
@@ -220,9 +384,38 @@ export default function EliteNavigationHeader() {
                       <Building2 className="h-5 w-5" />
                       <span className="text-sm font-medium">View Profile</span>
                     </Link>
-                    <Link href={`/business/${userBusinesses[0].id}/edit`} className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-cyan-50/50 hover:to-teal-50/50 transition-all text-gray-700" onClick={() => setIsMobileMenuOpen(false)}>
-                      <Building2 className="h-5 w-5" />
-                      <span className="text-sm font-medium">Edit Business</span>
+                    <Link href="/business-dashboard" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-cyan-50/50 hover:to-teal-50/50 transition-all text-gray-700" onClick={() => setIsMobileMenuOpen(false)}>
+                      <BarChart3 className="h-5 w-5" />
+                      <span className="text-sm font-medium">Business Dashboard</span>
+                    </Link>
+                    <Link href="/marketing" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-cyan-50/50 hover:to-teal-50/50 transition-all text-gray-700" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Target className="h-5 w-5 text-purple-600" />
+                      <span className="text-sm font-medium">Marketing Hub</span>
+                      <span className="ml-auto text-xs bg-purple-100 text-purple-600 px-1.5 py-0.5 rounded">NEW</span>
+                    </Link>
+                    <Link href="/blog/manage" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-cyan-50/50 hover:to-teal-50/50 transition-all text-gray-700" onClick={() => setIsMobileMenuOpen(false)}>
+                      <BookOpen className="h-5 w-5 text-green-600" />
+                      <span className="text-sm font-medium">Blog Manager</span>
+                      <span className="ml-auto text-xs bg-green-100 text-green-600 px-1.5 py-0.5 rounded">NEW</span>
+                    </Link>
+                    <Link href="/social-hub" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-cyan-50/50 hover:to-teal-50/50 transition-all text-gray-700" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Megaphone className="h-5 w-5 text-blue-600" />
+                      <span className="text-sm font-medium">Social Media Hub</span>
+                      <span className="ml-auto text-xs bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded">NEW</span>
+                    </Link>
+                    <Link href="/business-analytics" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-cyan-50/50 hover:to-teal-50/50 transition-all text-gray-700" onClick={() => setIsMobileMenuOpen(false)}>
+                      <TrendingUp className="h-5 w-5" />
+                      <span className="text-sm font-medium">Business Analytics</span>
+                    </Link>
+                    <Link href="/spotlight/voting" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-cyan-50/50 hover:to-teal-50/50 transition-all text-gray-700" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Trophy className="h-5 w-5 text-amber-600" />
+                      <span className="text-sm font-medium">Vote</span>
+                      <span className="ml-auto text-xs">🔥</span>
+                    </Link>
+                    <Link href="/loyalty" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-cyan-50/50 hover:to-teal-50/50 transition-all text-gray-700" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Gift className="h-5 w-5 text-purple-600" />
+                      <span className="text-sm font-medium">Rewards</span>
+                      <span className="ml-auto text-xs bg-purple-100 text-purple-600 px-1.5 py-0.5 rounded">NEW</span>
                     </Link>
                     <Link href="/vendor/products" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-cyan-50/50 hover:to-teal-50/50 transition-all text-gray-700" onClick={() => setIsMobileMenuOpen(false)}>
                       <Package className="h-5 w-5" />

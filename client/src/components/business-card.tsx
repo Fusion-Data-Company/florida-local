@@ -8,6 +8,8 @@ import { isUnauthorizedError } from "@/lib/authUtils";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { VerifiedBadge, getVerificationTier } from "@/components/ui/verified-badge";
+import { CheckCircle2 } from "lucide-react";
 
 // Professional Stock Images
 import elegantRestaurant1 from "@/assets/stock_images/elegant_restaurant_f_aa323e17.jpg";
@@ -237,9 +239,30 @@ export default function BusinessCard({ business, spotlightType, spotlightPositio
           {/* Premium Header Section */}
           <div className="flex items-start justify-between mb-6">
             <div className="flex-1 pr-4">
-              <h3 className="business-name-luxury text-3xl mb-2">
-                {business.name}
-              </h3>
+              <div className="flex items-center gap-3 mb-2 flex-wrap">
+                <h3 className="business-name-luxury text-3xl">
+                  {business.name}
+                </h3>
+                {getVerificationTier({
+                  gmbConnected: business.gmbConnected,
+                  averageRating: business.rating ? parseFloat(business.rating) : undefined,
+                  totalReviews: business.reviewCount,
+                  monthlyEngagement: (business.followerCount || 0) + (business.postCount || 0) * 10,
+                  isSpotlightFeatured: business.isVerified
+                }) && (
+                  <VerifiedBadge
+                    type={getVerificationTier({
+                      gmbConnected: business.gmbConnected,
+                      averageRating: business.rating ? parseFloat(business.rating) : undefined,
+                      totalReviews: business.reviewCount,
+                      monthlyEngagement: (business.followerCount || 0) + (business.postCount || 0) * 10,
+                      isSpotlightFeatured: business.isVerified
+                    })!}
+                    size="sm"
+                    showLabel
+                  />
+                )}
+              </div>
               {business.tagline && (
                 <p className="text-sm text-primary font-semibold uppercase tracking-wide opacity-80 mb-2">
                   {business.tagline}

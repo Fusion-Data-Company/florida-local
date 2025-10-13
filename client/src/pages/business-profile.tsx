@@ -16,6 +16,7 @@ import MagicEliteProductCard from "@/components/magic-elite-product-card";
 import { UserPlus, UserMinus, MessageCircle, Edit3, Clock, MapPin, Phone, Globe, Star, Music2, PlayCircle } from "lucide-react";
 import { getSpotifyTrackId, getYouTubeId } from "@/lib/media";
 import { GMBVerificationBadge, GMBConnectionFlow, GMBReviewsSection, GMBDataAttribution } from "@/components/gmb-integration";
+import AIInsightsPanel from "@/components/ai-insights-panel";
 
 export default function BusinessProfile() {
   const { id } = useParams() as { id: string };
@@ -489,7 +490,13 @@ export default function BusinessProfile() {
         )}
 
         {activeTab === 'analytics' && isOwner && (
-          <AIBusinessDashboard businessId={business.id} />
+          <div className="space-y-6">
+            {/* AI Insights Panel - NEW! */}
+            <AIInsightsPanel businessId={business.id} className="entrance-fade-up" />
+
+            {/* Existing AI Business Dashboard */}
+            <AIBusinessDashboard businessId={business.id} />
+          </div>
         )}
 
         {activeTab === 'products' && (

@@ -5,6 +5,8 @@ import { type Business } from "@shared/types";
 import EliteNavigationHeader from "@/components/elite-navigation-header";
 import SpotlightShowcase from "@/components/spotlight-showcase";
 import MarketplaceSection from "@/components/marketplace-section";
+import VotingInterface from "@/components/spotlight/VotingInterface";
+import TrendingBusinesses from "@/components/spotlight/TrendingBusinesses";
 import SocialFeed from "@/components/social-feed";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { Button } from "@/components/ui/button";
@@ -64,41 +66,43 @@ export default function Home() {
       </div>
 
       {/* FLORIDA LOCAL ULTRA-ELITE HERO */}
-      <div className="relative py-24 overflow-hidden">
+      <div className="relative py-24 overflow-hidden gradient-shift">
         {/* Teal-Gold Gradient Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-[var(--fl-teal-lagoon)]/10 via-background to-[var(--fl-sunset-gold)]/10" />
-        
+
         {/* Particle Field with Teal-Gold Colors */}
         <ParticleField count={50} color="cyan" />
-        
+
         <div className="container mx-auto px-4 lg:px-8 text-center relative z-10">
           {/* Florida Local Branded Headline */}
-          <GlowHero 
+          <GlowHero
             glowText="Welcome Back to Your Community"
             glowTextSize="xl"
-            className="mb-6"
+            className="mb-6 entrance-fade-up"
           />
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
-            Stay connected with Florida's thriving business network. Discover new opportunities, 
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8 entrance-fade-up stagger-1">
+            Stay connected with Florida's thriving business network. Discover new opportunities,
             showcase your latest updates, and grow your local presence.
           </p>
-          
+
           {/* Florida Local Branded Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <StardustButton 
+            <StardustButton
               variant="gold"
-              size="lg" 
+              size="lg"
               onClick={() => setLocation(userBusinesses[0]?.id ? `/business/${userBusinesses[0].id}` : '/create-business')}
               data-testid="button-view-my-business"
+              className="entrance-scale-fade stagger-2 shimmer-gold-hover"
             >
               <Store className="h-5 w-5 mr-2" />
               {userBusinesses[0]?.id ? 'View My Business' : 'Create Your Business'}
             </StardustButton>
-            <StardustButton 
+            <StardustButton
               variant="teal"
               size="lg"
               onClick={() => setLocation('/create-post')}
               data-testid="button-create-post"
+              className="entrance-scale-fade stagger-3 shimmer-on-hover"
             >
               <Plus className="h-4 w-4 mr-2" />
               Create Post
@@ -107,8 +111,8 @@ export default function Home() {
 
           {/* FLORIDA LOCAL BENEFITS CARDS - Teal-Gold-Bronze Theme */}
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <Transform3DCard>
-              <PremiumGlassCard className="group hover:shadow-[0_20px_45px_rgba(0,139,139,0.25)] transition-shadow duration-300">
+            <Transform3DCard className="card-entrance stagger-1">
+              <PremiumGlassCard className="group hover:shadow-[0_20px_45px_rgba(0,139,139,0.25)] transition-shadow duration-300 ambient-glow-teal">
                 <CardContent className="p-8 text-center">
                   <MicroIcon color="rgba(0, 139, 139, 0.8)">
                     <Users className="h-14 w-14 mx-auto mb-6 text-[var(--fl-teal-lagoon)]" />
@@ -157,6 +161,19 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Spotlight Voting Interface */}
+      <section className="py-12 container mx-auto px-4">
+        <VotingInterface variant="homepage" limit={6} />
+      </section>
+
+      {/* Trending Businesses */}
+      <section className="py-12 container mx-auto px-4">
+        <h2 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+          Trending Now
+        </h2>
+        <TrendingBusinesses limit={5} variant="compact" />
+      </section>
 
       <SpotlightShowcase />
       <MarketplaceSection />

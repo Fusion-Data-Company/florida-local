@@ -30,6 +30,7 @@ import {
   Sparkles
 } from "lucide-react";
 import { GMBVerificationBadge, GMBConnectionFlow, GMBReviewsSection, GMBDataAttribution } from "@/components/gmb-integration";
+import { VerifiedBadge, getVerificationTier } from "@/components/ui/verified-badge";
 
 export default function EliteBusinessProfile() {
   const { id } = useParams() as { id: string };
@@ -213,19 +214,53 @@ export default function EliteBusinessProfile() {
                   )}
                   
                   {/* Elite Verification Badge */}
-                  {business.isVerified && (
-                    <div className="absolute -top-2 -right-2 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full p-2 shadow-lg">
-                      <Crown className="h-4 w-4 text-white" />
+                  {getVerificationTier({
+                    gmbConnected: business.gmbConnected,
+                    averageRating: business.rating,
+                    totalReviews: business.reviewCount,
+                    monthlyEngagement: (business.followerCount || 0) + (business.postCount || 0) * 10,
+                    isSpotlightFeatured: business.isVerified
+                  }) && (
+                    <div className="absolute -top-2 -right-2">
+                      <VerifiedBadge
+                        type={getVerificationTier({
+                          gmbConnected: business.gmbConnected,
+                          averageRating: business.rating,
+                          totalReviews: business.reviewCount,
+                          monthlyEngagement: (business.followerCount || 0) + (business.postCount || 0) * 10,
+                          isSpotlightFeatured: business.isVerified
+                        })!}
+                        size="lg"
+                      />
                     </div>
                   )}
                 </div>
 
                 {/* Elite Business Info */}
                 <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
+                  <div className="flex items-center gap-3 mb-2 flex-wrap">
                     <h1 className="text-3xl lg:text-4xl font-bold miami-heading bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
                       {business.name}
                     </h1>
+                    {getVerificationTier({
+                      gmbConnected: business.gmbConnected,
+                      averageRating: business.rating,
+                      totalReviews: business.reviewCount,
+                      monthlyEngagement: (business.followerCount || 0) + (business.postCount || 0) * 10,
+                      isSpotlightFeatured: business.isVerified
+                    }) && (
+                      <VerifiedBadge
+                        type={getVerificationTier({
+                          gmbConnected: business.gmbConnected,
+                          averageRating: business.rating,
+                          totalReviews: business.reviewCount,
+                          monthlyEngagement: (business.followerCount || 0) + (business.postCount || 0) * 10,
+                          isSpotlightFeatured: business.isVerified
+                        })!}
+                        size="md"
+                        showLabel
+                      />
+                    )}
                     <Sparkles className="h-6 w-6 text-yellow-500 animate-pulse" />
                   </div>
                   
@@ -467,7 +502,7 @@ export default function EliteBusinessProfile() {
                         </div>
 
                         {/* Magic MCP Action Button */}
-                        <Button className="w-full btn-miami-primary miami-hover-lift font-semibold py-3">
+                        <Button variant="fl-gold" className="w-full miami-hover-lift font-semibold py-3">
                           <Crown className="h-5 w-5 mr-2" />
                           View Details
                         </Button>

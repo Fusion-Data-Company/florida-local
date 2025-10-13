@@ -12,6 +12,8 @@ import MobileBottomNav from "@/components/mobile-bottom-nav";
 import ProductCard from "@/components/product-card";
 import GlowHero from "@/components/ui/glow-hero";
 import MagicEliteProductCard, { MagicEliteProductGrid } from "@/components/magic-elite-product-card";
+import AIRecommendations from "@/components/ai-recommendations";
+import AISearchBadge from "@/components/ai-search-badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { StardustButton } from "@/components/ui/stardust-button";
@@ -189,6 +191,11 @@ export default function Marketplace() {
       <AuroraAmbient intensity="low" />
 
       <EliteNavigationHeader />
+
+      {/* AI RECOMMENDATIONS - Show at top for authenticated users */}
+      {isAuthenticated && user && (
+        <AIRecommendations userId={user.id} limit={6} />
+      )}
 
       {/* FLORIDA LOCAL MARKETPLACE HERO */}
       <div className="relative py-16 overflow-hidden">
@@ -407,6 +414,11 @@ export default function Marketplace() {
                 </div>
               </div>
 
+              {/* AI SEARCH BADGE */}
+              <div className="flex justify-center my-3">
+                <AISearchBadge variant="inline" />
+              </div>
+
               {/* PREMIUM FILTER BADGES */}
               <div className="flex flex-wrap gap-3">
                 <PremiumBadge color="emerald" size="sm" className="cursor-pointer" data-testid="filter-local-made">
@@ -429,10 +441,10 @@ export default function Marketplace() {
 
       {/* Featured Products */}
       {!searchQuery && !selectedCategory && (
-        <section className="py-16 marketplace-product-grid">
+        <section className="py-12 lg:py-20 marketplace-product-grid dynamic-gradient-bg">
           <div className="container mx-auto px-4 lg:px-8 marble-content">
-            <h2 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-[var(--fl-teal-lagoon)] via-[var(--fl-sunset-gold)] to-[var(--fl-bronze)] bg-clip-text text-transparent">Featured Products</h2>
-            
+            <h2 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-[var(--fl-teal-lagoon)] via-[var(--fl-sunset-gold)] to-[var(--fl-bronze)] bg-clip-text text-transparent entrance-fade-up">Featured Products</h2>
+
             {isLoading ? (
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[...Array(8)].map((_, i) => (
@@ -445,8 +457,10 @@ export default function Marketplace() {
               </div>
             ) : (
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {featuredProducts.map((product: Product) => (
-                  <ProductCard key={product.id} product={product} />
+                {featuredProducts.map((product: Product, index: number) => (
+                  <div key={product.id} className="card-entrance" style={{ animationDelay: `${index * 0.1}s` }}>
+                    <MagicEliteProductCard product={product} index={index} />
+                  </div>
                 ))}
               </div>
             )}
@@ -455,13 +469,13 @@ export default function Marketplace() {
       )}
 
       {/* Search Results */}
-      <section className="py-16 marketplace-product-grid">
+      <section className="py-12 lg:py-20 marketplace-product-grid gradient-shift">
         <div className="container mx-auto px-4 lg:px-8 marble-content">
           {(searchQuery || selectedCategory) && (
-            <div className="mb-8">
+            <div className="mb-8 entrance-slide-right">
               <h2 className="text-2xl font-bold bg-gradient-to-r from-[var(--fl-teal-lagoon)] to-[var(--fl-sunset-gold)] bg-clip-text text-transparent">
-                {searchQuery 
-                  ? `Search results for "${searchQuery}"` 
+                {searchQuery
+                  ? `Search results for "${searchQuery}"`
                   : `Products in ${selectedCategory}`
                 }
               </h2>
@@ -482,11 +496,11 @@ export default function Marketplace() {
               ))}
             </div>
           ) : products.length > 0 ? (
-            <div className="magic-glow-intense">
+            <div className="magic-glow-intense mouse-spotlight">
               <MagicEliteProductGrid products={products} />
             </div>
           ) : (searchQuery || selectedCategory) ? (
-            <div className="text-center py-16">
+            <div className="text-center py-16 entrance-fade-up">
               <i className="fas fa-search text-4xl text-muted-foreground mb-4"></i>
               <h3 className="text-xl font-semibold mb-2">No products found</h3>
               <p className="text-muted-foreground">
