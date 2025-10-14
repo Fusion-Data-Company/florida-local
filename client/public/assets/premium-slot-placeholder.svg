@@ -1,0 +1,163 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="2048" height="2048" viewBox="0 0 2048 2048">
+  <defs>
+    <!-- Sharp, vibrant gradients -->
+    <radialGradient id="tealSplash1">
+      <stop offset="0%" style="stop-color:#00FFFF;stop-opacity:1"/>
+      <stop offset="40%" style="stop-color:#00CED1;stop-opacity:0.95"/>
+      <stop offset="100%" style="stop-color:#008B8B;stop-opacity:0.8"/>
+    </radialGradient>
+
+    <radialGradient id="tealSplash2">
+      <stop offset="0%" style="stop-color:#20B2AA;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#008B8B;stop-opacity:0.9"/>
+      <stop offset="100%" style="stop-color:#006666;stop-opacity:0.7"/>
+    </radialGradient>
+
+    <radialGradient id="goldSplash1">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1"/>
+      <stop offset="40%" style="stop-color:#FFA500;stop-opacity:0.95"/>
+      <stop offset="100%" style="stop-color:#FF8C00;stop-opacity:0.8"/>
+    </radialGradient>
+
+    <radialGradient id="goldSplash2">
+      <stop offset="0%" style="stop-color:#FFA500;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#FF8C00;stop-opacity:0.9"/>
+      <stop offset="100%" style="stop-color:#FF6347;stop-opacity:0.7"/>
+    </radialGradient>
+
+    <!-- High quality filter for depth -->
+    <filter id="sharpGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2"/>
+      <feColorMatrix type="saturate" values="1.5"/>
+      <feComponentTransfer>
+        <feFuncR type="linear" slope="1.2"/>
+        <feFuncG type="linear" slope="1.2"/>
+        <feFuncB type="linear" slope="1.2"/>
+      </feComponentTransfer>
+      <feBlend in2="SourceGraphic" mode="normal"/>
+    </filter>
+
+    <filter id="textGlow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feFlood flood-color="#000000" flood-opacity="0.8"/>
+      <feComposite in2="blur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Dark background with subtle gradient -->
+  <rect width="2048" height="2048" fill="#0a0e27"/>
+  <rect width="2048" height="2048" fill="url(#bg)"/>
+  <radialGradient id="bg">
+    <stop offset="0%" style="stop-color:#16213e;stop-opacity:1"/>
+    <stop offset="100%" style="stop-color:#0f1419;stop-opacity:1"/>
+  </radialGradient>
+  <rect width="2048" height="2048" fill="url(#bg)"/>
+
+  <!-- TEAL PAINT SPLASHES (LEFT SIDE) -->
+  <!-- Large central teal splash -->
+  <g filter="url(#sharpGlow)">
+    <ellipse cx="450" cy="700" rx="280" ry="320" fill="url(#tealSplash1)" transform="rotate(-25 450 700)"/>
+    <ellipse cx="500" cy="800" rx="220" ry="260" fill="url(#tealSplash2)" transform="rotate(15 500 800)"/>
+    <ellipse cx="380" cy="620" rx="180" ry="200" fill="url(#tealSplash1)" transform="rotate(-40 380 620)"/>
+
+    <!-- Teal droplets and particles -->
+    <circle cx="320" cy="500" r="60" fill="#00FFFF" opacity="0.9"/>
+    <circle cx="280" cy="580" r="45" fill="#00CED1" opacity="0.85"/>
+    <circle cx="380" cy="450" r="35" fill="#20B2AA" opacity="0.8"/>
+    <circle cx="520" cy="520" r="50" fill="#00CED1" opacity="0.9"/>
+    <circle cx="600" cy="620" r="40" fill="#008B8B" opacity="0.85"/>
+    <circle cx="350" cy="750" r="55" fill="#00FFFF" opacity="0.9"/>
+    <circle cx="270" cy="850" r="42" fill="#20B2AA" opacity="0.85"/>
+    <circle cx="450" cy="920" r="48" fill="#00CED1" opacity="0.9"/>
+    <circle cx="580" cy="900" r="38" fill="#008B8B" opacity="0.85"/>
+
+    <!-- Small teal splatter -->
+    <circle cx="200" cy="650" r="28" fill="#00FFFF" opacity="0.8"/>
+    <circle cx="220" cy="720" r="22" fill="#00CED1" opacity="0.75"/>
+    <circle cx="650" cy="680" r="32" fill="#20B2AA" opacity="0.8"/>
+    <circle cx="680" cy="750" r="26" fill="#00CED1" opacity="0.75"/>
+  </g>
+
+  <!-- GOLD/ORANGE PAINT SPLASHES (RIGHT SIDE) -->
+  <g filter="url(#sharpGlow)">
+    <ellipse cx="1600" cy="650" rx="300" ry="340" fill="url(#goldSplash1)" transform="rotate(30 1600 650)"/>
+    <ellipse cx="1550" cy="800" rx="240" ry="280" fill="url(#goldSplash2)" transform="rotate(-20 1550 800)"/>
+    <ellipse cx="1680" cy="560" rx="190" ry="210" fill="url(#goldSplash1)" transform="rotate(45 1680 560)"/>
+
+    <!-- Gold droplets and particles -->
+    <circle cx="1750" cy="450" r="65" fill="#FFD700" opacity="0.95"/>
+    <circle cx="1800" cy="540" r="48" fill="#FFA500" opacity="0.9"/>
+    <circle cx="1680" cy="420" r="38" fill="#FFAA00" opacity="0.85"/>
+    <circle cx="1520" cy="500" r="52" fill="#FFA500" opacity="0.9"/>
+    <circle cx="1440" cy="600" r="42" fill="#FF8C00" opacity="0.85"/>
+    <circle cx="1700" cy="750" r="58" fill="#FFD700" opacity="0.95"/>
+    <circle cx="1780" cy="850" r="45" fill="#FFA500" opacity="0.9"/>
+    <circle cx="1600" cy="950" r="50" fill="#FFAA00" opacity="0.9"/>
+    <circle cx="1480" cy="920" r="40" fill="#FF8C00" opacity="0.85"/>
+
+    <!-- Small gold splatter -->
+    <circle cx="1850" cy="700" r="30" fill="#FFD700" opacity="0.85"/>
+    <circle cx="1820" cy="780" r="24" fill="#FFA500" opacity="0.8"/>
+    <circle cx="1400" cy="720" r="34" fill="#FFAA00" opacity="0.85"/>
+    <circle cx="1360" cy="790" r="28" fill="#FFA500" opacity="0.8"/>
+  </g>
+
+  <!-- CENTER MIXING AREA -->
+  <g filter="url(#sharpGlow)">
+    <ellipse cx="1024" cy="600" rx="260" ry="300" fill="url(#tealSplash1)" transform="rotate(10 1024 600)" opacity="0.7"/>
+    <ellipse cx="1024" cy="700" rx="240" ry="280" fill="url(#goldSplash1)" transform="rotate(-15 1024 700)" opacity="0.7"/>
+
+    <!-- Center particles -->
+    <circle cx="1024" cy="500" r="45" fill="#00FFD7" opacity="0.9"/>
+    <circle cx="1100" cy="650" r="40" fill="#FFB347" opacity="0.9"/>
+    <circle cx="950" cy="720" r="42" fill="#20B2AA" opacity="0.85"/>
+    <circle cx="1080" cy="800" r="38" fill="#FFA500" opacity="0.85"/>
+  </g>
+
+  <!-- SPARKLES AND HIGHLIGHTS -->
+  <g opacity="0.9">
+    <circle cx="400" cy="300" r="12" fill="#FFFFFF"/>
+    <circle cx="600" cy="350" r="10" fill="#FFFFFF"/>
+    <circle cx="800" cy="280" r="14" fill="#FFFFFF"/>
+    <circle cx="1200" cy="320" r="11" fill="#FFFFFF"/>
+    <circle cx="1450" cy="360" r="13" fill="#FFFFFF"/>
+    <circle cx="1650" cy="310" r="10" fill="#FFFFFF"/>
+
+    <circle cx="350" cy="1100" r="12" fill="#FFFFFF"/>
+    <circle cx="550" cy="1150" r="10" fill="#FFFFFF"/>
+    <circle cx="750" cy="1080" r="11" fill="#FFFFFF"/>
+    <circle cx="1300" cy="1120" r="13" fill="#FFFFFF"/>
+    <circle cx="1500" cy="1170" r="10" fill="#FFFFFF"/>
+    <circle cx="1700" cy="1090" r="12" fill="#FFFFFF"/>
+  </g>
+
+  <!-- TEXT WITH STRONG CONTRAST -->
+  <g filter="url(#textGlow)">
+    <!-- Semi-transparent background plate -->
+    <rect x="256" y="1300" width="1536" height="480" rx="40" fill="rgba(0,0,0,0.7)" stroke="#FFD700" stroke-width="6"/>
+
+    <!-- "YOUR BUSINESS" -->
+    <text x="1024" y="1480" font-family="Arial, sans-serif" font-size="180" font-weight="900"
+          text-anchor="middle" fill="#FFD700" stroke="#FF8C00" stroke-width="4" letter-spacing="8">
+      YOUR BUSINESS
+    </text>
+
+    <!-- "HERE!" -->
+    <text x="1024" y="1680" font-family="Arial, sans-serif" font-size="220" font-weight="900"
+          text-anchor="middle" fill="#00FFFF" stroke="#008B8B" stroke-width="4" letter-spacing="12">
+      HERE!
+    </text>
+  </g>
+
+  <!-- Corner accents -->
+  <g opacity="0.6">
+    <circle cx="100" cy="100" r="60" fill="#00CED1"/>
+    <circle cx="1948" cy="100" r="60" fill="#FFD700"/>
+    <circle cx="100" cy="1948" r="60" fill="#FFA500"/>
+    <circle cx="1948" cy="1948" r="60" fill="#20B2AA"/>
+  </g>
+</svg>

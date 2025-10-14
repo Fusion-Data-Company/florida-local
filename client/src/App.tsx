@@ -63,7 +63,7 @@ function Router() {
 
   return (
     <Switch>
-      {/* Public route - accessible to everyone */}
+      {/* Public routes - accessible to everyone */}
       <Route path="/florida-elite" component={FloridaLocalElite} />
       <Route path="/florida-local" component={FloridaLocalElite} />
       <Route path="/registry" component={Registry} />

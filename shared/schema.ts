@@ -2891,13 +2891,34 @@ export const errorLogs = pgTable("error_logs", {
   index("error_logs_last_seen_idx").on(table.lastSeenAt),
 ]);
 
+// Premium Advertising Slots (NEW TABLE)
+export const premiumAdSlots = pgTable("premium_ad_slots", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  companyName: varchar("company_name", { length: 255 }).notNull(),
+  tagline: text("tagline"),
+  imageUrl: varchar("image_url", { length: 500 }),
+  isPremium: boolean("is_premium").default(false),
+  businessId: uuid("business_id").references(() => businesses.id, { onDelete: "set null" }),
+  displayOrder: integer("display_order").default(0),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  expiresAt: timestamp("expires_at"),
+}, (table) => [
+  index("premium_slots_active_idx").on(table.isActive),
+  index("premium_slots_order_idx").on(table.displayOrder),
+]);
+
 // Insert schemas
 export const insertAdminRoleSchema = createInsertSchema(adminRoles);
 export const insertUserRoleSchema = createInsertSchema(userRoles);
 export const insertAdminAuditLogSchema = createInsertSchema(adminAuditLogs);
 export const insertErrorLogSchema = createInsertSchema(errorLogs);
+export const insertPremiumAdSlotSchema = createInsertSchema(premiumAdSlots);
 
 // TypeScript types
+export type PremiumAdSlot = typeof premiumAdSlots.$inferSelect;
+export type InsertPremiumAdSlot = z.infer<typeof insertPremiumAdSlotSchema>;
+
 export type AdminRole = typeof adminRoles.$inferSelect;
 export type InsertAdminRole = z.infer<typeof insertAdminRoleSchema>;
 export type UserRole = typeof userRoles.$inferSelect;

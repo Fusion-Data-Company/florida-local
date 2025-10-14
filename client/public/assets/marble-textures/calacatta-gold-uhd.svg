@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2048" height="2048" viewBox="0 0 2048 2048">
+  <defs>
+    <filter id="subtleTexture">
+      <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="6" seed="55" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0.05"/>
+      <feComponentTransfer>
+        <feFuncR type="linear" slope="0.03"/>
+        <feFuncG type="linear" slope="0.03"/>
+        <feFuncB type="linear" slope="0.03"/>
+      </feComponentTransfer>
+    </filter>
+
+    <filter id="boldVeins">
+      <feTurbulence type="turbulence" baseFrequency="0.001 0.08" numOctaves="4" seed="200" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0.4"/>
+      <feComponentTransfer>
+        <feFuncA type="discrete" tableValues="0 0 0 0 0 0.5 0.7 0.9"/>
+      </feComponentTransfer>
+    </filter>
+  </defs>
+
+  <!-- Base: Pure white with warm tint -->
+  <rect width="2048" height="2048" fill="#fcfaf4"/>
+
+  <!-- Very subtle texture -->
+  <rect width="2048" height="2048" filter="url(#subtleTexture)" opacity="0.3"/>
+
+  <!-- Bold gold veins -->
+  <rect width="2048" height="2048" fill="#c8aa6e" filter="url(#boldVeins)" opacity="0.25"/>
+
+  <!-- Grey accent veins -->
+  <rect width="2048" height="2048" fill="#a0a0a5" filter="url(#boldVeins)" opacity="0.1" transform="rotate(-30 1024 1024)"/>
+</svg>

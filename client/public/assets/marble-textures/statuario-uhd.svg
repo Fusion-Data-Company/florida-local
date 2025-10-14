@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2048" height="2048" viewBox="0 0 2048 2048">
+  <defs>
+    <filter id="minimalTexture">
+      <feTurbulence type="fractalNoise" baseFrequency="0.007" numOctaves="5" seed="33" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncR type="linear" slope="0.02"/>
+        <feFuncG type="linear" slope="0.02"/>
+        <feFuncB type="linear" slope="0.02"/>
+      </feComponentTransfer>
+    </filter>
+
+    <filter id="elegantVeins">
+      <feTurbulence type="turbulence" baseFrequency="0.002 0.07" numOctaves="4" seed="180" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="discrete" tableValues="0 0 0 0 0 0 0.3 0.5 0.7"/>
+      </feComponentTransfer>
+    </filter>
+  </defs>
+
+  <!-- Base: Cool white -->
+  <rect width="2048" height="2048" fill="#f7f7fa"/>
+
+  <!-- Minimal texture -->
+  <rect width="2048" height="2048" filter="url(#minimalTexture)" opacity="0.3"/>
+
+  <!-- Elegant grey veins -->
+  <rect width="2048" height="2048" fill="#8c8c91" filter="url(#elegantVeins)" opacity="0.18"/>
+
+  <!-- Lighter vein accents -->
+  <rect width="2048" height="2048" fill="#aaaaaf" filter="url(#elegantVeins)" opacity="0.12" transform="rotate(-45 1024 1024)"/>
+</svg>

@@ -48,8 +48,8 @@ export default function EliteNavigationHeader() {
     { href: "/", label: "Discover", icon: Home, testId: "nav-discover" },
     { href: "/marketplace", label: "Marketplace", icon: Store, testId: "nav-marketplace" },
     { href: "/community", label: "Community", icon: Users, testId: "nav-community" },
+    { href: "/registry", label: "Entrepreneurs", icon: Briefcase, testId: "nav-entrepreneurs" },
     { href: "/florida-local", label: "Florida Local", icon: MapPin, testId: "nav-florida-local" },
-    { href: "/registry", label: "Registry", icon: ScrollText, testId: "nav-registry" },
     { href: "/ai/tools", label: "AI Tools", icon: Sparkles, testId: "nav-ai-tools" },
   ];
 

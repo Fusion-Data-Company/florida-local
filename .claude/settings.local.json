@@ -32,7 +32,9 @@
       "Read(//home/runner/.cursor/**)",
       "Bash(npm run:*)",
       "Bash(timeout 30 npm run dev)",
-      "Bash(tsx scripts/seed-loyalty-data.ts:*)"
+      "Bash(tsx scripts/seed-loyalty-data.ts:*)",
+      "Bash(python3:*)",
+      "Bash(psql:*)"
     ],
     "deny": [],
     "ask": []

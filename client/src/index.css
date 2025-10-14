@@ -109,9 +109,13 @@
   --glass-border: rgba(0, 0, 0, 0.1);
   --noise-opacity: 0.02;
 
-  /* Texture system */
-  --texture-stucco: url('@assets/generated_images/White_Carrara_Marble_Texture_e43e4cf1.png');
-  --texture-marble-lux: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
+  /* ULTRA HD SEAMLESS MARBLE TEXTURE SYSTEM */
+  --texture-stucco: url('/assets/marble-textures/white-carrara-uhd.svg');
+  --texture-marble-lux: url('/assets/marble-textures/calacatta-gold-uhd.svg');
+  --texture-marble-grey: url('/assets/marble-textures/grey-emperador-uhd.svg');
+  --texture-marble-statuario: url('/assets/marble-textures/statuario-uhd.svg');
+  --texture-marble-champagne: url('/assets/marble-textures/champagne-pearl-uhd.svg');
+
   --texture-noise-overlay: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='stuccoNoise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23stuccoNoise)' opacity='0.08'/%3E%3C/svg%3E");
   --texture-overlay-warm-primary: radial-gradient(circle at 15% 85%, rgba(180, 150, 120, 0.25) 0%, transparent 55%);
   --texture-overlay-warm-secondary: radial-gradient(circle at 85% 15%, rgba(160, 140, 100, 0.18) 0%, transparent 55%);
@@ -119,8 +123,8 @@
   --texture-overlay-shimmer-primary: radial-gradient(ellipse at 70% 30%, rgba(255, 248, 235, 0.6) 0%, transparent 65%);
   --texture-overlay-shimmer-secondary: radial-gradient(ellipse at 30% 70%, rgba(250, 245, 225, 0.5) 0%, transparent 65%);
   --texture-gradient-base: linear-gradient(135deg, hsl(36, 28%, 94%) 0%, hsl(36, 35%, 92%) 50%, hsl(36, 28%, 94%) 100%);
-  --texture-scale-large: 420px 420px;
-  --texture-scale-medium: 220px 220px;
+  --texture-scale-large: 100% 100%;  /* Seamless SVG - no tiling needed */
+  --texture-scale-medium: 100% 100%;
   --texture-body-blend: multiply, overlay, normal, normal, normal, normal, normal, normal;
   --texture-surface-opacity: 0.38;
   --texture-surface-border: rgba(208, 188, 160, 0.45);
@@ -185,7 +189,7 @@
   --glass-bg: rgba(20, 25, 35, 0.85);
   --glass-border: rgba(255, 255, 255, 0.1);
   --noise-opacity: 0.03;
-  --texture-stucco: url('@assets/generated_images/Black_Marquina_Marble_Texture_5dc162e8.png');
+  --texture-stucco: url('/assets/marble-textures/grey-emperador-uhd.svg');
   --texture-noise-overlay: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='darkNoise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23darkNoise)' opacity='0.15'/%3E%3C/svg%3E");
   --texture-overlay-warm-primary: radial-gradient(circle at 18% 82%, rgba(25, 182, 246, 0.25) 0%, transparent 55%);
   --texture-overlay-warm-secondary: radial-gradient(circle at 82% 18%, rgba(255, 152, 67, 0.2) 0%, transparent 55%);
