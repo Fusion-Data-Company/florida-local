@@ -217,9 +217,13 @@ export async function createRedisStore(session: any) {
     });
   }
   
-  // Dynamic import for connect-redis to work with ESM
-  const RedisStore = (await import("connect-redis")).default;
-  return new RedisStore({
+  // For connect-redis v9, import the entire module
+  const RedisStoreModule = await import("connect-redis");
+  // Try to get the RedisStore - it could be default export or the module itself
+  const RedisStore = RedisStoreModule.default || RedisStoreModule;
+  
+  // In v9, RedisStore is a class that can be instantiated directly
+  return new (RedisStore as any)({
     client: redis,
     prefix: "sess:",
     ttl: 86400, // 1 day
