@@ -93,7 +93,7 @@ export default function Home() {
             glowTextSize="xl"
             className="mb-6 entrance-fade-up"
           />
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8 entrance-fade-up stagger-1">
+          <p className="text-xl text-white max-w-3xl mx-auto leading-relaxed mb-8 entrance-fade-up stagger-1" style={{textShadow: '0 1px 3px rgba(0,0,0,0.3)'}}>
             Stay connected with Florida's thriving business network. Discover new opportunities,
             showcase your latest updates, and grow your local presence.
           </p>
@@ -130,10 +130,10 @@ export default function Home() {
                   <MicroIcon color="rgba(0, 139, 139, 0.8)">
                     <Users className="h-14 w-14 mx-auto mb-6 text-[var(--fl-teal-lagoon)]" />
                   </MicroIcon>
-                  <h3 className="font-bold text-xl mb-3 bg-gradient-to-r from-[var(--fl-teal-lagoon)] to-[var(--fl-teal-lagoon)]/70 bg-clip-text text-transparent">
+                  <h3 className="font-bold text-xl mb-3 text-white" style={{textShadow: '0 1px 3px rgba(0,0,0,0.3)'}}>
                     Connect with Customers
                   </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-sm text-white leading-relaxed" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>
                     Build relationships and grow your customer base in Florida's local community
                   </p>
                 </CardContent>
@@ -146,10 +146,10 @@ export default function Home() {
                   <MicroIcon color="rgba(212, 175, 55, 0.8)">
                     <TrendingUp className="h-14 w-14 mx-auto mb-6 text-[var(--fl-sunset-gold)]" />
                   </MicroIcon>
-                  <h3 className="font-bold text-xl mb-3 bg-gradient-to-r from-[var(--fl-sunset-gold)] to-[var(--fl-sunset-gold)]/70 bg-clip-text text-transparent">
+                  <h3 className="font-bold text-xl mb-3 text-white" style={{textShadow: '0 1px 3px rgba(0,0,0,0.3)'}}>
                     Boost Your Sales
                   </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-sm text-white leading-relaxed" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>
                     Showcase products, run promotions, and drive more revenue through our marketplace
                   </p>
                 </CardContent>
@@ -162,10 +162,10 @@ export default function Home() {
                   <MicroIcon color="rgba(205, 127, 50, 0.8)">
                     <Star className="h-14 w-14 mx-auto mb-6 text-[var(--fl-bronze)]" />
                   </MicroIcon>
-                  <h3 className="font-bold text-xl mb-3 bg-gradient-to-r from-[var(--fl-bronze)] to-[var(--fl-bronze)]/70 bg-clip-text text-transparent">
+                  <h3 className="font-bold text-xl mb-3 text-white" style={{textShadow: '0 1px 3px rgba(0,0,0,0.3)'}}>
                     Build Your Brand
                   </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-sm text-white leading-relaxed" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>
                     Create a professional presence and get featured in our business spotlight
                   </p>
                 </CardContent>

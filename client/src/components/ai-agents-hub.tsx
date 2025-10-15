@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -46,7 +46,7 @@ interface AIAgent {
   name: string;
   description: string;
   category: 'marketing' | 'marketplace' | 'business';
-  icon: React.ReactNode;
+  icon: ReactNode;
   endpoint: string;
   fields: AgentField[];
   color: string;
@@ -551,7 +551,7 @@ export default function AIAgentsHub() {
     switch (status) {
       case 'completed': return <CheckCircle className="w-4 h-4 text-green-600" />;
       case 'failed': return <AlertTriangle className="w-4 h-4 text-red-600" />;
-      case 'processing': return <RefreshCw className="w-4 h-4 text-blue-600 animate-spin" />;
+      case 'processing': return <RefreshCw className={`w-4 h-4 text-blue-600 ${prefersReducedMotion ? '' : 'animate-spin'}`} />;
       default: return <Clock className="w-4 h-4 text-gray-400" />;
     }
   };

@@ -62,7 +62,7 @@ export default function AIAgentsPage() {
             <Sparkles className="w-10 h-10 text-[var(--fl-sunset-gold)] animate-pulse" />
           </motion.div>
 
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-12 entrance-fade-up stagger-1">
+          <p className="text-xl text-white max-w-3xl mx-auto leading-relaxed mb-12 entrance-fade-up stagger-1" style={{textShadow: '0 1px 3px rgba(0,0,0,0.3)'}}>
             15 specialized AI agents working for your Florida business. Optimize marketing,
             enhance your marketplace presence, and automate success.
           </p>
@@ -75,10 +75,10 @@ export default function AIAgentsPage() {
                   <MicroIcon color="rgba(0, 139, 139, 0.8)">
                     <Zap className="h-10 w-10 mx-auto mb-4 text-[var(--fl-teal-lagoon)]" />
                   </MicroIcon>
-                  <h3 className="font-bold text-3xl mb-2 bg-gradient-to-r from-[var(--fl-teal-lagoon)] to-[var(--fl-teal-lagoon)]/70 bg-clip-text text-transparent">
+                  <h3 className="font-bold text-3xl mb-2 text-white" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>
                     15
                   </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-white" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>
                     AI Agents Ready
                   </p>
                 </CardContent>
@@ -91,10 +91,10 @@ export default function AIAgentsPage() {
                   <MicroIcon color="rgba(212, 175, 55, 0.8)">
                     <TrendingUp className="h-10 w-10 mx-auto mb-4 text-[var(--fl-sunset-gold)]" />
                   </MicroIcon>
-                  <h3 className="font-bold text-3xl mb-2 bg-gradient-to-r from-[var(--fl-sunset-gold)] to-[var(--fl-sunset-gold)]/70 bg-clip-text text-transparent">
+                  <h3 className="font-bold text-3xl mb-2 text-white" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>
                     7
                   </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-white" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>
                     Marketing Agents
                   </p>
                 </CardContent>

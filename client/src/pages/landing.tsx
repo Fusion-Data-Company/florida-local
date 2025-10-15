@@ -66,8 +66,8 @@ export default function Landing() {
                   <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-elevated ambient-glow-orange">
                     <Store className="text-white" size={32} />
                   </div>
-                  <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">Rich Business Profiles</h3>
-                  <p className="text-muted-foreground leading-relaxed">Showcase your brand with high-quality images, videos, and detailed descriptions that captivate your audience.</p>
+                  <h3 className="text-2xl font-bold mb-4 text-white" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>Rich Business Profiles</h3>
+                  <p className="text-white leading-relaxed" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>Showcase your brand with high-quality images, videos, and detailed descriptions that captivate your audience.</p>
                 </div>
               </div>
 
@@ -78,8 +78,8 @@ export default function Landing() {
                   <div className="w-20 h-20 bg-gradient-to-br from-secondary to-secondary/80 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-elevated ambient-glow-teal">
                     <ShoppingCart className="text-white" size={32} />
                   </div>
-                  <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-secondary to-secondary/80 bg-clip-text text-transparent">E-Commerce Integration</h3>
-                  <p className="text-muted-foreground leading-relaxed">Sell products directly through your profile with secure built-in payment processing and inventory management.</p>
+                  <h3 className="text-2xl font-bold mb-4 text-white" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>E-Commerce Integration</h3>
+                  <p className="text-white leading-relaxed" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>Sell products directly through your profile with secure built-in payment processing and inventory management.</p>
                 </div>
               </div>
 
@@ -90,8 +90,8 @@ export default function Landing() {
                   <div className="w-20 h-20 bg-gradient-to-br from-accent to-accent/80 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-elevated ambient-glow-purple">
                     <Users className="text-white" size={32} />
                   </div>
-                  <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-accent to-accent/80 bg-clip-text text-transparent">Community Network</h3>
-                  <p className="text-muted-foreground leading-relaxed">Connect with other businesses, collaborate on projects, and build lasting partnerships that grow your network.</p>
+                  <h3 className="text-2xl font-bold mb-4 text-white" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>Community Network</h3>
+                  <p className="text-white leading-relaxed" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>Connect with other businesses, collaborate on projects, and build lasting partnerships that grow your network.</p>
                 </div>
               </div>
             </div>
