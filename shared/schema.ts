@@ -2706,7 +2706,7 @@ export type InsertDailyMetrics = z.infer<typeof insertDailyMetricsSchema>;
 export const socialAccounts = pgTable("social_accounts", {
   id: text("id").primaryKey(),
   userId: text("user_id").notNull().references(() => users.id),
-  businessId: text("business_id").references(() => businesses.id),
+  businessId: uuid("business_id").references(() => businesses.id),
   platform: text("platform").notNull(), // facebook, instagram, twitter, linkedin, tiktok, pinterest, youtube
   accountId: text("account_id").notNull(), // Platform-specific account ID
   accountName: text("account_name"),
@@ -2766,7 +2766,7 @@ export const socialPosts = pgTable("social_posts", {
 export const socialAnalytics = pgTable("social_analytics", {
   id: text("id").primaryKey(),
   socialAccountId: text("social_account_id").notNull().references(() => socialAccounts.id),
-  businessId: text("business_id").references(() => businesses.id),
+  businessId: uuid("business_id").references(() => businesses.id),
   platform: text("platform").notNull(),
   date: date("date").notNull(),
   metrics: jsonb("metrics").notNull(), // Platform-specific metrics

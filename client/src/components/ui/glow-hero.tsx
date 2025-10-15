@@ -87,9 +87,10 @@ const GlowHero: React.FC<GlowHeroProps> = ({
         </div>
       )}
       <div className="relative">
-        <div 
-          className={`glow-text relative ${glowTextSizeClasses[glowTextSize]} font-bold text-center text-white tracking-tight brightness-110 z-10`}
+        <div
+          className={`glow-text relative ${glowTextSizeClasses[glowTextSize]} font-bold text-center text-white tracking-tight z-10`}
           data-text={glowText}
+          style={{textShadow: '0 2px 8px rgba(0,0,0,0.6), 0 0 30px rgba(255,255,255,0.4), 0 0 60px rgba(212,175,55,0.3)', filter: 'brightness(1.3) contrast(1.1)'}}
         >
           {glowText}
         </div>

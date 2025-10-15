@@ -48,7 +48,7 @@ export default function Landing() {
               className="mb-6 entrance-fade-up"
             />
 
-            <p className="text-xl mb-12 text-foreground/90 leading-relaxed entrance-fade-up stagger-1">
+            <p className="text-xl mb-12 text-white leading-relaxed entrance-fade-up stagger-1" style={{textShadow: '0 2px 8px rgba(0,0,0,0.5), 0 0 20px rgba(255,255,255,0.3)'}}>
               Join thousands of Florida businesses building their digital presence,
               connecting with customers, and growing their community impact.
             </p>
