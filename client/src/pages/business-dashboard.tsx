@@ -119,6 +119,7 @@ export default function BusinessDashboard() {
               />
             )}
             <div className="flex-1">
+              <p className="text-lg text-white/80 mb-1">Welcome back, {user?.firstName || 'Business Owner'}!</p>
               <h1 className="text-4xl md:text-5xl font-bold mb-2">{business.name}</h1>
               <p className="text-xl text-white/90 mb-4">{business.tagline}</p>
               <div className="flex flex-wrap gap-3">
