@@ -8,6 +8,7 @@ import { Plus, Store, ChevronDown, Search, Bell, MessageCircle, Menu, X, Edit, P
 import { useState, useEffect } from "react";
 import CartIcon from "@/components/cart-icon";
 import type { Business } from "@shared/types";
+import headerBg from "@assets/abstract-composition-with-intertwined-orange-blue-curves-wave-aig51_31965-634212_1760500989450.avif";
 
 export default function NavigationHeader() {
   const { user, isAuthenticated } = useAuth();
@@ -66,12 +67,14 @@ export default function NavigationHeader() {
       {/* Magic MCP Elite Navigation Header */}
       <header 
         className={`
-          sticky top-0 z-50 w-full transition-all duration-500
-          ${scrolled 
-            ? 'magic-glass-elite border-b border-white/20 shadow-2xl' 
-            : 'premium-nav-glass border-b border-slate-200'
-          }
+          sticky top-0 z-50 w-full transition-all duration-500 border-b border-white/20 shadow-2xl
         `}
+        style={{
+          backgroundImage: `url(${headerBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
       >
         <div className="container mx-auto px-6 lg:px-12">
           <div className="flex h-20 items-center justify-between relative">
