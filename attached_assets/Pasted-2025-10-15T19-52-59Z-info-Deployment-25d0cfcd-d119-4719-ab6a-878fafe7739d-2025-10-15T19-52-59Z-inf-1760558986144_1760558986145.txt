@@ -1,0 +1,393 @@
+2025-10-15T19:52:59Z info: Deployment: 25d0cfcd-d119-4719-ab6a-878fafe7739d
+2025-10-15T19:52:59Z info: Build: f60be940-6928-40f5-adfd-5163b0fae5a3
+2025-10-15T19:52:59Z info: Connecting to builder
+2025-10-15T19:53:04Z info: Builder connected
+2025-10-15T19:53:05Z info: Installing packages
+--> npm install
+
+
+up to date, audited 1364 packages in 6s
+
+211 packages are looking for funding
+  run `npm fund` for details
+
+
+9 vulnerabilities (3 low, 6 moderate)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 11.6.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.6.2
+npm notice To update run: npm install -g npm@11.6.2
+npm notice
+
+2025-10-15T19:53:11Z info: Starting Build
+
+> rest-express@1.0.0 build
+> vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+
+
+vite v5.4.20 building for production...
+
+transforming...
+
+warn - The class `ease-[cubic-bezier(0.22,1,0.36,1)]` is ambiguous and matches multiple utilities.
+
+warn - If this is content and not a class, replace it with `ease-&lsqb;cubic-bezier(0.22,1,0.36,1)&rsqb;` to silence this warning.
+
+
+/grid.svg referenced in /grid.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+
+/Backgrounds/abstract-flowing-liquid-glass-waves-on-black-background-smooth-texture-blue-and-orange-photo.jpg referenced in /Backgrounds/abstract-flowing-liquid-glass-waves-on-black-background-smooth-texture-blue-and-orange-photo.jpg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/Backgrounds/colorful-painting-with-black-background-white-blue-background_380557-143.avif referenced in /Backgrounds/colorful-painting-with-black-background-white-blue-background_380557-143.avif didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+
+/Backgrounds/208414429-a-close-up-of-a-colorful-abstract-painting-generative-ai-image.jpg referenced in /Backgrounds/208414429-a-close-up-of-a-colorful-abstract-painting-generative-ai-image.jpg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+
+/Backgrounds/abstract-composition-glowing-bubbles-dark-background-with-orange-blue-tones_1090747-6434.avif referenced in /Backgrounds/abstract-composition-glowing-bubbles-dark-background-with-orange-blue-tones_1090747-6434.avif didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+
+/Backgrounds/abstract-composition-with-intertwined-orange-blue-curves-wave-aig51_31965-634212.avif referenced in /Backgrounds/abstract-composition-with-intertwined-orange-blue-curves-wave-aig51_31965-634212.avif didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+
+/Backgrounds/geometric-lines-intersecting-with-organic-shapes-hd-4k_964851-163761.jpg referenced in /Backgrounds/geometric-lines-intersecting-with-organic-shapes-hd-4k_964851-163761.jpg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+
+/Backgrounds/colorful-series-circles-with-orange-blue-colors_889056-245202.jpg referenced in /Backgrounds/colorful-series-circles-with-orange-blue-colors_889056-245202.jpg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+
+/Backgrounds/dynamic-abstract-patterns-with-overlapping-circles-spirals-creating-sense-motion_36897-73531.avif referenced in /Backgrounds/dynamic-abstract-patterns-with-overlapping-circles-spirals-creating-sense-motion_36897-73531.avif didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+✓ 10873 modules transformed.
+
+rendering chunks...
+
+dist/registerSW.js                                                          0.13 kB
+
+dist/manifest.webmanifest                                                   0.37 kB
+
+dist/index.html                                                             4.71 kB
+
+dist/assets/images/professional_photogr_afdb1a59-BrC0qSW_.jpg             107.71 kB
+
+dist/assets/images/professional_photogr_d7e01cb5-Cir8Neu9.jpg             138.50 kB
+
+dist/assets/images/professional_photogr_7ec7b11b-BZ0AnoeX.jpg             159.01 kB
+
+dist/assets/images/sunset_yoga_studio_p_c38ab4c1-DKtzXTPZ.jpg             160.16 kB
+
+dist/assets/images/elegant_restaurant_f_f8ca8e07-BotLWGtK.jpg             188.00 kB
+
+dist/assets/images/yoga_meditation_peac_cbdd7863-CAtT-Lik.jpg             192.20 kB
+dist/assets/images/beach_wedding_ceremo_59009157-DscHmboQ.jpg             223.00 kB
+
+dist/assets/images/luxury_wellness_spa__8f194a3c-cXHkuOR6.jpg             229.04 kB
+
+dist/assets/images/beach_wedding_ceremo_b81563df-BTNZTPRW.jpg             234.65 kB
+
+dist/assets/images/premium_photography__509b059a-DPIV_6o0.jpg             236.90 kB
+
+dist/assets/images/yoga_meditation_peac_dd325b82-2CZgT960.jpg             259.12 kB
+
+dist/assets/images/elegant_restaurant_f_aa323e17-y0zoJSh4.jpg             259.23 kB
+
+dist/assets/images/artisan_ceramic_pott_6f7a6640-D4U0FYdP.jpg             294.74 kB
+
+dist/assets/images/luxury_spa_wellness__78221b18-JaFjwzBz.jpg             303.85 kB
+
+dist/assets/images/beach_wedding_ceremo_313889d0-B6uuDB_m.jpg             304.40 kB
+
+dist/assets/images/premium_brand_identi_88f6d862-Dp5HuSOS.jpg             307.15 kB
+
+dist/assets/images/elegant_restaurant_f_cc520cc1-Co6SkcI7.jpg             360.06 kB
+
+dist/assets/images/elegant_restaurant_i_5b327bb1-CvO2W4yK.jpg             373.94 kB
+
+dist/assets/images/modern_luxury_hotel__f6015919-Ck3F56HL.jpg             420.67 kB
+
+dist/assets/images/gourmet_cuban_sandwi_e0346f8d-CgOoskUw.jpg             463.99 kB
+
+dist/assets/images/luxury_travel_experi_f2b67257-CEjdbtcf.jpg             465.39 kB
+
+dist/assets/images/White_Carrara_Marble_Texture_e43e4cf1-DnWU2PJi.png   1,082.70 kB
+
+dist/assets/images/Calacatta_Gold_Marble_Texture_fbe43c38-JNQ7UMqQ.png  1,460.38 kB
+
+dist/assets/images/Black_Marquina_Marble_Texture_5dc162e8-Dj-Y7RqF.png  1,566.93 kB
+
+dist/assets/css/index-CoUEwdPE.css                                        417.05 kB
+
+dist/assets/js/chunk-DX-ng3ro.js                                            0.18 kB
+
+dist/assets/js/chunk-DlBLYVYR.js                                           33.00 kB
+
+dist/assets/js/chunk-CB_FygZn.js                                           36.05 kB
+
+dist/assets/js/chunk-CsH5eBZF.js                                           36.99 kB
+
+dist/assets/js/chunk-C_L_2KoB.js                                           40.03 kB
+
+dist/assets/js/chunk-CDOfWkHr.js                                          104.87 kB
+
+dist/assets/js/chunk-B925Bl0Q.js                                          126.77 kB
+
+dist/assets/js/chunk-mXrEHHhv.js                                          168.82 kB
+
+dist/assets/js/chunk-BNHZepK5.js                                          322.72 kB
+
+dist/assets/index-DkpRlAnP.js                                           2,883.21 kB
+
+
+(!) Some chunks are larger than 1000 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+
+✓ built in 57.60s
+
+
+PWA v1.0.3
+mode      generateSW
+precache  15 entries (4085.19 KiB)
+files generated
+  dist/sw.js
+  dist/workbox-e20531c6.js
+
+
+✨ [vite-plugin-compression]:algorithm=gzip - compressed file successfully: 
+
+dist//home/runner/workspace/client/assets/js/chunk-CB_FygZn.js.gz     35.20kb / gzip: 10.71kb
+
+dist//home/runner/workspace/client/assets/js/chunk-CsH5eBZF.js.gz     36.12kb / gzip: 10.43kb
+
+dist//home/runner/workspace/client/assets/js/chunk-DlBLYVYR.js.gz     32.23kb / gzip: 9.15kb
+
+dist//home/runner/workspace/client/index.html.gz                      4.60kb / gzip: 1.30kb
+
+dist//home/runner/workspace/client/sw.js.gz                           2.05kb / gzip: 0.96kb
+
+dist//home/runner/workspace/client/assets/js/chunk-C_L_2KoB.js.gz     39.09kb / gzip: 12.20kb
+dist//home/runner/workspace/client/workbox-e20531c6.js.gz             21.74kb / gzip: 7.37kb
+
+dist//home/runner/workspace/client/assets/js/chunk-CDOfWkHr.js.gz     102.41kb / gzip: 26.36kb
+
+dist//home/runner/workspace/client/assets/js/chunk-B925Bl0Q.js.gz     123.80kb / gzip: 40.06kb
+
+dist//home/runner/workspace/client/assets/css/index-CoUEwdPE.css.gz   407.29kb / gzip: 56.47kb
+dist//home/runner/workspace/client/assets/js/chunk-mXrEHHhv.js.gz     164.86kb / gzip: 53.54kb
+
+dist//home/runner/workspace/client/assets/js/chunk-BNHZepK5.js.gz     315.17kb / gzip: 82.30kb
+dist//home/runner/workspace/client/assets/index-DkpRlAnP.js.gz        2816.65kb / gzip: 712.65kb
+
+
+
+
+
+✨ [vite-plugin-compression]:algorithm=brotliCompress - compressed file successfully: 
+
+dist//home/runner/workspace/client/assets/js/chunk-CB_FygZn.js.br     35.20kb / brotliCompress: 9.33kb
+
+dist//home/runner/workspace/client/assets/js/chunk-CsH5eBZF.js.br     36.12kb / brotliCompress: 9.39kb
+
+dist//home/runner/workspace/client/index.html.br                      4.60kb / brotliCompress: 1.02kb
+
+dist//home/runner/workspace/client/sw.js.br                           2.05kb / brotliCompress: 0.84kb
+
+dist//home/runner/workspace/client/assets/js/chunk-C_L_2KoB.js.br     39.09kb / brotliCompress: 10.86kb
+
+dist//home/runner/workspace/client/workbox-e20531c6.js.br             21.74kb / brotliCompress: 6.68kb
+dist//home/runner/workspace/client/assets/js/chunk-CDOfWkHr.js.br     102.41kb / brotliCompress: 23.38kb
+
+dist//home/runner/workspace/client/assets/js/chunk-DlBLYVYR.js.br     32.23kb / brotliCompress: 8.14kb
+
+dist//home/runner/workspace/client/assets/js/chunk-B925Bl0Q.js.br     123.80kb / brotliCompress: 35.49kb
+
+dist//home/runner/workspace/client/assets/js/chunk-mXrEHHhv.js.br     164.86kb / brotliCompress: 47.03kb
+
+dist//home/runner/workspace/client/assets/js/chunk-BNHZepK5.js.br     315.17kb / brotliCompress: 69.54kb
+
+dist//home/runner/workspace/client/assets/css/index-CoUEwdPE.css.br   407.29kb / brotliCompress: 43.92kb
+
+dist//home/runner/workspace/client/assets/index-DkpRlAnP.js.br        2816.65kb / brotliCompress: 566.70kb
+
+
+
+
+▲ [WARNING] Duplicate member "getTrendingBusinesses" in class body [duplicate-class-member]
+
+    server/storage.ts:2284:8:
+      2284 │   async getTrendingBusinesses(limit: number = 10): Promise<any[]> {
+           ╵         ~~~~~~~~~~~~~~~~~~~~~
+
+  The original member "getTrendingBusinesses" is here:
+
+    server/storage.ts:508:8:
+      508 │   async getTrendingBusinesses(limit: number): Promise<Business[]> {
+          ╵         ~~~~~~~~~~~~~~~~~~~~~
+
+
+1 warning
+
+
+  dist/index.js  745.2kb
+
+⚡ Done in 268ms
+
+2025-10-15T19:54:27Z info: Pushing pid1 binary layer...
+2025-10-15T19:54:29Z info: Pushing Repl layer...
+2025-10-15T19:54:29Z info: Pushing hosting layer...
+2025-10-15T19:54:29Z info: Created hosting layer
+2025-10-15T19:54:29Z info: Created pid1 binary layer
+2025-10-15T19:56:00Z info: Created Repl layer
+2025-10-15T19:56:03Z info: Pushed image manifest
+2025-10-15T19:56:05Z info: Pushed soci index manifest
+2025-10-15T19:56:08Z info: Creating Autoscale service
+forwarding local port 5000 to external port 80 (mapped as 1104)
+starting up user application
+> rest-express@1.0.0 start
+> NODE_ENV=production node dist/index.js
+❌ Database health check failed: password authentication failed for user 'neondb_owner'
+GMB API credentials not configured. Running in demo mode.
+⚠️ Sentry DSN not configured - error tracking disabled
+⚠️ Falling back to in-memory session store (sessions will not persist across restarts)
+Error: Dynamic require of "memorystore" is not supported
+❌ Redis main error: connect ECONNREFUSED 127.0.0.1:6379
+    at async registerRoutes (file:///home/runner/workspace/dist/index.js:16810:3)
+    at async setupAuth (file:///home/runner/workspace/dist/index.js:5372:29)
+    at async setupAuth (file:///home/runner/workspace/dist/index.js:5372:29)
+❌ Failed to setup PostgreSQL session store: Error: Database connection test failed
+⚠️ PostHog key not configured - analytics disabled
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.6.2
+❌ Database health check failed: password authentication failed for user 'neondb_owner'
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async file:///home/runner/workspace/dist/index.js:19732:18
+⚠️  Using temporary encryption key. Set GMB_ENCRYPTION_KEY environment variable for persistent token encryption.
+        ^
+info: ✅ Metrics endpoint available at /metrics {"environment":"production","service":"florida-elite","timestamp":"2025-10-15T19:57:40.747Z"}
+  throw Error('Dynamic require of "' + x + '" is not supported');
+⚠️ Redis not available, attempting PostgreSQL for sessions
+    at async registerRoutes (file:///home/runner/workspace/dist/index.js:16810:3)
+file:///home/runner/workspace/dist/index.js:7
+The `fetchConnectionCache` option is deprecated (now always `true`)
+npm notice To update run: npm install -g npm@11.6.2
+    at getSession (file:///home/runner/workspace/dist/index.js:5309:15)
+    at async file:///home/runner/workspace/dist/index.js:19732:18
+
+Node.js v20.19.3
+    at file:///home/runner/workspace/dist/index.js:7:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+command finished with error [npm run start]: exit status 1
+npm notice
+npm notice
+    at getSession (file:///home/runner/workspace/dist/index.js:5329:27)
+npm notice New major version of npm available! 10.8.2 -> 11.6.2
+> NODE_ENV=production node dist/index.js
+info: ✅ Metrics endpoint available at /metrics {"environment":"production","service":"florida-elite","timestamp":"2025-10-15T19:57:44.775Z"}
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+❌ Database health check failed: password authentication failed for user 'neondb_owner'
+file:///home/runner/workspace/dist/index.js:7
+    at getSession (file:///home/runner/workspace/dist/index.js:5329:27)
+⚠️ Sentry DSN not configured - error tracking disabled
+⚠️ PostHog key not configured - analytics disabled
+GMB API credentials not configured. Running in demo mode.
+  throw Error('Dynamic require of "' + x + '" is not supported');
+> rest-express@1.0.0 start
+⚠️  Using temporary encryption key. Set GMB_ENCRYPTION_KEY environment variable for persistent token encryption.
+
+    at async registerRoutes (file:///home/runner/workspace/dist/index.js:16810:3)
+❌ Failed to setup PostgreSQL session store: Error: Database connection test failed
+⚠️ Falling back to in-memory session store (sessions will not persist across restarts)
+The `fetchConnectionCache` option is deprecated (now always `true`)
+❌ Redis main error: connect ECONNREFUSED 127.0.0.1:6379
+❌ Database health check failed: password authentication failed for user 'neondb_owner'
+⚠️ Redis not available, attempting PostgreSQL for sessions
+
+    at async file:///home/runner/workspace/dist/index.js:19732:18
+    at getSession (file:///home/runner/workspace/dist/index.js:5309:15)
+    at async setupAuth (file:///home/runner/workspace/dist/index.js:5372:29)
+    at async file:///home/runner/workspace/dist/index.js:19732:18
+> rest-express@1.0.0 start
+Node.js v20.19.3
+    at async setupAuth (file:///home/runner/workspace/dist/index.js:5372:29)
+    at file:///home/runner/workspace/dist/index.js:7:9
+    at async registerRoutes (file:///home/runner/workspace/dist/index.js:16810:3)
+> NODE_ENV=production node dist/index.js
+Error: Dynamic require of "memorystore" is not supported
+        ^
+command finished with error [npm run start]: exit status 1
+⚠️  Using temporary encryption key. Set GMB_ENCRYPTION_KEY environment variable for persistent token encryption.
+The `fetchConnectionCache` option is deprecated (now always `true`)
+⚠️ PostHog key not configured - analytics disabled
+GMB API credentials not configured. Running in demo mode.
+    at async file:///home/runner/workspace/dist/index.js:19732:18
+file:///home/runner/workspace/dist/index.js:7
+info: ✅ Metrics endpoint available at /metrics {"environment":"production","service":"florida-elite","timestamp":"2025-10-15T19:57:48.952Z"}
+
+❌ Failed to setup PostgreSQL session store: Error: Database connection test failed
+    at file:///home/runner/workspace/dist/index.js:7:9
+    at async registerRoutes (file:///home/runner/workspace/dist/index.js:16810:3)
+❌ Redis main error: connect ECONNREFUSED 127.0.0.1:6379
+⚠️ Redis not available, attempting PostgreSQL for sessions
+    at async registerRoutes (file:///home/runner/workspace/dist/index.js:16810:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at getSession (file:///home/runner/workspace/dist/index.js:5309:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at getSession (file:///home/runner/workspace/dist/index.js:5329:27)
+Node.js v20.19.3
+❌ Database health check failed: password authentication failed for user 'neondb_owner'
+  throw Error('Dynamic require of "' + x + '" is not supported');
+
+    at async setupAuth (file:///home/runner/workspace/dist/index.js:5372:29)
+⚠️ Falling back to in-memory session store (sessions will not persist across restarts)
+command finished with error [npm run start]: exit status 1
+❌ Database health check failed: password authentication failed for user 'neondb_owner'
+Error: Dynamic require of "memorystore" is not supported
+        ^
+⚠️ Sentry DSN not configured - error tracking disabled
+    at async setupAuth (file:///home/runner/workspace/dist/index.js:5372:29)
+> rest-express@1.0.0 start
+    at async file:///home/runner/workspace/dist/index.js:19732:18
+> NODE_ENV=production node dist/index.js
+The `fetchConnectionCache` option is deprecated (now always `true`)
+    at async setupAuth (file:///home/runner/workspace/dist/index.js:5372:29)
+⚠️ Falling back to in-memory session store (sessions will not persist across restarts)
+❌ Failed to setup PostgreSQL session store: Error: Database connection test failed
+⚠️  Using temporary encryption key. Set GMB_ENCRYPTION_KEY environment variable for persistent token encryption.
+⚠️ PostHog key not configured - analytics disabled
+info: ✅ Metrics endpoint available at /metrics {"environment":"production","service":"florida-elite","timestamp":"2025-10-15T19:57:57.447Z"}
+> NODE_ENV=production node dist/index.js
+⚠️ Falling back to in-memory session store (sessions will not persist across restarts)
+
+    at async file:///home/runner/workspace/dist/index.js:19732:18
+Node.js v20.19.3
+> rest-express@1.0.0 start
+> NODE_ENV=production node dist/index.js
+⚠️  Using temporary encryption key. Set GMB_ENCRYPTION_KEY environment variable for persistent token encryption.
+⚠️ Falling back to in-memory session store (sessions will not persist across restarts)
+Node.js v20.19.3
+    at async setupAuth (file:///home/runner/workspace/dist/index.js:5372:29)
+> NODE_ENV=production node dist/index.js
+> rest-express@1.0.0 start
+    at async registerRoutes (file:///home/runner/workspace/dist/index.js:16810:3)
+The `fetchConnectionCache` option is deprecated (now always `true`)
+⚠️  Using temporary encryption key. Set GMB_ENCRYPTION_KEY environment variable for persistent token encryption.
+    at async setupAuth (file:///home/runner/workspace/dist/index.js:5372:29)
+Node.js v20.19.3
+    at async setupAuth (file:///home/runner/workspace/dist/index.js:5372:29)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+a port configuration was specified but the required port was never opened
+> NODE_ENV=production node dist/index.js
+> rest-express@1.0.0 start
+2025-10-15T19:59:21Z error: The deployment failed because the application failed to open a port in time. This can happen because the application takes to long to open a server, or doesn't open one at all on the expected port. Note that this doesn't mean that the application is crashing, only that it's not opening a port in time. The application must serve traffic on the first port specified as 'localPort' in the port configuration specified in the .replit file. Make sure that the application opens a port quickly and that there are no operations taking too long on startup. Check the logs for more information.

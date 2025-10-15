@@ -1,5 +1,7 @@
 import Redis from "ioredis";
 import { Queue, Worker, QueueEvents } from "bullmq";
+import ConnectRedis from "connect-redis";
+import memorystore from "memorystore";
 
 // Track Redis availability to prevent spam
 let redisConnected = false;
@@ -206,8 +208,7 @@ export const cache = {
 
 // Session store helper with fallback
 export function createRedisStore(session: any) {
-  const RedisStore = require("connect-redis").default;
-  const MemoryStore = require("memorystore")(session);
+  const MemoryStore = memorystore(session);
   
   // Use memory store if Redis is not available
   if (!redisConnected) {
@@ -217,7 +218,7 @@ export function createRedisStore(session: any) {
     });
   }
   
-  return new RedisStore({
+  return new ConnectRedis({
     client: redis,
     prefix: "sess:",
     ttl: 86400, // 1 day
