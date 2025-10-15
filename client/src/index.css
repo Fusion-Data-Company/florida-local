@@ -244,6 +244,40 @@
     backdrop-filter: blur(8px);
     z-index: 1;
   }
+
+  /* TEXT UTILITIES FOR ABSTRACT BACKGROUNDS */
+  /* Use these classes for text that appears on abstract backgrounds to ensure readability */
+
+  /* Heading text on abstract backgrounds - white with strong shadow */
+  .text-abstract-heading {
+    color: white !important;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Body text on abstract backgrounds - white with subtle shadow */
+  .text-abstract-body {
+    color: rgba(255, 255, 255, 0.95) !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Large display text on abstract backgrounds - white with extra strong shadow */
+  .text-abstract-display {
+    color: white !important;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Muted/secondary text on abstract backgrounds */
+  .text-abstract-muted {
+    color: rgba(255, 255, 255, 0.85) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Number/stat text on abstract backgrounds */
+  .text-abstract-stat {
+    color: white !important;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+    font-weight: 700;
+  }
 }
 
 :root {

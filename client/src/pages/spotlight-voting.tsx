@@ -105,8 +105,8 @@ export default function SpotlightVotingPage() {
       <div className="container mx-auto px-4 py-12 space-y-12">
         {/* Main Voting Interface */}
         <section>
-          <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
-            <Trophy className="h-8 w-8 text-yellow-500" />
+          <h2 className="text-3xl font-bold mb-8 flex items-center gap-3 text-white" style={{textShadow: '0 2px 8px rgba(0,0,0,0.4)'}}>
+            <Trophy className="h-8 w-8 text-white" />
             Cast Your Votes
           </h2>
           <VotingInterface variant="dedicated" />
@@ -114,8 +114,8 @@ export default function SpotlightVotingPage() {
 
         {/* Trending Businesses */}
         <section>
-          <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
-            <TrendingUp className="h-8 w-8 text-green-500" />
+          <h2 className="text-3xl font-bold mb-8 flex items-center gap-3 text-white" style={{textShadow: '0 2px 8px rgba(0,0,0,0.4)'}}>
+            <TrendingUp className="h-8 w-8 text-white" />
             Trending This Week
           </h2>
           <TrendingBusinesses limit={6} variant="full" />
@@ -124,8 +124,8 @@ export default function SpotlightVotingPage() {
         {/* Past Winners */}
         {pastWinners.length > 0 && (
           <section>
-            <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
-              <Crown className="h-8 w-8 text-yellow-500" />
+            <h2 className="text-3xl font-bold mb-8 flex items-center gap-3 text-white" style={{textShadow: '0 2px 8px rgba(0,0,0,0.4)'}}>
+              <Crown className="h-8 w-8 text-white" />
               Past Winners
             </h2>
             <div className="space-y-4">

@@ -182,7 +182,7 @@ export default function Home() {
 
         {/* Trending Businesses */}
         <section className="py-12 container mx-auto px-4 relative z-10">
-          <h2 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+          <h2 className="text-3xl font-bold mb-8 text-center text-white" style={{textShadow: '0 2px 8px rgba(0,0,0,0.4)'}}>
             Trending Now
           </h2>
           <TrendingBusinesses limit={5} variant="compact" />

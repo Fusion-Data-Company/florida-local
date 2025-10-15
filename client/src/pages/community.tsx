@@ -46,7 +46,7 @@ export default function CommunityPage() {
       <div className="container mx-auto px-4 py-12 space-y-12">
         {/* Community Stats Overview */}
         <section>
-          <h2 className="text-3xl font-bold mb-8 text-center">Community Impact</h2>
+          <h2 className="text-3xl font-bold mb-8 text-center text-white" style={{textShadow: '0 2px 8px rgba(0,0,0,0.4)'}}>Community Impact</h2>
           <div className="grid md:grid-cols-4 gap-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -58,8 +58,8 @@ export default function CommunityPage() {
                   <div className="inline-flex p-4 rounded-full bg-purple-100 mb-4">
                     <Users className="h-8 w-8 text-purple-600" />
                   </div>
-                  <div className="text-4xl font-bold text-purple-600 mb-2">2,847</div>
-                  <div className="text-sm text-muted-foreground">Active Businesses</div>
+                  <div className="text-4xl font-bold text-white mb-2" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>2,847</div>
+                  <div className="text-sm text-white" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>Active Businesses</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -74,8 +74,8 @@ export default function CommunityPage() {
                   <div className="inline-flex p-4 rounded-full bg-blue-100 mb-4">
                     <Star className="h-8 w-8 text-blue-600" />
                   </div>
-                  <div className="text-4xl font-bold text-blue-600 mb-2">18,392</div>
-                  <div className="text-sm text-muted-foreground">Reviews Posted</div>
+                  <div className="text-4xl font-bold text-white mb-2" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>18,392</div>
+                  <div className="text-sm text-white" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>Reviews Posted</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -90,8 +90,8 @@ export default function CommunityPage() {
                   <div className="inline-flex p-4 rounded-full bg-green-100 mb-4">
                     <ShoppingBag className="h-8 w-8 text-green-600" />
                   </div>
-                  <div className="text-4xl font-bold text-green-600 mb-2">45,621</div>
-                  <div className="text-sm text-muted-foreground">Orders Completed</div>
+                  <div className="text-4xl font-bold text-white mb-2" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>45,621</div>
+                  <div className="text-sm text-white" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>Orders Completed</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -106,8 +106,8 @@ export default function CommunityPage() {
                   <div className="inline-flex p-4 rounded-full bg-orange-100 mb-4">
                     <Heart className="h-8 w-8 text-orange-600" />
                   </div>
-                  <div className="text-4xl font-bold text-orange-600 mb-2">156K</div>
-                  <div className="text-sm text-muted-foreground">Community Votes</div>
+                  <div className="text-4xl font-bold text-white mb-2" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>156K</div>
+                  <div className="text-sm text-white" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>Community Votes</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -116,7 +116,7 @@ export default function CommunityPage() {
 
         {/* Community Actions */}
         <section>
-          <h2 className="text-3xl font-bold mb-8 text-center">Get Involved</h2>
+          <h2 className="text-3xl font-bold mb-8 text-center text-white" style={{textShadow: '0 2px 8px rgba(0,0,0,0.4)'}}>Get Involved</h2>
           <div className="grid md:grid-cols-3 gap-6">
             <Card className="hover:shadow-lg transition-all hover:-translate-y-1">
               <CardHeader>
@@ -183,8 +183,8 @@ export default function CommunityPage() {
         {/* Trending Businesses */}
         <section>
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold flex items-center gap-3">
-              <TrendingUp className="h-8 w-8 text-green-500" />
+            <h2 className="text-3xl font-bold flex items-center gap-3 text-white" style={{textShadow: '0 2px 8px rgba(0,0,0,0.4)'}}>
+              <TrendingUp className="h-8 w-8 text-white" />
               Trending Businesses
             </h2>
             <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white">

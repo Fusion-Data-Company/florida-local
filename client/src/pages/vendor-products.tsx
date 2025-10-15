@@ -128,9 +128,9 @@ export default function VendorProductsPage() {
       <AbstractBackground backgroundKey="geometric1" overlay="light" className="min-h-screen">
         <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold mb-6">Vendor Products</h1>
-          <div className="text-muted-foreground">
-            You need to create a business first. <a href="/create-business" className="text-primary hover:underline">Create Business</a>
+          <h1 className="text-3xl font-bold mb-6 text-white" style={{textShadow: '0 2px 8px rgba(0,0,0,0.4)'}}>Vendor Products</h1>
+          <div className="text-white" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>
+            You need to create a business first. <a href="/create-business" className="text-white underline hover:no-underline">Create Business</a>
           </div>
         </div>
         <MobileBottomNav />

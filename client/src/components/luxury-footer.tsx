@@ -67,18 +67,24 @@ export default function LuxuryFooter() {
           padding="py-12 lg:py-16"
           containerClassName="bg-gradient-to-b from-transparent via-background/50 to-background border-t border-border/20"
           titleClassName="text-center"
-          logoContainerWidth="w-40"
-          logoContainerHeight="h-20"
+          logoContainerWidth="w-48"
+          logoContainerHeight="h-28"
           logoImageWidth="w-auto"
-          logoImageHeight="h-12"
+          logoImageHeight="h-16"
+          logoMaxHeight="max-h-16"
         />
       </div>
 
-      <footer className="relative glass-panel footer-marble-section border-t border-border/20 backdrop-blur-lg">
-        {/* Gradient Top Border */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent"></div>
+      <footer className="relative glass-panel footer-marble-section border-t border-border/20 backdrop-blur-lg overflow-hidden">
+        {/* Abstract Background Decorations */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-primary/10 via-accent/5 to-transparent rounded-full blur-3xl opacity-40 pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-secondary/10 via-cyan-500/5 to-transparent rounded-full blur-3xl opacity-40 pointer-events-none"></div>
+        <div className="absolute top-1/3 left-1/4 w-64 h-64 bg-gradient-to-r from-accent/5 to-transparent rounded-full blur-3xl opacity-30 pointer-events-none"></div>
 
-        <div className="container mx-auto px-4 lg:px-8 py-16">
+        {/* Gradient Top Border - Enhanced */}
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary via-accent to-transparent opacity-70"></div>
+
+        <div className="container mx-auto px-4 lg:px-8 py-16 relative z-10">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           {/* Brand Column */}
@@ -278,7 +284,7 @@ export default function LuxuryFooter() {
 
           <div className="relative z-10 text-center max-w-2xl mx-auto">
             <h3 className="text-2xl md:text-3xl font-bold text-luxury font-serif mb-4 relative">
-              <span className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent drop-shadow-lg">
+              <span className="text-black dark:text-white font-bold drop-shadow-lg">
                 Stay Connected with Florida's Elite
               </span>
             </h3>
@@ -293,11 +299,11 @@ export default function LuxuryFooter() {
                 data-testid="newsletter-email"
               />
               <button
-                className="px-6 py-3 bg-gradient-to-r from-primary via-accent to-secondary hover:from-primary/90 hover:via-accent/90 hover:to-secondary/90 hover-lift btn-press rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl text-white relative overflow-hidden group/btn"
+                className="px-6 py-3 bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 hover:from-cyan-400 hover:via-blue-500 hover:to-purple-500 hover-lift btn-press rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-2xl hover:shadow-purple-500/50 text-white relative overflow-hidden group/btn"
                 data-testid="newsletter-subscribe"
               >
-                <span className="relative z-10">Subscribe</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700"></div>
+                <span className="relative z-10 font-bold">Subscribe</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700"></div>
               </button>
             </div>
           </div>

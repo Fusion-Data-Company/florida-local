@@ -347,8 +347,8 @@ export default function AIContentGenerator() {
           {/* Templates Tab */}
           <TabsContent value="templates" className="space-y-6">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold mb-3">Choose a Template</h2>
-              <p className="text-muted-foreground text-lg">
+              <h2 className="text-3xl font-bold mb-3 text-white" style={{textShadow: '0 2px 8px rgba(0,0,0,0.4)'}}>Choose a Template</h2>
+              <p className="text-white text-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>
                 Select from our professionally crafted templates to get started quickly
               </p>
             </div>
@@ -520,8 +520,8 @@ export default function AIContentGenerator() {
           {/* History Tab */}
           <TabsContent value="history" className="space-y-6">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold mb-3">Generation History</h2>
-              <p className="text-muted-foreground text-lg">
+              <h2 className="text-3xl font-bold mb-3 text-white" style={{textShadow: '0 2px 8px rgba(0,0,0,0.4)'}}>Generation History</h2>
+              <p className="text-white text-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>
                 View and reuse your previously generated content
               </p>
             </div>

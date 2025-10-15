@@ -12,6 +12,17 @@ interface AbstractBackgroundProps {
 /**
  * AbstractBackground Component
  * Renders a section with an abstract background and optional overlay
+ *
+ * TEXT COLOR GUIDELINES:
+ * - For 'light', 'medium', or 'subtle' overlays: Use default dark text colors
+ * - For 'dark' or 'gradient' overlays: Use white text with these utility classes:
+ *   - .text-abstract-heading - For h1, h2, h3 headings
+ *   - .text-abstract-body - For paragraph text
+ *   - .text-abstract-display - For large display text
+ *   - .text-abstract-muted - For secondary/muted text
+ *   - .text-abstract-stat - For numbers and statistics
+ *
+ * Or use Tailwind: text-white with appropriate text-shadow
  */
 export function AbstractBackground({
   backgroundKey,

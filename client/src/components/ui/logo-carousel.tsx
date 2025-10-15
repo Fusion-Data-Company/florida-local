@@ -90,11 +90,12 @@ export const AnimatedCarousel = ({
               <CarouselContent>
                 {logoItems.map((logo, index) => (
                   <CarouselItem className={`basis-1/${itemsPerViewMobile} lg:basis-1/${itemsPerViewDesktop}`} key={index}>
-                    <div className={`flex rounded-md ${logoContainerWidth} ${logoContainerHeight} items-center justify-center p-4 hover:bg-accent transition-colors ${logoClassName}`}>
-                      <img 
+                    <div className={`flex rounded-md ${logoContainerWidth} ${logoContainerHeight} items-center justify-center p-4 hover:bg-accent/10 transition-all duration-300 hover:scale-105 ${logoClassName}`}>
+                      <img
                         src={typeof logo === 'string' ? logo : logo}
                         alt={`Logo ${index + 1}`}
-                        className={`${logoImageSizeClasses} object-contain filter brightness-0 dark:brightness-0 dark:invert`}
+                        className={`${logoImageSizeClasses} object-contain drop-shadow-lg`}
+                        style={{ imageRendering: 'crisp-edges' }}
                       />
                     </div>
                   </CarouselItem>

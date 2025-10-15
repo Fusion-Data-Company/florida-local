@@ -91,14 +91,14 @@ export default function LoyaltyPage() {
           className="mt-12"
         >
           <Card className="p-8 bg-gradient-to-br from-primary/5 to-purple/5 border-primary/20">
-            <h2 className="text-2xl font-bold mb-6 text-center">Ways to Earn Points</h2>
+            <h2 className="text-2xl font-bold mb-6 text-center text-white" style={{textShadow: '0 2px 8px rgba(0,0,0,0.4)'}}>Ways to Earn Points</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="text-center">
                 <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-3">
                   <span className="text-3xl">🛍️</span>
                 </div>
-                <h3 className="font-semibold mb-2">Make Purchases</h3>
-                <p className="text-sm text-muted-foreground">
+                <h3 className="font-semibold mb-2 text-white" style={{textShadow: '0 1px 3px rgba(0,0,0,0.3)'}}>Make Purchases</h3>
+                <p className="text-sm text-white" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>
                   Earn 1 point per $1 spent (multiplied by your tier level)
                 </p>
               </div>
@@ -107,8 +107,8 @@ export default function LoyaltyPage() {
                 <div className="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-3">
                   <span className="text-3xl">⭐</span>
                 </div>
-                <h3 className="font-semibold mb-2">Leave Reviews</h3>
-                <p className="text-sm text-muted-foreground">
+                <h3 className="font-semibold mb-2 text-white" style={{textShadow: '0 1px 3px rgba(0,0,0,0.3)'}}>Leave Reviews</h3>
+                <p className="text-sm text-white" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>
                   Earn 50 points for reviews, 100 points with photos
                 </p>
               </div>
@@ -117,8 +117,8 @@ export default function LoyaltyPage() {
                 <div className="w-16 h-16 bg-purple-500/10 rounded-full flex items-center justify-center mx-auto mb-3">
                   <span className="text-3xl">👥</span>
                 </div>
-                <h3 className="font-semibold mb-2">Refer Friends</h3>
-                <p className="text-sm text-muted-foreground">
+                <h3 className="font-semibold mb-2 text-white" style={{textShadow: '0 1px 3px rgba(0,0,0,0.3)'}}>Refer Friends</h3>
+                <p className="text-sm text-white" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>
                   Earn 200 points per signup, 500 bonus on first purchase
                 </p>
               </div>
@@ -127,8 +127,8 @@ export default function LoyaltyPage() {
                 <div className="w-16 h-16 bg-pink-500/10 rounded-full flex items-center justify-center mx-auto mb-3">
                   <span className="text-3xl">📱</span>
                 </div>
-                <h3 className="font-semibold mb-2">Share on Social</h3>
-                <p className="text-sm text-muted-foreground">
+                <h3 className="font-semibold mb-2 text-white" style={{textShadow: '0 1px 3px rgba(0,0,0,0.3)'}}>Share on Social</h3>
+                <p className="text-sm text-white" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>
                   Earn 25 points per share (max 100 points per day)
                 </p>
               </div>
@@ -143,14 +143,14 @@ export default function LoyaltyPage() {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="mt-12"
         >
-          <h2 className="text-2xl font-bold mb-6 text-center">Membership Tiers</h2>
+          <h2 className="text-2xl font-bold mb-6 text-center text-white" style={{textShadow: '0 2px 8px rgba(0,0,0,0.4)'}}>Membership Tiers</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Bronze */}
             <Card className="bg-gradient-to-br from-orange-500/10 to-orange-700/10 border-2 border-orange-500/20 hover:border-orange-500/40 transition-all">
               <div className="p-6 text-center">
                 <div className="text-4xl mb-3">🥉</div>
-                <h3 className="text-xl font-bold mb-2">Bronze</h3>
-                <div className="text-2xl font-bold text-orange-600 mb-4">0+ Points</div>
+                <h3 className="text-xl font-bold mb-2 text-white" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>Bronze</h3>
+                <div className="text-2xl font-bold text-white mb-4" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>0+ Points</div>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center gap-2">
                     <span className="text-green-600">✓</span>
@@ -172,8 +172,8 @@ export default function LoyaltyPage() {
             <Card className="bg-gradient-to-br from-slate-400/10 to-slate-600/10 border-2 border-slate-500/20 hover:border-slate-500/40 transition-all">
               <div className="p-6 text-center">
                 <div className="text-4xl mb-3">🥈</div>
-                <h3 className="text-xl font-bold mb-2">Silver</h3>
-                <div className="text-2xl font-bold text-slate-600 mb-4">500+ Points</div>
+                <h3 className="text-xl font-bold mb-2 text-white" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>Silver</h3>
+                <div className="text-2xl font-bold text-white mb-4" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>500+ Points</div>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center gap-2">
                     <span className="text-green-600">✓</span>
@@ -195,8 +195,8 @@ export default function LoyaltyPage() {
             <Card className="bg-gradient-to-br from-yellow-400/10 to-yellow-600/10 border-2 border-yellow-500/20 hover:border-yellow-500/40 transition-all">
               <div className="p-6 text-center">
                 <div className="text-4xl mb-3">🥇</div>
-                <h3 className="text-xl font-bold mb-2">Gold</h3>
-                <div className="text-2xl font-bold text-yellow-600 mb-4">2,000+ Points</div>
+                <h3 className="text-xl font-bold mb-2 text-white" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>Gold</h3>
+                <div className="text-2xl font-bold text-white mb-4" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>2,000+ Points</div>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center gap-2">
                     <span className="text-green-600">✓</span>
@@ -218,8 +218,8 @@ export default function LoyaltyPage() {
             <Card className="bg-gradient-to-br from-purple-500/10 to-pink-600/10 border-2 border-purple-500/20 hover:border-purple-500/40 transition-all">
               <div className="p-6 text-center">
                 <div className="text-4xl mb-3">💎</div>
-                <h3 className="text-xl font-bold mb-2">Platinum</h3>
-                <div className="text-2xl font-bold text-purple-600 mb-4">5,000+ Points</div>
+                <h3 className="text-xl font-bold mb-2 text-white" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>Platinum</h3>
+                <div className="text-2xl font-bold text-white mb-4" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>5,000+ Points</div>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center gap-2">
                     <span className="text-green-600">✓</span>
