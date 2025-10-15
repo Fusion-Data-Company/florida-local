@@ -10,7 +10,6 @@ import {
   TrendingUp,
   Users,
   ShoppingBag,
-  DollarSign,
   Eye,
   Heart,
   MessageSquare,
@@ -21,7 +20,7 @@ import {
   MapPin,
   Bot,
 } from "lucide-react";
-import { Link, useParams } from "wouter";
+import { Link, useLocation } from "wouter";
 import AIContentGenerator from "@/components/ai-content-generator";
 import GMBSyncDashboard from "@/components/gmb-sync-dashboard";
 import GMBReviewManager from "@/components/gmb-review-manager";
@@ -37,9 +36,17 @@ import MobileBottomNav from "@/components/mobile-bottom-nav";
 
 export default function BusinessDashboard() {
   const { user } = useAuth();
-  const [, params] = useParams();
-  const businessId = params.id;
+  const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState("overview");
+
+  // Fetch user's businesses first
+  const { data: userBusinesses = [] } = useQuery<Business[]>({
+    queryKey: ['/api/businesses/my'],
+    enabled: !!user,
+  });
+
+  // Use user's first business
+  const businessId = userBusinesses[0]?.id;
 
   // Fetch business data
   const { data: business, isLoading: businessLoading } = useQuery<Business>({
@@ -310,7 +317,7 @@ export default function BusinessDashboard() {
             </motion.div>
 
             {/* GMB Status Widget */}
-            <GMBStatusWidget businessId={business.id} variant="full" />
+            <GMBStatusWidget businessId={Number(business.id)} variant="full" />
 
             {/* Quick Actions */}
             <Card className="bg-white/80 backdrop-blur-md">
@@ -421,22 +428,22 @@ export default function BusinessDashboard() {
           {/* Google My Business Tab */}
           <TabsContent value="gmb" className="space-y-6">
             {/* GMB Sync Status */}
-            <GMBSyncDashboard businessId={business.id} />
+            <GMBSyncDashboard businessId={Number(business.id)} />
 
             {/* Two-column layout for Reviews and Auto-Post */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <GMBLocationInsights businessId={business.id} />
-              <GMBAutoPost businessId={business.id} />
+              <GMBLocationInsights businessId={Number(business.id)} />
+              <GMBAutoPost businessId={Number(business.id)} />
             </div>
 
             {/* Full-width Review Manager */}
-            <GMBReviewManager businessId={business.id} />
+            <GMBReviewManager businessId={Number(business.id)} />
           </TabsContent>
 
           {/* AI Content Generator Tab */}
           <TabsContent value="content" className="space-y-6">
-            <AIContentGenerator businessId={business.id} />
-            <AIContentHistory businessId={business.id} userId={user?.id} limit={10} />
+            <AIContentGenerator businessId={Number(business.id)} />
+            <AIContentHistory businessId={Number(business.id)} userId={user?.id} limit={10} />
           </TabsContent>
 
           {/* Products Tab */}
@@ -461,10 +468,10 @@ export default function BusinessDashboard() {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {products.map((product) => (
                       <Card key={product.id} className="overflow-hidden">
-                        {product.images && Array.isArray(product.images) && product.images[0] && (
+                        {product.imageUrl && (
                           <div className="aspect-square overflow-hidden">
                             <img
-                              src={product.images[0]}
+                              src={product.imageUrl}
                               alt={product.name}
                               className="w-full h-full object-cover"
                             />
@@ -479,7 +486,7 @@ export default function BusinessDashboard() {
                             </Badge>
                           </div>
                           <p className="text-sm text-muted-foreground">
-                            Inventory: {product.inventory || 0}
+                            Inventory: {product.stockQuantity || 0}
                           </p>
                         </CardContent>
                       </Card>
