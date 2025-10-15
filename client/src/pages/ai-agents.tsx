@@ -107,10 +107,10 @@ export default function AIAgentsPage() {
                   <MicroIcon color="rgba(205, 127, 50, 0.8)">
                     <Target className="h-10 w-10 mx-auto mb-4 text-[var(--fl-bronze)]" />
                   </MicroIcon>
-                  <h3 className="font-bold text-3xl mb-2 bg-gradient-to-r from-[var(--fl-bronze)] to-[var(--fl-bronze)]/70 bg-clip-text text-transparent">
+                  <h3 className="font-bold text-3xl mb-2 text-white" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>
                     8
                   </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-white" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>
                     Marketplace Agents
                   </p>
                 </CardContent>
