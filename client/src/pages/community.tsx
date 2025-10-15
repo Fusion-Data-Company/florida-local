@@ -114,8 +114,8 @@ export default function CommunityPage() {
         <section>
           <h2 className="text-3xl font-bold mb-8 text-center text-white" style={{textShadow: '0 2px 8px rgba(0,0,0,0.4)'}}>Get Involved</h2>
           <div className="grid md:grid-cols-3 gap-6">
-            <Card className="hover:shadow-lg transition-all hover:-translate-y-1">
-              <CardHeader>
+            <Card className="marble-texture hover:shadow-lg transition-all hover:-translate-y-1">
+              <CardHeader className="marble-content">
                 <div className="inline-flex p-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white mb-4">
                   <Trophy className="h-6 w-6" />
                 </div>
@@ -124,7 +124,7 @@ export default function CommunityPage() {
                   Cast your vote for the monthly spotlight and support your favorites
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="marble-content">
                 <Link href="/spotlight/voting">
                   <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600">
                     <Trophy className="h-4 w-4 mr-2" />
@@ -134,8 +134,8 @@ export default function CommunityPage() {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-lg transition-all hover:-translate-y-1">
-              <CardHeader>
+            <Card className="marble-texture hover:shadow-lg transition-all hover:-translate-y-1">
+              <CardHeader className="marble-content">
                 <div className="inline-flex p-3 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white mb-4">
                   <MessageCircle className="h-6 w-6" />
                 </div>
@@ -144,7 +144,7 @@ export default function CommunityPage() {
                   Share your experiences and help others discover great businesses
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="marble-content">
                 <Link href="/marketplace">
                   <Button className="w-full" variant="outline">
                     <Star className="h-4 w-4 mr-2" />
@@ -154,8 +154,8 @@ export default function CommunityPage() {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-lg transition-all hover:-translate-y-1">
-              <CardHeader>
+            <Card className="marble-texture hover:shadow-lg transition-all hover:-translate-y-1">
+              <CardHeader className="marble-content">
                 <div className="inline-flex p-3 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 text-white mb-4">
                   <ShoppingBag className="h-6 w-6" />
                 </div>
@@ -164,7 +164,7 @@ export default function CommunityPage() {
                   Support Florida businesses by shopping in the marketplace
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="marble-content">
                 <Link href="/marketplace">
                   <Button className="w-full" variant="outline">
                     <ShoppingBag className="h-4 w-4 mr-2" />
