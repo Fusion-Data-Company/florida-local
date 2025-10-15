@@ -14,10 +14,6 @@ import { randomBytes } from "crypto";
 
 const MemoryStore = memorystore(session);
 
-if (!process.env.REPLIT_DOMAINS) {
-  throw new Error("Environment variable REPLIT_DOMAINS not provided");
-}
-
 const getOidcConfig = memoize(
   async () => {
     return await client.discovery(
@@ -135,6 +131,13 @@ async function upsertUser(
 }
 
 export async function setupAuth(app: Express) {
+  // Validate REPLIT_DOMAINS early
+  if (!process.env.REPLIT_DOMAINS) {
+    console.error("❌ CRITICAL: REPLIT_DOMAINS environment variable is not set");
+    throw new Error("REPLIT_DOMAINS environment variable is required for authentication");
+  }
+
+  console.log("🔐 Starting auth setup...");
   app.set("trust proxy", 1);
   
   // Session setup with timeout to prevent hanging
@@ -146,11 +149,14 @@ export async function setupAuth(app: Express) {
   ]);
   
   app.use(sessionMiddleware);
+  console.log("✅ Session middleware configured");
   
   app.use(passport.initialize());
   app.use(passport.session());
+  console.log("✅ Passport initialized");
 
   const config = await getOidcConfig();
+  console.log("✅ OIDC config loaded");
   
   // Keep track of registered strategies for debugging
   const registeredStrategies = new Set<string>();
@@ -184,7 +190,7 @@ export async function setupAuth(app: Express) {
   };
 
   // Register strategy for Replit domains
-  const replitDomains = process.env.REPLIT_DOMAINS!.split(",");
+  const replitDomains = process.env.REPLIT_DOMAINS.split(",");
   console.log("🔑 Registering authentication strategies for domains:", replitDomains);
   
   for (const domain of replitDomains) {
