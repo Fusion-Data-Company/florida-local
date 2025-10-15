@@ -217,17 +217,28 @@ export async function createRedisStore(session: any) {
     });
   }
   
-  // For connect-redis v9, import the entire module
-  const RedisStoreModule = await import("connect-redis");
-  // Try to get the RedisStore - it could be default export or the module itself
-  const RedisStore = RedisStoreModule.default || RedisStoreModule;
+  // Import connect-redis properly for ESM
+  const connectRedis = await import("connect-redis");
+  // Handle both named export and potential variations
+  const RedisStore = (connectRedis as any).RedisStore || (connectRedis as any).default || connectRedis;
   
-  // In v9, RedisStore is a class that can be instantiated directly
-  return new (RedisStore as any)({
-    client: redis,
-    prefix: "sess:",
-    ttl: 86400, // 1 day
-  });
+  // Create the store with the correct constructor
+  if (typeof RedisStore === 'function') {
+    // If it's a function, call it with session
+    const Store = RedisStore(session);
+    return new Store({
+      client: redis,
+      prefix: "sess:",
+      ttl: 86400, // 1 day
+    });
+  } else {
+    // If it's already a class/constructor, instantiate directly
+    return new RedisStore({
+      client: redis,
+      prefix: "sess:",
+      ttl: 86400, // 1 day
+    });
+  }
 }
 
 // Graceful startup - try to connect but don't block the app
