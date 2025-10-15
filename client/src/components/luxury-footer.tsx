@@ -262,27 +262,42 @@ export default function LuxuryFooter() {
           </div>
         </div>
 
-        {/* Newsletter Signup */}
-        <div className="mb-12 p-8 glass-panel footer-marble-newsletter rounded-2xl card-rim-light">
-          <div className="text-center max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold gradient-text text-luxury font-serif mb-4">
-              Stay Connected with Florida's Elite
+        {/* Newsletter Signup - Enhanced with Abstract Styling */}
+        <div className="mb-12 p-8 rounded-2xl relative overflow-hidden group hover-lift transition-all duration-500">
+          {/* Abstract Background Gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-accent/15 to-secondary/20 rounded-2xl"></div>
+          <div className="absolute inset-0 bg-gradient-to-tl from-cyan-500/10 via-transparent to-yellow-500/10 rounded-2xl opacity-50"></div>
+
+          {/* Animated Abstract Shapes */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-primary/30 to-transparent rounded-full blur-3xl opacity-60 group-hover:scale-110 transition-transform duration-700"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-accent/30 to-transparent rounded-full blur-3xl opacity-60 group-hover:scale-110 transition-transform duration-700"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-r from-secondary/20 via-primary/10 to-accent/20 rounded-full blur-3xl opacity-40"></div>
+
+          {/* Glass Panel Overlay */}
+          <div className="absolute inset-0 glass-panel rounded-2xl border border-border/30"></div>
+
+          <div className="relative z-10 text-center max-w-2xl mx-auto">
+            <h3 className="text-2xl md:text-3xl font-bold text-luxury font-serif mb-4 relative">
+              <span className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent drop-shadow-lg">
+                Stay Connected with Florida's Elite
+              </span>
             </h3>
-            <p className="text-muted-foreground mb-6">
+            <p className="text-foreground/90 mb-6 font-medium drop-shadow-sm">
               Get exclusive access to premium businesses, special offers, and insider updates from Florida's luxury marketplace.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 px-4 py-3 rounded-lg glass-panel border-border/30 bg-background/50 focus:border-primary/50 focus:ring-primary/20 transition-all duration-300 text-foreground placeholder:text-muted-foreground"
+                className="flex-1 px-4 py-3 rounded-lg glass-panel border border-border/40 bg-background/80 backdrop-blur-sm focus:border-primary/60 focus:ring-2 focus:ring-primary/30 transition-all duration-300 text-foreground placeholder:text-muted-foreground shadow-md"
                 data-testid="newsletter-email"
               />
               <button
-                className="px-6 py-3 metallic hover-lift btn-press rounded-lg font-semibold transition-all duration-300 shadow-sm"
+                className="px-6 py-3 bg-gradient-to-r from-primary via-accent to-secondary hover:from-primary/90 hover:via-accent/90 hover:to-secondary/90 hover-lift btn-press rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl text-white relative overflow-hidden group/btn"
                 data-testid="newsletter-subscribe"
               >
                 <span className="relative z-10">Subscribe</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700"></div>
               </button>
             </div>
           </div>
