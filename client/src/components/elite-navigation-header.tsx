@@ -88,7 +88,7 @@ export default function EliteNavigationHeader() {
                       href={item.href}
                       className={`elite-nav-item ${isActivePath(item.href) ? 'elite-nav-active' : ''}`}
                       data-testid={item.testId}
-                      style={{ color: 'white' }}
+                      style={{ color: 'white', textShadow: '0 2px 4px rgba(0, 0, 0, 0.8)' }}
                     >
                       <IconComponent />
                       <span>{item.label}</span>
@@ -98,7 +98,7 @@ export default function EliteNavigationHeader() {
 
                 {/* BUSINESS DROPDOWN - FIXED SIZE */}
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="elite-nav-item" style={{ gap: '6px', color: 'white' }}>
+                  <DropdownMenuTrigger className="elite-nav-item" style={{ gap: '6px', color: 'white', textShadow: '0 2px 4px rgba(0, 0, 0, 0.8)' }}>
                     <Building2 style={{ width: '18px', height: '18px' }} />
                     <span>Business</span>
                     <ChevronDown style={{ width: '14px', height: '14px', marginLeft: '-2px' }} />
