@@ -13,8 +13,8 @@ async function seedElite() {
     const [rob] = await db.insert(users).values({
       id: "admin-rob-fusion",
       email: "rob@fusiondataco.com",
-      firstName: "Rob",
-      lastName: "Fusion",
+      firstName: "Robert",
+      lastName: "Yeager",
       isAdmin: true,
     }).onConflictDoUpdate({
       target: users.id,
@@ -25,7 +25,7 @@ async function seedElite() {
       id: "admin-mat-fusion",
       email: "mat@fusiondataco.com",
       firstName: "Mat",
-      lastName: "Fusion",
+      lastName: "Mercado",
       isAdmin: true,
     }).onConflictDoUpdate({
       target: users.id,
@@ -33,6 +33,181 @@ async function seedElite() {
     }).returning();
 
     console.log("✅ Created admin users (rob@fusiondataco.com, mat@fusiondataco.com)");
+
+    // ============================================================================
+    // ROB YEAGER - Entrepreneur Profile & Fusion Data Co
+    // ============================================================================
+    
+    const [robEntrepreneur] = await db.insert(entrepreneurs).values({
+      userId: rob.id,
+      firstName: "Robert",
+      lastName: "Yeager",
+      tagline: "Workflow Automation Architect & Lead Generation Strategist",
+      bio: "Transforming Sales Operations Through Intelligent Automation | Helping Companies Scale Revenue Without Scaling Headcount",
+      story: `Results-driven workflow automation architect with 15+ years of experience engineering revenue-generating systems for scaling businesses. Specializes in designing sophisticated lead generation pipelines, sales automation frameworks, and AI-powered business intelligence solutions.
+
+Philosophy: "The best sales team is the one that never sleeps. Automation doesn't replace humans—it amplifies them."
+
+Professional Journey:
+• Founded Fusion Data Co (2020) - architected 200+ automated workflows generating $50M+ in attributed revenue
+• Senior Workflow Consultant (2015-2020) - consulted for 40+ companies on sales automation strategy
+• Sales Operations Manager (2010-2015) - managed sales tech stack for 50+ rep teams
+
+Location-independent operations from custom RV workspace ("The MotherShip"), advocating for remote-first, automation-driven business models.`,
+      location: "Sacramento, CA (Remote/Mobile RV-based)",
+      website: "https://fusiondataco.com",
+      yearsExperience: 15,
+      specialties: [
+        "Workflow Automation (N8N, Make.com, Zapier)",
+        "Multi-channel Lead Generation",
+        "CRM Optimization & Sales Funnel Engineering",
+        "AI Agent Development & Voice Automation",
+        "Full-stack Integration (APIs, Webhooks)",
+        "Data Enrichment & Attribution Modeling"
+      ],
+      achievements: [
+        "Architected 200+ automated workflows generating $50M+ in attributed revenue",
+        "Developed proprietary lead scoring algorithms improving efficiency by 340%",
+        "Built AI-powered voice agents processing 10K+ qualification calls monthly",
+        "Reduced client CAC by average of 62% through automation optimization",
+        "Enabled 3-person sales teams to perform at 15-person capacity",
+        "N8N Certified Workflow Developer",
+        "Make.com Advanced Automation Specialist",
+        "10,000+ hours in automation engineering"
+      ],
+      socialLinks: {
+        website: "https://fusiondataco.com",
+        linkedin: "robert-yeager-automation",
+        twitter: "@FusionDataCo",
+        github: "/FusionDataCo"
+      },
+      isVerified: true,
+      isFeatured: true,
+      followerCount: 850,
+    }).onConflictDoUpdate({
+      target: entrepreneurs.userId,
+      set: { updatedAt: new Date() }
+    }).returning();
+
+    const [fusionDataCo] = await db.insert(businesses).values({
+      ownerId: rob.id,
+      name: "Fusion Data Co",
+      tagline: "Where Automation Meets Revenue Intelligence",
+      description: `Premier workflow automation and revenue intelligence firm that transforms how businesses generate, qualify, and convert leads. We architect sophisticated automation systems that enable small sales teams to perform at enterprise scale.
+
+Mission: Democratize enterprise-grade automation for growing businesses. Every company deserves sales infrastructure that works 24/7/365.
+
+What Makes Us Different:
+• Zero-fluff implementations - every workflow drives measurable ROI
+• Proprietary frameworks from 200+ successful deployments
+• AI-native approach integrating LLMs into every automation layer
+• White-glove service with direct founder involvement
+• Rapid deployment cycles (weeks, not months)
+
+Services: Lead Generation Architecture, Sales Automation Engineering, AI Agent Development, System Integration & Migration, Training & Enablement
+
+Target Markets: B2B SaaS, Solar/Renewable Energy, Real Estate Technology, Professional Services, E-commerce
+
+Results: $50M+ in attributed client revenue, 98% client retention, 4.9/5 satisfaction score`,
+      category: "Business Automation & AI Solutions",
+      location: "Sacramento, CA (Remote-First)",
+      address: "Remote Operations - Mobile RV Workspace",
+      phone: "(916) 555-DATA",
+      website: "https://fusiondataco.com",
+      email: "support@fusiondataco.com",
+      isVerified: true,
+      isActive: true,
+      rating: "4.9",
+      reviewCount: 127,
+      followerCount: 1200,
+      postCount: 89,
+      socialLinks: {
+        website: "https://fusiondataco.com",
+        linkedin: "/company/fusion-data-co",
+        twitter: "@FusionDataCo",
+        github: "/FusionDataCo"
+      },
+      operatingHours: {
+        monday: "9:00 AM - 6:00 PM PT",
+        tuesday: "9:00 AM - 6:00 PM PT",
+        wednesday: "9:00 AM - 6:00 PM PT",
+        thursday: "9:00 AM - 6:00 PM PT",
+        friday: "9:00 AM - 6:00 PM PT",
+        saturday: "Closed",
+        sunday: "Closed"
+      }
+    }).onConflictDoUpdate({
+      target: businesses.id,
+      set: { updatedAt: new Date() }
+    }).returning();
+
+    await db.insert(entrepreneurBusinesses).values({
+      entrepreneurId: robEntrepreneur.id,
+      businessId: fusionDataCo.id,
+      role: "Founder & Chief Automation Officer",
+      equityPercentage: "50.00",
+      isCurrent: true,
+      isPublic: true,
+    }).onConflictDoNothing();
+
+    console.log("✅ Created Rob Yeager entrepreneur profile & Fusion Data Co business");
+
+    // ============================================================================
+    // MAT MERCADO - Co-Founder of Fusion Data Co
+    // ============================================================================
+
+    const [matEntrepreneur] = await db.insert(entrepreneurs).values({
+      userId: mat.id,
+      firstName: "Mat",
+      lastName: "Mercado",
+      tagline: "Co-Founder & Automation Strategist at Fusion Data Co",
+      bio: "Co-Founder at Fusion Data Co, specializing in sales automation and revenue intelligence. Helping businesses transform their operations through intelligent workflow automation and AI-powered solutions.",
+      story: `Mat Mercado is Co-Founder of Fusion Data Co, working alongside Rob Yeager to democratize enterprise-grade automation for growing businesses. With deep expertise in sales operations and process optimization, Mat helps clients design and implement automation systems that drive measurable ROI.
+
+Mat's focus is on translating complex business requirements into elegant automation solutions that scale. He specializes in CRM optimization, multi-channel outbound strategies, and building AI-native architectures that integrate LLMs at every workflow layer.
+
+His approach combines technical expertise with strategic thinking, ensuring every automation drives real business value. Mat believes that automation should amplify human capabilities, not replace them, and works directly with clients to ensure successful implementations and ongoing optimization.`,
+      location: "Remote",
+      website: "https://fusiondataco.com",
+      yearsExperience: 10,
+      specialties: [
+        "Sales Automation Strategy",
+        "CRM Optimization",
+        "Process Engineering",
+        "AI Integration",
+        "Revenue Operations",
+        "Client Success & Implementation"
+      ],
+      achievements: [
+        "Co-Founded Fusion Data Co (2020)",
+        "200+ successful automation deployments",
+        "Expert in sales operations scaling",
+        "Strategic automation consulting",
+        "AI-native workflow architecture"
+      ],
+      socialLinks: {
+        website: "https://fusiondataco.com",
+        email: "mat@fusiondataco.com"
+      },
+      isVerified: true,
+      isFeatured: true,
+      followerCount: 680,
+    }).onConflictDoUpdate({
+      target: entrepreneurs.userId,
+      set: { updatedAt: new Date() }
+    }).returning();
+
+    // Link Mat to Fusion Data Co
+    await db.insert(entrepreneurBusinesses).values({
+      entrepreneurId: matEntrepreneur.id,
+      businessId: fusionDataCo.id,
+      role: "Co-Founder & Automation Strategist",
+      equityPercentage: "50.00",
+      isCurrent: true,
+      isPublic: true,
+    }).onConflictDoNothing();
+
+    console.log("✅ Created Mat Mercado entrepreneur profile & linked to Fusion Data Co");
 
     // ============================================================================
     // 1. JASON PEREZ - The Insurance School
@@ -409,6 +584,49 @@ async function seedElite() {
     // ============================================================================
     // PRODUCTS/SERVICES FOR EACH BUSINESS
     // ============================================================================
+
+    // Rob Yeager - Fusion Data Co Services
+    await db.insert(products).values([
+      {
+        businessId: fusionDataCo.id,
+        name: "Lead Generation Architecture Sprint",
+        description: "2-week intensive sprint to design and deploy your multi-channel lead generation system. Includes discovery workshop, workflow design, implementation, and training. Typical ROI: 300%+ in 90 days.",
+        price: "7500.00",
+        category: "Automation Services",
+        isActive: true,
+        isDigital: true,
+        inventory: 10,
+        tags: ["Lead Generation", "Automation", "Multi-Channel", "Outbound", "Sprint"],
+        rating: "5.0",
+        reviewCount: 42
+      },
+      {
+        businessId: fusionDataCo.id,
+        name: "AI Voice Agent Development",
+        description: "Custom AI-powered voice qualification bot using ElevenLabs technology. Handles inbound qualification calls 24/7, books meetings, and routes hot leads to your team. Processes 1,000+ calls monthly.",
+        price: "12000.00",
+        category: "AI Solutions",
+        isActive: true,
+        isDigital: true,
+        inventory: 5,
+        tags: ["AI", "Voice Agent", "ElevenLabs", "Qualification", "24/7"],
+        rating: "5.0",
+        reviewCount: 28
+      },
+      {
+        businessId: fusionDataCo.id,
+        name: "Sales Automation Retainer",
+        description: "Monthly ongoing optimization and support for your automation infrastructure. Includes workflow maintenance, new feature development, performance optimization, and strategic consulting.",
+        price: "3500.00",
+        category: "Monthly Retainer",
+        isActive: true,
+        isDigital: true,
+        inventory: 999,
+        tags: ["Retainer", "Support", "Optimization", "Consulting", "Ongoing"],
+        rating: "4.9",
+        reviewCount: 67
+      }
+    ]).onConflictDoNothing();
 
     // Jason Perez - The Insurance School Products
     await db.insert(products).values([
