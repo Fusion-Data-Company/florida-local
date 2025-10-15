@@ -287,27 +287,32 @@ export class DatabaseStorage implements IStorage {
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
-    // Check if user exists and is admin
-    const existingUser = await db
+    // Check if email matches an admin user (preserve admin status during Replit auth)
+    const existingAdminByEmail = await db
       .select()
       .from(users)
       .where(eq(users.email, userData.email))
       .limit(1);
     
-    // If user is admin, preserve their existing data (don't overwrite with Replit auth data)
-    if (existingUser[0]?.isAdmin) {
-      return existingUser[0];
-    }
+    // If this email belongs to an admin, preserve admin status and use better profile data
+    const isAdminEmail = existingAdminByEmail[0]?.isAdmin === true;
     
-    // For non-admin users, proceed with normal upsert
     const [user] = await db
       .insert(users)
-      .values(userData)
+      .values({
+        ...userData,
+        isAdmin: isAdminEmail || userData.isAdmin, // Preserve admin status
+        // If admin, use existing name data instead of Replit data
+        firstName: isAdminEmail && existingAdminByEmail[0]?.firstName ? existingAdminByEmail[0].firstName : userData.firstName,
+        lastName: isAdminEmail && existingAdminByEmail[0]?.lastName ? existingAdminByEmail[0].lastName : userData.lastName,
+      })
       .onConflictDoUpdate({
-        target: users.email,
+        target: users.id,
         set: {
-          firstName: userData.firstName,
-          lastName: userData.lastName,
+          email: userData.email,
+          // Only update name if not admin, or if admin data is missing
+          firstName: isAdminEmail && existingAdminByEmail[0]?.firstName ? existingAdminByEmail[0].firstName : userData.firstName,
+          lastName: isAdminEmail && existingAdminByEmail[0]?.lastName ? existingAdminByEmail[0].lastName : userData.lastName,
           profileImageUrl: userData.profileImageUrl,
           updatedAt: new Date(),
         },

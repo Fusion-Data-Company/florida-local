@@ -60,7 +60,7 @@ export default function Landing() {
                 <div className="absolute -inset-1 bg-gradient-to-br from-primary/40 via-primary/20 to-transparent rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                 <div className="relative bg-card/95 backdrop-blur-xl border border-border/50 p-8 rounded-2xl hover-lift shadow-luxury-multi transition-all duration-500 group-hover:border-primary/30 group-hover:shadow-primary/20">
-                  <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-elevated ambient-glow-orange">
+                  <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg border-2 border-orange-400/30" style={{boxShadow: '0 8px 20px rgba(249, 115, 22, 0.4), inset 0 1px 0 rgba(255,255,255,0.3)'}}>
                     <Store className="text-white" size={32} />
                   </div>
                   <h3 className="text-2xl font-bold mb-4 text-white" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>Rich Business Profiles</h3>
@@ -72,7 +72,7 @@ export default function Landing() {
                 <div className="absolute -inset-1 bg-gradient-to-br from-secondary/40 via-secondary/20 to-transparent rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                 <div className="relative bg-card/95 backdrop-blur-xl border border-border/50 p-8 rounded-2xl hover-lift shadow-luxury-multi transition-all duration-500 group-hover:border-secondary/30 group-hover:shadow-secondary/20">
-                  <div className="w-20 h-20 bg-gradient-to-br from-secondary to-secondary/80 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-elevated ambient-glow-teal">
+                  <div className="w-20 h-20 bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg border-2 border-teal-400/30" style={{boxShadow: '0 8px 20px rgba(20, 184, 166, 0.4), inset 0 1px 0 rgba(255,255,255,0.3)'}}>
                     <ShoppingCart className="text-white" size={32} />
                   </div>
                   <h3 className="text-2xl font-bold mb-4 text-white" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>E-Commerce Integration</h3>
@@ -84,7 +84,7 @@ export default function Landing() {
                 <div className="absolute -inset-1 bg-gradient-to-br from-accent/40 via-accent/20 to-transparent rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                 <div className="relative bg-card/95 backdrop-blur-xl border border-border/50 p-8 rounded-2xl hover-lift shadow-luxury-multi transition-all duration-500 group-hover:border-accent/30 group-hover:shadow-accent/20">
-                  <div className="w-20 h-20 bg-gradient-to-br from-accent to-accent/80 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-elevated ambient-glow-purple">
+                  <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg border-2 border-purple-400/30" style={{boxShadow: '0 8px 20px rgba(168, 85, 247, 0.4), inset 0 1px 0 rgba(255,255,255,0.3)'}}>
                     <Users className="text-white" size={32} />
                   </div>
                   <h3 className="text-2xl font-bold mb-4 text-white" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>Community Network</h3>
