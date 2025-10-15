@@ -70,30 +70,11 @@ export default function UserProfile() {
 
     setIsRouting(true);
 
-    // Determine user profile type and route accordingly
+    // Route all users to Discover page (home)
     const routeUser = async () => {
       try {
-        // Priority 1: Admin users
-        if (user?.isAdmin) {
-          navigate("/admin");
-          return;
-        }
-
-        // Priority 2: Business owners
-        if (userBusinesses && userBusinesses.length > 0) {
-          // Multiple businesses - go to business dashboard
-          navigate("/business-dashboard");
-          return;
-        }
-
-        // Priority 3: Users with loyalty accounts (any account, not just with points)
-        if (loyaltyAccount) {
-          navigate("/loyalty");
-          return;
-        }
-
-        // Priority 4: New users - encourage business creation
-        navigate("/create-business");
+        // Everyone starts on the Discover page
+        navigate("/");
       } catch (error) {
         console.error("Error routing user:", error);
         // Default to home on error
