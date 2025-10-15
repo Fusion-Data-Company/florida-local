@@ -169,7 +169,7 @@ export async function setupAuth(app: Express) {
     await upsertUser(claims);
     
     // Get the actual database user (which may have a different ID than Replit)
-    const dbUser = await storage.getUserByEmail(claims["email"]);
+    const dbUser = await storage.getUserByEmail(claims?.["email"]);
     
     if (!dbUser) {
       return verified(new Error("User not found in database"));
@@ -194,9 +194,27 @@ export async function setupAuth(app: Express) {
   console.log("🔑 Registering authentication strategies for domains:", replitDomains);
   
   // Always ensure production domain is registered
-  const additionalDomains = ['florida-local.replit.app'];
+  // Handle both .replit.dev (development) and .replit.app (production) domains
+  const additionalDomains: string[] = [];
+  
+  // For each .replit.dev domain, also register the corresponding .replit.app domain
+  for (const domain of replitDomains) {
+    if (domain.includes('.replit.dev')) {
+      // Extract the repl ID and create the .replit.app version
+      const replId = domain.split('-00-')[0];
+      if (replId) {
+        // Add the production .replit.app domain
+        additionalDomains.push(`${replId}.replit.app`);
+        // Also add florida-local.replit.app for backward compatibility
+        if (!additionalDomains.includes('florida-local.replit.app')) {
+          additionalDomains.push('florida-local.replit.app');
+        }
+      }
+    }
+  }
   
   const allDomains = [...replitDomains, ...additionalDomains];
+  console.log("🔑 Registering strategies for all domains:", allDomains);
   
   for (const domain of allDomains) {
     const trimmedDomain = domain.trim();
@@ -221,7 +239,8 @@ export async function setupAuth(app: Express) {
       console.log(`✅ Registered strategy: ${strategyName}`);
     } catch (strategyError) {
       console.error(`❌ Failed to register strategy ${strategyName}:`, strategyError);
-      throw strategyError; // Re-throw to fail the whole setup
+      // Don't throw, just log the error and continue with other strategies
+      console.error(`⚠️ Continuing with other strategies...`);
     }
   }
 
@@ -304,7 +323,7 @@ export async function setupAuth(app: Express) {
     })(req, res, next);
   });
 
-  app.get("/api/callback", (req, res, next) => {
+  app.get("/api/callback", async (req, res, next) => {
     const hostname = req.hostname;
     const strategyName = `replitauth:${hostname}`;
     
@@ -336,9 +355,53 @@ export async function setupAuth(app: Express) {
       }
     }
     
-    passport.authenticate(strategyName, {
-      successReturnToOrRedirect: "/",
-      failureRedirect: "/api/login",
+    // Use custom callback to handle post-authentication routing
+    passport.authenticate(strategyName, async (err: any, user: any, info: any) => {
+      if (err) {
+        console.error("❌ Authentication error:", err);
+        return res.redirect("/api/login");
+      }
+      
+      if (!user) {
+        console.error("❌ Authentication failed - no user");
+        return res.redirect("/api/login");
+      }
+      
+      // Log the user in
+      req.login(user, async (loginErr) => {
+        if (loginErr) {
+          console.error("❌ Login error:", loginErr);
+          return res.redirect("/api/login");
+        }
+        
+        // Get user profile to determine redirect
+        try {
+          const userId = user.claims?.sub;
+          if (userId) {
+            const dbUser = await storage.getUser(userId);
+            
+            // Route based on user type/profile
+            if (dbUser?.isAdmin) {
+              return res.redirect("/admin");
+            } else {
+              // Check if user has businesses
+              const businesses = await storage.getBusinessesByOwner(userId);
+              if (businesses && businesses.length > 0) {
+                // If they have businesses, go to business dashboard
+                return res.redirect("/business-dashboard");
+              } else {
+                // Otherwise go to home page
+                return res.redirect("/");
+              }
+            }
+          }
+        } catch (profileError) {
+          console.error("⚠️ Error determining user profile:", profileError);
+        }
+        
+        // Default redirect to home
+        return res.redirect("/");
+      });
     })(req, res, next);
   });
 
