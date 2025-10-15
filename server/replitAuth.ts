@@ -205,9 +205,9 @@ export async function setupAuth(app: Express) {
       if (replId) {
         // Add the production .replit.app domain
         additionalDomains.push(`${replId}.replit.app`);
-        // Also add florida-local.replit.app for backward compatibility
-        if (!additionalDomains.includes('florida-local.replit.app')) {
-          additionalDomains.push('florida-local.replit.app');
+        // Add florida-local-elite.replit.app as the production domain
+        if (!additionalDomains.includes('florida-local-elite.replit.app')) {
+          additionalDomains.push('florida-local-elite.replit.app');
         }
       }
     }
