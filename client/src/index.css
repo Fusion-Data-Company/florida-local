@@ -3,7 +3,34 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  /* Prevent horizontal scrolling across the entire platform */
+  html,
+  body {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
+  /* Ensure root div also respects width constraints */
+  #root {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+}
+
 @layer utilities {
+  /* Prevent horizontal overflow utilities */
+  .no-horizontal-scroll {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
+  .container-safe {
+    overflow-x: hidden;
+    max-width: 100vw;
+    box-sizing: border-box;
+  }
+
   /* PREMIUM CLEAR GLASS EFFECT - High-End Frosted Glass Over Abstracts */
   .abstract-glass-premium {
     position: relative;
