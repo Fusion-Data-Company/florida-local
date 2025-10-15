@@ -193,29 +193,36 @@ export async function setupAuth(app: Express) {
   const replitDomains = process.env.REPLIT_DOMAINS.split(",");
   console.log("🔑 Registering authentication strategies for domains:", replitDomains);
   
-  // Add common production domains that might not be in REPLIT_DOMAINS
-  const additionalDomains = [];
-  if (process.env.NODE_ENV === 'production' && !replitDomains.some(d => d.includes('.replit.app'))) {
-    additionalDomains.push('florida-local.replit.app');
-  }
+  // Always ensure production domain is registered
+  const additionalDomains = ['florida-local.replit.app'];
   
   const allDomains = [...replitDomains, ...additionalDomains];
   
   for (const domain of allDomains) {
     const trimmedDomain = domain.trim();
+    if (!trimmedDomain) {
+      console.warn(`⚠️ Skipping empty domain`);
+      continue;
+    }
     const strategyName = `replitauth:${trimmedDomain}`;
-    const strategy = new Strategy(
-      {
-        name: strategyName,
-        config,
-        scope: "openid email profile offline_access",
-        callbackURL: `https://${trimmedDomain}/api/callback`,
-      },
-      verify,
-    );
-    passport.use(strategy);
-    registeredStrategies.add(strategyName);
-    console.log(`✅ Registered strategy: ${strategyName}`);
+    console.log(`🔧 Attempting to register strategy: ${strategyName}`);
+    try {
+      const strategy = new Strategy(
+        {
+          name: strategyName,
+          config,
+          scope: "openid email profile offline_access",
+          callbackURL: `https://${trimmedDomain}/api/callback`,
+        },
+        verify,
+      );
+      passport.use(strategy);
+      registeredStrategies.add(strategyName);
+      console.log(`✅ Registered strategy: ${strategyName}`);
+    } catch (strategyError) {
+      console.error(`❌ Failed to register strategy ${strategyName}:`, strategyError);
+      throw strategyError; // Re-throw to fail the whole setup
+    }
   }
 
   // Also register strategy for localhost development
