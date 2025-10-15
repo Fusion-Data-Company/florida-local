@@ -2741,7 +2741,7 @@ export const socialTokens = pgTable("social_tokens", {
 export const socialPosts = pgTable("social_posts", {
   id: text("id").primaryKey(),
   socialAccountId: text("social_account_id").notNull().references(() => socialAccounts.id),
-  businessId: text("business_id").references(() => businesses.id),
+  businessId: uuid("business_id").references(() => businesses.id),
   platformPostId: text("platform_post_id"), // ID on the social platform
   platform: text("platform").notNull(),
   postType: text("post_type").notNull(), // post, story, reel, video, etc.
@@ -2908,12 +2908,309 @@ export const premiumAdSlots = pgTable("premium_ad_slots", {
   index("premium_slots_order_idx").on(table.displayOrder),
 ]);
 
+// ============================================================================
+// AI CHAT ASSISTANT SYSTEM - Enterprise-Grade Conversational AI
+// ============================================================================
+
+// Chat conversations - Main conversation threads
+export const chatConversations = pgTable("chat_conversations", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  sessionId: varchar("session_id", { length: 100 }).notNull(), // Browser session ID
+  title: varchar("title", { length: 255 }), // Auto-generated from first message
+  status: varchar("status", { length: 20 }).default("active").notNull(), // active, resolved, escalated, archived
+  channel: varchar("channel", { length: 50 }).default("widget").notNull(), // widget, mobile, api, sms
+  businessId: uuid("business_id").references(() => businesses.id, { onDelete: "set null" }), // If discussing specific business
+
+  // Context & Metadata
+  metadata: jsonb("metadata"), // { page, referrer, utmParams, deviceInfo, etc. }
+  tags: jsonb("tags").$type<string[]>().default(sql`'[]'::jsonb`), // ["support", "billing", "product-inquiry"]
+  intent: varchar("intent", { length: 50 }), // question, complaint, booking, purchase, feedback
+  sentiment: varchar("sentiment", { length: 20 }), // positive, neutral, negative, frustrated
+  language: varchar("language", { length: 10 }).default("en"), // ISO language code
+
+  // Analytics
+  messageCount: integer("message_count").default(0),
+  satisfactionScore: integer("satisfaction_score"), // 1-5 rating
+  satisfactionComment: text("satisfaction_comment"),
+  resolved: boolean("resolved").default(false),
+  resolvedAt: timestamp("resolved_at"),
+  resolutionTime: integer("resolution_time"), // Seconds from start to resolution
+
+  // Human handoff
+  escalated: boolean("escalated").default(false),
+  escalatedAt: timestamp("escalated_at"),
+  escalatedTo: varchar("escalated_to").references(() => users.id), // Support agent
+  escalationReason: text("escalation_reason"),
+
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  lastMessageAt: timestamp("last_message_at").defaultNow().notNull(),
+}, (table) => [
+  index("chat_conversations_user_idx").on(table.userId),
+  index("chat_conversations_session_idx").on(table.sessionId),
+  index("chat_conversations_status_idx").on(table.status),
+  index("chat_conversations_created_idx").on(table.createdAt),
+  index("chat_conversations_business_idx").on(table.businessId),
+  index("chat_conversations_escalated_idx").on(table.escalated, table.escalatedTo),
+]);
+
+// Chat messages - Individual messages in conversations
+export const chatMessages = pgTable("chat_messages", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  conversationId: uuid("conversation_id").notNull().references(() => chatConversations.id, { onDelete: "cascade" }),
+  role: varchar("role", { length: 20 }).notNull(), // user, assistant, system, agent
+  content: text("content").notNull(),
+
+  // Rich message features
+  messageType: varchar("message_type", { length: 50 }).default("text"), // text, card, carousel, quick_reply, file
+  attachments: jsonb("attachments"), // [{ type, url, name, size }]
+  metadata: jsonb("metadata"), // For rich cards, buttons, actions
+
+  // AI-specific fields
+  model: varchar("model", { length: 50 }), // gpt-4, gpt-3.5-turbo, claude-3
+  tokens: integer("tokens"), // Token usage for cost tracking
+  latency: integer("latency"), // Response time in milliseconds
+  temperature: decimal("temperature", { precision: 3, scale: 2 }), // Model temperature used
+
+  // Context & Analysis
+  intent: varchar("intent", { length: 50 }), // Detected intent
+  sentiment: varchar("sentiment", { length: 20 }), // Message-level sentiment
+  entities: jsonb("entities"), // Extracted entities: {orderNumber, businessName, date, etc.}
+  knowledgeBaseUsed: boolean("knowledge_base_used").default(false),
+  knowledgeBaseArticles: jsonb("knowledge_base_articles").$type<string[]>(), // Article IDs used
+
+  // Feedback & Quality
+  helpful: boolean("helpful"), // User feedback: thumbs up/down
+  feedbackComment: text("feedback_comment"),
+  flagged: boolean("flagged").default(false), // For review
+  flagReason: text("flag_reason"),
+
+  // Status
+  status: varchar("status", { length: 20 }).default("sent"), // pending, sent, delivered, read, failed
+  errorMessage: text("error_message"), // If failed
+
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  readAt: timestamp("read_at"),
+}, (table) => [
+  index("chat_messages_conversation_idx").on(table.conversationId),
+  index("chat_messages_created_idx").on(table.createdAt),
+  index("chat_messages_role_idx").on(table.role),
+  index("chat_messages_flagged_idx").on(table.flagged),
+]);
+
+// Chat knowledge base - FAQ and support articles for RAG
+export const chatKnowledgeBase = pgTable("chat_knowledge_base", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  category: varchar("category", { length: 100 }).notNull(), // products, billing, shipping, account, etc.
+  subcategory: varchar("subcategory", { length: 100 }),
+
+  // Content
+  question: text("question").notNull(), // The question or topic
+  answer: text("answer").notNull(), // The answer/content
+  alternativeQuestions: jsonb("alternative_questions").$type<string[]>(), // Different ways to ask
+  keywords: jsonb("keywords").$type<string[]>(), // For matching
+
+  // SEO & Metadata
+  title: varchar("title", { length: 255 }), // Display title
+  slug: varchar("slug", { length: 255 }).unique(),
+  summary: text("summary"), // Short summary
+  relatedArticles: jsonb("related_articles").$type<string[]>(), // Related article IDs
+  externalLinks: jsonb("external_links"), // [{ title, url }]
+
+  // Vector embeddings for semantic search
+  embedding: text("embedding"), // JSON stringified vector (or use pgvector extension)
+  embeddingModel: varchar("embedding_model", { length: 50 }), // text-embedding-ada-002
+
+  // Usage analytics
+  viewCount: integer("view_count").default(0),
+  useCount: integer("use_count").default(0), // Times used in chat responses
+  helpfulCount: integer("helpful_count").default(0),
+  notHelpfulCount: integer("not_helpful_count").default(0),
+
+  // Management
+  isActive: boolean("is_active").default(true),
+  priority: integer("priority").default(0), // Higher = shown first
+  createdBy: varchar("created_by").references(() => users.id),
+  lastEditedBy: varchar("last_edited_by").references(() => users.id),
+
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("chat_kb_category_idx").on(table.category),
+  index("chat_kb_active_idx").on(table.isActive),
+  index("chat_kb_priority_idx").on(table.priority),
+  index("chat_kb_slug_idx").on(table.slug),
+]);
+
+// Chat sessions - Browser/device sessions for context
+export const chatSessions = pgTable("chat_sessions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  sessionId: varchar("session_id", { length: 100 }).notNull().unique(),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "set null" }), // Null for anonymous
+
+  // Device & Browser Info
+  deviceInfo: jsonb("device_info"), // { browser, os, device, screen }
+  ipAddress: varchar("ip_address", { length: 45 }),
+  userAgent: text("user_agent"),
+  location: jsonb("location"), // { country, region, city, timezone }
+
+  // Context
+  initialPage: varchar("initial_page", { length: 500 }), // Landing page
+  referrer: varchar("referrer", { length: 500 }),
+  utmParams: jsonb("utm_params"), // UTM tracking parameters
+
+  // Activity tracking
+  pageViews: jsonb("page_views").$type<Array<{ page: string; timestamp: string }>>(),
+  lastActivity: timestamp("last_activity").defaultNow().notNull(),
+  isActive: boolean("is_active").default(true),
+
+  // Engagement
+  conversationCount: integer("conversation_count").default(0),
+  messagesSent: integer("messages_sent").default(0),
+  avgResponseTime: integer("avg_response_time"), // Milliseconds
+
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  expiresAt: timestamp("expires_at"), // Session expiry
+}, (table) => [
+  index("chat_sessions_session_id_idx").on(table.sessionId),
+  index("chat_sessions_user_idx").on(table.userId),
+  index("chat_sessions_active_idx").on(table.isActive),
+  index("chat_sessions_last_activity_idx").on(table.lastActivity),
+]);
+
+// Chat analytics - Aggregated metrics for reporting
+export const chatAnalytics = pgTable("chat_analytics", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  conversationId: uuid("conversation_id").notNull().references(() => chatConversations.id, { onDelete: "cascade" }),
+
+  // Conversation metrics
+  duration: integer("duration").notNull(), // Total conversation time in seconds
+  messageCount: integer("message_count").notNull(),
+  userMessageCount: integer("user_message_count").notNull(),
+  assistantMessageCount: integer("assistant_message_count").notNull(),
+
+  // Response times
+  avgResponseTime: integer("avg_response_time"), // Average AI response time (ms)
+  minResponseTime: integer("min_response_time"),
+  maxResponseTime: integer("max_response_time"),
+
+  // AI metrics
+  totalTokens: integer("total_tokens"),
+  totalCost: decimal("total_cost", { precision: 10, scale: 4 }), // USD
+  modelsUsed: jsonb("models_used").$type<string[]>(),
+
+  // Quality metrics
+  sentimentProgression: jsonb("sentiment_progression"), // Track sentiment over time
+  intentChanges: integer("intent_changes"), // How many times intent changed
+  knowledgeBaseHitRate: decimal("kb_hit_rate", { precision: 5, scale: 2 }), // % of answers from KB
+
+  // Outcomes
+  resolved: boolean("resolved").notNull(),
+  escalated: boolean("escalated").notNull(),
+  satisfactionScore: integer("satisfaction_score"),
+  conversionEvent: varchar("conversion_event", { length: 100 }), // signup, purchase, demo_booked
+  conversionValue: decimal("conversion_value", { precision: 10, scale: 2 }),
+
+  // Context
+  peakHour: integer("peak_hour"), // Hour of day (0-23)
+  dayOfWeek: integer("day_of_week"), // 0-6
+
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("chat_analytics_conversation_idx").on(table.conversationId),
+  index("chat_analytics_created_idx").on(table.createdAt),
+  index("chat_analytics_resolved_idx").on(table.resolved),
+]);
+
+// Chat quick actions - Pre-configured action buttons
+export const chatQuickActions = pgTable("chat_quick_actions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+
+  // Action config
+  label: varchar("label", { length: 100 }).notNull(), // "Book Demo", "Contact Sales"
+  actionType: varchar("action_type", { length: 50 }).notNull(), // navigate, api_call, modal, email
+  actionPayload: jsonb("action_payload").notNull(), // { url, endpoint, modalId, etc. }
+
+  // Display
+  icon: varchar("icon", { length: 50 }), // Lucide icon name
+  variant: varchar("variant", { length: 20 }).default("default"), // default, primary, outline
+  description: text("description"),
+
+  // Targeting
+  showOnPages: jsonb("show_on_pages").$type<string[]>(), // Pages where this action appears
+  showForIntents: jsonb("show_for_intents").$type<string[]>(), // Show for specific intents
+  requiresAuth: boolean("requires_auth").default(false),
+
+  // Analytics
+  clickCount: integer("click_count").default(0),
+  conversionCount: integer("conversion_count").default(0),
+
+  // Management
+  displayOrder: integer("display_order").default(0),
+  isActive: boolean("is_active").default(true),
+
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("chat_quick_actions_active_idx").on(table.isActive),
+  index("chat_quick_actions_order_idx").on(table.displayOrder),
+]);
+
+// Chat proactive triggers - Rules for proactive engagement
+export const chatProactiveTriggers = pgTable("chat_proactive_triggers", {
+  id: uuid("id").primaryKey().defaultRandom(),
+
+  // Trigger config
+  name: varchar("name", { length: 100 }).notNull(),
+  description: text("description"),
+  triggerType: varchar("trigger_type", { length: 50 }).notNull(), // time_on_page, scroll_depth, exit_intent, cart_abandon, error_404
+
+  // Conditions
+  conditions: jsonb("conditions").notNull(), // { pages, minTime, scrollPercent, etc. }
+  message: text("message").notNull(), // The proactive message to show
+  quickReplies: jsonb("quick_replies").$type<string[]>(), // Suggested responses
+
+  // Targeting
+  targetPages: jsonb("target_pages").$type<string[]>(),
+  requiresAuth: boolean("requires_auth").default(false),
+  excludeIfConversationExists: boolean("exclude_if_conversation_exists").default(true),
+
+  // Frequency control
+  maxShowsPerSession: integer("max_shows_per_session").default(1),
+  cooldownMinutes: integer("cooldown_minutes").default(60),
+
+  // Analytics
+  showCount: integer("show_count").default(0),
+  engagementCount: integer("engagement_count").default(0),
+  engagementRate: decimal("engagement_rate", { precision: 5, scale: 2 }),
+
+  // Management
+  priority: integer("priority").default(0),
+  isActive: boolean("is_active").default(true),
+
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("chat_proactive_active_idx").on(table.isActive),
+  index("chat_proactive_priority_idx").on(table.priority),
+]);
+
 // Insert schemas
 export const insertAdminRoleSchema = createInsertSchema(adminRoles);
 export const insertUserRoleSchema = createInsertSchema(userRoles);
 export const insertAdminAuditLogSchema = createInsertSchema(adminAuditLogs);
 export const insertErrorLogSchema = createInsertSchema(errorLogs);
 export const insertPremiumAdSlotSchema = createInsertSchema(premiumAdSlots);
+
+// Chat system insert schemas
+export const insertChatConversationSchema = createInsertSchema(chatConversations);
+export const insertChatMessageSchema = createInsertSchema(chatMessages);
+export const insertChatKnowledgeBaseSchema = createInsertSchema(chatKnowledgeBase);
+export const insertChatSessionSchema = createInsertSchema(chatSessions);
+export const insertChatAnalyticsSchema = createInsertSchema(chatAnalytics);
+export const insertChatQuickActionSchema = createInsertSchema(chatQuickActions);
+export const insertChatProactiveTriggerSchema = createInsertSchema(chatProactiveTriggers);
 
 // TypeScript types
 export type PremiumAdSlot = typeof premiumAdSlots.$inferSelect;
@@ -2927,3 +3224,19 @@ export type AdminAuditLog = typeof adminAuditLogs.$inferSelect;
 export type InsertAdminAuditLog = z.infer<typeof insertAdminAuditLogSchema>;
 export type ErrorLog = typeof errorLogs.$inferSelect;
 export type InsertErrorLog = z.infer<typeof insertErrorLogSchema>;
+
+// Chat system TypeScript types
+export type ChatConversation = typeof chatConversations.$inferSelect;
+export type InsertChatConversation = z.infer<typeof insertChatConversationSchema>;
+export type ChatMessage = typeof chatMessages.$inferSelect;
+export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
+export type ChatKnowledgeBase = typeof chatKnowledgeBase.$inferSelect;
+export type InsertChatKnowledgeBase = z.infer<typeof insertChatKnowledgeBaseSchema>;
+export type ChatSession = typeof chatSessions.$inferSelect;
+export type InsertChatSession = z.infer<typeof insertChatSessionSchema>;
+export type ChatAnalytics = typeof chatAnalytics.$inferSelect;
+export type InsertChatAnalytics = z.infer<typeof insertChatAnalyticsSchema>;
+export type ChatQuickAction = typeof chatQuickActions.$inferSelect;
+export type InsertChatQuickAction = z.infer<typeof insertChatQuickActionSchema>;
+export type ChatProactiveTrigger = typeof chatProactiveTriggers.$inferSelect;
+export type InsertChatProactiveTrigger = z.infer<typeof insertChatProactiveTriggerSchema>;

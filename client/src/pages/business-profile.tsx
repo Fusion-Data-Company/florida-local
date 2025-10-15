@@ -85,7 +85,7 @@ export default function BusinessProfile() {
   if (isLoading) {
     return (
       <div
-        className="premium-page-wrapper premium-surface min-h-screen marble-texture"
+        className="premium-page-wrapper premium-surface min-h-screen marble-texture abstract-overlay-light"
         data-surface-intensity="delicate"
         data-surface-tone="warm"
       >
@@ -110,7 +110,7 @@ export default function BusinessProfile() {
   if (!business) {
     return (
       <div
-        className="premium-page-wrapper premium-surface min-h-screen marble-texture"
+        className="premium-page-wrapper premium-surface min-h-screen marble-texture abstract-overlay-light"
         data-surface-intensity="delicate"
         data-surface-tone="warm"
       >
@@ -127,7 +127,7 @@ export default function BusinessProfile() {
 
   return (
     <div
-      className="premium-page-wrapper premium-surface min-h-screen marble-texture"
+      className="premium-page-wrapper premium-surface min-h-screen marble-texture abstract-overlay-light"
       data-surface-intensity="delicate"
       data-surface-tone="warm"
     >

@@ -4,56 +4,224 @@
 @tailwind utilities;
 
 @layer utilities {
-  /* MARBLE TEXTURE UTILITY CLASSES - Apply to all white/light backgrounds */
-  .marble-texture {
+  /* PREMIUM CLEAR GLASS EFFECT - High-End Frosted Glass Over Abstracts */
+  .abstract-glass-premium {
+    position: relative;
+  }
+
+  .abstract-glass-premium::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(12px) saturate(140%) brightness(105%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%) brightness(105%);
+    background: rgba(255, 255, 255, 0.02);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .abstract-glass-premium > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Subtle Glass Variant - Less Blur */
+  .abstract-glass-subtle {
+    position: relative;
+  }
+
+  .abstract-glass-subtle::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(8px) saturate(130%) brightness(103%);
+    -webkit-backdrop-filter: blur(8px) saturate(130%) brightness(103%);
+    background: rgba(255, 255, 255, 0.01);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .abstract-glass-subtle > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ABSTRACT ARTISTIC BACKGROUNDS - Elite enterprise-grade aesthetics */
+  .abstract-bg {
     position: relative;
     z-index: 1;
-    background: var(--texture-stucco), var(--background);
-    background-size: var(--texture-scale-large), cover;
-    background-repeat: repeat, no-repeat;
-    background-blend-mode: multiply;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  .abstract-bg-light {
+    position: relative;
+    z-index: 1;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  .abstract-bg-card {
+    position: relative;
+    z-index: 1;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  /* Abstract background with overlay for readability */
+  .abstract-overlay-light::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    z-index: -1;
+  }
+
+  .abstract-overlay-medium::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(12px);
+    z-index: -1;
+  }
+
+  .abstract-overlay-subtle::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(15px);
+    z-index: -1;
+  }
+
+  .abstract-overlay-dark::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(10px);
+    z-index: -1;
+  }
+
+  /* Legacy marble classes - now redirect to abstract */
+  .marble-texture {
+    @apply abstract-bg;
   }
 
   .marble-texture-white {
-    position: relative;
-    z-index: 1;
-    background: var(--texture-stucco), white;
-    background-size: var(--texture-scale-large), cover;
-    background-repeat: repeat, no-repeat;
-    background-blend-mode: multiply;
+    @apply abstract-bg-light;
   }
 
   .marble-texture-card {
-    position: relative;
-    z-index: 1;
-    background: var(--texture-stucco), var(--card);
-    background-size: var(--texture-scale-large), cover;
-    background-repeat: repeat, no-repeat;
-    background-blend-mode: multiply;
+    @apply abstract-bg-card;
   }
 
-  /* MARBLE TEXTURE BACKGROUND - For pure background layers only */
   .marble-texture-bg {
     position: relative;
     z-index: 0;
-    background: var(--texture-stucco), var(--background);
-    background-size: var(--texture-scale-large), cover;
-    background-repeat: repeat, no-repeat;
-    background-blend-mode: multiply;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
   }
 
-  /* CONTENT LAYER - Ensures content appears above marble backgrounds */
+  /* NEW ABSTRACT BACKGROUND VARIANTS */
+  .abstract-bg-waves {
+    position: relative;
+    background: var(--abstract-waves);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  .abstract-bg-dark {
+    position: relative;
+    background: var(--abstract-dark);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  .abstract-bg-gradient {
+    position: relative;
+    background: var(--abstract-gradient);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  .abstract-bg-teal {
+    position: relative;
+    background: var(--abstract-teal);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  .abstract-bg-gold {
+    position: relative;
+    background: var(--abstract-gold);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  /* CONTENT LAYER - Ensures content appears above backgrounds with subtle overlay */
+  .abstract-bg > *,
+  .abstract-bg-light > *,
+  .abstract-bg-card > *,
+  .abstract-bg-waves > *,
+  .abstract-bg-dark > *,
+  .abstract-bg-gradient > *,
   .marble-texture > *,
   .marble-texture-white > *,
-  .marble-texture-card > * {
+  .marble-texture-card > *,
+  .abstract-bg-teal > *,
+  .abstract-bg-gold > * {
     position: relative;
     z-index: 2;
+  }
+
+  /* Optional overlay for better text readability on abstract backgrounds */
+  .abstract-overlay::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+  }
+
+  .abstract-overlay-light::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 1;
   }
 }
 
 :root {
   /* THE FLORIDA LOCAL - ULTRA-ELITE COLOR PALETTE */
-  --background: hsl(36, 25%, 96%);  /* Cream Marble base */
+  --background: hsl(36, 25%, 96%);  /* Cream base */
   --foreground: hsl(0, 0%, 17%);  /* Deep Charcoal text */
   --card: hsl(36, 30%, 98%);  /* Pearl white cards */
   --card-foreground: hsl(0, 0%, 17%);
@@ -109,12 +277,15 @@
   --glass-border: rgba(0, 0, 0, 0.1);
   --noise-opacity: 0.02;
 
-  /* ULTRA HD SEAMLESS MARBLE TEXTURE SYSTEM */
-  --texture-stucco: url('/assets/marble-textures/white-carrara-uhd.svg');
-  --texture-marble-lux: url('/assets/marble-textures/calacatta-gold-uhd.svg');
-  --texture-marble-grey: url('/assets/marble-textures/grey-emperador-uhd.svg');
-  --texture-marble-statuario: url('/assets/marble-textures/statuario-uhd.svg');
-  --texture-marble-champagne: url('/assets/marble-textures/champagne-pearl-uhd.svg');
+  /* ELITE ABSTRACT ARTISTIC BACKGROUND SYSTEM - YOUR IMAGES */
+  --abstract-primary: url('/Backgrounds/abstract-flowing-liquid-glass-waves-on-black-background-smooth-texture-blue-and-orange-photo.jpg');
+  --abstract-dark: url('/Backgrounds/colorful-painting-with-black-background-white-blue-background_380557-143.avif');
+  --abstract-light: url('/Backgrounds/208414429-a-close-up-of-a-colorful-abstract-painting-generative-ai-image.jpg');
+  --abstract-card: url('/Backgrounds/abstract-composition-glowing-bubbles-dark-background-with-orange-blue-tones_1090747-6434.avif');
+  --abstract-waves: url('/Backgrounds/abstract-composition-with-intertwined-orange-blue-curves-wave-aig51_31965-634212.avif');
+  --abstract-teal: url('/Backgrounds/geometric-lines-intersecting-with-organic-shapes-hd-4k_964851-163761.jpg');
+  --abstract-gold: url('/Backgrounds/colorful-series-circles-with-orange-blue-colors_889056-245202.jpg');
+  --abstract-gradient: url('/Backgrounds/dynamic-abstract-patterns-with-overlapping-circles-spirals-creating-sense-motion_36897-73531.avif');
 
   --texture-noise-overlay: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='stuccoNoise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23stuccoNoise)' opacity='0.08'/%3E%3C/svg%3E");
   --texture-overlay-warm-primary: radial-gradient(circle at 15% 85%, rgba(180, 150, 120, 0.25) 0%, transparent 55%);
@@ -148,6 +319,9 @@
   --color-1: 0 100% 63%;
   --color-2: 270 100% 63%;
   --color-3: 210 100% 63%;
+
+  /* BUTTON RIPPLE COLOR */
+  --button-ripple-color: rgba(0, 139, 139, 0.3);
   --color-4: 195 100% 63%;
   --color-5: 90 100% 63%;
 }
@@ -189,7 +363,16 @@
   --glass-bg: rgba(20, 25, 35, 0.85);
   --glass-border: rgba(255, 255, 255, 0.1);
   --noise-opacity: 0.03;
-  --texture-stucco: url('/assets/marble-textures/grey-emperador-uhd.svg');
+  
+  /* DARK MODE ABSTRACT BACKGROUNDS - SAME IMAGES */
+  --abstract-primary: url('/Backgrounds/abstract-flowing-liquid-glass-waves-on-black-background-smooth-texture-blue-and-orange-photo.jpg');
+  --abstract-dark: url('/Backgrounds/colorful-painting-with-black-background-white-blue-background_380557-143.avif');
+  --abstract-light: url('/Backgrounds/208414429-a-close-up-of-a-colorful-abstract-painting-generative-ai-image.jpg');
+  --abstract-card: url('/Backgrounds/abstract-composition-glowing-bubbles-dark-background-with-orange-blue-tones_1090747-6434.avif');
+  --abstract-waves: url('/Backgrounds/abstract-composition-with-intertwined-orange-blue-curves-wave-aig51_31965-634212.avif');
+  --abstract-teal: url('/Backgrounds/geometric-lines-intersecting-with-organic-shapes-hd-4k_964851-163761.jpg');
+  --abstract-gold: url('/Backgrounds/colorful-series-circles-with-orange-blue-colors_889056-245202.jpg');
+  --abstract-gradient: url('/Backgrounds/dynamic-abstract-patterns-with-overlapping-circles-spirals-creating-sense-motion_36897-73531.avif');
   --texture-noise-overlay: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='darkNoise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23darkNoise)' opacity='0.15'/%3E%3C/svg%3E");
   --texture-overlay-warm-primary: radial-gradient(circle at 18% 82%, rgba(25, 182, 246, 0.25) 0%, transparent 55%);
   --texture-overlay-warm-secondary: radial-gradient(circle at 82% 18%, rgba(255, 152, 67, 0.2) 0%, transparent 55%);
@@ -1706,18 +1889,18 @@ textarea:focus-visible {
   height: 72px;
   position: relative;
   background-image:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.82) 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.30) 0%, rgba(255, 255, 255, 0.25) 100%),
+    url('/backgrounds/abstract-flowing-liquid-glass-waves-on-black-background-smooth-texture-blue-and-orange-photo.jpg'),
     var(--texture-stucco);
-  background-size: cover, var(--texture-scale-large);
-  background-repeat: no-repeat, repeat;
-  background-blend-mode: normal, overlay;
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  background-size: cover, cover, var(--texture-scale-large);
+  background-repeat: no-repeat, no-repeat, repeat;
+  background-blend-mode: normal, normal, overlay;
+  background-position: center, center, center;
   border-top: 1px solid rgba(255, 255, 255, 0.6);
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow:
-    0 2px 0 rgba(255, 255, 255, 0.9) inset,
-    0 -1px 0 rgba(255, 255, 255, 0.5) inset,
+    0 2px 0 rgba(255, 255, 255, 0.5) inset,
+    0 -1px 0 rgba(255, 255, 255, 0.3) inset,
     0 2px 8px rgba(0, 0, 0, 0.04);
   transition: all 0.3s ease;
 }
@@ -1761,10 +1944,11 @@ textarea:focus-visible {
 
 .elite-glass-header.scrolled {
   background-image:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.92) 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.30) 100%),
+    url('/backgrounds/abstract-flowing-liquid-glass-waves-on-black-background-smooth-texture-blue-and-orange-photo.jpg'),
     var(--texture-stucco);
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
     0 4px 16px rgba(0, 0, 0, 0.08),
     0 8px 32px rgba(0, 0, 0, 0.04);
 }
@@ -1777,9 +1961,13 @@ textarea:focus-visible {
 @media (prefers-color-scheme: dark) {
   .elite-glass-header {
     background-image:
-      linear-gradient(180deg, rgba(15, 23, 42, 0.92) 0%, rgba(15, 23, 42, 0.88) 100%),
+      linear-gradient(180deg, rgba(15, 23, 42, 0.40) 0%, rgba(15, 23, 42, 0.35) 100%),
+      url('/backgrounds/abstract-flowing-liquid-glass-waves-on-black-background-smooth-texture-blue-and-orange-photo.jpg'),
       var(--texture-stucco);
-    background-blend-mode: normal, overlay;
+    background-blend-mode: normal, normal, overlay;
+    background-size: cover, cover, var(--texture-scale-large);
+    background-repeat: no-repeat, no-repeat, repeat;
+    background-position: center, center, center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow:
       0 1px 0 rgba(255, 255, 255, 0.05) inset,
@@ -1800,7 +1988,8 @@ textarea:focus-visible {
 
   .elite-glass-header.scrolled {
     background-image:
-      linear-gradient(180deg, rgba(15, 23, 42, 0.97) 0%, rgba(15, 23, 42, 0.95) 100%),
+      linear-gradient(180deg, rgba(15, 23, 42, 0.45) 0%, rgba(15, 23, 42, 0.40) 100%),
+      url('/backgrounds/abstract-flowing-liquid-glass-waves-on-black-background-smooth-texture-blue-and-orange-photo.jpg'),
       var(--texture-stucco);
     box-shadow:
       0 1px 0 rgba(255, 255, 255, 0.08) inset,
@@ -2045,15 +2234,15 @@ textarea:focus-visible {
 
 .elite-nav-item:hover {
   background: linear-gradient(135deg,
-    rgba(0, 139, 139, 0.25) 0%,
-    rgba(212, 175, 55, 0.2) 100%
+    rgba(0, 139, 139, 0.45) 0%,
+    rgba(212, 175, 55, 0.35) 100%
   );
   color: hsl(180, 100%, 20%);
-  border: 1px solid rgba(212, 175, 55, 0.4);
+  border: 1px solid rgba(212, 175, 55, 0.6);
   box-shadow:
-    0 2px 6px rgba(0, 139, 139, 0.25),
-    0 1px 0 rgba(255, 255, 255, 0.6) inset,
-    0 0 16px rgba(212, 175, 55, 0.2);
+    0 2px 8px rgba(0, 139, 139, 0.35),
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 0 20px rgba(212, 175, 55, 0.3);
   transform: translateY(-1px);
 }
 
@@ -2064,16 +2253,16 @@ textarea:focus-visible {
 
 .elite-nav-active {
   background: linear-gradient(135deg,
-    rgba(0, 139, 139, 0.35) 0%,
-    rgba(212, 175, 55, 0.25) 100%
+    rgba(0, 139, 139, 0.65) 0%,
+    rgba(212, 175, 55, 0.55) 100%
   );
   color: #ffffff;
   font-weight: 600;
-  border: 1px solid rgba(212, 175, 55, 0.5);
+  border: 1px solid rgba(212, 175, 55, 0.8);
   box-shadow:
-    0 2px 8px rgba(0, 139, 139, 0.3),
-    0 1px 0 rgba(255, 255, 255, 0.8) inset,
-    0 0 20px rgba(212, 175, 55, 0.3);
+    0 3px 12px rgba(0, 139, 139, 0.45),
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 0 30px rgba(212, 175, 55, 0.4);
 }
 
 .elite-nav-active svg {
@@ -9184,4 +9373,175 @@ select:focus-visible,
 .card-interactive:active {
   transform: translateY(-2px);
   transition-duration: 150ms;
+}
+
+/* === GEOMETRIC SPHERE HERO STYLES === */
+
+:root {
+  --primary: 0,139,139;
+  --secondary: 212,175,55;
+  --sphere-rotation-duration: 240s;
+  --grid-pan-duration: 180s;
+  --core-glow-duration: 25s;
+  --wire-opacity: 0.75;
+  --wire-shadow: 70px;
+  --core-blur: 200px;
+  --parallax-depth: 35;
+  --lerp: 0.08;
+}
+
+@keyframes sphereRotate {
+  from {
+    transform: rotateY(0deg) rotateX(0deg);
+  }
+  to {
+    transform: rotateY(360deg) rotateX(360deg);
+  }
+}
+
+@keyframes gridPan {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
+}
+
+@keyframes coreGlow {
+  0%,100% {
+    transform: scale(1.0);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+.sphere-container {
+  perspective: 1500px;
+  perspective-origin: center center;
+}
+
+.sphere-rotation {
+  transform-style: preserve-3d;
+  animation: sphereRotate var(--sphere-rotation-duration) linear infinite;
+}
+
+.wireframe-line {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 700px;
+  height: 700px;
+  border: 2px solid rgba(var(--primary), var(--wire-opacity));
+  border-radius: 50%;
+  transform-style: preserve-3d;
+  box-shadow: 0 0 var(--wire-shadow) rgba(var(--primary), 0.6),
+              inset 0 0 var(--wire-shadow) rgba(var(--primary), 0.4);
+  transform: translate(-50%, -50%);
+}
+
+.core-light {
+  animation: coreGlow var(--core-glow-duration) ease-in-out infinite;
+}
+
+.panning-grid {
+  animation: gridPan var(--grid-pan-duration) linear infinite;
+}
+
+.vignette-overlay {
+  background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.8) 100%);
+}
+
+.hero-title {
+  font-size: clamp(2.5rem, 5vw, 5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+}
+
+.hero-gradient {
+  background: linear-gradient(135deg, rgba(var(--primary), 1) 0%, rgba(var(--secondary), 1) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 40px rgba(var(--primary), 0.6));
+}
+
+.hero-sub {
+  font-size: clamp(1rem, 2vw, 1.35rem);
+  color: rgba(240, 240, 245, 0.8);
+  max-width: 42rem;
+  margin: 0 auto 2.5rem auto;
+  line-height: 1.7;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  padding: 1rem 2.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, rgba(var(--primary), 1), rgba(var(--secondary), 1));
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(var(--primary), 0.4),
+              0 8px 40px rgba(var(--primary), 0.2);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 30px rgba(var(--primary), 0.5),
+              0 12px 50px rgba(var(--primary), 0.3);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-ghost {
+  padding: 1rem 2.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(240, 240, 245, 0.9);
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(var(--primary), 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(var(--primary), 0.2);
+}
+
+.btn-ghost:active {
+  transform: translateY(0);
+}
+
+.content-foreground {
+  backdrop-filter: blur(2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sphere-rotation,
+  .panning-grid,
+  .core-light {
+    animation: none !important;
+  }
 }

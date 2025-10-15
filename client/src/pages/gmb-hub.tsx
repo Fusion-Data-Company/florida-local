@@ -36,6 +36,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
+import { AbstractBackground } from "@/components/ui/abstract-background";
 
 interface GMBStatus {
   connected: boolean;
@@ -180,7 +181,7 @@ export default function GMBHub() {
 
   if (!isAuthenticated) {
     return (
-      <div className="premium-page-wrapper premium-surface min-h-screen marble-texture">
+      <div className="premium-page-wrapper premium-surface min-h-screen marble-texture abstract-overlay-light">
         <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-20 text-center">
           <MapPin className="h-16 w-16 mx-auto mb-6 text-blue-500" />
@@ -584,7 +585,7 @@ export default function GMBHub() {
   };
 
   return (
-    <div className="premium-page-wrapper premium-surface min-h-screen marble-texture">
+    <AbstractBackground backgroundKey="geometric2" overlay="light" className="min-h-screen">
       <EliteNavigationHeader />
 
       {/* Hero Header */}
@@ -665,6 +666,6 @@ export default function GMBHub() {
       </div>
 
       <MobileBottomNav />
-    </div>
+    </AbstractBackground>
   );
 }

@@ -31,6 +31,9 @@ import AIContentHistory from "@/components/ai-content-history";
 import { GMBStatusWidget } from "@/components/widgets/GMBStatusWidget";
 import type { Business, Product, Post } from "@shared/types";
 import { motion } from "framer-motion";
+import { AbstractBackground } from "@/components/ui/abstract-background";
+import EliteNavigationHeader from "@/components/elite-navigation-header";
+import MobileBottomNav from "@/components/mobile-bottom-nav";
 
 export default function BusinessDashboard() {
   const { user } = useAuth();
@@ -97,7 +100,8 @@ export default function BusinessDashboard() {
   const followers = business.followerCount || 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-950 dark:to-gray-900">
+    <AbstractBackground backgroundKey="geometric1" overlay="light" className="min-h-screen">
+      <EliteNavigationHeader />
       {/* Hero Section with Business Info */}
       <div className="relative bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 text-white overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20"></div>
@@ -174,7 +178,7 @@ export default function BusinessDashboard() {
           <TabsContent value="overview" className="space-y-6">
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="border-2 hover:shadow-lg transition-shadow">
+              <Card className="border-2 hover:shadow-lg transition-shadow bg-white/80 backdrop-blur-md">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Total Followers</CardTitle>
                   <Users className="h-5 w-5 text-blue-600" />
@@ -185,7 +189,7 @@ export default function BusinessDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="border-2 hover:shadow-lg transition-shadow">
+              <Card className="border-2 hover:shadow-lg transition-shadow bg-white/80 backdrop-blur-md">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Products</CardTitle>
                   <Package className="h-5 w-5 text-green-600" />
@@ -198,7 +202,7 @@ export default function BusinessDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="border-2 hover:shadow-lg transition-shadow">
+              <Card className="border-2 hover:shadow-lg transition-shadow bg-white/80 backdrop-blur-md">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Rating</CardTitle>
                   <TrendingUp className="h-5 w-5 text-yellow-600" />
@@ -211,7 +215,7 @@ export default function BusinessDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="border-2 hover:shadow-lg transition-shadow">
+              <Card className="border-2 hover:shadow-lg transition-shadow bg-white/80 backdrop-blur-md">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Engagement</CardTitle>
                   <Heart className="h-5 w-5 text-red-600" />
@@ -231,7 +235,7 @@ export default function BusinessDashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <Card className="border-2 border-purple-200 dark:border-purple-800 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30">
+              <Card className="border-2 border-purple-200 dark:border-purple-800 bg-gradient-to-r from-purple-50/90 to-pink-50/90 dark:from-purple-950/30 dark:to-pink-950/30 backdrop-blur-md">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -309,7 +313,7 @@ export default function BusinessDashboard() {
             <GMBStatusWidget businessId={business.id} variant="full" />
 
             {/* Quick Actions */}
-            <Card>
+            <Card className="bg-white/80 backdrop-blur-md">
               <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
                 <CardDescription>Manage your business day-to-day</CardDescription>
@@ -345,7 +349,7 @@ export default function BusinessDashboard() {
 
             {/* Recent Activity */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
+              <Card className="bg-white/80 backdrop-blur-md">
                 <CardHeader>
                   <CardTitle>Recent Products</CardTitle>
                   <CardDescription>Your latest product listings</CardDescription>
@@ -380,7 +384,7 @@ export default function BusinessDashboard() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="bg-white/80 backdrop-blur-md">
                 <CardHeader>
                   <CardTitle>Recent Posts</CardTitle>
                   <CardDescription>Your latest social updates</CardDescription>
@@ -437,7 +441,7 @@ export default function BusinessDashboard() {
 
           {/* Products Tab */}
           <TabsContent value="products">
-            <Card>
+            <Card className="bg-white/80 backdrop-blur-md">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
@@ -502,7 +506,7 @@ export default function BusinessDashboard() {
 
           {/* Posts Tab */}
           <TabsContent value="posts">
-            <Card>
+            <Card className="bg-white/80 backdrop-blur-md">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
@@ -561,6 +565,7 @@ export default function BusinessDashboard() {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+      <MobileBottomNav />
+    </AbstractBackground>
   );
 }

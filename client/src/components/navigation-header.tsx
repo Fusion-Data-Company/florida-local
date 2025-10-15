@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Plus, Store, ChevronDown, Search, Bell, MessageCircle, Menu, X, TreePine, Edit, Package, User, LogOut } from "lucide-react";
+import { Plus, Store, ChevronDown, Search, Bell, MessageCircle, Menu, X, Edit, Package, User, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
 import CartIcon from "@/components/cart-icon";
 import type { Business } from "@shared/types";
@@ -76,21 +76,19 @@ export default function NavigationHeader() {
         <div className="container mx-auto px-6 lg:px-12">
           <div className="flex h-20 items-center justify-between relative">
             
-            {/* Elite Brand Logo Section */}
+            {/* THE FLORIDA LOCAL LOGO - OFFICIAL BRAND */}
             <Link href="/" className="elite-brand-container group" data-testid="brand-logo">
-              <div className="flex items-center space-x-4">
-                <div className="relative">
-                  <TreePine className="text-4xl text-slate-700 group-hover:text-secondary transition-all duration-500 group-hover:scale-105" size={32} />
-                  <div className="absolute inset-0 bg-gradient-to-r from-secondary/5 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full"></div>
-                </div>
-                <div className="flex flex-col justify-center">
-                  <h1 className="elite-logo-text group-hover:scale-105 transition-transform duration-500">
-                    Florida Local
-                  </h1>
-                  <p className="elite-subtitle-text">
-                    Elite
-                  </p>
-                </div>
+              <div className="relative px-3 py-2 rounded-xl" style={{
+                background: 'linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 100%)',
+                backdropFilter: 'blur(12px)',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)'
+              }}>
+                <img
+                  src="/i-am-the-logo.png"
+                  alt="THE FLORIDA LOCAL"
+                  className="w-auto object-contain transition-all duration-300 group-hover:scale-105"
+                  style={{ height: '48px' }}
+                />
               </div>
             </Link>
 
@@ -327,7 +325,11 @@ export default function NavigationHeader() {
         <div className="flex justify-between items-center mb-8">
           <div className="elite-brand-container">
             <div className="flex items-center space-x-3">
-              <TreePine className="text-2xl text-slate-700" size={24} />
+              <img
+                src="/i-am-the-logo.png"
+                alt="THE FLORIDA LOCAL"
+                className="w-auto h-6 object-contain"
+              />
               <div>
                 <h2 className="elite-logo-text text-lg">Florida Local</h2>
                 <p className="elite-subtitle-text text-xs">Elite</p>

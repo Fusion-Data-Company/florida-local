@@ -34,7 +34,17 @@
       "Bash(timeout 30 npm run dev)",
       "Bash(tsx scripts/seed-loyalty-data.ts:*)",
       "Bash(python3:*)",
-      "Bash(psql:*)"
+      "Bash(psql:*)",
+      "Bash(timeout 10 npm run dev:*)",
+      "Bash(do echo \"=== $page ===\")",
+      "Bash(xxd:*)",
+      "Bash(netstat:*)",
+      "Bash(ss:*)",
+      "Bash(kill:*)",
+      "Bash(fuser:*)",
+      "Bash(1)",
+      "Bash(rm:*)",
+      "Bash(journalctl:*)"
     ],
     "deny": [],
     "ask": []

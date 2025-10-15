@@ -11,7 +11,7 @@ interface LayoutProps {
 export default function Layout({ children, showFooter = true, showMobileNav = true }: LayoutProps) {
   return (
     <div
-      className="premium-page-wrapper premium-surface min-h-screen marble-texture flex flex-col"
+      className="premium-page-wrapper premium-surface min-h-screen marble-texture abstract-overlay-light flex flex-col"
       data-surface-intensity="delicate"
       data-surface-tone="warm"
     >

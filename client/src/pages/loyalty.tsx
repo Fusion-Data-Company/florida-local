@@ -5,11 +5,13 @@ import LoyaltyDashboard from "@/components/loyalty-dashboard";
 import RewardsCatalog from "@/components/rewards-catalog";
 import ReferralCenter from "@/components/referral-center";
 import EliteNavigationHeader from "@/components/elite-navigation-header";
+import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { motion } from "framer-motion";
+import { AbstractBackground } from "@/components/ui/abstract-background";
 
 export default function LoyaltyPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <AbstractBackground backgroundKey="vibrant3" overlay="subtle" className="min-h-screen">
       <EliteNavigationHeader />
 
       <div className="container mx-auto px-4 py-8">
@@ -241,6 +243,7 @@ export default function LoyaltyPage() {
           </div>
         </motion.div>
       </div>
-    </div>
+      <MobileBottomNav />
+    </AbstractBackground>
   );
 }

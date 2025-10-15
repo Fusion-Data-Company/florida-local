@@ -66,7 +66,7 @@ export default function CartPage() {
   if (isLoading) {
     return (
       <div
-        className="premium-page-wrapper premium-surface min-h-screen marble-texture flex items-center justify-center"
+        className="premium-page-wrapper premium-surface min-h-screen marble-texture abstract-overlay-light flex items-center justify-center"
         data-surface-intensity="delicate"
         data-surface-tone="warm"
       >
@@ -77,13 +77,21 @@ export default function CartPage() {
 
   return (
     <div
-      className="premium-page-wrapper premium-surface min-h-screen marble-texture relative"
+      className="premium-page-wrapper premium-surface min-h-screen relative"
+      style={{
+        backgroundImage: "url('/backgrounds/abstract-composition-glowing-bubbles-dark-background-with-orange-blue-tones_1090747-6434.avif')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
       data-surface-intensity="delicate"
       data-surface-tone="warm"
     >
+      <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-blue-50/88 to-orange-50/88 backdrop-blur-md" />
       {/* ULTRA PREMIUM EFFECTS */}
       <AuroraAmbient intensity="low" />
 
+      <div className="relative z-10">
       <EliteNavigationHeader />
 
       {/* ULTRA PREMIUM HERO */}
@@ -261,6 +269,7 @@ export default function CartPage() {
       </div>
 
       <MobileBottomNav />
+      </div>
     </div>
   );
 }

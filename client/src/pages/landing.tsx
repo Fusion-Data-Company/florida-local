@@ -6,154 +6,202 @@ import SocialFeed from "@/components/social-feed";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { Button } from "@/components/ui/button";
 import { StardustButton } from "@/components/ui/stardust-button";
-import { Store, ShoppingCart, Users } from "lucide-react";
+import { AbstractBackground } from "@/components/ui/abstract-background";
+import {
+  AnimatedGradientHero,
+  ParticleField,
+  AuroraAmbient,
+  HoverTrail
+} from "@/components/premium-ultra";
+import GlowHero from "@/components/ui/glow-hero";
+import { Store, ShoppingCart, Users, Sparkles } from "lucide-react";
 
 export default function Landing() {
   return (
-    <div
-      className="premium-page-wrapper premium-surface min-h-screen marble-texture"
-      data-surface-intensity="bold"
-      data-surface-tone="warm"
-    >
+    <div className="min-h-screen relative overflow-hidden">
+      {/* ULTRA PREMIUM EFFECTS - Background Layer */}
+      <AuroraAmbient intensity="medium" />
+      <HoverTrail />
+
+      {/* ABSTRACT BACKGROUND WRAPPER */}
+      <AbstractBackground
+        backgroundKey="flowing1"
+        overlay="gradient"
+        className="min-h-screen"
+      >
+      {/* CONTENT WRAPPER - Proper Z-Index */}
+      <div className="relative z-10">
       <EliteNavigationHeader />
       <HeroSection />
       <SpotlightShowcase />
       
       {/* Miami Elite Profile Creation CTA */}
-      <section className="py-20 bg-gradient-to-r from-primary to-secondary miami-cta-section">
-        <div className="container mx-auto px-4 lg:px-8 text-center text-white">
+      <section className="relative py-20 overflow-hidden">
+        {/* Animated Gradient Background */}
+        <AnimatedGradientHero>
+          <ParticleField count={60} color="cyan" />
+
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/15 to-accent/20" />
+
+          <div className="container mx-auto px-4 lg:px-8 text-center relative z-10">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 miami-heading">
-              Ready to Shine in the Spotlight?
-            </h2>
-            
-            <p className="text-xl mb-12 opacity-90 leading-relaxed miami-body-text">
-              Join thousands of Florida businesses building their digital presence, 
+            <GlowHero
+              glowText="Ready to Shine in the Spotlight?"
+              glowTextSize="lg"
+              className="mb-6 entrance-fade-up"
+            />
+
+            <p className="text-xl mb-12 text-foreground/90 leading-relaxed entrance-fade-up stagger-1">
+              Join thousands of Florida businesses building their digital presence,
               connecting with customers, and growing their community impact.
             </p>
 
             {/* Feature Grid */}
-            <div className="grid md:grid-cols-3 gap-8 mb-12">
-              <div className="bg-slate-900/95 backdrop-blur-xl border border-white/10 p-8 rounded-2xl hover-lift card-rim-light group transition-all duration-500 shadow-luxury-multi">
-                <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-elevated">
-                  <Store className="text-white" size={32} />
+            <div className="grid md:grid-cols-3 gap-8 mb-12 entrance-fade-up stagger-2">
+              <div className="relative group">
+                {/* Glowing background effect */}
+                <div className="absolute -inset-1 bg-gradient-to-br from-primary/40 via-primary/20 to-transparent rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                <div className="relative bg-card/95 backdrop-blur-xl border border-border/50 p-8 rounded-2xl hover-lift shadow-luxury-multi transition-all duration-500 group-hover:border-primary/30 group-hover:shadow-primary/20">
+                  <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-elevated ambient-glow-orange">
+                    <Store className="text-white" size={32} />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">Rich Business Profiles</h3>
+                  <p className="text-muted-foreground leading-relaxed">Showcase your brand with high-quality images, videos, and detailed descriptions that captivate your audience.</p>
                 </div>
-                <h3 className="text-2xl font-bold mb-4 text-white">Rich Business Profiles</h3>
-                <p className="text-white/90 leading-relaxed">Showcase your brand with high-quality images, videos, and detailed descriptions that captivate your audience.</p>
               </div>
-              
-              <div className="bg-slate-900/95 backdrop-blur-xl border border-white/10 p-8 rounded-2xl hover-lift card-rim-light group transition-all duration-500 shadow-luxury-multi">
-                <div className="w-20 h-20 bg-gradient-to-br from-secondary to-secondary/80 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-elevated">
-                  <ShoppingCart className="text-white" size={32} />
+
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-br from-secondary/40 via-secondary/20 to-transparent rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                <div className="relative bg-card/95 backdrop-blur-xl border border-border/50 p-8 rounded-2xl hover-lift shadow-luxury-multi transition-all duration-500 group-hover:border-secondary/30 group-hover:shadow-secondary/20">
+                  <div className="w-20 h-20 bg-gradient-to-br from-secondary to-secondary/80 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-elevated ambient-glow-teal">
+                    <ShoppingCart className="text-white" size={32} />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-secondary to-secondary/80 bg-clip-text text-transparent">E-Commerce Integration</h3>
+                  <p className="text-muted-foreground leading-relaxed">Sell products directly through your profile with secure built-in payment processing and inventory management.</p>
                 </div>
-                <h3 className="text-2xl font-bold mb-4 text-white">E-Commerce Integration</h3>
-                <p className="text-white/90 leading-relaxed">Sell products directly through your profile with secure built-in payment processing and inventory management.</p>
               </div>
-              
-              <div className="bg-slate-900/95 backdrop-blur-xl border border-white/10 p-8 rounded-2xl hover-lift card-rim-light group transition-all duration-500 shadow-luxury-multi">
-                <div className="w-20 h-20 bg-gradient-to-br from-accent to-accent/80 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-elevated">
-                  <Users className="text-white" size={32} />
+
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-br from-accent/40 via-accent/20 to-transparent rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                <div className="relative bg-card/95 backdrop-blur-xl border border-border/50 p-8 rounded-2xl hover-lift shadow-luxury-multi transition-all duration-500 group-hover:border-accent/30 group-hover:shadow-accent/20">
+                  <div className="w-20 h-20 bg-gradient-to-br from-accent to-accent/80 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-elevated ambient-glow-purple">
+                    <Users className="text-white" size={32} />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-accent to-accent/80 bg-clip-text text-transparent">Community Network</h3>
+                  <p className="text-muted-foreground leading-relaxed">Connect with other businesses, collaborate on projects, and build lasting partnerships that grow your network.</p>
                 </div>
-                <h3 className="text-2xl font-bold mb-4 text-white">Community Network</h3>
-                <p className="text-white/90 leading-relaxed">Connect with other businesses, collaborate on projects, and build lasting partnerships that grow your network.</p>
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <StardustButton 
+            <div className="flex flex-col sm:flex-row gap-4 justify-center entrance-scale-fade stagger-3">
+              <StardustButton
                 variant="gold"
                 size="lg"
-                onClick={() => window.location.href = '/api/login'} 
+                onClick={() => window.location.href = '/api/login'}
                 data-testid="button-create-profile"
+                className="shimmer-gold-hover"
               >
+                <Sparkles className="w-5 h-5 mr-2" />
                 Create Your Business Profile
               </StardustButton>
-              <StardustButton 
+              <StardustButton
                 variant="teal"
                 size="lg"
+                className="shimmer-on-hover"
               >
                 See Pricing Plans
               </StardustButton>
             </div>
           </div>
-        </div>
+          </div>
+        </AnimatedGradientHero>
       </section>
 
       <MarketplaceSection />
       <SocialFeed />
 
       {/* Footer */}
-      <footer className="bg-card border-t border-border premium-surface" data-surface-intensity="delicate">
-        <div className="container mx-auto px-4 lg:px-8 py-16">
+      <footer className="relative bg-card/95 backdrop-blur-xl border-t border-border/50 premium-surface overflow-hidden" data-surface-intensity="delicate">
+        {/* Subtle gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 pointer-events-none"></div>
+
+        <div className="container mx-auto px-4 lg:px-8 py-16 relative z-10">
           <div className="grid lg:grid-cols-4 gap-12 mb-12">
             {/* Brand Column */}
-            <div className="lg:col-span-1">
-              <div className="flex items-center space-x-2 mb-6">
-                <i className="fas fa-palm-tree text-2xl text-primary"></i>
+            <div className="lg:col-span-1 entrance-fade-up">
+              <div className="flex items-center space-x-2 mb-6 group">
+                <i className="fas fa-palm-tree text-2xl text-primary group-hover:scale-110 transition-transform duration-300"></i>
                 <div>
-                  <h1 className="text-xl font-bold gradient-text">Florida Local</h1>
+                  <h1 className="text-xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">Florida Local</h1>
                   <p className="text-xs text-muted-foreground">Elite</p>
                 </div>
               </div>
               <p className="text-muted-foreground mb-6 leading-relaxed">
-                Connecting Florida's business community through innovation, collaboration, and local pride. 
+                Connecting Florida's business community through innovation, collaboration, and local pride.
                 Where entrepreneurs thrive together.
               </p>
               <div className="flex space-x-4">
-                <a href="#" className="w-10 h-10 bg-primary text-primary-foreground rounded-full flex items-center justify-center hover:bg-primary/90 transition-all">
-                  <i className="fab fa-facebook"></i>
+                <a href="#" className="relative w-10 h-10 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-full flex items-center justify-center hover:scale-110 transition-all duration-300 shadow-md hover:shadow-primary/40 group">
+                  <i className="fab fa-facebook relative z-10"></i>
+                  <div className="absolute inset-0 bg-primary/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </a>
-                <a href="#" className="w-10 h-10 bg-primary text-primary-foreground rounded-full flex items-center justify-center hover:bg-primary/90 transition-all">
-                  <i className="fab fa-instagram"></i>
+                <a href="#" className="relative w-10 h-10 bg-gradient-to-br from-secondary to-secondary/80 text-primary-foreground rounded-full flex items-center justify-center hover:scale-110 transition-all duration-300 shadow-md hover:shadow-secondary/40 group">
+                  <i className="fab fa-instagram relative z-10"></i>
+                  <div className="absolute inset-0 bg-secondary/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </a>
-                <a href="#" className="w-10 h-10 bg-primary text-primary-foreground rounded-full flex items-center justify-center hover:bg-primary/90 transition-all">
-                  <i className="fab fa-linkedin"></i>
+                <a href="#" className="relative w-10 h-10 bg-gradient-to-br from-accent to-accent/80 text-primary-foreground rounded-full flex items-center justify-center hover:scale-110 transition-all duration-300 shadow-md hover:shadow-accent/40 group">
+                  <i className="fab fa-linkedin relative z-10"></i>
+                  <div className="absolute inset-0 bg-accent/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </a>
-                <a href="#" className="w-10 h-10 bg-primary text-primary-foreground rounded-full flex items-center justify-center hover:bg-primary/90 transition-all">
-                  <i className="fab fa-twitter"></i>
+                <a href="#" className="relative w-10 h-10 bg-gradient-to-br from-primary to-secondary text-primary-foreground rounded-full flex items-center justify-center hover:scale-110 transition-all duration-300 shadow-md hover:shadow-primary/40 group">
+                  <i className="fab fa-twitter relative z-10"></i>
+                  <div className="absolute inset-0 bg-primary/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </a>
               </div>
             </div>
 
             {/* Quick Links */}
-            <div>
-              <h3 className="font-bold text-lg mb-6">Platform</h3>
+            <div className="entrance-fade-up stagger-1">
+              <h3 className="font-bold text-lg mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Platform</h3>
               <ul className="space-y-3">
-                <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">Business Profiles</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">Marketplace</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">Community</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">Spotlight</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">Analytics</a></li>
+                <li><a href="#" className="text-muted-foreground hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block">Business Profiles</a></li>
+                <li><a href="#" className="text-muted-foreground hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block">Marketplace</a></li>
+                <li><a href="#" className="text-muted-foreground hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block">Community</a></li>
+                <li><a href="#" className="text-muted-foreground hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block">Spotlight</a></li>
+                <li><a href="#" className="text-muted-foreground hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block">Analytics</a></li>
               </ul>
             </div>
 
             {/* Resources */}
-            <div>
-              <h3 className="font-bold text-lg mb-6">Resources</h3>
+            <div className="entrance-fade-up stagger-2">
+              <h3 className="font-bold text-lg mb-6 bg-gradient-to-r from-secondary to-accent bg-clip-text text-transparent">Resources</h3>
               <ul className="space-y-3">
-                <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">Help Center</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">Getting Started</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">API Documentation</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">Success Stories</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-primary transition-colors">Blog</a></li>
+                <li><a href="#" className="text-muted-foreground hover:text-secondary transition-all duration-300 hover:translate-x-1 inline-block">Help Center</a></li>
+                <li><a href="#" className="text-muted-foreground hover:text-secondary transition-all duration-300 hover:translate-x-1 inline-block">Getting Started</a></li>
+                <li><a href="#" className="text-muted-foreground hover:text-secondary transition-all duration-300 hover:translate-x-1 inline-block">API Documentation</a></li>
+                <li><a href="#" className="text-muted-foreground hover:text-secondary transition-all duration-300 hover:translate-x-1 inline-block">Success Stories</a></li>
+                <li><a href="#" className="text-muted-foreground hover:text-secondary transition-all duration-300 hover:translate-x-1 inline-block">Blog</a></li>
               </ul>
             </div>
 
             {/* Newsletter */}
-            <div>
-              <h3 className="font-bold text-lg mb-6">Stay Connected</h3>
+            <div className="entrance-fade-up stagger-3">
+              <h3 className="font-bold text-lg mb-6 bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">Stay Connected</h3>
               <p className="text-muted-foreground mb-4">
                 Get the latest updates on new features, spotlight businesses, and community events.
               </p>
               <div className="space-y-3">
-                <input 
-                  type="email" 
-                  placeholder="Enter your email" 
-                  className="w-full px-4 py-3 bg-muted border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="w-full px-4 py-3 bg-muted/50 border border-border/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all duration-300 hover:border-border backdrop-blur-sm"
                   data-testid="input-newsletter-email"
                 />
-                <button 
-                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 rounded-lg font-semibold transition-all"
+                <button
+                  className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground py-3 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5"
                   data-testid="button-subscribe-newsletter"
                 >
                   Subscribe
@@ -163,16 +211,16 @@ export default function Landing() {
           </div>
 
           {/* Bottom Bar */}
-          <div className="pt-8 border-t border-border">
-            <div className="flex flex-col md:flex-row items-center justify-between">
+          <div className="pt-8 border-t border-border/30">
+            <div className="flex flex-col md:flex-row items-center justify-between entrance-fade-up stagger-4">
               <p className="text-muted-foreground text-sm mb-4 md:mb-0">
                 © 2024 Florida Local Elite. All rights reserved.
               </p>
               <div className="flex space-x-6 text-sm">
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">Privacy Policy</a>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">Terms of Service</a>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">Cookie Policy</a>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">Contact</a>
+                <a href="#" className="text-muted-foreground hover:text-primary transition-all duration-300 hover:-translate-y-0.5 inline-block">Privacy Policy</a>
+                <a href="#" className="text-muted-foreground hover:text-primary transition-all duration-300 hover:-translate-y-0.5 inline-block">Terms of Service</a>
+                <a href="#" className="text-muted-foreground hover:text-primary transition-all duration-300 hover:-translate-y-0.5 inline-block">Cookie Policy</a>
+                <a href="#" className="text-muted-foreground hover:text-primary transition-all duration-300 hover:-translate-y-0.5 inline-block">Contact</a>
               </div>
             </div>
           </div>
@@ -180,6 +228,8 @@ export default function Landing() {
       </footer>
 
       <MobileBottomNav />
+      </div>
+      </AbstractBackground>
     </div>
   );
 }

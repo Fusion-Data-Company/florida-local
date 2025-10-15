@@ -9,6 +9,7 @@ import VotingInterface from "@/components/spotlight/VotingInterface";
 import TrendingBusinesses from "@/components/spotlight/TrendingBusinesses";
 import SocialFeed from "@/components/social-feed";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
+import LuxuryFooter from "@/components/luxury-footer";
 import { Button } from "@/components/ui/button";
 import { StardustButton } from "@/components/ui/stardust-button";
 import { ShaderAnimation } from "@/components/ui/shader-animation";
@@ -38,7 +39,7 @@ export default function Home() {
   if (isLoading) {
     return (
       <div
-        className="premium-page-wrapper premium-surface min-h-screen marble-texture flex items-center justify-center"
+        className="premium-page-wrapper premium-surface min-h-screen marble-texture abstract-overlay-light flex items-center justify-center"
         data-surface-intensity="delicate"
       >
         <PremiumLoader text="Loading your experience..." />
@@ -48,7 +49,7 @@ export default function Home() {
 
   return (
     <div
-      className="premium-page-wrapper premium-surface min-h-screen marble-texture relative"
+      className="premium-page-wrapper premium-surface min-h-screen relative"
       data-surface-intensity="delicate"
       data-surface-tone="cool"
     >
@@ -58,12 +59,24 @@ export default function Home() {
       <EliteNavigationHeader />
 
       {/* SHADER ANIMATION HERO */}
-      <div className="relative flex h-[650px] w-full flex-col items-center justify-center overflow-hidden rounded-xl border bg-blue-700">
+      <div className="relative flex h-[650px] w-full flex-col items-center justify-center overflow-hidden">
         <ShaderAnimation/>
         <span className="absolute pointer-events-none z-10 text-center text-7xl leading-none font-semibold tracking-tighter whitespace-pre-wrap text-white">
           {userBusinesses[0]?.name || (user?.username ? `Hello, ${user.username}` : 'Welcome to Florida Local')}
         </span>
       </div>
+
+      {/* Background for rest of page */}
+      <div
+        className="relative"
+        style={{
+          backgroundImage: "url('/backgrounds/colorful-series-circles-with-orange-blue-colors_889056-245202.jpg')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed'
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-white/88 via-blue-50/85 to-orange-50/85 backdrop-blur-sm" />
 
       {/* FLORIDA LOCAL ULTRA-ELITE HERO */}
       <div className="relative py-24 overflow-hidden gradient-shift">
@@ -162,22 +175,25 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Spotlight Voting Interface */}
-      <section className="py-12 container mx-auto px-4">
-        <VotingInterface variant="homepage" limit={6} />
-      </section>
+        {/* Spotlight Voting Interface */}
+        <section className="py-12 container mx-auto px-4 relative z-10">
+          <VotingInterface variant="homepage" limit={6} />
+        </section>
 
-      {/* Trending Businesses */}
-      <section className="py-12 container mx-auto px-4">
-        <h2 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-          Trending Now
-        </h2>
-        <TrendingBusinesses limit={5} variant="compact" />
-      </section>
+        {/* Trending Businesses */}
+        <section className="py-12 container mx-auto px-4 relative z-10">
+          <h2 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+            Trending Now
+          </h2>
+          <TrendingBusinesses limit={5} variant="compact" />
+        </section>
 
-      <SpotlightShowcase />
-      <MarketplaceSection />
-      <SocialFeed />
+        <SpotlightShowcase />
+        <MarketplaceSection />
+        <SocialFeed />
+      </div>
+
+      <LuxuryFooter />
       <MobileBottomNav />
     </div>
   );

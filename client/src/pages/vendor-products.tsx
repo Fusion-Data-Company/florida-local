@@ -13,6 +13,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from "@/components/ui/label";
 import { ObjectUploader } from "@/components/ObjectUploader";
 import { X } from "lucide-react";
+import { AbstractBackground } from "@/components/ui/abstract-background";
+import EliteNavigationHeader from "@/components/elite-navigation-header";
+import MobileBottomNav from "@/components/mobile-bottom-nav";
 
 type Product = {
   id: string;
@@ -111,22 +114,34 @@ export default function VendorProductsPage() {
   };
 
   if (!isAuthenticated) {
-    return <div className="container mx-auto px-4 py-8">Please sign in to manage products.</div>;
+    return (
+      <AbstractBackground backgroundKey="geometric1" overlay="light" className="min-h-screen">
+        <EliteNavigationHeader />
+        <div className="container mx-auto px-4 py-8">Please sign in to manage products.</div>
+        <MobileBottomNav />
+      </AbstractBackground>
+    );
   }
 
   if (businesses.length === 0) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">Vendor Products</h1>
-        <div className="text-muted-foreground">
-          You need to create a business first. <a href="/create-business" className="text-primary hover:underline">Create Business</a>
+      <AbstractBackground backgroundKey="geometric1" overlay="light" className="min-h-screen">
+        <EliteNavigationHeader />
+        <div className="container mx-auto px-4 py-8">
+          <h1 className="text-3xl font-bold mb-6">Vendor Products</h1>
+          <div className="text-muted-foreground">
+            You need to create a business first. <a href="/create-business" className="text-primary hover:underline">Create Business</a>
+          </div>
         </div>
-      </div>
+        <MobileBottomNav />
+      </AbstractBackground>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <AbstractBackground backgroundKey="geometric1" overlay="light" className="min-h-screen">
+      <EliteNavigationHeader />
+      <div className="container mx-auto px-4 py-8">
       <div className="vendor-products-header flex items-center justify-between mb-6 rounded-2xl p-6 relative">
         <h1 className="text-3xl font-bold marble-content" data-testid="heading-vendor-products">Vendor Products</h1>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
@@ -177,7 +192,7 @@ export default function VendorProductsPage() {
               <div className="col-span-full text-muted-foreground" data-testid="empty-products">No products yet. Create your first product!</div>
             ) : (
               products.map((product) => (
-                <Card key={product.id} className="vendor-product-card hover:shadow-lg transition-shadow relative" data-testid={`card-product-${product.id}`}>
+                <Card key={product.id} className="vendor-product-card hover:shadow-lg transition-shadow relative bg-white/80 backdrop-blur-md" data-testid={`card-product-${product.id}`}>
                   <CardHeader className="marble-content">
                     <CardTitle className="flex items-center justify-between">
                       <span className="truncate" data-testid={`text-product-name-${product.id}`}>{product.name}</span>
@@ -244,7 +259,9 @@ export default function VendorProductsPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+      <MobileBottomNav />
+    </AbstractBackground>
   );
 }
 

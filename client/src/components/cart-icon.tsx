@@ -21,40 +21,59 @@ export default function CartIcon() {
   }
 
   return (
-    <Button 
-      variant="ghost" 
-      size="sm" 
-      asChild 
-      className="relative rounded-lg hover:bg-gradient-to-br hover:from-cyan-50 hover:to-teal-50 transition-all" 
-      style={{
-        width: '40px',
-        height: '40px',
-        padding: 0
-      }}
-      data-testid="button-cart"
-    >
-      <Link href="/cart">
-        <ShoppingCart 
-          className="h-5 w-5" 
-          style={{ 
-            color: '#008B8B',
-            strokeWidth: 2 
-          }} 
-        />
-        {itemCount > 0 && (
-          <Badge 
-            className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-[10px] font-bold border-2 border-white"
+    <>
+      <Button
+        variant="ghost"
+        size="sm"
+        asChild
+        className="relative rounded-full hover:scale-105 transition-all duration-300"
+        style={{
+          width: '52px',
+          height: '52px',
+          padding: 0,
+          position: 'relative',
+          background: 'linear-gradient(145deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.15) 100%)',
+          backdropFilter: 'blur(20px) saturate(180%)',
+          border: '2px solid rgba(255, 255, 255, 0.4)',
+          borderTop: '2px solid rgba(255, 255, 255, 0.6)',
+          borderLeft: '2px solid rgba(255, 255, 255, 0.5)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35), inset 0 3px 6px rgba(255, 255, 255, 0.5), inset 0 -2px 4px rgba(0, 0, 0, 0.1), 0 0 30px rgba(255, 255, 255, 0.2), 0 1px 0 rgba(255, 255, 255, 0.7) inset',
+          overflow: 'visible',
+          zIndex: 1
+        }}
+        data-testid="button-cart"
+      >
+        <Link href="/cart">
+          <ShoppingCart
+            className="h-6 w-6"
             style={{
-              background: 'linear-gradient(135deg, #D4AF37 0%, #CD7F32 100%)',
-              color: '#ffffff',
-              boxShadow: '0 2px 6px rgba(212, 175, 55, 0.4), 0 0 12px rgba(212, 175, 55, 0.3)'
+              color: 'white',
+              strokeWidth: 2.5,
+              position: 'relative',
+              zIndex: 1,
+              filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 8px rgba(255, 255, 255, 0.3))'
             }}
-            data-testid="text-cart-count"
-          >
-            {itemCount > 99 ? '99+' : itemCount}
-          </Badge>
-        )}
-      </Link>
-    </Button>
+          />
+          {itemCount > 0 && (
+            <Badge
+              className="absolute h-6 w-6 rounded-full p-0 flex items-center justify-center text-xs font-bold border-2 border-white"
+              style={{
+                top: '-8px',
+                right: '-8px',
+                background: 'linear-gradient(135deg, #D4AF37 0%, #CD7F32 100%)',
+                color: '#ffffff',
+                boxShadow: '0 2px 8px rgba(212, 175, 55, 0.5), 0 0 16px rgba(212, 175, 55, 0.4)',
+                zIndex: 9999,
+                pointerEvents: 'none',
+                transform: 'translateZ(100px)'
+              }}
+              data-testid="text-cart-count"
+            >
+              {itemCount > 99 ? '99+' : itemCount}
+            </Badge>
+          )}
+        </Link>
+      </Button>
+    </>
   );
 }

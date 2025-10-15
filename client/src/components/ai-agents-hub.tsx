@@ -507,30 +507,29 @@ export default function AIAgentsHub() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-            AI Agents Hub
-          </h1>
-          <p className="text-muted-foreground">15 specialized AI agents at your service</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Bot className="w-8 h-8 text-purple-600" />
-          <Sparkles className="w-6 h-6 text-blue-600 animate-pulse" />
-        </div>
+    <div className="space-y-8">
+      <div className="text-center">
+        <h2 className="text-4xl font-bold mb-3 bg-gradient-to-r from-[var(--fl-teal-lagoon)] via-[var(--fl-sunset-gold)] to-[var(--fl-bronze)] bg-clip-text text-transparent">
+          Choose Your AI Agent
+        </h2>
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          Select from our suite of specialized agents designed to supercharge your Florida business
+        </p>
       </div>
 
       {/* Active Tasks */}
       {Object.keys(tasks).length > 0 && (
-        <Card className="border-2 border-blue-200 dark:border-blue-900">
+        <Card className="border-2 border-[var(--fl-teal-lagoon)]/30 bg-gradient-to-br from-white/95 to-[var(--fl-teal-lagoon)]/5 shadow-lg">
           <CardHeader>
-            <CardTitle className="text-lg">Active AI Tasks</CardTitle>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Workflow className="h-5 w-5 text-[var(--fl-teal-lagoon)]" />
+              Active AI Tasks
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {Object.entries(tasks).map(([taskId, task]) => (
-                <div key={taskId} className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-900">
+                <div key={taskId} className="flex items-center justify-between p-4 rounded-lg bg-white/80 border border-[var(--fl-teal-lagoon)]/20 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center gap-3">
                     {getTaskIcon(task.status)}
                     <span className="text-sm font-medium">Task {taskId.slice(0, 8)}</span>
@@ -549,49 +548,65 @@ export default function AIAgentsHub() {
       )}
 
       <Tabs value={activeCategory} onValueChange={(v) => setActiveCategory(v as any)}>
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="all">
+        <TabsList className="grid w-full grid-cols-3 max-w-2xl mx-auto h-14 bg-white/80 shadow-lg border border-[var(--fl-teal-lagoon)]/20">
+          <TabsTrigger value="all" className="text-base font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-[var(--fl-teal-lagoon)] data-[state=active]:to-[var(--fl-sunset-gold)] data-[state=active]:text-white">
             All Agents
-            <Badge variant="secondary" className="ml-2">{AI_AGENTS.length}</Badge>
+            <Badge variant="secondary" className="ml-2 data-[state=active]:bg-white/20">{AI_AGENTS.length}</Badge>
           </TabsTrigger>
-          <TabsTrigger value="marketing">
+          <TabsTrigger value="marketing" className="text-base font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-[var(--fl-sunset-gold)] data-[state=active]:to-[var(--fl-bronze)] data-[state=active]:text-white">
             Marketing
-            <Badge variant="secondary" className="ml-2">7</Badge>
+            <Badge variant="secondary" className="ml-2 data-[state=active]:bg-white/20">7</Badge>
           </TabsTrigger>
-          <TabsTrigger value="marketplace">
+          <TabsTrigger value="marketplace" className="text-base font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-[var(--fl-teal-lagoon)] data-[state=active]:to-blue-500 data-[state=active]:text-white">
             Marketplace
-            <Badge variant="secondary" className="ml-2">8</Badge>
+            <Badge variant="secondary" className="ml-2 data-[state=active]:bg-white/20">8</Badge>
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value={activeCategory} className="mt-6">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredAgents.map((agent) => (
+        <TabsContent value={activeCategory} className="mt-8">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {filteredAgents.map((agent, index) => (
               <Card
                 key={agent.id}
-                className={`cursor-pointer transition-all hover:shadow-lg ${
-                  selectedAgent?.id === agent.id ? 'ring-2 ring-purple-500' : ''
+                className={`cursor-pointer transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 bg-white/95 backdrop-blur-sm ${
+                  selectedAgent?.id === agent.id
+                    ? 'ring-2 ring-[var(--fl-sunset-gold)] shadow-[0_0_30px_rgba(212,175,55,0.3)]'
+                    : 'hover:ring-2 hover:ring-[var(--fl-teal-lagoon)]/30'
                 }`}
                 onClick={() => setSelectedAgent(agent)}
+                style={{
+                  animationDelay: `${index * 0.05}s`
+                }}
               >
                 <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className={`p-2 rounded-lg bg-gradient-to-br ${agent.color} text-white`}>
+                  <div className="flex items-start justify-between mb-3">
+                    <div className={`p-3 rounded-xl bg-gradient-to-br ${agent.color} text-white shadow-lg transform group-hover:scale-110 transition-transform`}>
                       {agent.icon}
                     </div>
-                    <Badge variant="outline" className="text-xs">
+                    <Badge
+                      variant="outline"
+                      className="text-xs font-semibold border-[var(--fl-teal-lagoon)]/30 bg-[var(--fl-teal-lagoon)]/5"
+                    >
                       {agent.category}
                     </Badge>
                   </div>
-                  <CardTitle className="text-lg mt-3">{agent.name}</CardTitle>
-                  <CardDescription className="text-sm">{agent.description}</CardDescription>
+                  <CardTitle className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                    {agent.name}
+                  </CardTitle>
+                  <CardDescription className="text-sm leading-relaxed">
+                    {agent.description}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Button
-                    className="w-full"
-                    variant={selectedAgent?.id === agent.id ? "default" : "outline"}
+                    className={`w-full font-semibold transition-all ${
+                      selectedAgent?.id === agent.id
+                        ? 'bg-gradient-to-r from-[var(--fl-sunset-gold)] to-[var(--fl-bronze)] hover:shadow-lg'
+                        : 'bg-gradient-to-r from-[var(--fl-teal-lagoon)] to-blue-500 text-white hover:shadow-lg'
+                    }`}
+                    variant={selectedAgent?.id === agent.id ? "default" : "default"}
                   >
-                    {selectedAgent?.id === agent.id ? "Selected" : "Select Agent"}
+                    {selectedAgent?.id === agent.id ? "✓ Selected" : "Select Agent"}
                   </Button>
                 </CardContent>
               </Card>
@@ -602,16 +617,18 @@ export default function AIAgentsHub() {
 
       {/* Agent Configuration Panel */}
       {selectedAgent && (
-        <Card className="border-2 border-purple-200 dark:border-purple-900">
-          <CardHeader>
+        <Card className="border-2 border-[var(--fl-sunset-gold)]/40 bg-gradient-to-br from-white/95 to-[var(--fl-sunset-gold)]/5 shadow-2xl">
+          <CardHeader className="bg-gradient-to-r from-[var(--fl-teal-lagoon)]/10 to-[var(--fl-sunset-gold)]/10">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg bg-gradient-to-br ${selectedAgent.color} text-white`}>
+              <div className="flex items-center gap-4">
+                <div className={`p-3 rounded-xl bg-gradient-to-br ${selectedAgent.color} text-white shadow-lg`}>
                   {selectedAgent.icon}
                 </div>
                 <div>
-                  <CardTitle>{selectedAgent.name}</CardTitle>
-                  <CardDescription>{selectedAgent.description}</CardDescription>
+                  <CardTitle className="text-2xl bg-gradient-to-r from-[var(--fl-teal-lagoon)] to-[var(--fl-sunset-gold)] bg-clip-text text-transparent">
+                    {selectedAgent.name}
+                  </CardTitle>
+                  <CardDescription className="text-base">{selectedAgent.description}</CardDescription>
                 </div>
               </div>
               <Button
@@ -621,16 +638,17 @@ export default function AIAgentsHub() {
                   setSelectedAgent(null);
                   setFormData({});
                 }}
+                className="hover:bg-red-100 hover:text-red-600 rounded-full"
               >
                 ✕
               </Button>
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
+          <CardContent className="pt-6">
+            <div className="space-y-5">
               {selectedAgent.fields.map((field) => (
-                <div key={field.name}>
-                  <Label htmlFor={field.name}>
+                <div key={field.name} className="space-y-2">
+                  <Label htmlFor={field.name} className="text-sm font-semibold text-gray-700">
                     {field.label}
                     {field.required && <span className="text-red-500 ml-1">*</span>}
                   </Label>
@@ -640,14 +658,15 @@ export default function AIAgentsHub() {
                       placeholder={field.placeholder}
                       value={formData[field.name] || ''}
                       onChange={(e) => setFormData(prev => ({ ...prev, [field.name]: e.target.value }))}
-                      className="mt-1"
+                      className="border-[var(--fl-teal-lagoon)]/30 focus:border-[var(--fl-sunset-gold)] focus:ring-[var(--fl-sunset-gold)] bg-white/80"
+                      rows={4}
                     />
                   ) : field.type === 'select' ? (
                     <Select
                       value={formData[field.name] || ''}
                       onValueChange={(value) => setFormData(prev => ({ ...prev, [field.name]: value }))}
                     >
-                      <SelectTrigger className="mt-1">
+                      <SelectTrigger className="border-[var(--fl-teal-lagoon)]/30 focus:border-[var(--fl-sunset-gold)] focus:ring-[var(--fl-sunset-gold)] bg-white/80">
                         <SelectValue placeholder={`Select ${field.label.toLowerCase()}`} />
                       </SelectTrigger>
                       <SelectContent>
@@ -665,26 +684,26 @@ export default function AIAgentsHub() {
                       placeholder={field.placeholder}
                       value={formData[field.name] || ''}
                       onChange={(e) => setFormData(prev => ({ ...prev, [field.name]: e.target.value }))}
-                      className="mt-1"
+                      className="border-[var(--fl-teal-lagoon)]/30 focus:border-[var(--fl-sunset-gold)] focus:ring-[var(--fl-sunset-gold)] bg-white/80"
                     />
                   )}
                 </div>
               ))}
 
-              <div className="flex gap-3 pt-4">
+              <div className="flex gap-3 pt-6 border-t border-[var(--fl-teal-lagoon)]/20">
                 <Button
                   onClick={handleSubmit}
                   disabled={executeMutation.isPending}
-                  className="flex-1"
+                  className="flex-1 h-12 text-base font-semibold bg-gradient-to-r from-[var(--fl-sunset-gold)] to-[var(--fl-bronze)] hover:shadow-xl transition-all"
                 >
                   {executeMutation.isPending ? (
                     <>
-                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                      <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
                       Processing...
                     </>
                   ) : (
                     <>
-                      <Zap className="w-4 h-4 mr-2" />
+                      <Zap className="w-5 h-5 mr-2" />
                       Execute AI Agent
                     </>
                   )}
@@ -693,6 +712,7 @@ export default function AIAgentsHub() {
                   variant="outline"
                   onClick={() => setFormData({})}
                   disabled={executeMutation.isPending}
+                  className="h-12 px-8 border-[var(--fl-teal-lagoon)]/30 hover:bg-[var(--fl-teal-lagoon)]/10"
                 >
                   Clear
                 </Button>

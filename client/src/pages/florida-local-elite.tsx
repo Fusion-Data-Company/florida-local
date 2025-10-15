@@ -22,6 +22,10 @@ import { ProgressiveBlur } from "@/components/ui/progressive-blur";
 import VaporizeTextCycle, { Tag } from "@/components/ui/vapour-text-effect";
 import { ScrollXCarousel, ScrollXCarouselContainer, ScrollXCarouselProgress, ScrollXCarouselWrap } from "@/components/ui/scroll-x-carousel";
 import { CardHoverReveal, CardHoverRevealContent, CardHoverRevealMain } from "@/components/ui/reveal-on-hover";
+import BusinessAdvertPromo from "@/components/ui/business-advert-promo";
+import ContentCreatorPromo from "@/components/ui/content-creator-promo";
+import { ThreeDPhotoCarousel } from "@/components/ui/3d-carousel";
+import { OfferCarousel, type Offer } from "@/components/ui/offer-carousel";
 
 // Premium Metallic Badge Component
 const MetallicBadge = ({ children, color = "gold", className = "" }: { children: React.ReactNode; color?: "gold" | "platinum" | "bronze" | "emerald" | "ruby"; className?: string }) => {
@@ -84,18 +88,20 @@ export default function FloridaLocalElite() {
   const [activeTab, setActiveTab] = useState("restaurants");
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-50">
+    <div className="min-h-screen relative overflow-hidden">
       {/* ULTRA PREMIUM EFFECTS */}
       <AuroraAmbient intensity="medium" />
       <HoverTrail />
 
       {/* CONTENT WRAPPER - Above all effects - PROPER Z-INDEX */}
       <div className="relative" style={{ zIndex: 10 }}>
-      {/* 1. SITE HEADER / NAVIGATION */}
-      <EliteNavigationHeader />
+      {/* 1. SITE HEADER / NAVIGATION - HIGHEST Z-INDEX */}
+      <div className="sticky top-0" style={{ zIndex: 9999 }}>
+        <EliteNavigationHeader />
+      </div>
 
-      {/* 2. NEW HERO SECTION WITH VIDEO BACKGROUND */}
-      <section className="relative overflow-hidden min-h-[600px] md:min-h-[700px] lg:min-h-[800px]">
+      {/* 2. NEW HERO SECTION WITH VIDEO BACKGROUND - SCROLLS TO FRONT */}
+      <section className="relative overflow-hidden min-h-[700px] md:min-h-[850px] lg:min-h-[100vh]" style={{ zIndex: 1000 }}>
         {/* Video Background */}
         <div className="absolute inset-0 w-full h-full overflow-hidden">
           <video
@@ -104,6 +110,11 @@ export default function FloridaLocalElite() {
             muted
             playsInline
             className="w-full h-full object-cover"
+            style={{
+              objectPosition: 'center bottom',
+              transform: 'scale(1.15)',
+              transformOrigin: 'center bottom'
+            }}
             src="/attached_assets/17853291-uhd_3840_2160_30fps_1760213055083.mp4"
           />
           {/* Video overlay for better text readability */}
@@ -111,180 +122,137 @@ export default function FloridaLocalElite() {
         </div>
 
         {/* Content Overlay - Absolutely positioned on video */}
-        <div className="relative z-10 min-h-[600px] md:min-h-[700px] lg:min-h-[800px]">
-          {/* LOGO WITH SUBTLE GLOW - FORCED TO LEFT EDGE */}
-          <div className="absolute bottom-32 md:bottom-40 lg:bottom-48 left-0 -ml-16 md:-ml-24 lg:-ml-32" style={{ transform: 'translateX(-120px)' }}>
+        <div className="relative min-h-[700px] md:min-h-[850px] lg:min-h-[100vh]" style={{ zIndex: 10 }}>
+
+          {/* LARGE CENTERED LOGO - WITH GLOW */}
+          <div className="absolute left-1/2 top-[38.5%] -translate-x-1/2 -translate-y-1/2" style={{ zIndex: 100 }}>
+            {/* Outer glow ring */}
+            <div className="absolute inset-0 animate-pulse" style={{
+              background: 'radial-gradient(circle, rgba(251,191,36,0.2) 0%, transparent 70%)',
+              filter: 'blur(60px)',
+              transform: 'scale(1.3)'
+            }}></div>
+
             <img
-              src="/attached_assets/me_1760215801481.png"
-              alt="The Florida Local"
-              className="w-[500px] md:w-[800px] lg:w-[1000px] h-auto transition-all duration-500 animate-float logo-subtle-glow"
-              data-testid="img-hero-logo"
+              src="/logo-big.png"
+              alt="Florida Local"
+              className="w-auto object-contain relative z-10"
+              style={{
+                width: '70vw',
+                height: '70vh',
+                maxWidth: 'none',
+                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.9)) drop-shadow(0 4px 8px rgba(0,0,0,0.8)) drop-shadow(0 0 60px rgba(251,191,36,0.5)) drop-shadow(0 0 100px rgba(251,191,36,0.3)) drop-shadow(0 20px 40px rgba(0,0,0,0.6)) drop-shadow(0 0 120px rgba(255,255,255,0.4))'
+              }}
             />
+
+            {/* Bottom spotlight effect */}
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-32 opacity-50" style={{
+              background: 'radial-gradient(ellipse at center, rgba(251,191,36,0.4) 0%, transparent 70%)',
+              filter: 'blur(40px)'
+            }}></div>
           </div>
 
-          {/* ULTRA ELEGANT TAGLINE WITH STYLED CAPITALS - CENTERED ACROSS BOTTOM */}
-          <div className="absolute bottom-12 md:bottom-16 lg:bottom-20 left-0 right-0 w-full px-4">
-            <p className="text-center text-4xl md:text-5xl lg:text-6xl leading-relaxed tracking-wide whitespace-nowrap" data-testid="text-hero-tagline">
+          {/* ULTRA ELEGANT TAGLINE WITH STYLED CAPITALS - HIGHER UP */}
+          <div className="absolute bottom-32 md:bottom-40 lg:bottom-48 left-0 right-0 w-full px-4" style={{ zIndex: 50 }}>
+            <p className="text-center text-5xl md:text-6xl lg:text-7xl leading-relaxed tracking-wide whitespace-nowrap" data-testid="text-hero-tagline">
               <span className="inline-block relative">
-                <span className="text-white/90 drop-shadow-lg">Life's is </span>
-                <span 
-                  className="font-bold tracking-wider drop-shadow-[0_0_20px_rgba(251,191,36,0.6)] gold-underline"
+                <span className="text-white/90" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8))' }}>Life is </span>
+                <span
+                  className="font-bold tracking-wider gold-underline"
                   style={{
                     background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #fbbf24 100%)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                     backgroundClip: 'text',
-                    textShadow: '0 0 30px rgba(251,191,36,0.5)',
+                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8)) drop-shadow(0 0 20px rgba(251,191,36,0.6))',
                   }}
                 >
                   BETTER
                 </span>
-                <span className="text-white/90 drop-shadow-lg"> when you're </span>
-                <span 
-                  className="font-bold tracking-wider drop-shadow-[0_0_20px_rgba(251,191,36,0.6)] gold-underline"
+                <span className="text-white/90" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8))' }}> when you're </span>
+                <span
+                  className="font-bold tracking-wider gold-underline"
                   style={{
                     background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #fbbf24 100%)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                     backgroundClip: 'text',
-                    textShadow: '0 0 30px rgba(251,191,36,0.5)',
+                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8)) drop-shadow(0 0 20px rgba(251,191,36,0.6))',
                   }}
                 >
                   LIVING
                 </span>
-                <span className="text-white/90 drop-shadow-lg"> </span>
-                <span 
-                  className="font-bold tracking-wider drop-shadow-[0_0_20px_rgba(251,191,36,0.6)] gold-underline"
+                <span className="text-white/90" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8))' }}> </span>
+                <span
+                  className="font-bold tracking-wider gold-underline"
                   style={{
                     background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #fbbf24 100%)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                     backgroundClip: 'text',
-                    textShadow: '0 0 30px rgba(251,191,36,0.5)',
+                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8)) drop-shadow(0 0 20px rgba(251,191,36,0.6))',
                   }}
                 >
                   LIKE
                 </span>
-                <span className="text-white/90 drop-shadow-lg"> a </span>
-                <span 
-                  className="font-bold tracking-wider drop-shadow-[0_0_20px_rgba(251,191,36,0.6)] gold-underline"
+                <span className="text-white/90" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8))' }}> a </span>
+                <span
+                  className="font-bold tracking-wider gold-underline"
                   style={{
                     background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #fbbf24 100%)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                     backgroundClip: 'text',
-                    textShadow: '0 0 30px rgba(251,191,36,0.5)',
+                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8)) drop-shadow(0 0 20px rgba(251,191,36,0.6))',
                   }}
                 >
                   LOCAL
                 </span>
-                <span className="text-white/90 drop-shadow-lg">.</span>
+                <span className="text-white/90" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8))' }}>.</span>
               </span>
             </p>
           </div>
-        </div>
-      </section>
 
-      {/* 2.5 SCROLLING BRAND BAR */}
-      <section className="bg-background pb-2">
-        <div className="group relative m-auto max-w-7xl px-6">
-          <div className="flex flex-col items-center md:flex-row">
-            <div className="md:max-w-44 md:border-r md:pr-6">
-              <p className="text-end text-sm dark:text-white">Powering the best teams</p>
-            </div>
-            <div className="relative py-6 md:w-[calc(100%-11rem)]">
-              <InfiniteSlider
-                speedOnHover={40}
-                speed={80}
-                gap={112}>
-                <div className="flex">
-                  <img
-                    className="mx-auto h-5 w-fit dark:invert"
-                    src="https://html.tailus.io/blocks/customers/nvidia.svg"
-                    alt="Nvidia Logo"
-                    height="20"
-                    width="auto"
-                  />
+          {/* SCROLLING BRAND BAR - BELOW TAGLINE */}
+          <div className="absolute bottom-2 md:bottom-4 lg:bottom-6 left-0 right-0 w-full" style={{ zIndex: 30 }}>
+            <div className="mx-auto max-w-7xl px-6 py-4 bg-white/10 backdrop-blur-md rounded-2xl">
+              <div className="group relative m-auto max-w-7xl px-6">
+                <div className="flex flex-col items-center md:flex-row">
+                  <div className="md:max-w-44 md:border-r md:border-white/30 md:pr-6">
+                    <p className="text-end text-sm text-white/90 font-medium">Powering the best teams</p>
+                  </div>
+                  <div className="relative py-6 md:w-[calc(100%-11rem)]">
+                    <InfiniteSlider speedOnHover={40} speed={80} gap={112}>
+                      <div className="flex">
+                        <img className="mx-auto h-5 w-fit brightness-0 invert" src="https://html.tailus.io/blocks/customers/nvidia.svg" alt="Nvidia Logo" height="20" width="auto" />
+                      </div>
+                      <div className="flex">
+                        <img className="mx-auto h-4 w-fit brightness-0 invert" src="https://html.tailus.io/blocks/customers/column.svg" alt="Column Logo" height="16" width="auto" />
+                      </div>
+                      <div className="flex">
+                        <img className="mx-auto h-4 w-fit brightness-0 invert" src="https://html.tailus.io/blocks/customers/github.svg" alt="GitHub Logo" height="16" width="auto" />
+                      </div>
+                      <div className="flex">
+                        <img className="mx-auto h-5 w-fit brightness-0 invert" src="https://html.tailus.io/blocks/customers/nike.svg" alt="Nike Logo" height="20" width="auto" />
+                      </div>
+                      <div className="flex">
+                        <img className="mx-auto h-5 w-fit brightness-0 invert" src="https://html.tailus.io/blocks/customers/lemonsqueezy.svg" alt="Lemon Squeezy Logo" height="20" width="auto" />
+                      </div>
+                      <div className="flex">
+                        <img className="mx-auto h-4 w-fit brightness-0 invert" src="https://html.tailus.io/blocks/customers/laravel.svg" alt="Laravel Logo" height="16" width="auto" />
+                      </div>
+                      <div className="flex">
+                        <img className="mx-auto h-7 w-fit brightness-0 invert" src="https://html.tailus.io/blocks/customers/lilly.svg" alt="Lilly Logo" height="28" width="auto" />
+                      </div>
+                      <div className="flex">
+                        <img className="mx-auto h-6 w-fit brightness-0 invert" src="https://html.tailus.io/blocks/customers/openai.svg" alt="OpenAI Logo" height="24" width="auto" />
+                      </div>
+                    </InfiniteSlider>
+                    <ProgressiveBlur className="pointer-events-none absolute left-0 top-0 h-full w-20" direction="left" blurIntensity={1} />
+                    <ProgressiveBlur className="pointer-events-none absolute right-0 top-0 h-full w-20" direction="right" blurIntensity={1} />
+                  </div>
                 </div>
-
-                <div className="flex">
-                  <img
-                    className="mx-auto h-4 w-fit dark:invert"
-                    src="https://html.tailus.io/blocks/customers/column.svg"
-                    alt="Column Logo"
-                    height="16"
-                    width="auto"
-                  />
-                </div>
-                <div className="flex">
-                  <img
-                    className="mx-auto h-4 w-fit dark:invert"
-                    src="https://html.tailus.io/blocks/customers/github.svg"
-                    alt="GitHub Logo"
-                    height="16"
-                    width="auto"
-                  />
-                </div>
-                <div className="flex">
-                  <img
-                    className="mx-auto h-5 w-fit dark:invert"
-                    src="https://html.tailus.io/blocks/customers/nike.svg"
-                    alt="Nike Logo"
-                    height="20"
-                    width="auto"
-                  />
-                </div>
-                <div className="flex">
-                  <img
-                    className="mx-auto h-5 w-fit dark:invert"
-                    src="https://html.tailus.io/blocks/customers/lemonsqueezy.svg"
-                    alt="Lemon Squeezy Logo"
-                    height="20"
-                    width="auto"
-                  />
-                </div>
-                <div className="flex">
-                  <img
-                    className="mx-auto h-4 w-fit dark:invert"
-                    src="https://html.tailus.io/blocks/customers/laravel.svg"
-                    alt="Laravel Logo"
-                    height="16"
-                    width="auto"
-                  />
-                </div>
-                <div className="flex">
-                  <img
-                    className="mx-auto h-7 w-fit dark:invert"
-                    src="https://html.tailus.io/blocks/customers/lilly.svg"
-                    alt="Lilly Logo"
-                    height="28"
-                    width="auto"
-                  />
-                </div>
-
-                <div className="flex">
-                  <img
-                    className="mx-auto h-6 w-fit dark:invert"
-                    src="https://html.tailus.io/blocks/customers/openai.svg"
-                    alt="OpenAI Logo"
-                    height="24"
-                    width="auto"
-                  />
-                </div>
-              </InfiniteSlider>
-
-              <div className="bg-linear-to-r from-background absolute inset-y-0 left-0 w-20"></div>
-              <div className="bg-linear-to-l from-background absolute inset-y-0 right-0 w-20"></div>
-              <ProgressiveBlur
-                className="pointer-events-none absolute left-0 top-0 h-full w-20"
-                direction="left"
-                blurIntensity={1}
-              />
-              <ProgressiveBlur
-                className="pointer-events-none absolute right-0 top-0 h-full w-20"
-                direction="right"
-                blurIntensity={1}
-              />
+              </div>
             </div>
           </div>
         </div>
@@ -314,6 +282,9 @@ export default function FloridaLocalElite() {
           />
         </div>
       </section>
+
+      {/* PREMIUM ADVERTISEMENT BLOCK 1 - Prime Above-the-Fold Position */}
+      <BusinessAdvertPromo variant={1} />
 
       {/* 3. FOODIES, CREATORS & COLLABORATORS CAROUSEL - HORIZONTAL SCROLL */}
       <ScrollXCarousel className="h-auto bg-black pb-16">
@@ -420,7 +391,11 @@ export default function FloridaLocalElite() {
       </ScrollXCarousel>
 
       {/* 4. FEATURING | THE FLORIDA LOCAL LIFESTYLE - PREMIUM GLASS */}
-      <section className="py-20 relative overflow-hidden bg-gradient-to-br from-pink-50 via-purple-50 to-white">
+      <section className="py-20 relative overflow-hidden abstract-glass-premium" style={{
+        backgroundImage: "url('/backgrounds/colorful-series-circles-with-orange-blue-colors_889056-245202.jpg')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}>
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <Card
@@ -478,7 +453,11 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 5. FLORIDA LAKE LIFE FEATURE - PREMIUM GLASS */}
-      <section className="py-20 relative overflow-hidden bg-gradient-to-br from-blue-50 via-purple-50 to-white">
+      <section className="py-20 relative overflow-hidden abstract-glass-premium" style={{
+        backgroundImage: "url('/backgrounds/208414429-a-close-up-of-a-colorful-abstract-painting-generative-ai-image.jpg')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}>
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <Card
@@ -508,7 +487,7 @@ export default function FloridaLocalElite() {
                 </div>
                 <div className="relative h-96 md:h-auto overflow-hidden">
                   <img
-                    src="/florida-local/Screen_Shot_2023_07_17_at_7_21_79.jpg"
+                    src="/florida-local/Screen_Shot_2023_07_17_at_7_21_79.png"
                     alt="Florida Lake Life"
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
@@ -520,8 +499,49 @@ export default function FloridaLocalElite() {
         </div>
       </section>
 
+      {/* 5.5 SEPARATOR - JOIN THE FLORIDA LOCAL COMMUNITY */}
+      <section className="py-16 bg-gradient-to-br from-orange-50 via-blue-50 to-purple-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-orange-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Discover The Florida Local Lifestyle
+            </h2>
+            <p className="text-xl text-gray-700 mb-8 leading-relaxed">
+              Join thousands of locals exploring the best food, experiences, and hidden gems across Florida.
+              From lake life adventures to foodie hotspots, we're your guide to living like a true local.
+            </p>
+            <div className="flex flex-wrap gap-4 justify-center items-center">
+              <Button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-lg px-8 py-6 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300">
+                Join Our Community
+              </Button>
+              <Button variant="outline" className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 text-lg px-8 py-6 rounded-full">
+                Explore Features
+              </Button>
+            </div>
+            <div className="mt-12 grid grid-cols-3 gap-6 max-w-2xl mx-auto">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-orange-600 mb-2">500+</div>
+                <div className="text-sm text-gray-600">Local Businesses</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-blue-600 mb-2">10K+</div>
+                <div className="text-sm text-gray-600">Community Members</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-purple-600 mb-2">1000+</div>
+                <div className="text-sm text-gray-600">Featured Posts</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* 6. FEATURED | LOCAL YELP ELITE - PREMIUM FOODIE SECTION */}
-      <section className="py-20 relative overflow-hidden bg-gradient-to-br from-orange-50 via-pink-50 to-purple-50">
+      <section className="py-20 relative overflow-hidden abstract-glass-premium" style={{
+        backgroundImage: "url('/backgrounds/dynamic-abstract-patterns-with-overlapping-circles-spirals-creating-sense-motion_36897-73531.avif')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}>
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {/* Left Column - Premium Glass Card */}
@@ -609,8 +629,15 @@ export default function FloridaLocalElite() {
         </div>
       </section>
 
+      {/* PREMIUM ADVERTISEMENT BLOCK 2 - Mid-Content High-Engagement Zone */}
+      <BusinessAdvertPromo variant={2} />
+
       {/* 7. LOCALS | EAST ORLANDO FLAVOR - TURULL'S BOQUERIA */}
-      <section className="py-12 lg:py-20 bg-gradient-to-br from-blue-50 via-purple-50 to-white">
+      <section className="py-12 lg:py-20 relative overflow-hidden abstract-glass-premium" style={{
+        backgroundImage: "url('/backgrounds/abstract-composition-glowing-bubbles-dark-background-with-orange-blue-tones_1090747-6434.avif')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}>
         <div className="container mx-auto px-4 max-w-6xl">
           <h2 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
             Locals | East Orlando Flavor
@@ -823,7 +850,11 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 11. ENTREPRENEURS, CREATORS & COLLABORATORS */}
-      <section className="py-12 lg:py-20 bg-gradient-to-br from-green-50 via-blue-50 to-white">
+      <section className="py-12 lg:py-20 relative overflow-hidden abstract-glass-premium" style={{
+        backgroundImage: "url('/backgrounds/360_F_652778958_COkVj7I3ibeJHDY0fKzEuHj5ptec0AB3.jpg')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}>
         <div className="container mx-auto px-4">
           <div className="flex justify-center mb-12">
             <MetallicBadge color="emerald" className="text-2xl px-10 py-5">
@@ -854,8 +885,15 @@ export default function FloridaLocalElite() {
         </div>
       </section>
 
+      {/* PREMIUM ADVERTISEMENT BLOCK 3 - Deep-Content Authority Position */}
+      <BusinessAdvertPromo variant={3} />
+
       {/* 12. IPOWER MOVES & CARIBBEAN LOCALS SLIDER */}
-      <section className="py-12 lg:py-20 bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
+      <section className="py-12 lg:py-20 relative overflow-hidden abstract-glass-premium" style={{
+        backgroundImage: "url('/backgrounds/abstract-composition-with-intertwined-orange-blue-curves-wave-aig51_31965-634212.avif')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}>
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto mb-12">
             <Card className="rounded-3xl shadow-2xl overflow-hidden">
@@ -903,7 +941,11 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 13. DENTAL SPOTLIGHT - SIAN DENTAL STUDIO */}
-      <section className="py-12 lg:py-20 bg-gradient-to-br from-blue-50 via-purple-50 to-white">
+      <section className="py-12 lg:py-20 relative overflow-hidden abstract-glass-premium" style={{
+        backgroundImage: "url('/backgrounds/colorful-painting-with-black-background-white-blue-background_380557-143.avif')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}>
         <div className="container mx-auto px-4 max-w-6xl">
           <h2 className="text-5xl font-bold text-center mb-4">
             ORLANDO | Your SMILE Is Contagious
@@ -953,7 +995,11 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 14. THE FLORIDA LOCAL - FEATURED COLLABORATORS & FOODIE EXPERTS */}
-      <section className="py-12 lg:py-20 bg-gradient-to-br from-green-50 via-purple-50 to-pink-50">
+      <section className="py-12 lg:py-20 relative overflow-hidden abstract-glass-premium" style={{
+        backgroundImage: "url('/backgrounds/abstract-composition-glowing-bubbles-dark-background-with-orange-blue-tones_1090747-6434.avif')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}>
         <div className="container mx-auto px-4">
           <div className="flex justify-center mb-6">
             <MetallicBadge color="emerald" className="text-xl px-8 py-4">
@@ -1014,7 +1060,11 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 15. IPOWERMOVES - INDEPENDENT POWER MOVES */}
-      <section className="py-12 lg:py-20 bg-gradient-to-br from-orange-50 via-pink-50 to-white">
+      <section className="py-12 lg:py-20 relative overflow-hidden abstract-glass-premium" style={{
+        backgroundImage: "url('/backgrounds/colorful-painting-with-black-background-white-blue-background_380557-143.avif')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}>
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <Card className="rounded-3xl shadow-2xl overflow-hidden">
@@ -1038,7 +1088,11 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 16. CILANTRILLO RESTAURANT MENU & FOODIE POSTS */}
-      <section className="py-12 lg:py-20 bg-gradient-to-br from-purple-50 via-pink-50 to-white">
+      <section className="py-12 lg:py-20 relative overflow-hidden abstract-glass-premium" style={{
+        backgroundImage: "url('/backgrounds/abstract-composition-with-intertwined-orange-blue-curves-wave-aig51_31965-634212.avif')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}>
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="grid md:grid-cols-2 gap-8">
             {/* Left: Foodie Posts */}
@@ -1108,7 +1162,11 @@ export default function FloridaLocalElite() {
       {/* 17. #EFFINTRENDY - MUSIC, FASHION & LIFESTYLE (Already included earlier, enhanced version) */}
 
       {/* 18. FEATURED ENTREPRENEURS - IFASTSOCIAL ENDORSEMENT */}
-      <section className="py-12 lg:py-20 bg-gradient-to-br from-yellow-50 via-orange-50 to-white">
+      <section className="py-12 lg:py-20 relative overflow-hidden abstract-glass-premium" style={{
+        backgroundImage: "url('/backgrounds/360_F_652778958_COkVj7I3ibeJHDY0fKzEuHj5ptec0AB3.jpg')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}>
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <Card className="rounded-3xl shadow-2xl overflow-hidden">
@@ -1134,8 +1192,15 @@ export default function FloridaLocalElite() {
         </div>
       </section>
 
+      {/* CONTENT CREATOR PROMO BLOCK 1 - Pre-Creator Section Hook */}
+      <ContentCreatorPromo variant={1} />
+
       {/* 19. #IPOWERMOVES - ENTREPRENEUR SPOTLIGHT & CREATORS GRID */}
-      <section className="py-12 lg:py-20 bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
+      <section className="py-12 lg:py-20 relative overflow-hidden abstract-glass-premium" style={{
+        backgroundImage: "url('/backgrounds/dynamic-abstract-patterns-with-overlapping-circles-spirals-creating-sense-motion_36897-73531.avif')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}>
         <div className="container mx-auto px-4">
           <div className="flex justify-center mb-12">
             <MetallicBadge color="platinum" className="text-2xl px-10 py-5">
@@ -1190,32 +1255,100 @@ export default function FloridaLocalElite() {
         </div>
       </section>
 
-      {/* 20. CATEGORIES & TAG CLUSTERS */}
-      <section className="py-12 lg:py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-12">Explore By Category</h2>
-          
-          <div className="flex gap-4 overflow-x-auto pb-4 max-w-7xl mx-auto scrollbar-hide">
-            {[
-              { tag: "#ItsGoodAf", count: 30, color: "from-orange-400 to-red-500" },
-              { tag: "#KidPowerMoves", count: 1, color: "from-blue-400 to-cyan-500" },
-              { tag: "#NeverHuntAlone", count: 1, color: "from-green-400 to-emerald-500" },
-              { tag: "#SideHustles", count: 3, color: "from-purple-400 to-pink-500" },
-              { tag: "#EffinTrendy", count: 13, color: "from-pink-400 to-rose-500" },
-              { tag: "#iFastSocial", count: 14, color: "from-yellow-400 to-orange-500" },
-              { tag: "#incrediblein", count: 18, color: "from-indigo-400 to-purple-500" },
-              { tag: "#iPowerMoves", count: 6, color: "from-teal-400 to-blue-500" }
-            ].map((item, i) => (
-              <Card key={i} className={`flex-shrink-0 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer min-w-[280px]`}>
-                <div className={`h-32 bg-gradient-to-br ${item.color} flex items-center justify-center`}>
-                  <div className="w-12 h-12 rounded-full bg-white/30 backdrop-blur-sm"></div>
-                </div>
-                <CardContent className="p-6">
-                  <h4 className="font-bold text-xl mb-2">{item.tag}</h4>
-                  <p className="text-gray-600">{item.count} Post{item.count !== 1 ? 's' : ''}</p>
-                </CardContent>
-              </Card>
-            ))}
+      {/* CONTENT CREATOR PROMO BLOCK 2 - Post-Creator Section Conversion */}
+      <ContentCreatorPromo variant={2} />
+
+      {/* 20. EXPLORE BY CATEGORY - OFFER CAROUSEL */}
+      <section className="py-12 lg:py-20 relative overflow-hidden abstract-glass-premium" style={{
+        backgroundImage: "url('/backgrounds/geometric-lines-intersecting-with-organic-shapes-hd-4k_964851-163761.jpg')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}>
+        {/* Subtle background texture */}
+        <div className="absolute inset-0 opacity-[0.02]" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E")`
+        }} />
+
+        {/* Radial gradient vignette */}
+        <div className="absolute inset-0 opacity-[0.15] bg-[radial-gradient(80%_60%_at_50%_40%,rgba(180,230,255,.3),transparent_70%)]" />
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-7xl mx-auto">
+            {/* Premium heading with glass effect */}
+            <div className="text-center mb-12">
+              <h2 className="text-5xl lg:text-6xl font-bold mb-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent tracking-tight">
+                Explore By Category
+              </h2>
+              <p className="text-lg text-gray-600 font-medium tracking-wide">
+                Discover exclusive local offers and experiences
+              </p>
+            </div>
+
+            {/* Offer Carousel */}
+            <OfferCarousel
+              offers={[
+                {
+                  id: 1,
+                  imageSrc: "/florida-local/IMG_6248_120.jpg",
+                  imageAlt: "ItsGoodAF - Local food experiences",
+                  tag: "Food & Dining",
+                  title: "#ItsGoodAF",
+                  description: "Discover the best local restaurants and food experiences in Florida.",
+                  brandLogoSrc: "/i-am-the-logo.png",
+                  brandName: "The Florida Local",
+                  promoCode: "30 Featured Posts",
+                  href: "#",
+                },
+                {
+                  id: 2,
+                  imageSrc: "/florida-local/IMG_9321_1_qri8nzeahveri4j4nbg_65.png",
+                  imageAlt: "KidPowerMoves - Family activities",
+                  tag: "Family & Kids",
+                  title: "#KidPowerMoves",
+                  description: "Family-friendly activities and adventures for the young ones.",
+                  brandLogoSrc: "/i-am-the-logo.png",
+                  brandName: "The Florida Local",
+                  promoCode: "1 Featured Post",
+                  href: "#",
+                },
+                {
+                  id: 3,
+                  imageSrc: "/florida-local/Never_Hunt_Alone_Logo_47.png",
+                  imageAlt: "NeverHuntAlone - Community collaboration",
+                  tag: "Community",
+                  title: "#NeverHuntAlone",
+                  description: "Connect with local entrepreneurs, creators, and collaborators.",
+                  brandLogoSrc: "/i-am-the-logo.png",
+                  brandName: "The Florida Local",
+                  promoCode: "1 Featured Post",
+                  href: "#",
+                },
+                {
+                  id: 4,
+                  imageSrc: "/florida-local/how_to_make_a_website_like_onl_11.png",
+                  imageAlt: "SideHustles - Entrepreneurship",
+                  tag: "Business",
+                  title: "#SideHustles",
+                  description: "Explore side hustle opportunities and entrepreneurial ventures.",
+                  brandLogoSrc: "/i-am-the-logo.png",
+                  brandName: "The Florida Local",
+                  promoCode: "3 Featured Posts",
+                  href: "#",
+                },
+                {
+                  id: 5,
+                  imageSrc: "/florida-local/3E6A3388_scaled_qri8nygjylpn3c_7.jpg",
+                  imageAlt: "EffinTrendy - Fashion and lifestyle",
+                  tag: "Fashion & Lifestyle",
+                  title: "#EffinTrendy",
+                  description: "Stay updated with the latest trends in fashion, music, and lifestyle.",
+                  brandLogoSrc: "/i-am-the-logo.png",
+                  brandName: "The Florida Local",
+                  promoCode: "13 Featured Posts",
+                  href: "#",
+                },
+              ]}
+            />
           </div>
         </div>
       </section>

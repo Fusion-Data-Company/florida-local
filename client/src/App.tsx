@@ -33,6 +33,7 @@ import AdminAnalytics from "@/pages/admin-analytics";
 import BusinessAnalytics from "@/pages/business-analytics";
 import AdminDashboard from "@/pages/admin-dashboard";
 import BusinessDashboard from "@/pages/business-dashboard";
+import SubscriptionPage from "@/pages/subscription";
 
 // Marketing Pages
 import MarketingHub from "@/pages/marketing-hub";
@@ -67,6 +68,7 @@ function Router() {
       <Route path="/florida-elite" component={FloridaLocalElite} />
       <Route path="/florida-local" component={FloridaLocalElite} />
       <Route path="/registry" component={Registry} />
+      <Route path="/subscription" component={SubscriptionPage} />
 
       {isLoading || !isAuthenticated ? (
         <Route path="/" component={Landing} />

@@ -204,11 +204,19 @@ export default function Checkout() {
   if (!isAuthenticated) {
     return (
       <div
-        className="premium-page-wrapper premium-surface min-h-screen marble-texture relative"
+        className="premium-page-wrapper premium-surface min-h-screen relative"
+        style={{
+          backgroundImage: "url('/backgrounds/360_F_652778958_COkVj7I3ibeJHDY0fKzEuHj5ptec0AB3.jpg')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed'
+        }}
         data-surface-intensity="delicate"
         data-surface-tone="cool"
       >
+        <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-green-50/88 to-blue-50/88 backdrop-blur-md" />
         <AuroraAmbient intensity="low" />
+        <div className="relative z-10">
         <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-12 text-center relative z-10">
           <Transform3DCard className="entrance-scale-fade">
@@ -227,6 +235,7 @@ export default function Checkout() {
           </Transform3DCard>
         </div>
         <MobileBottomNav />
+        </div>
       </div>
     );
   }
@@ -234,7 +243,7 @@ export default function Checkout() {
   if (cartLoading) {
     return (
       <div
-        className="premium-page-wrapper premium-surface min-h-screen marble-texture flex items-center justify-center"
+        className="premium-page-wrapper premium-surface min-h-screen marble-texture abstract-overlay-light flex items-center justify-center"
         data-surface-intensity="delicate"
         data-surface-tone="cool"
       >
@@ -246,7 +255,7 @@ export default function Checkout() {
   if (cartItems.length === 0) {
     return (
       <div
-        className="premium-page-wrapper premium-surface min-h-screen marble-texture relative"
+        className="premium-page-wrapper premium-surface min-h-screen marble-texture abstract-overlay-light relative"
         data-surface-intensity="delicate"
         data-surface-tone="cool"
       >
@@ -275,13 +284,21 @@ export default function Checkout() {
 
   return (
     <div
-      className="premium-page-wrapper premium-surface min-h-screen marble-texture relative"
+      className="premium-page-wrapper premium-surface min-h-screen relative"
+      style={{
+        backgroundImage: "url('/backgrounds/360_F_652778958_COkVj7I3ibeJHDY0fKzEuHj5ptec0AB3.jpg')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
       data-surface-intensity="delicate"
       data-surface-tone="cool"
     >
+      <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-green-50/88 to-blue-50/88 backdrop-blur-md" />
       {/* ULTRA PREMIUM EFFECTS */}
       <AuroraAmbient intensity="low" />
 
+      <div className="relative z-10">
       <EliteNavigationHeader />
 
       {/* FLORIDA LOCAL CHECKOUT HERO */}
@@ -589,6 +606,7 @@ export default function Checkout() {
       </div>
 
       <MobileBottomNav />
+      </div>
     </div>
   );
 }

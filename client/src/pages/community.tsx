@@ -8,33 +8,39 @@ import { Button } from "@/components/ui/button";
 import { Users, Trophy, Heart, MessageCircle, ShoppingBag, TrendingUp, Star, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
+import { CtaCard } from "@/components/ui/call-to-action-cta";
+import SphereHero from "@/components/ui/geometric-sphere";
 
 export default function CommunityPage() {
   return (
-    <div className="premium-page-wrapper premium-surface min-h-screen marble-texture">
+    <div
+      className="premium-page-wrapper premium-surface min-h-screen relative"
+      style={{
+        backgroundImage: "url('/backgrounds/abstract-composition-with-intertwined-orange-blue-curves-wave-aig51_31965-634212.avif')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
+      <div className="relative z-10">
       <EliteNavigationHeader />
 
-      {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white">
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent_70%)]" />
-        </div>
+      {/* Geometric Sphere Hero Section */}
+      <SphereHero />
 
-        <div className="container mx-auto px-4 py-20 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center"
-          >
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <Users className="h-16 w-16" />
-              <h1 className="text-6xl font-bold">Florida Local Community</h1>
-            </div>
-            <p className="text-2xl opacity-90 max-w-3xl mx-auto">
-              Join Florida's most vibrant community of local businesses and supporters
-            </p>
-          </motion.div>
-        </div>
+      {/* CTA Hero Section */}
+      <div className="container mx-auto px-4 py-8">
+        <CtaCard
+          title="Florida Local Community"
+          description="Join Florida's most vibrant community of local businesses and supporters"
+          buttonText="Join Community"
+          inputPlaceholder="Enter your email"
+          imageSrc="https://images.unsplash.com/photo-1505142468610-359e7d316be0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2574&q=80"
+          onButtonClick={(email) => {
+            console.log("Community signup:", email);
+            // Add your signup logic here
+          }}
+        />
       </div>
 
       <div className="container mx-auto px-4 py-12 space-y-12">
@@ -196,6 +202,7 @@ export default function CommunityPage() {
       </div>
 
       <MobileBottomNav />
+      </div>
     </div>
   );
 }

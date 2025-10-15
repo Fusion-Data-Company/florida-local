@@ -13,6 +13,9 @@ import { Store, TrendingUp, Plus } from "lucide-react";
 import { Link as WouterLink, useLocation } from "wouter";
 import { useState } from "react";
 import BusinessAnalyticsDashboard from "@/components/business-analytics-dashboard";
+import { AbstractBackground } from "@/components/ui/abstract-background";
+import EliteNavigationHeader from "@/components/elite-navigation-header";
+import MobileBottomNav from "@/components/mobile-bottom-nav";
 
 interface Business {
   id: string;
@@ -38,19 +41,25 @@ export default function BusinessAnalyticsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <TrendingUp className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading your businesses...</p>
+      <AbstractBackground backgroundKey="flowing1" overlay="subtle" className="min-h-screen">
+        <EliteNavigationHeader />
+        <div className="flex items-center justify-center min-h-[80vh]">
+          <div className="text-center">
+            <TrendingUp className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
+            <p className="text-muted-foreground">Loading your businesses...</p>
+          </div>
         </div>
-      </div>
+        <MobileBottomNav />
+      </AbstractBackground>
     );
   }
 
   if (!businesses || businesses.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <Card className="max-w-md w-full">
+      <AbstractBackground backgroundKey="flowing1" overlay="subtle" className="min-h-screen">
+        <EliteNavigationHeader />
+        <div className="flex items-center justify-center p-4 min-h-[80vh]">
+          <Card className="max-w-md w-full bg-white/90 backdrop-blur-md">
           <CardHeader>
             <div className="flex items-center gap-3 mb-2">
               <Store className="h-8 w-8 text-blue-600" />
@@ -74,12 +83,15 @@ export default function BusinessAnalyticsPage() {
             </WouterLink>
           </CardContent>
         </Card>
-      </div>
+        </div>
+        <MobileBottomNav />
+      </AbstractBackground>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+    <AbstractBackground backgroundKey="flowing1" overlay="subtle" className="min-h-screen">
+      <EliteNavigationHeader />
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-6 shadow-lg">
         <div className="container mx-auto px-4">
@@ -129,6 +141,7 @@ export default function BusinessAnalyticsPage() {
           </div>
         )}
       </div>
-    </div>
+      <MobileBottomNav />
+    </AbstractBackground>
   );
 }

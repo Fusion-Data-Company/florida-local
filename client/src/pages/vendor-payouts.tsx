@@ -29,6 +29,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { AbstractBackground } from "@/components/ui/abstract-background";
+import EliteNavigationHeader from "@/components/elite-navigation-header";
+import MobileBottomNav from "@/components/mobile-bottom-nav";
 
 type Business = {
   id: string;
@@ -409,7 +412,9 @@ export default function VendorPayoutsPage() {
   const canRequestPayout = stripeStatus?.payoutsEnabled;
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-8">
+    <AbstractBackground backgroundKey="vibrant1" overlay="light" className="min-h-screen">
+      <EliteNavigationHeader />
+      <div className="container mx-auto px-4 py-8 space-y-8">
       {/* Header */}
       <div className="vendor-payouts-header flex items-center justify-between rounded-2xl p-6 relative">
         <div className="marble-content">
@@ -815,6 +820,8 @@ export default function VendorPayoutsPage() {
           )}
         </>
       )}
-    </div>
+      </div>
+      <MobileBottomNav />
+    </AbstractBackground>
   );
 }

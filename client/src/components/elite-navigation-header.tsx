@@ -4,11 +4,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Menu, X, Home, MapPin, Store, MessageSquare, ShoppingCart, Package, Building2, ScrollText, Sparkles, Trophy, Users, Gift, Star, TrendingUp, BarChart3, Target, BookOpen, Monitor, Shield, Megaphone, Workflow, FileText, User, Briefcase, Rocket } from "lucide-react";
+import { ChevronDown, Menu, X, Home, MapPin, Store, MessageSquare, ShoppingCart, Package, Building2, ScrollText, Sparkles, Trophy, Users, Gift, Star, TrendingUp, BarChart3, Target, BookOpen, Monitor, Shield, Megaphone, Workflow, FileText, User, Briefcase, Rocket, CreditCard } from "lucide-react";
 import { useState, useEffect } from "react";
 import CartIcon from "@/components/cart-icon";
 import NotificationCenter from "@/components/notification-center";
-import { ConnectionIndicator } from "@/components/realtime/ConnectionIndicator";
 import type { Business } from "@shared/types";
 import { Link as WouterLink } from "wouter";
 
@@ -40,13 +39,18 @@ export default function EliteNavigationHeader() {
   }, []);
 
   const isActivePath = (path: string) => {
-    return location === path || location.startsWith(path);
+    // Exact match for home route to prevent Discover from always being highlighted
+    if (path === "/") {
+      return location === "/";
+    }
+    return location.startsWith(path);
   };
 
   // APPLE-STYLE NAVIGATION ITEMS - CLEAN & MINIMAL
   const navigationItems = [
     { href: "/", label: "Discover", icon: Home, testId: "nav-discover" },
     { href: "/marketplace", label: "Marketplace", icon: Store, testId: "nav-marketplace" },
+    { href: "/messages", label: "Messages", icon: MessageSquare, testId: "nav-messages" },
     { href: "/community", label: "Community", icon: Users, testId: "nav-community" },
     { href: "/registry", label: "Entrepreneurs", icon: Briefcase, testId: "nav-entrepreneurs" },
     { href: "/florida-local", label: "Florida Local", icon: MapPin, testId: "nav-florida-local" },
@@ -62,18 +66,15 @@ export default function EliteNavigationHeader() {
 
             {/* FLORIDA LOCAL LOGO - ULTRA-ELITE TREATMENT */}
             <Link href="/" className="elite-logo-container flex items-center" data-testid="brand-logo">
-              <div className="relative px-4 py-2 rounded-xl" style={{
-                background: 'linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 100%)',
-                backdropFilter: 'blur(10px)',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)'
-              }}>
-                <img 
-                  src="/attached_assets/me_1760215801481.png" 
-                  alt="The Florida Local" 
-                  className="h-12 w-auto object-contain"
-                  style={{ maxHeight: '48px', filter: 'drop-shadow(0 2px 8px rgba(251,191,36,0.3))' }}
-                />
-              </div>
+              <img
+                src="/new-logo-trans.png"
+                alt="The Florida Local"
+                className="w-auto object-contain transition-all duration-300 hover:scale-105"
+                style={{
+                  height: '70px',
+                  filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4)) drop-shadow(0 0 8px rgba(255,255,255,0.3))'
+                }}
+              />
             </Link>
 
             {/* NAVIGATION - FIXED SIZES */}
@@ -87,6 +88,7 @@ export default function EliteNavigationHeader() {
                       href={item.href}
                       className={`elite-nav-item ${isActivePath(item.href) ? 'elite-nav-active' : ''}`}
                       data-testid={item.testId}
+                      style={{ color: 'white' }}
                     >
                       <IconComponent />
                       <span>{item.label}</span>
@@ -96,16 +98,21 @@ export default function EliteNavigationHeader() {
 
                 {/* BUSINESS DROPDOWN - FIXED SIZE */}
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="elite-nav-item" style={{ gap: '6px' }}>
+                  <DropdownMenuTrigger className="elite-nav-item" style={{ gap: '6px', color: 'white' }}>
                     <Building2 style={{ width: '18px', height: '18px' }} />
                     <span>Business</span>
                     <ChevronDown style={{ width: '14px', height: '14px', marginLeft: '-2px' }} />
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="elite-glass-dropdown w-52">
+                  <DropdownMenuContent className="elite-glass-dropdown w-52" style={{
+                    background: 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.88) 100%)',
+                    backdropFilter: 'blur(20px) saturate(180%)',
+                    border: '1px solid rgba(0, 139, 139, 0.2)',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15), 0 0 20px rgba(0, 139, 139, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
+                  }}>
                     {userBusinesses.length > 0 ? (
                       <>
                         {/* Profile Section */}
-                        <div className="px-2 py-1 text-xs font-bold text-gray-500">PROFILES</div>
+                        <div className="px-2 py-1 text-xs font-bold bg-gradient-to-r from-[#008B8B] to-[#d4af37] bg-clip-text text-transparent">PROFILES</div>
                         <DropdownMenuItem asChild>
                           <Link href={`/entrepreneur/${user?.id}`}>
                             <User className="h-4 w-4 mr-2 inline text-purple-600" />
@@ -120,7 +127,7 @@ export default function EliteNavigationHeader() {
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         {/* Management Section */}
-                        <div className="px-2 py-1 text-xs font-bold text-gray-500">MANAGEMENT</div>
+                        <div className="px-2 py-1 text-xs font-bold bg-gradient-to-r from-[#008B8B] to-[#d4af37] bg-clip-text text-transparent">MANAGEMENT</div>
                         <DropdownMenuItem asChild>
                           <Link href="/business-dashboard">
                             <BarChart3 className="h-4 w-4 mr-2 inline" />
@@ -179,6 +186,13 @@ export default function EliteNavigationHeader() {
                             <span className="ml-auto text-xs bg-purple-100 text-purple-600 px-1.5 py-0.5 rounded">NEW</span>
                           </Link>
                         </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href="/subscription">
+                            <CreditCard className="h-4 w-4 mr-2 inline text-[#d4af37]" />
+                            Subscription
+                            <span className="ml-auto text-xs bg-gradient-to-r from-[#d4af37] to-[#ffd700] text-white px-1.5 py-0.5 rounded font-semibold">PRO</span>
+                          </Link>
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         {/* Products & Store */}
                         <DropdownMenuItem asChild>
@@ -220,11 +234,10 @@ export default function EliteNavigationHeader() {
             )}
 
             {/* USER MENU - FIXED SIZES */}
-            <div className="flex items-center" style={{ gap: '8px' }}>
+            <div className="flex items-center" style={{ gap: '24px', position: 'relative', zIndex: 200, overflow: 'visible' }}>
               {isAuthenticated ? (
                 <>
-                  <div className="hidden md:flex items-center" style={{ gap: '8px' }}>
-                    <ConnectionIndicator />
+                  <div className="hidden md:flex items-center" style={{ gap: '24px', position: 'relative', zIndex: 200, overflow: 'visible' }}>
                     <NotificationCenter />
                     {loyaltyAccount && (
                       <WouterLink href="/loyalty">
@@ -248,26 +261,43 @@ export default function EliteNavigationHeader() {
                     <DropdownMenuTrigger asChild>
                       <Button
                         variant="ghost"
-                        className="rounded-full hover:bg-black/5 transition-all"
+                        className="rounded-full hover:scale-105 transition-all duration-300"
                         style={{
-                          width: '36px',
-                          height: '36px',
+                          width: '52px',
+                          height: '52px',
                           padding: 0,
-                          border: '1px solid rgba(255, 255, 255, 0.5)',
-                          boxShadow: '0 2px 8px rgba(6, 182, 212, 0.15), 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 0 12px rgba(255, 255, 255, 0.2)'
+                          background: 'linear-gradient(145deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.15) 100%)',
+                          backdropFilter: 'blur(20px) saturate(180%)',
+                          border: '2px solid rgba(255, 255, 255, 0.4)',
+                          borderTop: '2px solid rgba(255, 255, 255, 0.6)',
+                          borderLeft: '2px solid rgba(255, 255, 255, 0.5)',
+                          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35), inset 0 3px 6px rgba(255, 255, 255, 0.5), inset 0 -2px 4px rgba(0, 0, 0, 0.1), 0 0 30px rgba(255, 255, 255, 0.2), 0 1px 0 rgba(255, 255, 255, 0.7) inset'
                         }}
                       >
-                        <Avatar style={{ width: '32px', height: '32px' }}>
+                        <Avatar style={{ width: '48px', height: '48px', boxShadow: '0 0 16px rgba(5, 150, 105, 0.5)' }}>
                           <AvatarImage src={user?.profileImageUrl || undefined} />
-                          <AvatarFallback className="text-xs bg-gradient-to-br from-cyan-500 to-blue-500 text-white" style={{ fontSize: '13px' }}>
+                          <AvatarFallback className="text-lg text-white" style={{
+                            fontSize: '36px',
+                            fontFamily: "'Great Vibes', 'Edwardian Script ITC', 'Kunstler Script', 'Monotype Corsiva', cursive",
+                            fontWeight: 400,
+                            fontStyle: 'normal',
+                            background: 'linear-gradient(145deg, #34d399 0%, #10b981 15%, #059669 35%, #047857 60%, #065f46 85%, #064e3b 100%)',
+                            boxShadow: 'inset 0 2px 4px rgba(255, 255, 255, 0.4), inset 0 -2px 4px rgba(0, 0, 0, 0.3), inset -2px 0 4px rgba(0, 0, 0, 0.2), inset 2px 0 4px rgba(255, 255, 255, 0.2)',
+                            textShadow: '0 2px 4px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 0.3), 0 -1px 0 rgba(0, 0, 0, 0.5)'
+                          }}>
                             {user?.firstName?.charAt(0) || 'U'}
                           </AvatarFallback>
                         </Avatar>
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="elite-glass-dropdown w-52">
+                    <DropdownMenuContent className="elite-glass-dropdown w-52" style={{
+                      background: 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.88) 100%)',
+                      backdropFilter: 'blur(20px) saturate(180%)',
+                      border: '1px solid rgba(0, 139, 139, 0.2)',
+                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15), 0 0 20px rgba(0, 139, 139, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
+                    }}>
                       {/* Personal Section */}
-                      <div className="px-2 py-1 text-xs font-bold text-gray-500">PERSONAL</div>
+                      <div className="px-2 py-1 text-xs font-bold bg-gradient-to-r from-[#008B8B] to-[#d4af37] bg-clip-text text-transparent">PERSONAL</div>
                       <DropdownMenuItem asChild>
                         <Link href={`/entrepreneur/${user?.id}`}>
                           <User className="h-4 w-4 mr-2 inline" />
@@ -291,7 +321,7 @@ export default function EliteNavigationHeader() {
                       {user?.id === "1" && (
                         <>
                           <DropdownMenuSeparator />
-                          <div className="px-2 py-1 text-xs font-bold text-gray-500">ADMIN</div>
+                          <div className="px-2 py-1 text-xs font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">ADMIN</div>
                           <DropdownMenuItem asChild>
                             <Link href="/admin">
                               <Shield className="h-4 w-4 mr-2 inline" />
@@ -328,14 +358,25 @@ export default function EliteNavigationHeader() {
                   </DropdownMenu>
                 </>
               ) : (
-                <Button
-                  onClick={() => window.location.href = '/api/login'}
-                  className="rounded-lg"
-                  style={{ height: '40px', padding: '0 20px', fontSize: '15px', fontWeight: 500 }}
-                  data-testid="button-signin"
-                >
-                  Sign In
-                </Button>
+                <>
+                  <Link href="/subscription">
+                    <Button
+                      variant="ghost"
+                      className="rounded-lg hover:bg-black/5 transition-all text-[#008B8B] font-semibold"
+                      style={{ height: '40px', padding: '0 20px', fontSize: '15px' }}
+                    >
+                      Subscriptions
+                    </Button>
+                  </Link>
+                  <Button
+                    onClick={() => window.location.href = '/api/login'}
+                    className="rounded-lg"
+                    style={{ height: '40px', padding: '0 20px', fontSize: '15px', fontWeight: 500 }}
+                    data-testid="button-signin"
+                  >
+                    Sign In
+                  </Button>
+                </>
               )}
 
               {/* MOBILE MENU TOGGLE - FIXED SIZE */}

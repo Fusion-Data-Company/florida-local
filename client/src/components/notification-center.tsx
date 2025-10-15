@@ -188,20 +188,35 @@ export default function NotificationCenter() {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="relative rounded-full hover:bg-black/5 transition-all"
+          className="relative rounded-full hover:scale-105 transition-all duration-300"
           style={{
-            width: '36px',
-            height: '36px',
+            width: '52px',
+            height: '52px',
             padding: 0,
-            border: '1px solid rgba(255, 255, 255, 0.5)',
-            boxShadow: '0 2px 8px rgba(6, 182, 212, 0.15), 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 0 12px rgba(255, 255, 255, 0.2)'
+            background: 'linear-gradient(145deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.15) 100%)',
+            backdropFilter: 'blur(20px) saturate(180%)',
+            border: '2px solid rgba(255, 255, 255, 0.4)',
+            borderTop: '2px solid rgba(255, 255, 255, 0.6)',
+            borderLeft: '2px solid rgba(255, 255, 255, 0.5)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35), inset 0 3px 6px rgba(255, 255, 255, 0.5), inset 0 -2px 4px rgba(0, 0, 0, 0.1), 0 0 30px rgba(255, 255, 255, 0.2), 0 1px 0 rgba(255, 255, 255, 0.7) inset',
+            position: 'relative',
+            overflow: 'visible',
+            zIndex: 1
           }}
         >
-          <Bell className="w-4 h-4 text-slate-700" />
+          <Bell className="w-6 h-6 text-white" style={{ position: 'relative', zIndex: 1, filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 8px rgba(255, 255, 255, 0.3))' }} />
           {unreadCount > 0 && (
             <Badge
-              className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs font-bold bg-gradient-to-r from-rose-500 to-pink-500 border-2 border-white shadow-lg animate-pulse"
-              style={{ zIndex: 60 }}
+              className="absolute h-6 w-6 flex items-center justify-center p-0 text-xs font-bold border-2 border-white shadow-lg"
+              style={{
+                background: 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)',
+                top: '-8px',
+                right: '-8px',
+                zIndex: 9999,
+                pointerEvents: 'none',
+                transform: 'translateZ(100px)',
+                color: 'white'
+              }}
             >
               {unreadCount > 9 ? '9+' : unreadCount}
             </Badge>

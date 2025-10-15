@@ -48,6 +48,7 @@ import {
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { Business } from "@shared/types";
+import { AbstractBackground } from "@/components/ui/abstract-background";
 
 interface EntrepreneurProfile {
   id: string;
@@ -276,7 +277,7 @@ export default function EntrepreneurProfile() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-purple-50">
+      <AbstractBackground backgroundKey="flowing1" overlay="medium" className="min-h-screen">
         <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-6xl mx-auto space-y-6">
@@ -290,12 +291,12 @@ export default function EntrepreneurProfile() {
           </div>
         </div>
         <MobileBottomNav />
-      </div>
+      </AbstractBackground>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-purple-50 dark:from-purple-950/20 dark:via-slate-950 dark:to-purple-950/20">
+    <AbstractBackground backgroundKey="flowing1" overlay="medium" className="min-h-screen">
       <EliteNavigationHeader />
 
       <div className="container mx-auto px-4 py-8">
@@ -702,6 +703,6 @@ export default function EntrepreneurProfile() {
       </div>
 
       <MobileBottomNav />
-    </div>
+    </AbstractBackground>
   );
 }

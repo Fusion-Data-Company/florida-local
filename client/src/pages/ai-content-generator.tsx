@@ -34,6 +34,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { AbstractBackground } from "@/components/ui/abstract-background";
 
 interface ContentTemplate {
   id: string;
@@ -230,7 +231,7 @@ export default function AIContentGenerator() {
 
   if (!isAuthenticated) {
     return (
-      <div className="premium-page-wrapper premium-surface min-h-screen marble-texture">
+      <AbstractBackground backgroundKey="dynamic1" overlay="gradient" className="min-h-screen">
         <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-20 text-center">
           <Sparkles className="h-16 w-16 mx-auto mb-6 text-purple-500" />
@@ -242,12 +243,13 @@ export default function AIContentGenerator() {
             Sign In
           </Button>
         </div>
-      </div>
+        <MobileBottomNav />
+      </AbstractBackground>
     );
   }
 
   return (
-    <div className="premium-page-wrapper premium-surface min-h-screen marble-texture">
+    <AbstractBackground backgroundKey="dynamic1" overlay="gradient" className="min-h-screen">
       <EliteNavigationHeader />
 
       {/* Hero Header */}
@@ -589,6 +591,6 @@ export default function AIContentGenerator() {
       </div>
 
       <MobileBottomNav />
-    </div>
+    </AbstractBackground>
   );
 }

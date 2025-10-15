@@ -10,6 +10,8 @@ import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import EliteNavigationHeader from "@/components/elite-navigation-header";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
+import LuxuryFooter from "@/components/luxury-footer";
+import { AnimatedCarousel } from "@/components/ui/logo-carousel";
 import { RotatingCarousel } from "@/components/ui/rotating-carousel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -28,6 +30,9 @@ const BusinessOwnerCard = ({
   };
   translate: MotionValue<number>;
 }) => {
+  // Check if this is an advertisement slot
+  const isAdvertisement = owner.name === "Your Company Here";
+
   return (
     <motion.div
       style={{
@@ -52,15 +57,24 @@ const BusinessOwnerCard = ({
           className="object-cover object-center absolute h-full w-full inset-0 rounded-2xl"
           alt={owner.name}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--fl-teal-lagoon)]/80 via-[var(--fl-teal-lagoon)]/20 to-transparent rounded-2xl"></div>
+        {/* Only show overlays and text if NOT an advertisement */}
+        {!isAdvertisement && (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-t from-[var(--fl-teal-lagoon)]/80 via-[var(--fl-teal-lagoon)]/20 to-transparent rounded-2xl"></div>
+          </>
+        )}
       </Link>
-      <div className="absolute inset-0 h-full w-full opacity-0 group-hover/card:opacity-100 bg-gradient-to-t from-[var(--fl-sunset-gold)]/90 via-[var(--fl-bronze)]/40 to-transparent pointer-events-none rounded-2xl transition-opacity duration-300"></div>
-      <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-        <h3 className="text-2xl font-bold mb-1 opacity-100">{owner.name}</h3>
-        <p className="text-sm opacity-90 group-hover/card:opacity-100 transition-opacity">
-          {owner.business}
-        </p>
-      </div>
+      {!isAdvertisement && (
+        <>
+          <div className="absolute inset-0 h-full w-full opacity-0 group-hover/card:opacity-100 bg-gradient-to-t from-[var(--fl-sunset-gold)]/90 via-[var(--fl-bronze)]/40 to-transparent pointer-events-none rounded-2xl transition-opacity duration-300"></div>
+          <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+            <h3 className="text-2xl font-bold mb-1 opacity-100">{owner.name}</h3>
+            <p className="text-sm opacity-90 group-hover/card:opacity-100 transition-opacity">
+              {owner.business}
+            </p>
+          </div>
+        </>
+      )}
     </motion.div>
   );
 };
@@ -78,6 +92,9 @@ const ShowcaseCard = ({
   };
   translate: MotionValue<number>;
 }) => {
+  // Check if this is an advertisement slot
+  const isAdvertisement = showcase.title === "Your Company Here";
+
   return (
     <motion.div
       style={{
@@ -102,15 +119,24 @@ const ShowcaseCard = ({
           className="object-cover object-center absolute h-full w-full inset-0 rounded-2xl"
           alt={showcase.title}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--fl-sunset-gold)]/80 via-[var(--fl-bronze)]/20 to-transparent rounded-2xl"></div>
+        {/* Only show overlays and text if NOT an advertisement */}
+        {!isAdvertisement && (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-t from-[var(--fl-sunset-gold)]/80 via-[var(--fl-bronze)]/20 to-transparent rounded-2xl"></div>
+          </>
+        )}
       </Link>
-      <div className="absolute inset-0 h-full w-full opacity-0 group-hover/showcase:opacity-100 bg-gradient-to-t from-[var(--fl-teal-lagoon)]/90 via-[var(--fl-sunset-gold)]/40 to-transparent pointer-events-none rounded-2xl transition-opacity duration-300"></div>
-      <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-        <h3 className="text-2xl font-bold mb-1 opacity-100">{showcase.title}</h3>
-        <p className="text-sm opacity-90 group-hover/showcase:opacity-100 transition-opacity">
-          {showcase.category}
-        </p>
-      </div>
+      {!isAdvertisement && (
+        <>
+          <div className="absolute inset-0 h-full w-full opacity-0 group-hover/showcase:opacity-100 bg-gradient-to-t from-[var(--fl-teal-lagoon)]/90 via-[var(--fl-sunset-gold)]/40 to-transparent pointer-events-none rounded-2xl transition-opacity duration-300"></div>
+          <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+            <h3 className="text-2xl font-bold mb-1 opacity-100">{showcase.title}</h3>
+            <p className="text-sm opacity-90 group-hover/showcase:opacity-100 transition-opacity">
+              {showcase.category}
+            </p>
+          </div>
+        </>
+      )}
     </motion.div>
   );
 };
@@ -141,53 +167,12 @@ const PremiumSlotCard = ({
       className="group/slot h-96 w-[30rem] relative flex-shrink-0"
     >
       <div className="block group-hover/slot:shadow-2xl relative h-full w-full rounded-2xl overflow-hidden">
-        {slot.isPremium ? (
-          <>
-            <img
-              src={slot.imageUrl || `https://api.dicebear.com/7.x/shapes/svg?seed=${slot.companyName}`}
-              height="600"
-              width="600"
-              className="object-cover object-center absolute h-full w-full inset-0"
-              alt={slot.companyName}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[var(--fl-sunset-gold)]/90 via-[var(--fl-sunset-gold)]/30 to-transparent"></div>
-            <div className="absolute top-4 right-4">
-              <Badge className="bg-[var(--fl-sunset-gold)] text-white border-2 border-white">
-                <Sparkles className="h-3 w-3 mr-1" />
-                Premium
-              </Badge>
-            </div>
-          </>
-        ) : (
-          <>
-            {/* Ultra 4K engaging placeholder image */}
-            <img
-              src="/assets/premium-slot-placeholder.svg"
-              className="object-cover object-center absolute h-full w-full inset-0"
-              alt="Your Business Here - Premium Advertising Slot"
-            />
-          </>
-        )}
-        <div className="absolute inset-0 h-full w-full opacity-0 group-hover/slot:opacity-100 bg-gradient-to-t from-black/80 via-[var(--fl-teal-lagoon)]/60 to-transparent pointer-events-none transition-opacity duration-300"></div>
-        {!slot.isPremium ? (
-          <div className="absolute bottom-0 left-0 right-0 p-6 text-center">
-            <Button
-              size="lg"
-              className="bg-gradient-to-r from-[var(--fl-sunset-gold)] to-[var(--fl-bronze)] hover:scale-105 transition-transform text-white font-bold text-lg shadow-2xl"
-            >
-              <Sparkles className="h-5 w-5 mr-2" />
-              Claim This Premium Slot
-              <ChevronRight className="h-5 w-5 ml-2" />
-            </Button>
-          </div>
-        ) : (
-          <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-            <h3 className="text-2xl font-bold mb-1">{slot.companyName}</h3>
-            <p className="text-sm opacity-90 group-hover/slot:opacity-100 transition-opacity">
-              {slot.tagline}
-            </p>
-          </div>
-        )}
+        {/* Just show the image, no overlays or text */}
+        <img
+          src="/your-company-here.png"
+          alt="Premium Advertisement Space"
+          className="w-full h-full object-cover"
+        />
       </div>
     </motion.div>
   );
@@ -231,7 +216,7 @@ export default function Registry() {
     springConfig
   );
   const opacity = useSpring(
-    useTransform(scrollYProgress, [0, 0.2], [1, 1]), // Keep at full opacity always
+    useTransform(scrollYProgress, [0, 0.2], [0.1, 1]), // Start at 90% transparent (0.1 opacity) and fade to fully visible
     springConfig
   );
   const rotateZ = useSpring(
@@ -254,7 +239,7 @@ export default function Registry() {
     companyName: "Your Company Here",
     tagline: "Advertise to thousands of local customers",
     imageUrl: "",
-    isPremium: i < 9, // First 9 are "premium" examples (row 1)
+    isPremium: false, // All slots show Florida Local branding
   }));
 
   const displaySlots = premiumSlots.length > 0 ? premiumSlots : mockPremiumSlots;
@@ -279,9 +264,9 @@ export default function Registry() {
       link: "#",
     },
     {
-      name: "Sarah Chen",
-      business: "Culinary Excellence",
-      image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&h=600&fit=crop",
+      name: "Your Company Here",
+      business: "Premium Advertisement Space",
+      image: "/your-company-here.png",
       link: "#",
     },
     {
@@ -297,9 +282,9 @@ export default function Registry() {
       link: "#",
     },
     {
-      name: "David Martinez",
-      business: "Martinez Legal Group",
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&h=600&fit=crop",
+      name: "Your Company Here",
+      business: "Premium Advertisement Space",
+      image: "/your-company-here.png",
       link: "#",
     },
     {
@@ -315,9 +300,9 @@ export default function Registry() {
       link: "#",
     },
     {
-      name: "Jennifer Lopez",
-      business: "J-Lo Fashion Boutique",
-      image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&h=600&fit=crop",
+      name: "Your Company Here",
+      business: "Premium Advertisement Space",
+      image: "/your-company-here.png",
       link: "#",
     },
     {
@@ -343,9 +328,9 @@ export default function Registry() {
       link: "#",
     },
     {
-      title: "Ocean View Properties",
-      category: "Real Estate",
-      image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&h=600&fit=crop",
+      title: "Your Company Here",
+      category: "Premium Advertisement",
+      image: "/your-company-here.png",
       link: "#",
     },
     {
@@ -361,9 +346,9 @@ export default function Registry() {
       link: "#",
     },
     {
-      title: "Tropical Fitness Studio",
-      category: "Health & Wellness",
-      image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&h=600&fit=crop",
+      title: "Your Company Here",
+      category: "Premium Advertisement",
+      image: "/your-company-here.png",
       link: "#",
     },
     {
@@ -379,9 +364,9 @@ export default function Registry() {
       link: "#",
     },
     {
-      title: "Elite Auto Detailing",
-      category: "Automotive",
-      image: "https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?w=600&h=600&fit=crop",
+      title: "Your Company Here",
+      category: "Premium Advertisement",
+      image: "/your-company-here.png",
       link: "#",
     },
     {
@@ -407,9 +392,9 @@ export default function Registry() {
       link: "#",
     },
     {
-      name: "Carlos Mendez",
-      business: "Auto Elite Dealership",
-      image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&h=600&fit=crop",
+      name: "Your Company Here",
+      business: "Premium Advertisement Space",
+      image: "/your-company-here.png",
       link: "#",
     },
     {
@@ -425,9 +410,9 @@ export default function Registry() {
       link: "#",
     },
     {
-      name: "Sophia Patel",
-      business: "Patel Consulting Group",
-      image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=600&h=600&fit=crop",
+      name: "Your Company Here",
+      business: "Premium Advertisement Space",
+      image: "/your-company-here.png",
       link: "#",
     },
     {
@@ -449,9 +434,9 @@ export default function Registry() {
       link: "#",
     },
     {
-      name: "Nina Gonzalez",
-      business: "Gonzalez Event Planning",
-      image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&h=600&fit=crop",
+      name: "Your Company Here",
+      business: "Premium Advertisement Space",
+      image: "/your-company-here.png",
       link: "#",
     },
   ];
@@ -637,6 +622,26 @@ export default function Registry() {
         />
       </div>
 
+      {/* Partner Logos Carousel - Styled for Registry */}
+      <div className="relative mt-20">
+        <AnimatedCarousel
+          title="Empowering Local Commerce"
+          autoPlay={true}
+          autoPlayInterval={2000}
+          itemsPerViewMobile={3}
+          itemsPerViewDesktop={5}
+          padding="py-16 lg:py-20"
+          containerClassName="bg-gradient-to-b from-transparent via-[var(--fl-bronze)]/3 to-background/50 border-t border-[var(--fl-bronze)]/20"
+          titleClassName="bg-gradient-to-r from-[var(--fl-sunset-gold)] via-[var(--fl-bronze)] to-[var(--fl-teal-lagoon)] bg-clip-text text-transparent text-center"
+          logoContainerWidth="w-40"
+          logoContainerHeight="h-20"
+          logoImageWidth="w-auto"
+          logoImageHeight="h-12"
+        />
+      </div>
+
+      {/* Luxury Footer */}
+      <LuxuryFooter />
       <MobileBottomNav />
     </div>
   );

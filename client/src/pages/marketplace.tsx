@@ -3,13 +3,13 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Product, Business, insertProductSchema } from "@shared/types";
+import type { Product, Business } from "@shared/types";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import EliteNavigationHeader from "@/components/elite-navigation-header";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
-import ProductCard from "@/components/product-card";
+import LuxuryFooter from "@/components/luxury-footer";
 import GlowHero from "@/components/ui/glow-hero";
 import MagicEliteProductCard, { MagicEliteProductGrid } from "@/components/magic-elite-product-card";
 import AIRecommendations from "@/components/ai-recommendations";
@@ -18,14 +18,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { StardustButton } from "@/components/ui/stardust-button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Package, Image as ImageIcon, Search } from "lucide-react";
+import { Plus, Package, Image as ImageIcon } from "lucide-react";
 import {
-  AnimatedGradientHero,
   ParticleField,
   AuroraAmbient,
   PremiumLoader,
@@ -33,6 +31,7 @@ import {
 import { PremiumBadge } from "@/components/premium-ui";
 import { CircularTestimonials } from "@/components/ui/circular-testimonials";
 import { useTheme } from "@/contexts/ThemeContext";
+import { AbstractBackground } from "@/components/ui/abstract-background";
 
 const createProductSchema = z.object({
   businessId: z.string().min(1, "Business is required"),
@@ -56,7 +55,7 @@ export default function Marketplace() {
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
   const [isCreateProductOpen, setIsCreateProductOpen] = useState(false);
 
-  const { data: products = [], isLoading } = useQuery<Product[]>({
+  const { data: productsData, isLoading } = useQuery<any>({
     queryKey: ['/api/products/search', searchQuery, selectedCategory],
     queryFn: () => {
       const params = new URLSearchParams();
@@ -65,6 +64,8 @@ export default function Marketplace() {
       return fetch(`/api/products/search?${params}`).then(res => res.json());
     },
   });
+
+  const products = productsData?.items || [];
 
   const { data: featuredProducts = [] } = useQuery<Product[]>({
     queryKey: ['/api/products/featured', 20, 'unique=images'],
@@ -172,7 +173,7 @@ export default function Marketplace() {
   if (isLoading) {
     return (
       <div
-        className="premium-page-wrapper premium-surface min-h-screen marble-texture flex items-center justify-center"
+        className="premium-page-wrapper premium-surface min-h-screen marble-texture abstract-overlay-light flex items-center justify-center"
         data-surface-intensity="delicate"
         data-surface-tone="cool"
       >
@@ -182,10 +183,10 @@ export default function Marketplace() {
   }
 
   return (
-    <div
-      className="premium-page-wrapper premium-surface min-h-screen marble-texture relative"
-      data-surface-intensity="delicate"
-      data-surface-tone="cool"
+    <AbstractBackground
+      backgroundKey="vibrant2"
+      overlay="light"
+      className="premium-page-wrapper premium-surface min-h-screen"
     >
       {/* ULTRA PREMIUM EFFECTS */}
       <AuroraAmbient intensity="low" />
@@ -198,25 +199,29 @@ export default function Marketplace() {
       )}
 
       {/* FLORIDA LOCAL MARKETPLACE HERO */}
-      <div className="relative py-16 overflow-hidden">
-        {/* Teal-Gold Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[var(--fl-teal-lagoon)]/10 via-background to-[var(--fl-sunset-gold)]/10" />
-        
-        <ParticleField count={40} color="cyan" />
+      <div className="relative py-20 overflow-hidden">
+        {/* Premium Gradient Overlay - Lighter */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/50 to-white/40" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,166,251,0.08),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(255,138,0,0.05),transparent_50%)]" />
+
+        <ParticleField count={60} color="cyan" />
         <div className="container mx-auto px-4 lg:px-8 relative z-10">
-          <div className="text-center mb-8">
-            <div className="flex flex-col items-center justify-between gap-6 md:flex-row md:text-left">
-              <div className="flex-1">
-                <PremiumBadge color="emerald" size="sm" className="mb-4">
-                  Florida Local Marketplace
-                </PremiumBadge>
-                <GlowHero 
-                  glowText="Local Marketplace"
+          <div className="text-center mb-12">
+            <div className="flex flex-col items-center justify-between gap-8 md:flex-row md:text-left">
+              <div className="flex-1 space-y-6">
+                <div className="inline-block">
+                  <PremiumBadge color="emerald" size="sm" className="mb-4 shadow-lg shadow-emerald-500/20 border-2 border-emerald-500/30">
+                    Florida Local Marketplace
+                  </PremiumBadge>
+                </div>
+                <GlowHero
+                  glowText="Premium Marketplace"
                   glowTextSize="xl"
-                  className="mb-4"
+                  className="mb-6"
                 />
-                <p className="text-xl text-muted-foreground max-w-2xl leading-relaxed">
-                  Discover unique products from Florida's most innovative businesses.
+                <p className="text-xl text-muted-foreground max-w-2xl leading-relaxed font-light">
+                  Discover <span className="font-semibold bg-gradient-to-r from-[var(--fl-teal-lagoon)] to-[var(--fl-sunset-gold)] bg-clip-text text-transparent">unique products</span> from Florida's most innovative businesses.
                   Support local entrepreneurs while finding exactly what you need.
                 </p>
               </div>
@@ -386,8 +391,17 @@ export default function Marketplace() {
 
           {/* Search and Filter */}
           <div className="max-w-4xl mx-auto">
-            <div className="bg-card border border-border rounded-xl p-6 shadow-lg marketplace-search-panel">
-              <div className="flex flex-col md:flex-row gap-4 mb-4 marble-content">
+            <div className="relative group">
+              {/* Glass morphism background with premium effects */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/80 via-white/60 to-white/70 dark:from-gray-900/80 dark:via-gray-900/60 dark:to-gray-900/70 backdrop-blur-xl rounded-2xl shadow-2xl shadow-blue-500/10"></div>
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[var(--fl-teal-lagoon)]/5 via-transparent to-[var(--fl-sunset-gold)]/5"></div>
+              <div className="absolute inset-0 rounded-2xl border border-white/40 dark:border-white/10"></div>
+
+              {/* Premium glow effect on hover */}
+              <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-[var(--fl-teal-lagoon)]/0 via-[var(--fl-sunset-gold)]/0 to-[var(--fl-teal-lagoon)]/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm group-hover:from-[var(--fl-teal-lagoon)]/20 group-hover:via-[var(--fl-sunset-gold)]/20 group-hover:to-[var(--fl-teal-lagoon)]/20"></div>
+
+              <div className="relative p-8 marketplace-search-panel">
+                <div className="flex flex-col md:flex-row gap-4 mb-6 marble-content">
                 <div className="flex-1">
                   <Input
                     type="search"
@@ -421,18 +435,19 @@ export default function Marketplace() {
 
               {/* PREMIUM FILTER BADGES */}
               <div className="flex flex-wrap gap-3">
-                <PremiumBadge color="emerald" size="sm" className="cursor-pointer" data-testid="filter-local-made">
+                <PremiumBadge color="emerald" size="sm" className="cursor-pointer hover:scale-105 transition-transform duration-200 shadow-md hover:shadow-lg hover:shadow-emerald-500/30" data-testid="filter-local-made">
                   Local Made
                 </PremiumBadge>
-                <PremiumBadge color="emerald" size="sm" className="cursor-pointer" data-testid="filter-eco-friendly">
+                <PremiumBadge color="emerald" size="sm" className="cursor-pointer hover:scale-105 transition-transform duration-200 shadow-md hover:shadow-lg hover:shadow-emerald-500/30" data-testid="filter-eco-friendly">
                   Eco-Friendly
                 </PremiumBadge>
-                <PremiumBadge color="topaz" size="sm" className="cursor-pointer" data-testid="filter-small-batch">
+                <PremiumBadge color="topaz" size="sm" className="cursor-pointer hover:scale-105 transition-transform duration-200 shadow-md hover:shadow-lg hover:shadow-amber-500/30" data-testid="filter-small-batch">
                   Small Batch
                 </PremiumBadge>
-                <PremiumBadge color="sapphire" size="sm" className="cursor-pointer" data-testid="filter-free-shipping">
+                <PremiumBadge color="sapphire" size="sm" className="cursor-pointer hover:scale-105 transition-transform duration-200 shadow-md hover:shadow-lg hover:shadow-blue-500/30" data-testid="filter-free-shipping">
                   Free Shipping
                 </PremiumBadge>
+              </div>
               </div>
             </div>
           </div>
@@ -441,9 +456,17 @@ export default function Marketplace() {
 
       {/* Featured Products */}
       {!searchQuery && !selectedCategory && (
-        <section className="py-12 lg:py-20 marketplace-product-grid dynamic-gradient-bg">
-          <div className="container mx-auto px-4 lg:px-8 marble-content">
-            <h2 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-[var(--fl-teal-lagoon)] via-[var(--fl-sunset-gold)] to-[var(--fl-bronze)] bg-clip-text text-transparent entrance-fade-up">Featured Products</h2>
+        <section className="py-16 lg:py-24 marketplace-product-grid relative">
+          {/* Premium section background */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[var(--fl-teal-lagoon)]/5 to-transparent"></div>
+
+          <div className="container mx-auto px-4 lg:px-8 marble-content relative">
+            <div className="text-center mb-12 space-y-4">
+              <h2 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-[var(--fl-teal-lagoon)] via-[var(--fl-sunset-gold)] to-[var(--fl-bronze)] bg-clip-text text-transparent entrance-fade-up drop-shadow-lg">
+                Featured Products
+              </h2>
+              <div className="w-24 h-1 mx-auto bg-gradient-to-r from-transparent via-[var(--fl-sunset-gold)] to-transparent rounded-full"></div>
+            </div>
 
             {isLoading ? (
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -456,10 +479,18 @@ export default function Marketplace() {
                 ))}
               </div>
             ) : (
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {featuredProducts.map((product: Product, index: number) => (
-                  <div key={product.id} className="card-entrance" style={{ animationDelay: `${index * 0.1}s` }}>
-                    <MagicEliteProductCard product={product} index={index} />
+                  <div
+                    key={product.id}
+                    className="card-entrance group relative"
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
+                    {/* Premium card glow effect */}
+                    <div className="absolute -inset-1 bg-gradient-to-r from-[var(--fl-teal-lagoon)] via-[var(--fl-sunset-gold)] to-[var(--fl-teal-lagoon)] rounded-2xl opacity-0 group-hover:opacity-20 blur-lg transition-opacity duration-500"></div>
+                    <div className="relative">
+                      <MagicEliteProductCard product={product} index={index} />
+                    </div>
                   </div>
                 ))}
               </div>
@@ -469,19 +500,23 @@ export default function Marketplace() {
       )}
 
       {/* Search Results */}
-      <section className="py-12 lg:py-20 marketplace-product-grid gradient-shift">
-        <div className="container mx-auto px-4 lg:px-8 marble-content">
+      <section className="py-16 lg:py-24 marketplace-product-grid relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-[var(--fl-sunset-gold)]/5 via-transparent to-[var(--fl-teal-lagoon)]/5"></div>
+
+        <div className="container mx-auto px-4 lg:px-8 marble-content relative">
           {(searchQuery || selectedCategory) && (
-            <div className="mb-8 entrance-slide-right">
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-[var(--fl-teal-lagoon)] to-[var(--fl-sunset-gold)] bg-clip-text text-transparent">
-                {searchQuery
-                  ? `Search results for "${searchQuery}"`
-                  : `Products in ${selectedCategory}`
-                }
-              </h2>
-              <p className="text-muted-foreground">
-                {products.length} product{products.length !== 1 ? 's' : ''} found
-              </p>
+            <div className="mb-12 entrance-slide-right">
+              <div className="inline-block p-6 rounded-2xl bg-gradient-to-br from-white/60 to-white/40 dark:from-gray-900/60 dark:to-gray-900/40 backdrop-blur-md border border-white/50 dark:border-white/10 shadow-xl">
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-[var(--fl-teal-lagoon)] to-[var(--fl-sunset-gold)] bg-clip-text text-transparent mb-2">
+                  {searchQuery
+                    ? `Search results for "${searchQuery}"`
+                    : `Products in ${selectedCategory}`
+                  }
+                </h2>
+                <p className="text-muted-foreground font-medium">
+                  {products.length} product{products.length !== 1 ? 's' : ''} found
+                </p>
+              </div>
             </div>
           )}
 
@@ -512,27 +547,40 @@ export default function Marketplace() {
       </section>
 
       {/* Customer Testimonials Section */}
-      <section className="py-20 relative overflow-hidden">
-        <div className={`p-12 md:p-20 rounded-lg min-h-[300px] flex flex-wrap gap-6 items-center justify-center relative ${
-          theme === 'dark' 
-            ? 'bg-gradient-to-br from-[#060507] via-[#0a0a0c] to-[#060507]' 
-            : 'bg-gradient-to-br from-[#f7f7fa] via-white to-[#f7f7fa]'
-        }`}>
-          <div className="absolute inset-0 opacity-5">
-            <div className={`absolute inset-0 ${
-              theme === 'dark' 
-                ? 'bg-[radial-gradient(circle_at_50%_50%,rgba(0,166,251,0.15),transparent_70%)]' 
-                : 'bg-[radial-gradient(circle_at_50%_50%,rgba(0,166,251,0.08),transparent_70%)]'
-            }`} />
-          </div>
-          <div className="w-full text-center mb-8 relative z-10">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-[var(--fl-teal-lagoon)] via-[var(--fl-sunset-gold)] to-[var(--fl-bronze)] bg-clip-text text-transparent">
-              What Our Community Says
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Join thousands of satisfied customers and business owners thriving on Florida Local
-            </p>
-          </div>
+      <section className="py-24 relative overflow-hidden">
+        {/* Premium background layers */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[var(--fl-teal-lagoon)]/10 via-transparent to-[var(--fl-sunset-gold)]/10"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,166,251,0.1),transparent_70%)]"></div>
+
+        <div className="container mx-auto px-4 lg:px-8 relative">
+          <div className={`p-12 md:p-20 rounded-3xl min-h-[300px] flex flex-wrap gap-6 items-center justify-center relative backdrop-blur-sm border-2 ${
+            theme === 'dark'
+              ? 'bg-gradient-to-br from-[#060507]/80 via-[#0a0a0c]/70 to-[#060507]/80 border-white/10 shadow-2xl shadow-blue-500/20'
+              : 'bg-gradient-to-br from-[#f7f7fa]/90 via-white/80 to-[#f7f7fa]/90 border-white/40 shadow-2xl shadow-blue-500/10'
+          }`}>
+            {/* Decorative elements */}
+            <div className="absolute inset-0 opacity-10">
+              <div className={`absolute inset-0 ${
+                theme === 'dark'
+                  ? 'bg-[radial-gradient(circle_at_50%_50%,rgba(0,166,251,0.2),transparent_70%)]'
+                  : 'bg-[radial-gradient(circle_at_50%_50%,rgba(0,166,251,0.12),transparent_70%)]'
+              }`} />
+            </div>
+
+            <div className="w-full text-center mb-12 relative z-10 space-y-6">
+              <div className="inline-block">
+                <PremiumBadge color="sapphire" size="sm" className="mb-6 shadow-lg shadow-blue-500/20">
+                  Customer Success Stories
+                </PremiumBadge>
+              </div>
+              <h2 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-[var(--fl-teal-lagoon)] via-[var(--fl-sunset-gold)] to-[var(--fl-bronze)] bg-clip-text text-transparent drop-shadow-lg">
+                What Our Community Says
+              </h2>
+              <div className="w-32 h-1 mx-auto bg-gradient-to-r from-transparent via-[var(--fl-teal-lagoon)] to-transparent rounded-full mb-4"></div>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-light leading-relaxed">
+                Join <span className="font-semibold bg-gradient-to-r from-[var(--fl-teal-lagoon)] to-[var(--fl-sunset-gold)] bg-clip-text text-transparent">thousands</span> of satisfied customers and business owners thriving on Florida Local
+              </p>
+            </div>
           <div
             className="items-center justify-center relative flex w-full"
             style={{ maxWidth: "1456px" }}
@@ -562,10 +610,12 @@ export default function Marketplace() {
               }}
             />
           </div>
+          </div>
         </div>
       </section>
 
+      <LuxuryFooter />
       <MobileBottomNav />
-    </div>
+    </AbstractBackground>
   );
 }

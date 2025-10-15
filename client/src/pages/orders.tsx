@@ -82,7 +82,7 @@ export default function Orders() {
   if (isLoading) {
     return (
       <div
-        className="premium-page-wrapper premium-surface min-h-screen marble-texture flex items-center justify-center"
+        className="premium-page-wrapper premium-surface min-h-screen marble-texture abstract-overlay-light flex items-center justify-center"
         data-surface-intensity="delicate"
         data-surface-tone="warm"
       >
@@ -93,7 +93,7 @@ export default function Orders() {
 
   return (
     <div
-      className="premium-page-wrapper premium-surface min-h-screen marble-texture relative"
+      className="premium-page-wrapper premium-surface min-h-screen marble-texture abstract-overlay-light relative"
       data-surface-intensity="delicate"
       data-surface-tone="warm"
     >

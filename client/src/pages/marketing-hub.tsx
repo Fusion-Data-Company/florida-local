@@ -37,6 +37,7 @@ import EliteNavigationHeader from "@/components/elite-navigation-header";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { MarketingOverviewDashboard } from "@/components/marketing/MarketingOverviewDashboard";
 import { cn } from "@/lib/utils";
+import { AbstractBackground } from "@/components/ui/abstract-background";
 
 interface CampaignStats {
   total: number;
@@ -230,7 +231,7 @@ export default function MarketingHub() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-purple-50 dark:from-purple-950/20 dark:via-slate-950 dark:to-purple-950/20">
+    <AbstractBackground backgroundKey="vibrant2" overlay="light" className="min-h-screen">
       <EliteNavigationHeader />
 
       <div className="container mx-auto px-4 py-8">
@@ -257,7 +258,7 @@ export default function MarketingHub() {
 
         {/* Quick Stats */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
-          <Card className="border-2 hover:border-purple-400 transition-all">
+          <Card className="border-2 hover:border-purple-400 transition-all bg-white/80 backdrop-blur-md">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Active Campaigns</CardTitle>
               <Mail className="h-4 w-4 text-purple-600" />
@@ -270,7 +271,7 @@ export default function MarketingHub() {
             </CardContent>
           </Card>
 
-          <Card className="border-2 hover:border-green-400 transition-all">
+          <Card className="border-2 hover:border-green-400 transition-all bg-white/80 backdrop-blur-md">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Open Rate</CardTitle>
               <Eye className="h-4 w-4 text-green-600" />
@@ -286,7 +287,7 @@ export default function MarketingHub() {
             </CardContent>
           </Card>
 
-          <Card className="border-2 hover:border-blue-400 transition-all">
+          <Card className="border-2 hover:border-blue-400 transition-all bg-white/80 backdrop-blur-md">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Segments</CardTitle>
               <Users className="h-4 w-4 text-blue-600" />
@@ -299,7 +300,7 @@ export default function MarketingHub() {
             </CardContent>
           </Card>
 
-          <Card className="border-2 hover:border-orange-400 transition-all">
+          <Card className="border-2 hover:border-orange-400 transition-all bg-white/80 backdrop-blur-md">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">AI Optimizations</CardTitle>
               <Brain className="h-4 w-4 text-orange-600" />
@@ -704,6 +705,6 @@ export default function MarketingHub() {
       </div>
 
       <MobileBottomNav />
-    </div>
+    </AbstractBackground>
   );
 }

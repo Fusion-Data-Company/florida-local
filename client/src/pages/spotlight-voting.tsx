@@ -14,7 +14,17 @@ export default function SpotlightVotingPage() {
   });
 
   return (
-    <div className="premium-page-wrapper premium-surface min-h-screen marble-texture">
+    <div
+      className="premium-page-wrapper premium-surface min-h-screen relative"
+      style={{
+        backgroundImage: "url('/backgrounds/colorful-painting-with-black-background-white-blue-background_380557-143.avif')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-white/88 via-purple-50/85 to-pink-50/85 backdrop-blur-sm" />
+      <div className="relative z-10">
       <EliteNavigationHeader />
 
       {/* Hero Section */}
@@ -128,6 +138,7 @@ export default function SpotlightVotingPage() {
       </div>
 
       <MobileBottomNav />
+      </div>
     </div>
   );
 }
