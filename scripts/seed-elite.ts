@@ -18,7 +18,12 @@ async function seedElite() {
       isAdmin: true,
     }).onConflictDoUpdate({
       target: users.id,
-      set: { isAdmin: true, updatedAt: new Date() }
+      set: { 
+        firstName: "Robert",
+        lastName: "Yeager",
+        isAdmin: true, 
+        updatedAt: new Date() 
+      }
     }).returning();
 
     const [mat] = await db.insert(users).values({
@@ -29,7 +34,12 @@ async function seedElite() {
       isAdmin: true,
     }).onConflictDoUpdate({
       target: users.id,
-      set: { isAdmin: true, updatedAt: new Date() }
+      set: { 
+        firstName: "Mat",
+        lastName: "Mercado",
+        isAdmin: true, 
+        updatedAt: new Date() 
+      }
     }).returning();
 
     console.log("✅ Created admin users (rob@fusiondataco.com, mat@fusiondataco.com)");
@@ -808,6 +818,23 @@ His approach combines technical expertise with strategic thinking, ensuring ever
 
     await db.insert(posts).values([
       {
+        businessId: fusionDataCo.id,
+        content: "Just deployed a lead generation system for a solar company that reduced their response time from 3 days to under 5 minutes. Result? Their close rate jumped from 8% to 23% in 90 days. This is what intelligent automation looks like. 🚀 #WorkflowAutomation #SalesOps",
+        type: "achievement",
+        likeCount: 156,
+        commentCount: 24,
+        isVisible: true
+      },
+      {
+        businessId: fusionDataCo.id,
+        content: "Hot take: Your sales team doesn't need more reps. They need better automation. We just helped a 3-person team perform at 15-person capacity through smart workflows. The future of sales isn't bigger teams—it's smarter systems. 💡 #Automation #ScaleUp",
+        type: "update",
+        likeCount: 203,
+        commentCount: 31,
+        shareCount: 18,
+        isVisible: true
+      },
+      {
         businessId: insuranceSchool.id,
         content: "🎉 Another amazing cohort just crushed their 2-15 exam! 87% pass rate on FIRST attempt! Remember: #NeverHuntAlone. When you join The Insurance School family, you're joining a community of future insurance professionals who support each other every step of the way. Ready to start YOUR insurance career? Link in bio! 📚✨",
         type: "achievement",
@@ -846,8 +873,9 @@ His approach combines technical expertise with strategic thinking, ensuring ever
 
     console.log("\n🎉 ELITE SEED DATA COMPLETE!");
     console.log("\n📋 Summary:");
-    console.log("👥 Admins: rob@fusiondataco.com, mat@fusiondataco.com");
+    console.log("👥 Admins: rob@fusiondataco.com (Robert Yeager), mat@fusiondataco.com (Mat Mercado)");
     console.log("🏪 Businesses:");
+    console.log("   0. Rob Yeager & Mat Mercado - Fusion Data Co (ADMIN ELITE - Workflow Automation)");
     console.log("   1. Jason Perez - The Insurance School (Central Florida)");
     console.log("   2. Kelli Kirk - Boho Hooligan (Etsy Artisan)");
     console.log("   3. Ted Bogert - The Ted Show (GOLD STANDARD - Orlando Media)");
@@ -857,7 +885,7 @@ His approach combines technical expertise with strategic thinking, ensuring ever
     console.log("   - Verified business listings with full details");
     console.log("   - Relevant products/services based on actual offerings");
     console.log("   - Social posts for engagement");
-    console.log("\n🔐 Admin users can impersonate regular users for public view testing");
+    console.log("\n🔐 Admin users (Rob & Mat) have both admin privileges AND entrepreneur profiles with Fusion Data Co business");
     
   } catch (error) {
     console.error("❌ Seed error:", error);
