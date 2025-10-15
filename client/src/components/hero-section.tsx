@@ -75,24 +75,26 @@ export default function HeroSection() {
             <Zap className="w-4 h-4 mr-2" />
             AI-Powered Platform
           </Badge>
-          <motion.Badge
-            className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+          <motion.div
+            className="inline-flex items-center"
             animate={{ scale: [1, 1.05, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            <Users className="w-4 h-4 mr-2" />
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={activeUsers}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.3 }}
-              >
-                {activeUsers} Active Now
-              </motion.span>
-            </AnimatePresence>
-          </motion.Badge>
+            <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+              <Users className="w-4 h-4 mr-2" />
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={activeUsers}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {activeUsers} Active Now
+                </motion.span>
+              </AnimatePresence>
+            </Badge>
+          </motion.div>
           <Badge className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-4 py-2 text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
             <Shield className="w-4 h-4 mr-2" />
             Verified Businesses
