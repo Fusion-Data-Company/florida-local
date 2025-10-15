@@ -52,20 +52,21 @@ export default function UserProfile() {
   });
 
   // Fetch loyalty account
-  const { data: loyaltyAccount } = useQuery<any>({
+  const { data: loyaltyAccount, isLoading: loyaltyLoading } = useQuery<any>({
     queryKey: ['/api/loyalty/account'],
     enabled: isAuthenticated,
   });
 
   // Fetch user stats
-  const { data: userStats } = useQuery<any>({
+  const { data: userStats, isLoading: statsLoading } = useQuery<any>({
     queryKey: ['/api/user/stats'],
     enabled: isAuthenticated,
   });
 
   // Auto-route logic based on user profile
   useEffect(() => {
-    if (!isAuthenticated || businessesLoading || isRouting) return;
+    // Wait for all data to load before routing
+    if (!isAuthenticated || businessesLoading || loyaltyLoading || isRouting) return;
 
     setIsRouting(true);
 
@@ -85,8 +86,8 @@ export default function UserProfile() {
           return;
         }
 
-        // Priority 3: Users with loyalty accounts (customers)
-        if (loyaltyAccount && loyaltyAccount.currentPoints > 0) {
+        // Priority 3: Users with loyalty accounts (any account, not just with points)
+        if (loyaltyAccount) {
           navigate("/loyalty");
           return;
         }
@@ -102,7 +103,7 @@ export default function UserProfile() {
 
     // Add slight delay to prevent flashing
     setTimeout(routeUser, 500);
-  }, [isAuthenticated, user, userBusinesses, businessesLoading, loyaltyAccount, isRouting]);
+  }, [isAuthenticated, user, userBusinesses, businessesLoading, loyaltyAccount, loyaltyLoading, isRouting]);
 
   if (!isAuthenticated) {
     navigate("/");
