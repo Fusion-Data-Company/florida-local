@@ -33,8 +33,6 @@ import { Link } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import EliteNavigationHeader from "@/components/elite-navigation-header";
-import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { MarketingOverviewDashboard } from "@/components/marketing/MarketingOverviewDashboard";
 import { cn } from "@/lib/utils";
 import { AbstractBackground } from "@/components/ui/abstract-background";
@@ -232,7 +230,6 @@ export default function MarketingHub() {
 
   return (
     <AbstractBackground backgroundKey="vibrant2" overlay="light" className="min-h-screen">
-      <EliteNavigationHeader />
 
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
@@ -703,8 +700,6 @@ export default function MarketingHub() {
           </TabsContent>
         </Tabs>
       </div>
-
-      <MobileBottomNav />
     </AbstractBackground>
   );
 }

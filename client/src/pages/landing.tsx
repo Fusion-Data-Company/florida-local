@@ -1,9 +1,7 @@
-import EliteNavigationHeader from "@/components/elite-navigation-header";
 import HeroSection from "@/components/hero-section";
 import SpotlightShowcase from "@/components/spotlight-showcase";
 import MarketplaceSection from "@/components/marketplace-section";
 import SocialFeed from "@/components/social-feed";
-import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { Button } from "@/components/ui/button";
 import { StardustButton } from "@/components/ui/stardust-button";
 import { AbstractBackground } from "@/components/ui/abstract-background";
@@ -31,7 +29,6 @@ export default function Landing() {
       >
       {/* CONTENT WRAPPER - Proper Z-Index */}
       <div className="relative z-10">
-      <EliteNavigationHeader />
       <HeroSection />
       <SpotlightShowcase />
       
@@ -227,7 +224,6 @@ export default function Landing() {
         </div>
       </footer>
 
-      <MobileBottomNav />
       </div>
       </AbstractBackground>
     </div>

@@ -1,5 +1,3 @@
-import EliteNavigationHeader from "@/components/elite-navigation-header";
-import MobileBottomNav from "@/components/mobile-bottom-nav";
 import VotingInterface from "@/components/spotlight/VotingInterface";
 import TrendingBusinesses from "@/components/spotlight/TrendingBusinesses";
 import { WinnerBanner } from "@/components/spotlight/WinnerAnnouncement";
@@ -25,7 +23,6 @@ export default function SpotlightVotingPage() {
     >
       <div className="absolute inset-0 bg-gradient-to-br from-white/88 via-purple-50/85 to-pink-50/85 backdrop-blur-sm" />
       <div className="relative z-10">
-      <EliteNavigationHeader />
 
       {/* Hero Section */}
       <div className="relative overflow-hidden bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 text-white">
@@ -137,7 +134,6 @@ export default function SpotlightVotingPage() {
         )}
       </div>
 
-      <MobileBottomNav />
       </div>
     </div>
   );

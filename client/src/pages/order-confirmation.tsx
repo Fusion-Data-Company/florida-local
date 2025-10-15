@@ -3,8 +3,6 @@ import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
 import { useLocation, Link } from "wouter";
-import EliteNavigationHeader from "@/components/elite-navigation-header";
-import MobileBottomNav from "@/components/mobile-bottom-nav";
 import GlowHero from "@/components/ui/glow-hero";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -126,7 +124,6 @@ export default function OrderConfirmation() {
         data-surface-intensity="delicate"
         data-surface-tone="warm"
       >
-        <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-12 text-center">
           <h1 className="text-2xl font-bold mb-4">Please log in to view order confirmation</h1>
           <Button asChild>
@@ -135,7 +132,6 @@ export default function OrderConfirmation() {
             </Link>
           </Button>
         </div>
-        <MobileBottomNav />
       </div>
     );
   }
@@ -147,13 +143,11 @@ export default function OrderConfirmation() {
         data-surface-intensity="delicate"
         data-surface-tone="warm"
       >
-        <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-12 text-center">
           <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
           <h2 className="text-xl font-semibold">Confirming your order...</h2>
           <p className="text-muted-foreground mt-2">Please wait while we process your payment</p>
         </div>
-        <MobileBottomNav />
       </div>
     );
   }
@@ -164,7 +158,6 @@ export default function OrderConfirmation() {
       data-surface-intensity="delicate"
       data-surface-tone="warm"
     >
-      <EliteNavigationHeader />
 
       <div className="container mx-auto px-4 py-8 lg:px-8">
         {/* Success Header */}
@@ -380,8 +373,6 @@ export default function OrderConfirmation() {
           </div>
         </div>
       </div>
-
-      <MobileBottomNav />
     </div>
   );
 }

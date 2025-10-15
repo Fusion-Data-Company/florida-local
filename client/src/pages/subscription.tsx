@@ -4,8 +4,6 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "wouter";
 import { AbstractBackground } from "@/components/ui/abstract-background";
-import EliteNavigationHeader from "@/components/elite-navigation-header";
-import MobileBottomNav from "@/components/mobile-bottom-nav";
 
 // Milestones for the roadmap showing business growth journey
 const milestonesData = [
@@ -95,7 +93,6 @@ export default function SubscriptionPage() {
 
   return (
     <AbstractBackground backgroundKey="flowing2" overlay="light" className="min-h-screen">
-      <EliteNavigationHeader />
       <div className="w-full">
       {/* Hero Section with Roadmap */}
       <div className="container mx-auto flex flex-col items-center px-4 py-16 text-center md:py-24">
@@ -232,7 +229,6 @@ export default function SubscriptionPage() {
         </div>
       </div>
       </div>
-      <MobileBottomNav />
     </AbstractBackground>
   );
 }

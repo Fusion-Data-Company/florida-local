@@ -1,5 +1,3 @@
-import EliteNavigationHeader from "@/components/elite-navigation-header";
-import MobileBottomNav from "@/components/mobile-bottom-nav";
 import Leaderboard from "@/components/community/Leaderboard";
 import TrendingBusinesses from "@/components/spotlight/TrendingBusinesses";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,8 +21,6 @@ export default function CommunityPage() {
       }}
     >
       <div className="relative z-10">
-      <EliteNavigationHeader />
-
       {/* Geometric Sphere Hero Section */}
       <SphereHero />
 
@@ -200,8 +196,6 @@ export default function CommunityPage() {
           <Leaderboard variant="full" />
         </section>
       </div>
-
-      <MobileBottomNav />
       </div>
     </div>
   );

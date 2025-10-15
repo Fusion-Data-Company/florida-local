@@ -4,8 +4,6 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import EliteNavigationHeader from "@/components/elite-navigation-header";
-import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -278,7 +276,6 @@ export default function EntrepreneurProfile() {
   if (isLoading) {
     return (
       <AbstractBackground backgroundKey="flowing1" overlay="medium" className="min-h-screen">
-        <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-6xl mx-auto space-y-6">
             <Skeleton className="h-64 w-full" />
@@ -290,14 +287,12 @@ export default function EntrepreneurProfile() {
             </div>
           </div>
         </div>
-        <MobileBottomNav />
       </AbstractBackground>
     );
   }
 
   return (
     <AbstractBackground backgroundKey="flowing1" overlay="medium" className="min-h-screen">
-      <EliteNavigationHeader />
 
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
@@ -702,7 +697,6 @@ export default function EntrepreneurProfile() {
         </div>
       </div>
 
-      <MobileBottomNav />
     </AbstractBackground>
   );
 }

@@ -4,15 +4,12 @@ import { Trophy, Gift, Users, Sparkles } from "lucide-react";
 import LoyaltyDashboard from "@/components/loyalty-dashboard";
 import RewardsCatalog from "@/components/rewards-catalog";
 import ReferralCenter from "@/components/referral-center";
-import EliteNavigationHeader from "@/components/elite-navigation-header";
-import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { motion } from "framer-motion";
 import { AbstractBackground } from "@/components/ui/abstract-background";
 
 export default function LoyaltyPage() {
   return (
     <AbstractBackground backgroundKey="vibrant3" overlay="subtle" className="min-h-screen">
-      <EliteNavigationHeader />
 
       <div className="container mx-auto px-4 py-8">
         {/* Page Header */}
@@ -243,7 +240,6 @@ export default function LoyaltyPage() {
           </div>
         </motion.div>
       </div>
-      <MobileBottomNav />
     </AbstractBackground>
   );
 }

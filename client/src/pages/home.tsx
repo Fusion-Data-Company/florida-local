@@ -2,14 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { type Business } from "@shared/types";
-import EliteNavigationHeader from "@/components/elite-navigation-header";
 import SpotlightShowcase from "@/components/spotlight-showcase";
 import MarketplaceSection from "@/components/marketplace-section";
 import VotingInterface from "@/components/spotlight/VotingInterface";
 import TrendingBusinesses from "@/components/spotlight/TrendingBusinesses";
 import SocialFeed from "@/components/social-feed";
-import MobileBottomNav from "@/components/mobile-bottom-nav";
-import LuxuryFooter from "@/components/luxury-footer";
 import { Button } from "@/components/ui/button";
 import { StardustButton } from "@/components/ui/stardust-button";
 import { ShaderAnimation } from "@/components/ui/shader-animation";
@@ -55,8 +52,6 @@ export default function Home() {
     >
       {/* ULTRA PREMIUM EFFECTS */}
       <AuroraAmbient intensity="medium" />
-
-      <EliteNavigationHeader />
 
       {/* SHADER ANIMATION HERO */}
       <div className="relative flex h-[650px] w-full flex-col items-center justify-center overflow-hidden">
@@ -193,8 +188,6 @@ export default function Home() {
         <SocialFeed />
       </div>
 
-      <LuxuryFooter />
-      <MobileBottomNav />
     </div>
   );
 }

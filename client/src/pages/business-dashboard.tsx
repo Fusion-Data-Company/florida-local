@@ -31,8 +31,6 @@ import { GMBStatusWidget } from "@/components/widgets/GMBStatusWidget";
 import type { Business, Product, Post } from "@shared/types";
 import { motion } from "framer-motion";
 import { AbstractBackground } from "@/components/ui/abstract-background";
-import EliteNavigationHeader from "@/components/elite-navigation-header";
-import MobileBottomNav from "@/components/mobile-bottom-nav";
 
 export default function BusinessDashboard() {
   const { user } = useAuth();
@@ -108,7 +106,6 @@ export default function BusinessDashboard() {
 
   return (
     <AbstractBackground backgroundKey="geometric1" overlay="light" className="min-h-screen">
-      <EliteNavigationHeader />
       {/* Hero Section with Business Info */}
       <div className="relative bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 text-white overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20"></div>
@@ -572,7 +569,6 @@ export default function BusinessDashboard() {
           </TabsContent>
         </Tabs>
       </div>
-      <MobileBottomNav />
     </AbstractBackground>
   );
 }

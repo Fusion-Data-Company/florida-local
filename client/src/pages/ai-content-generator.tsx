@@ -3,8 +3,6 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import EliteNavigationHeader from "@/components/elite-navigation-header";
-import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -232,7 +230,6 @@ export default function AIContentGenerator() {
   if (!isAuthenticated) {
     return (
       <AbstractBackground backgroundKey="dynamic1" overlay="gradient" className="min-h-screen">
-        <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-20 text-center">
           <Sparkles className="h-16 w-16 mx-auto mb-6 text-purple-500" />
           <h1 className="text-4xl font-bold mb-4">AI Content Generator</h1>
@@ -243,14 +240,12 @@ export default function AIContentGenerator() {
             Sign In
           </Button>
         </div>
-        <MobileBottomNav />
       </AbstractBackground>
     );
   }
 
   return (
     <AbstractBackground backgroundKey="dynamic1" overlay="gradient" className="min-h-screen">
-      <EliteNavigationHeader />
 
       {/* Hero Header */}
       <div className="relative overflow-hidden bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 text-white">
@@ -590,7 +585,6 @@ export default function AIContentGenerator() {
         </Tabs>
       </div>
 
-      <MobileBottomNav />
     </AbstractBackground>
   );
 }

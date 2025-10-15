@@ -5,8 +5,6 @@ import { Business, Product, Post } from "@shared/types";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import EliteNavigationHeader from "@/components/elite-navigation-header";
-import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -89,7 +87,6 @@ export default function BusinessProfile() {
         data-surface-intensity="delicate"
         data-surface-tone="warm"
       >
-        <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-8">
           <div className="space-y-6">
             <Skeleton className="h-64 w-full" />
@@ -102,7 +99,6 @@ export default function BusinessProfile() {
             </div>
           </div>
         </div>
-        <MobileBottomNav />
       </div>
     );
   }
@@ -114,11 +110,9 @@ export default function BusinessProfile() {
         data-surface-intensity="delicate"
         data-surface-tone="warm"
       >
-        <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-8 text-center">
           <h1 className="text-2xl font-bold text-muted-foreground">Business Not Found</h1>
         </div>
-        <MobileBottomNav />
       </div>
     );
   }
@@ -131,7 +125,6 @@ export default function BusinessProfile() {
       data-surface-intensity="delicate"
       data-surface-tone="warm"
     >
-      <EliteNavigationHeader />
 
       {/* Business Header */}
       <div className="relative">
@@ -592,8 +585,6 @@ export default function BusinessProfile() {
           </div>
         )}
       </div>
-
-      <MobileBottomNav />
     </div>
   );
 }

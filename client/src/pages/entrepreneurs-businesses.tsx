@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import EliteNavigationHeader from "@/components/elite-navigation-header";
-import LuxuryFooter from "@/components/luxury-footer";
-import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -87,7 +84,6 @@ export default function EntrepreneursBusinesses() {
       <HoverTrail />
 
       <div className="relative" style={{ zIndex: 10 }}>
-        <EliteNavigationHeader />
 
         {/* HERO SECTION */}
         <section className="py-20 relative overflow-hidden">
@@ -420,11 +416,7 @@ export default function EntrepreneursBusinesses() {
             </ScrollArea>
           </div>
         </section>
-
-        <LuxuryFooter />
       </div>
-
-      <MobileBottomNav />
     </div>
   );
 }

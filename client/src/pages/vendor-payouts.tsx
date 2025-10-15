@@ -30,8 +30,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { AbstractBackground } from "@/components/ui/abstract-background";
-import EliteNavigationHeader from "@/components/elite-navigation-header";
-import MobileBottomNav from "@/components/mobile-bottom-nav";
 
 type Business = {
   id: string;
@@ -413,7 +411,6 @@ export default function VendorPayoutsPage() {
 
   return (
     <AbstractBackground backgroundKey="vibrant1" overlay="light" className="min-h-screen">
-      <EliteNavigationHeader />
       <div className="container mx-auto px-4 py-8 space-y-8">
       {/* Header */}
       <div className="vendor-payouts-header flex items-center justify-between rounded-2xl p-6 relative">
@@ -821,7 +818,6 @@ export default function VendorPayoutsPage() {
         </>
       )}
       </div>
-      <MobileBottomNav />
     </AbstractBackground>
   );
 }

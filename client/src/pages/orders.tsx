@@ -1,8 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "wouter";
-import EliteNavigationHeader from "@/components/elite-navigation-header";
-import MobileBottomNav from "@/components/mobile-bottom-nav";
 import GlowHero from "@/components/ui/glow-hero";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -99,8 +97,6 @@ export default function Orders() {
     >
       {/* ULTRA PREMIUM EFFECTS */}
       <AuroraAmbient intensity="medium" />
-
-      <EliteNavigationHeader />
 
       {/* ULTRA PREMIUM HERO */}
       <AnimatedGradientHero className="py-16">
@@ -284,8 +280,6 @@ export default function Orders() {
           </div>
         </div>
       </div>
-
-      <MobileBottomNav />
     </div>
   );
 }

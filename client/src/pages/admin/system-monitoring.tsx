@@ -32,8 +32,6 @@ import {
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import EliteNavigationHeader from "@/components/elite-navigation-header";
-import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
 
@@ -219,7 +217,6 @@ export default function SystemMonitoring() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
-      <EliteNavigationHeader />
 
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
@@ -743,8 +740,6 @@ export default function SystemMonitoring() {
           </TabsContent>
         </Tabs>
       </div>
-
-      <MobileBottomNav />
     </div>
   );
 }

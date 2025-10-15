@@ -9,8 +9,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
-import EliteNavigationHeader from "@/components/elite-navigation-header";
-import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { Button } from "@/components/ui/button";
 import { StardustButton } from "@/components/ui/stardust-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -217,7 +215,6 @@ export default function Checkout() {
         <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-green-50/88 to-blue-50/88 backdrop-blur-md" />
         <AuroraAmbient intensity="low" />
         <div className="relative z-10">
-        <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-12 text-center relative z-10">
           <Transform3DCard className="entrance-scale-fade">
             <PremiumGlassCard className="ambient-glow-teal elevation-3">
@@ -234,7 +231,6 @@ export default function Checkout() {
             </PremiumGlassCard>
           </Transform3DCard>
         </div>
-        <MobileBottomNav />
         </div>
       </div>
     );
@@ -260,7 +256,6 @@ export default function Checkout() {
         data-surface-tone="cool"
       >
         <AuroraAmbient intensity="low" />
-        <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-12 text-center relative z-10">
           <Transform3DCard className="entrance-scale-fade">
             <PremiumGlassCard className="ambient-glow-purple elevation-3">
@@ -277,7 +272,6 @@ export default function Checkout() {
             </PremiumGlassCard>
           </Transform3DCard>
         </div>
-        <MobileBottomNav />
       </div>
     );
   }
@@ -299,7 +293,6 @@ export default function Checkout() {
       <AuroraAmbient intensity="low" />
 
       <div className="relative z-10">
-      <EliteNavigationHeader />
 
       {/* FLORIDA LOCAL CHECKOUT HERO */}
       <div className="relative py-12 overflow-hidden">
@@ -604,8 +597,6 @@ export default function Checkout() {
           </div>
         </div>
       </div>
-
-      <MobileBottomNav />
       </div>
     </div>
   );

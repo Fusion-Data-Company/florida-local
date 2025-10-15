@@ -3,8 +3,6 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import EliteNavigationHeader from "@/components/elite-navigation-header";
-import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -182,7 +180,6 @@ export default function GMBHub() {
   if (!isAuthenticated) {
     return (
       <div className="premium-page-wrapper premium-surface min-h-screen marble-texture abstract-overlay-light">
-        <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-20 text-center">
           <MapPin className="h-16 w-16 mx-auto mb-6 text-blue-500" />
           <h1 className="text-4xl font-bold mb-4">GMB Integration Hub</h1>
@@ -586,7 +583,6 @@ export default function GMBHub() {
 
   return (
     <AbstractBackground backgroundKey="geometric2" overlay="light" className="min-h-screen">
-      <EliteNavigationHeader />
 
       {/* Hero Header */}
       <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-cyan-600 to-teal-600 text-white">
@@ -664,8 +660,6 @@ export default function GMBHub() {
           </Tabs>
         )}
       </div>
-
-      <MobileBottomNav />
     </AbstractBackground>
   );
 }

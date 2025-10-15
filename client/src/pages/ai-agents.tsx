@@ -1,9 +1,6 @@
 import { useLocation } from "wouter";
 import { Bot, Brain, Sparkles, Zap, TrendingUp, Target } from "lucide-react";
 import AIAgentsHub from "@/components/ai-agents-hub";
-import EliteNavigationHeader from "@/components/elite-navigation-header";
-import LuxuryFooter from "@/components/luxury-footer";
-import MobileBottomNav from "@/components/mobile-bottom-nav";
 import GlowHero from "@/components/ui/glow-hero";
 import { AbstractBackground } from "@/components/ui/abstract-background";
 import {
@@ -30,8 +27,6 @@ export default function AIAgentsPage() {
 
       {/* Premium Effects */}
       <AuroraAmbient intensity="medium" />
-
-      <EliteNavigationHeader />
 
       {/* Hero Section */}
       <div className="relative py-24 overflow-hidden gradient-shift">
@@ -137,8 +132,6 @@ export default function AIAgentsPage() {
         </div>
       </div>
 
-      <LuxuryFooter />
-      <MobileBottomNav />
     </div>
   );
 }

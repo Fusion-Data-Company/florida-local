@@ -8,9 +8,6 @@ import {
 } from "framer-motion";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import EliteNavigationHeader from "@/components/elite-navigation-header";
-import MobileBottomNav from "@/components/mobile-bottom-nav";
-import LuxuryFooter from "@/components/luxury-footer";
 import { AnimatedCarousel } from "@/components/ui/logo-carousel";
 import { RotatingCarousel } from "@/components/ui/rotating-carousel";
 import { Badge } from "@/components/ui/badge";
@@ -533,8 +530,6 @@ export default function Registry() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
-      <EliteNavigationHeader />
-
       {/* SCROLL HEADER WITH 3 ROWS (Row 2 = Premium Ad Slots!) */}
       <div
         ref={ref}
@@ -639,10 +634,6 @@ export default function Registry() {
           logoImageHeight="h-12"
         />
       </div>
-
-      {/* Luxury Footer */}
-      <LuxuryFooter />
-      <MobileBottomNav />
     </div>
   );
 }

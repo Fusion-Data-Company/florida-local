@@ -5,8 +5,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import EliteNavigationHeader from "@/components/elite-navigation-header";
-import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -457,7 +455,6 @@ export default function Messages() {
   if (conversationsLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-orange-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
-        <EliteNavigationHeader />
         <div className="container mx-auto px-4 py-8">
           <div className="grid lg:grid-cols-4 gap-6 h-[calc(100vh-200px)]">
             <div className="lg:col-span-1 space-y-4">
@@ -476,14 +473,12 @@ export default function Messages() {
             </div>
           </div>
         </div>
-        <MobileBottomNav />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
-      <EliteNavigationHeader />
 
       <div className="container mx-auto px-4 py-8 messages-container">
         <div className="mb-6 relative z-10">
@@ -942,8 +937,6 @@ export default function Messages() {
           </Card>
         </div>
       </div>
-
-      <MobileBottomNav />
     </div>
   );
 }

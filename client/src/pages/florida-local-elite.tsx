@@ -8,8 +8,6 @@ import {
   Star, Phone, Calendar, ChevronLeft, ChevronRight,
   Heart, Bookmark, Play, Sparkles
 } from "lucide-react";
-import EliteNavigationHeader from "@/components/elite-navigation-header";
-import LuxuryFooter from "@/components/luxury-footer";
 import {
   AnimatedGradientHero,
   ParticleField,
@@ -95,10 +93,6 @@ export default function FloridaLocalElite() {
 
       {/* CONTENT WRAPPER - Above all effects - PROPER Z-INDEX */}
       <div className="relative" style={{ zIndex: 10 }}>
-      {/* 1. SITE HEADER / NAVIGATION - HIGHEST Z-INDEX */}
-      <div className="sticky top-0" style={{ zIndex: 9999 }}>
-        <EliteNavigationHeader />
-      </div>
 
       {/* 2. NEW HERO SECTION WITH VIDEO BACKGROUND - SCROLLS TO FRONT */}
       <section className="relative overflow-hidden min-h-[700px] md:min-h-[850px] lg:min-h-[100vh]" style={{ zIndex: 1000 }}>
@@ -1381,8 +1375,6 @@ export default function FloridaLocalElite() {
 
       </div>
       {/* End Content Wrapper */}
-      
-      <LuxuryFooter />
     </div>
   );
 }

@@ -4,8 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLocation } from "wouter";
-import EliteNavigationHeader from "@/components/elite-navigation-header";
-import MobileBottomNav from "@/components/mobile-bottom-nav";
 import AIAgentsHub from "@/components/ai-agents-hub";
 import VisualSearch from "@/components/visual-search";
 import VoiceSearch from "@/components/voice-search";
@@ -159,7 +157,6 @@ export default function AIToolsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <EliteNavigationHeader />
 
       {/* Hero Section */}
       <div className="relative overflow-hidden border-b">
@@ -411,8 +408,6 @@ export default function AIToolsPage() {
           </TabsContent>
         </Tabs>
       </div>
-
-      <MobileBottomNav />
     </div>
   );
 }

@@ -7,9 +7,6 @@ import type { Product, Business } from "@shared/types";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import EliteNavigationHeader from "@/components/elite-navigation-header";
-import MobileBottomNav from "@/components/mobile-bottom-nav";
-import LuxuryFooter from "@/components/luxury-footer";
 import GlowHero from "@/components/ui/glow-hero";
 import MagicEliteProductCard, { MagicEliteProductGrid } from "@/components/magic-elite-product-card";
 import AIRecommendations from "@/components/ai-recommendations";
@@ -190,8 +187,6 @@ export default function Marketplace() {
     >
       {/* ULTRA PREMIUM EFFECTS */}
       <AuroraAmbient intensity="low" />
-
-      <EliteNavigationHeader />
 
       {/* AI RECOMMENDATIONS - Show at top for authenticated users */}
       {isAuthenticated && user && (
@@ -614,8 +609,6 @@ export default function Marketplace() {
         </div>
       </section>
 
-      <LuxuryFooter />
-      <MobileBottomNav />
     </AbstractBackground>
   );
 }

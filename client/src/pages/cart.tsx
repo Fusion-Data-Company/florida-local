@@ -7,8 +7,6 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { ApiCartItem } from "@/lib/types";
 import { ShoppingCart, Trash2, Plus, Minus } from "lucide-react";
-import EliteNavigationHeader from "@/components/elite-navigation-header";
-import MobileBottomNav from "@/components/mobile-bottom-nav";
 import GlowHero from "@/components/ui/glow-hero";
 import {
   AnimatedGradientHero,
@@ -92,8 +90,6 @@ export default function CartPage() {
       <AuroraAmbient intensity="low" />
 
       <div className="relative z-10">
-      <EliteNavigationHeader />
-
       {/* ULTRA PREMIUM HERO */}
       <AnimatedGradientHero className="py-12 gradient-shift">
         <ParticleField count={30} color="purple" />
@@ -267,8 +263,6 @@ export default function CartPage() {
         )}
       </div>
       </div>
-
-      <MobileBottomNav />
       </div>
     </div>
   );
