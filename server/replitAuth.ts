@@ -42,7 +42,7 @@ export async function getSession() {
   if (redisAvailable) {
     console.log("✅ Using Redis for session storage");
     try {
-      sessionStore = createRedisStore(session);
+      sessionStore = await createRedisStore(session);
     } catch (error) {
       console.error("❌ Failed to create Redis session store:", error);
       sessionStore = null;
