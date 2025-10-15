@@ -30,8 +30,15 @@ const stripe = stripeKey
   : null;
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth middleware
-  await setupAuth(app);
+  // Auth middleware with graceful fallback
+  try {
+    await setupAuth(app);
+    console.log("✅ Authentication middleware initialized");
+  } catch (error) {
+    console.error("❌ Failed to setup authentication:", error);
+    console.log("⚠️ Server will start without session persistence");
+    // Continue anyway - the app can still serve public routes
+  }
 
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {

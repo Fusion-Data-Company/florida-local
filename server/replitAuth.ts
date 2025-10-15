@@ -6,10 +6,13 @@ import session from "express-session";
 import type { Express, RequestHandler } from "express";
 import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
+import memorystore from "memorystore";
 import { storage } from "./storage";
 import { createRedisStore, redis, isRedisAvailable, checkRedisConnection } from "./redis";
 import { getDatabaseStatus, testDatabaseConnection } from "./db";
 import { randomBytes } from "crypto";
+
+const MemoryStore = memorystore(session);
 
 if (!process.env.REPLIT_DOMAINS) {
   throw new Error("Environment variable REPLIT_DOMAINS not provided");
@@ -84,7 +87,6 @@ export async function getSession() {
       console.error("❌ Failed to setup PostgreSQL session store:", dbError);
       console.log("⚠️ Falling back to in-memory session store (sessions will not persist across restarts)");
       
-      const MemoryStore = require("memorystore")(session);
       sessionStore = new MemoryStore({
         checkPeriod: 86400000,
       });
@@ -135,8 +137,14 @@ async function upsertUser(
 export async function setupAuth(app: Express) {
   app.set("trust proxy", 1);
   
-  // Session setup is now async, so we need to await it
-  const sessionMiddleware = await getSession();
+  // Session setup with timeout to prevent hanging
+  const sessionMiddleware = await Promise.race([
+    getSession(),
+    new Promise<any>((_, reject) => 
+      setTimeout(() => reject(new Error('Session initialization timeout')), 10000)
+    )
+  ]);
+  
   app.use(sessionMiddleware);
   
   app.use(passport.initialize());
