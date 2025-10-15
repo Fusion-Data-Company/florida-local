@@ -103,7 +103,6 @@ export interface IStorage {
   getUserLikedPosts(userId: string): Promise<any[]>;
   getUserPurchaseHistory(userId: string): Promise<any[]>;
   getBusinessMetrics(businessId: string): Promise<any>;
-  getTrendingBusinesses(limit: number): Promise<Business[]>;
   getOrderItemsWithProducts(orderId: string): Promise<any[]>;
   updateOrderInvoiceNumber(orderId: string, invoiceNumber: string): Promise<void>;
   
@@ -505,22 +504,6 @@ export class DatabaseStorage implements IStorage {
     };
   }
 
-  async getTrendingBusinesses(limit: number): Promise<Business[]> {
-    return await db
-      .select()
-      .from(businesses)
-      .where(
-        and(
-          eq(businesses.isActive, true),
-          eq(businesses.isVerified, true)
-        )
-      )
-      .orderBy(
-        desc(businesses.followerCount),
-        desc(businesses.rating)
-      )
-      .limit(limit);
-  }
 
   async getOrderItemsWithProducts(orderId: string): Promise<any[]> {
     return await db
