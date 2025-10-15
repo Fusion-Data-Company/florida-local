@@ -287,6 +287,19 @@ export class DatabaseStorage implements IStorage {
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
+    // Check if user exists and is admin
+    const existingUser = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, userData.email))
+      .limit(1);
+    
+    // If user is admin, preserve their existing data (don't overwrite with Replit auth data)
+    if (existingUser[0]?.isAdmin) {
+      return existingUser[0];
+    }
+    
+    // For non-admin users, proceed with normal upsert
     const [user] = await db
       .insert(users)
       .values(userData)
