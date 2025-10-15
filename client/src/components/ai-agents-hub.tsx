@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import {
   Bot,
   Sparkles,
@@ -34,7 +35,10 @@ import {
   Zap,
   AlertTriangle,
   CheckCircle,
-  RefreshCw
+  RefreshCw,
+  Star,
+  Flame,
+  ChevronRight
 } from "lucide-react";
 
 interface AIAgent {
@@ -365,12 +369,51 @@ interface TaskStatus {
   progress?: number;
 }
 
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2
+    }
+  }
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 30, scale: 0.95 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    scale: 1,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 15
+    }
+  }
+};
+
+const heroVariants = {
+  hidden: { opacity: 0, y: -20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.8,
+      ease: "easeOut"
+    }
+  }
+};
+
 export default function AIAgentsHub() {
   const { toast } = useToast();
   const [selectedAgent, setSelectedAgent] = useState<AIAgent | null>(null);
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [tasks, setTasks] = useState<Record<string, TaskStatus>>({});
   const [activeCategory, setActiveCategory] = useState<'all' | 'marketing' | 'marketplace'>('all');
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
   // Execute agent task
   const executeMutation = useMutation({
@@ -507,45 +550,157 @@ export default function AIAgentsHub() {
   };
 
   return (
-    <div className="space-y-8">
-      <div className="text-center">
-        <h2 className="text-4xl font-bold mb-3 bg-gradient-to-r from-[var(--fl-teal-lagoon)] via-[var(--fl-sunset-gold)] to-[var(--fl-bronze)] bg-clip-text text-transparent">
-          Choose Your AI Agent
-        </h2>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Select from our suite of specialized agents designed to supercharge your Florida business
-        </p>
-      </div>
-
-      {/* Active Tasks */}
-      {Object.keys(tasks).length > 0 && (
-        <Card className="border-2 border-[var(--fl-teal-lagoon)]/30 bg-gradient-to-br from-white/95 to-[var(--fl-teal-lagoon)]/5 shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Workflow className="h-5 w-5 text-[var(--fl-teal-lagoon)]" />
-              Active AI Tasks
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {Object.entries(tasks).map(([taskId, task]) => (
-                <div key={taskId} className="flex items-center justify-between p-4 rounded-lg bg-white/80 border border-[var(--fl-teal-lagoon)]/20 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center gap-3">
-                    {getTaskIcon(task.status)}
-                    <span className="text-sm font-medium">Task {taskId.slice(0, 8)}</span>
-                    <Badge variant={task.status === 'completed' ? 'success' : 'secondary'}>
-                      {task.status}
-                    </Badge>
-                  </div>
-                  {task.progress && task.status === 'processing' && (
-                    <Progress value={task.progress} className="w-32" />
-                  )}
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Animated background gradients */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[var(--fl-teal-lagoon)]/5 via-transparent to-[var(--fl-sunset-gold)]/5 animate-pulse" style={{ animationDuration: '8s' }} />
+      <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--fl-teal-lagoon)]/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '6s' }} />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-[var(--fl-sunset-gold)]/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '7s' }} />
+      
+      <div className="relative z-10 space-y-8 pb-12">
+        {/* Premium Hero Section */}
+        <motion.div 
+          className="text-center py-12 relative"
+          initial="hidden"
+          animate="visible"
+          variants={heroVariants}
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--fl-teal-lagoon)]/5 to-transparent" />
+          <div className="relative">
+            <motion.div
+              animate={{ 
+                scale: [1, 1.05, 1],
+                rotate: [0, 5, -5, 0]
+              }}
+              transition={{ 
+                duration: 4, 
+                repeat: Infinity,
+                repeatType: "reverse" 
+              }}
+              className="inline-block mb-4"
+            >
+              <Sparkles className="w-16 h-16 text-[var(--fl-sunset-gold)] drop-shadow-[0_0_15px_rgba(212,175,55,0.5)]" />
+            </motion.div>
+            
+            <h2 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-[var(--fl-teal-lagoon)] via-[var(--fl-sunset-gold)] to-[var(--fl-bronze)] bg-clip-text text-transparent drop-shadow-2xl">
+              AI Command Center
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto font-light">
+              Unleash the power of <span className="font-semibold text-[var(--fl-sunset-gold)]">15 specialized AI agents</span> designed to supercharge your business
+            </p>
+            
+            {/* Floating stats */}
+            <div className="flex justify-center gap-6 mt-8">
+              <motion.div 
+                className="px-6 py-3 rounded-full bg-white/80 dark:bg-black/40 backdrop-blur-xl border border-[var(--fl-teal-lagoon)]/30 shadow-lg"
+                whileHover={{ scale: 1.05, y: -2 }}
+              >
+                <div className="flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-[var(--fl-sunset-gold)]" />
+                  <span className="font-semibold text-sm">Ultra Fast</span>
                 </div>
-              ))}
+              </motion.div>
+              <motion.div 
+                className="px-6 py-3 rounded-full bg-white/80 dark:bg-black/40 backdrop-blur-xl border border-[var(--fl-sunset-gold)]/30 shadow-lg"
+                whileHover={{ scale: 1.05, y: -2 }}
+              >
+                <div className="flex items-center gap-2">
+                  <Brain className="w-5 h-5 text-[var(--fl-teal-lagoon)]" />
+                  <span className="font-semibold text-sm">AI Powered</span>
+                </div>
+              </motion.div>
             </div>
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        </motion.div>
+
+      {/* Active Tasks with Premium Design */}
+      <AnimatePresence>
+        {Object.keys(tasks).length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            transition={{ duration: 0.4 }}
+          >
+            <Card className="border-2 border-[var(--fl-teal-lagoon)]/40 bg-gradient-to-br from-white/90 dark:from-black/60 to-[var(--fl-teal-lagoon)]/10 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+              {/* Animated background gradient */}
+              <div className="absolute inset-0 bg-gradient-to-r from-[var(--fl-teal-lagoon)]/5 via-[var(--fl-sunset-gold)]/5 to-[var(--fl-teal-lagoon)]/5 animate-pulse" style={{ animationDuration: '3s' }} />
+              
+              <CardHeader className="relative z-10">
+                <CardTitle className="text-xl flex items-center gap-3">
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                  >
+                    <Workflow className="h-6 w-6 text-[var(--fl-teal-lagoon)]" />
+                  </motion.div>
+                  <span className="bg-gradient-to-r from-[var(--fl-teal-lagoon)] to-[var(--fl-sunset-gold)] bg-clip-text text-transparent">
+                    Active AI Tasks
+                  </span>
+                  <Badge variant="secondary" className="bg-[var(--fl-sunset-gold)]/20 text-[var(--fl-sunset-gold)]">
+                    {Object.keys(tasks).length}
+                  </Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="relative z-10">
+                <div className="space-y-3">
+                  {Object.entries(tasks).map(([taskId, task], index) => (
+                    <motion.div
+                      key={taskId}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      className="flex items-center justify-between p-4 rounded-xl bg-white/90 dark:bg-black/40 border-2 border-[var(--fl-teal-lagoon)]/30 shadow-lg hover:shadow-2xl hover:border-[var(--fl-sunset-gold)]/50 transition-all duration-300 backdrop-blur-sm relative overflow-hidden group"
+                    >
+                      {/* Pulsing background for processing tasks */}
+                      {task.status === 'processing' && (
+                        <div className="absolute inset-0 bg-gradient-to-r from-[var(--fl-teal-lagoon)]/10 to-[var(--fl-sunset-gold)]/10 animate-pulse" />
+                      )}
+                      
+                      <div className="flex items-center gap-3 relative z-10">
+                        <motion.div
+                          animate={task.status === 'processing' ? { 
+                            scale: [1, 1.2, 1],
+                            rotate: [0, 180, 360]
+                          } : {}}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        >
+                          {getTaskIcon(task.status)}
+                        </motion.div>
+                        <div>
+                          <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                            Task {taskId.slice(0, 8)}
+                          </span>
+                          <Badge 
+                            variant={task.status === 'completed' ? 'success' : 'secondary'}
+                            className={`ml-2 ${
+                              task.status === 'completed' 
+                                ? 'bg-green-500/20 text-green-700 dark:text-green-400 border-green-500/50'
+                                : task.status === 'processing'
+                                ? 'bg-blue-500/20 text-blue-700 dark:text-blue-400 border-blue-500/50'
+                                : 'bg-gray-500/20 text-gray-700 dark:text-gray-400 border-gray-500/50'
+                            }`}
+                          >
+                            {task.status}
+                          </Badge>
+                        </div>
+                      </div>
+                      {task.progress !== undefined && task.status === 'processing' && (
+                        <div className="flex items-center gap-3 relative z-10">
+                          <span className="text-xs font-semibold text-[var(--fl-teal-lagoon)]">{task.progress}%</span>
+                          <Progress 
+                            value={task.progress} 
+                            className="w-32 h-2 bg-gray-200 dark:bg-gray-700"
+                          />
+                        </div>
+                      )}
+                    </motion.div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <Tabs value={activeCategory} onValueChange={(v) => setActiveCategory(v as any)}>
         <TabsList className="grid w-full grid-cols-3 max-w-2xl mx-auto h-14 bg-white/80 shadow-lg border border-[var(--fl-teal-lagoon)]/20">
@@ -564,86 +719,164 @@ export default function AIAgentsHub() {
         </TabsList>
 
         <TabsContent value={activeCategory} className="mt-8">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <motion.div 
+            className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
             {filteredAgents.map((agent, index) => (
-              <Card
+              <motion.div
                 key={agent.id}
-                className={`cursor-pointer transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 bg-white/95 backdrop-blur-sm ${
-                  selectedAgent?.id === agent.id
-                    ? 'ring-2 ring-[var(--fl-sunset-gold)] shadow-[0_0_30px_rgba(212,175,55,0.3)]'
-                    : 'hover:ring-2 hover:ring-[var(--fl-teal-lagoon)]/30'
-                }`}
-                onClick={() => setSelectedAgent(agent)}
+                variants={cardVariants}
+                whileHover={{ 
+                  scale: 1.03,
+                  rotateY: 5,
+                  z: 50
+                }}
+                whileTap={{ scale: 0.98 }}
+                onHoverStart={() => setHoveredCard(agent.id)}
+                onHoverEnd={() => setHoveredCard(null)}
                 style={{
-                  animationDelay: `${index * 0.05}s`
+                  transformStyle: 'preserve-3d',
+                  perspective: 1000
                 }}
               >
-                <CardHeader>
-                  <div className="flex items-start justify-between mb-3">
-                    <div className={`p-3 rounded-xl bg-gradient-to-br ${agent.color} text-white shadow-lg transform group-hover:scale-110 transition-transform`}>
-                      {agent.icon}
-                    </div>
-                    <Badge
-                      variant="outline"
-                      className="text-xs font-semibold border-[var(--fl-teal-lagoon)]/30 bg-[var(--fl-teal-lagoon)]/5"
-                    >
-                      {agent.category}
-                    </Badge>
+                <Card
+                  className={`h-full cursor-pointer transition-all duration-500 bg-white/80 dark:bg-black/40 backdrop-blur-xl border-2 relative overflow-hidden group ${
+                    selectedAgent?.id === agent.id
+                      ? 'ring-4 ring-[var(--fl-sunset-gold)]/50 shadow-[0_0_40px_rgba(212,175,55,0.4)] border-[var(--fl-sunset-gold)]'
+                      : 'hover:border-[var(--fl-teal-lagoon)]/50 border-gray-200/50 dark:border-gray-700/50'
+                  }`}
+                  onClick={() => setSelectedAgent(agent)}
+                  data-testid={`card-agent-${agent.id}`}
+                >
+                  {/* Animated gradient border effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-[var(--fl-teal-lagoon)]/0 via-[var(--fl-sunset-gold)]/20 to-[var(--fl-teal-lagoon)]/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl" />
+                  
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
                   </div>
-                  <CardTitle className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                    {agent.name}
-                  </CardTitle>
-                  <CardDescription className="text-sm leading-relaxed">
-                    {agent.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button
-                    className={`w-full font-semibold transition-all ${
-                      selectedAgent?.id === agent.id
-                        ? 'bg-gradient-to-r from-[var(--fl-sunset-gold)] to-[var(--fl-bronze)] hover:shadow-lg'
-                        : 'bg-gradient-to-r from-[var(--fl-teal-lagoon)] to-blue-500 text-white hover:shadow-lg'
-                    }`}
-                    variant={selectedAgent?.id === agent.id ? "default" : "default"}
-                  >
-                    {selectedAgent?.id === agent.id ? "✓ Selected" : "Select Agent"}
-                  </Button>
-                </CardContent>
-              </Card>
+
+                  <CardHeader className="relative z-10">
+                    <div className="flex items-start justify-between mb-3">
+                      <motion.div 
+                        className={`p-3 rounded-xl bg-gradient-to-br ${agent.color} text-white shadow-lg relative overflow-hidden`}
+                        whileHover={{ rotate: 360 }}
+                        transition={{ duration: 0.6 }}
+                      >
+                        {/* Icon glow effect */}
+                        <div className="absolute inset-0 bg-white/20 rounded-xl blur-sm group-hover:bg-white/40 transition-all" />
+                        <div className="relative z-10">{agent.icon}</div>
+                      </motion.div>
+                      <Badge
+                        variant="outline"
+                        className="text-xs font-semibold border-[var(--fl-teal-lagoon)]/40 bg-gradient-to-r from-[var(--fl-teal-lagoon)]/10 to-[var(--fl-sunset-gold)]/10 backdrop-blur-sm"
+                      >
+                        {agent.category}
+                      </Badge>
+                    </div>
+                    <CardTitle className="text-lg font-bold bg-gradient-to-r from-gray-900 dark:from-gray-100 to-gray-600 dark:to-gray-400 bg-clip-text text-transparent group-hover:from-[var(--fl-teal-lagoon)] group-hover:to-[var(--fl-sunset-gold)] transition-all duration-300">
+                      {agent.name}
+                    </CardTitle>
+                    <CardDescription className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+                      {agent.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="relative z-10">
+                    <Button
+                      className={`w-full font-semibold transition-all duration-300 relative overflow-hidden group/btn ${
+                        selectedAgent?.id === agent.id
+                          ? 'bg-gradient-to-r from-[var(--fl-sunset-gold)] to-[var(--fl-bronze)] hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] text-white'
+                          : 'bg-gradient-to-r from-[var(--fl-teal-lagoon)] to-blue-500 text-white hover:shadow-[0_0_30px_rgba(0,128,128,0.5)]'
+                      }`}
+                      data-testid={`button-select-${agent.id}`}
+                    >
+                      {/* Button shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-200%] group-hover/btn:translate-x-[200%] transition-transform duration-700" />
+                      <span className="relative z-10 flex items-center justify-center gap-2">
+                        {selectedAgent?.id === agent.id ? (
+                          <>
+                            <CheckCircle className="w-4 h-4" />
+                            Selected
+                          </>
+                        ) : (
+                          <>
+                            Select Agent
+                            <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                          </>
+                        )}
+                      </span>
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </TabsContent>
       </Tabs>
 
-      {/* Agent Configuration Panel */}
-      {selectedAgent && (
-        <Card className="border-2 border-[var(--fl-sunset-gold)]/40 bg-gradient-to-br from-white/95 to-[var(--fl-sunset-gold)]/5 shadow-2xl">
-          <CardHeader className="bg-gradient-to-r from-[var(--fl-teal-lagoon)]/10 to-[var(--fl-sunset-gold)]/10">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className={`p-3 rounded-xl bg-gradient-to-br ${selectedAgent.color} text-white shadow-lg`}>
-                  {selectedAgent.icon}
+      {/* Agent Configuration Panel with Premium Design */}
+      <AnimatePresence>
+        {selectedAgent && (
+          <motion.div
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 30, scale: 0.95 }}
+            transition={{ 
+              type: "spring",
+              stiffness: 200,
+              damping: 20
+            }}
+          >
+            <Card className="border-2 border-[var(--fl-sunset-gold)]/50 bg-gradient-to-br from-white/95 dark:from-black/80 to-[var(--fl-sunset-gold)]/10 shadow-[0_20px_60px_rgba(212,175,55,0.3)] backdrop-blur-xl relative overflow-hidden">
+              {/* Animated gradient background */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[var(--fl-teal-lagoon)]/5 via-transparent to-[var(--fl-sunset-gold)]/10 animate-pulse" style={{ animationDuration: '4s' }} />
+              
+              {/* Sparkle effects */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--fl-sunset-gold)]/10 rounded-full blur-3xl" />
+              <div className="absolute bottom-0 left-0 w-32 h-32 bg-[var(--fl-teal-lagoon)]/10 rounded-full blur-3xl" />
+              
+              <CardHeader className="bg-gradient-to-r from-[var(--fl-teal-lagoon)]/10 to-[var(--fl-sunset-gold)]/10 relative z-10">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <motion.div 
+                      className={`p-4 rounded-2xl bg-gradient-to-br ${selectedAgent.color} text-white shadow-2xl relative overflow-hidden`}
+                      whileHover={{ rotate: [0, -10, 10, -10, 0] }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <div className="absolute inset-0 bg-white/20 rounded-2xl blur-sm" />
+                      <div className="relative z-10">
+                        {selectedAgent.icon}
+                      </div>
+                    </motion.div>
+                    <div>
+                      <CardTitle className="text-3xl font-bold bg-gradient-to-r from-[var(--fl-teal-lagoon)] via-[var(--fl-sunset-gold)] to-[var(--fl-bronze)] bg-clip-text text-transparent">
+                        {selectedAgent.name}
+                      </CardTitle>
+                      <CardDescription className="text-base mt-1 text-gray-600 dark:text-gray-400">{selectedAgent.description}</CardDescription>
+                    </div>
+                  </div>
+                  <motion.div
+                    whileHover={{ scale: 1.1, rotate: 90 }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setSelectedAgent(null);
+                        setFormData({});
+                      }}
+                      className="hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 rounded-full h-10 w-10 p-0"
+                      data-testid="button-close-agent"
+                    >
+                      ✕
+                    </Button>
+                  </motion.div>
                 </div>
-                <div>
-                  <CardTitle className="text-2xl bg-gradient-to-r from-[var(--fl-teal-lagoon)] to-[var(--fl-sunset-gold)] bg-clip-text text-transparent">
-                    {selectedAgent.name}
-                  </CardTitle>
-                  <CardDescription className="text-base">{selectedAgent.description}</CardDescription>
-                </div>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setSelectedAgent(null);
-                  setFormData({});
-                }}
-                className="hover:bg-red-100 hover:text-red-600 rounded-full"
-              >
-                ✕
-              </Button>
-            </div>
-          </CardHeader>
+              </CardHeader>
           <CardContent className="pt-6">
             <div className="space-y-5">
               {selectedAgent.fields.map((field) => (
@@ -720,7 +953,10 @@ export default function AIAgentsHub() {
             </div>
           </CardContent>
         </Card>
-      )}
+      </motion.div>
+        )}
+      </AnimatePresence>
+      </div>
     </div>
   );
 }
