@@ -42,6 +42,9 @@ import SocialMediaHub from "@/pages/social-media-hub";
 // Entrepreneur Pages
 import EntrepreneurProfile from "@/pages/entrepreneur-profile";
 
+// User Profile Page
+import UserProfile from "@/pages/user-profile";
+
 // Marketing Components
 import { WorkflowBuilder } from "@/components/marketing/WorkflowBuilder";
 import { LeadFormBuilder } from "@/components/marketing/LeadFormBuilder";
@@ -78,6 +81,7 @@ function Router() {
       ) : (
         <>
           <Route path="/" component={Home} />
+          <Route path="/profile" component={UserProfile} />
           <Route path="/create-business" component={CreateBusiness} />
           <Route path="/business/:id" component={BusinessProfile} />
           <Route path="/business/:id/edit" component={EditBusiness} />

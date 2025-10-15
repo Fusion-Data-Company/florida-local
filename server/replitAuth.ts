@@ -380,20 +380,8 @@ export async function setupAuth(app: Express) {
           if (userId) {
             const dbUser = await storage.getUser(userId);
             
-            // Route based on user type/profile
-            if (dbUser?.isAdmin) {
-              return res.redirect("/admin");
-            } else {
-              // Check if user has businesses
-              const businesses = await storage.getBusinessesByOwner(userId);
-              if (businesses && businesses.length > 0) {
-                // If they have businesses, go to business dashboard
-                return res.redirect("/business-dashboard");
-              } else {
-                // Otherwise go to home page
-                return res.redirect("/");
-              }
-            }
+            // Always redirect to profile page for intelligent routing
+            return res.redirect("/profile");
           }
         } catch (profileError) {
           console.error("⚠️ Error determining user profile:", profileError);
