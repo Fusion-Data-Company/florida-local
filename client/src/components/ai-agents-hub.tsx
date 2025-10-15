@@ -703,18 +703,60 @@ export default function AIAgentsHub() {
       </AnimatePresence>
 
       <Tabs value={activeCategory} onValueChange={(v) => setActiveCategory(v as any)}>
-        <TabsList className="grid w-full grid-cols-3 max-w-2xl mx-auto h-14 bg-white/80 shadow-lg border border-[var(--fl-teal-lagoon)]/20">
-          <TabsTrigger value="all" className="text-base font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-[var(--fl-teal-lagoon)] data-[state=active]:to-[var(--fl-sunset-gold)] data-[state=active]:text-white">
-            All Agents
-            <Badge variant="secondary" className="ml-2 data-[state=active]:bg-white/20">{AI_AGENTS.length}</Badge>
+        <TabsList className="grid w-full grid-cols-3 max-w-2xl mx-auto h-16 bg-white/90 dark:bg-black/40 backdrop-blur-xl shadow-2xl border-2 border-[var(--fl-teal-lagoon)]/30 rounded-2xl p-1 relative overflow-hidden">
+          {/* Animated glow effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[var(--fl-teal-lagoon)]/10 via-[var(--fl-sunset-gold)]/10 to-[var(--fl-teal-lagoon)]/10 opacity-50 blur-xl" />
+          
+          <TabsTrigger 
+            value="all" 
+            className="text-base font-bold relative z-10 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[var(--fl-teal-lagoon)] data-[state=active]:to-[var(--fl-sunset-gold)] data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(0,128,128,0.5)] transition-all duration-300 rounded-xl data-[state=inactive]:hover:bg-[var(--fl-teal-lagoon)]/10"
+            data-testid="tab-all"
+          >
+            <motion.div 
+              className="flex items-center gap-2"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Sparkles className="w-4 h-4" />
+              All Agents
+              <Badge variant="secondary" className="ml-1 bg-[var(--fl-sunset-gold)]/20 text-[var(--fl-sunset-gold)] data-[state=active]:bg-white/30 data-[state=active]:text-white border-0">
+                {AI_AGENTS.length}
+              </Badge>
+            </motion.div>
           </TabsTrigger>
-          <TabsTrigger value="marketing" className="text-base font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-[var(--fl-sunset-gold)] data-[state=active]:to-[var(--fl-bronze)] data-[state=active]:text-white">
-            Marketing
-            <Badge variant="secondary" className="ml-2 data-[state=active]:bg-white/20">7</Badge>
+          <TabsTrigger 
+            value="marketing" 
+            className="text-base font-bold relative z-10 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[var(--fl-sunset-gold)] data-[state=active]:to-[var(--fl-bronze)] data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(212,175,55,0.5)] transition-all duration-300 rounded-xl data-[state=inactive]:hover:bg-[var(--fl-sunset-gold)]/10"
+            data-testid="tab-marketing"
+          >
+            <motion.div 
+              className="flex items-center gap-2"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <TrendingUp className="w-4 h-4" />
+              Marketing
+              <Badge variant="secondary" className="ml-1 bg-[var(--fl-teal-lagoon)]/20 text-[var(--fl-teal-lagoon)] data-[state=active]:bg-white/30 data-[state=active]:text-white border-0">
+                7
+              </Badge>
+            </motion.div>
           </TabsTrigger>
-          <TabsTrigger value="marketplace" className="text-base font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-[var(--fl-teal-lagoon)] data-[state=active]:to-blue-500 data-[state=active]:text-white">
-            Marketplace
-            <Badge variant="secondary" className="ml-2 data-[state=active]:bg-white/20">8</Badge>
+          <TabsTrigger 
+            value="marketplace" 
+            className="text-base font-bold relative z-10 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[var(--fl-teal-lagoon)] data-[state=active]:to-blue-500 data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(0,128,128,0.5)] transition-all duration-300 rounded-xl data-[state=inactive]:hover:bg-blue-500/10"
+            data-testid="tab-marketplace"
+          >
+            <motion.div 
+              className="flex items-center gap-2"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <ShoppingCart className="w-4 h-4" />
+              Marketplace
+              <Badge variant="secondary" className="ml-1 bg-blue-500/20 text-blue-600 dark:text-blue-400 data-[state=active]:bg-white/30 data-[state=active]:text-white border-0">
+                8
+              </Badge>
+            </motion.div>
           </TabsTrigger>
         </TabsList>
 
