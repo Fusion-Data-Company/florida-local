@@ -138,9 +138,27 @@ export async function setupAuth(app: Express) {
     tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers,
     verified: passport.AuthenticateCallback
   ) => {
-    const user = {};
-    updateUserSession(user, tokens);
-    await upsertUser(tokens.claims());
+    const claims = tokens.claims();
+    await upsertUser(claims);
+    
+    // Get the actual database user (which may have a different ID than Replit)
+    const dbUser = await storage.getUserByEmail(claims["email"]);
+    
+    if (!dbUser) {
+      return verified(new Error("User not found in database"));
+    }
+    
+    // Create session user with database ID and Replit tokens
+    const user = {
+      claims: {
+        ...claims,
+        sub: dbUser.id, // Use DATABASE user ID, not Replit ID
+      },
+      access_token: tokens.access_token,
+      refresh_token: tokens.refresh_token,
+      expires_at: claims?.exp,
+    };
+    
     verified(null, user);
   };
 
