@@ -287,38 +287,34 @@ export class DatabaseStorage implements IStorage {
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
-    // Check if email matches an admin user (preserve admin status during Replit auth)
-    const existingAdminByEmail = await db
+    // Check if user with this email already exists
+    const existingUser = await db
       .select()
       .from(users)
       .where(eq(users.email, userData.email))
       .limit(1);
-    
-    // If this email belongs to an admin, preserve admin status and use better profile data
-    const isAdminEmail = existingAdminByEmail[0]?.isAdmin === true;
-    
-    const [user] = await db
-      .insert(users)
-      .values({
-        ...userData,
-        isAdmin: isAdminEmail || userData.isAdmin, // Preserve admin status
-        // If admin, use existing name data instead of Replit data
-        firstName: isAdminEmail && existingAdminByEmail[0]?.firstName ? existingAdminByEmail[0].firstName : userData.firstName,
-        lastName: isAdminEmail && existingAdminByEmail[0]?.lastName ? existingAdminByEmail[0].lastName : userData.lastName,
-      })
-      .onConflictDoUpdate({
-        target: users.id,
-        set: {
-          email: userData.email,
-          // Only update name if not admin, or if admin data is missing
-          firstName: isAdminEmail && existingAdminByEmail[0]?.firstName ? existingAdminByEmail[0].firstName : userData.firstName,
-          lastName: isAdminEmail && existingAdminByEmail[0]?.lastName ? existingAdminByEmail[0].lastName : userData.lastName,
+
+    if (existingUser[0]) {
+      // User exists - just update profile data but keep existing ID
+      const [user] = await db
+        .update(users)
+        .set({
+          firstName: userData.firstName,
+          lastName: userData.lastName,
           profileImageUrl: userData.profileImageUrl,
           updatedAt: new Date(),
-        },
-      })
-      .returning();
-    return user;
+        })
+        .where(eq(users.email, userData.email))
+        .returning();
+      return user;
+    } else {
+      // New user - insert with Replit ID
+      const [user] = await db
+        .insert(users)
+        .values(userData)
+        .returning();
+      return user;
+    }
   }
 
   async updateUserAdminStatus(id: string, isAdmin: boolean): Promise<void> {
