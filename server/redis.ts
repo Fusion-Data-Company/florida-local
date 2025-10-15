@@ -217,26 +217,62 @@ export async function createRedisStore(session: any) {
     });
   }
   
-  // Import connect-redis properly for ESM
-  const connectRedis = await import("connect-redis");
-  // Handle both named export and potential variations
-  const RedisStore = (connectRedis as any).RedisStore || (connectRedis as any).default || connectRedis;
-  
-  // Create the store with the correct constructor
-  if (typeof RedisStore === 'function') {
-    // If it's a function, call it with session
-    const Store = RedisStore(session);
-    return new Store({
-      client: redis,
-      prefix: "sess:",
-      ttl: 86400, // 1 day
-    });
-  } else {
-    // If it's already a class/constructor, instantiate directly
-    return new RedisStore({
-      client: redis,
-      prefix: "sess:",
-      ttl: 86400, // 1 day
+  try {
+    // For connect-redis v7+, we need to handle the import carefully
+    // The module might export differently in production vs development
+    const connectRedisModule = await import("connect-redis");
+    
+    // Try different export patterns to handle various versions and build tools
+    let RedisStore: any;
+    
+    // Pattern 1: Named export (most common for v7+)
+    if ('RedisStore' in connectRedisModule) {
+      RedisStore = connectRedisModule.RedisStore;
+    }
+    // Pattern 2: Default export that's a factory function
+    else if ((connectRedisModule as any).default) {
+      RedisStore = (connectRedisModule as any).default;
+    }
+    // Pattern 3: Module itself is the store/factory
+    else if (typeof connectRedisModule === 'function') {
+      RedisStore = connectRedisModule;
+    }
+    // Pattern 4: Direct module export
+    else {
+      RedisStore = connectRedisModule;
+    }
+    
+    // Now try to create the store
+    if (typeof RedisStore === 'function') {
+      // Check if it's a factory function or a constructor
+      const testInstance = RedisStore.prototype;
+      
+      if (testInstance && testInstance.constructor) {
+        // It's a constructor, instantiate directly
+        return new RedisStore({
+          client: redis,
+          prefix: "sess:",
+          ttl: 86400, // 1 day
+        });
+      } else {
+        // It's a factory function, call it with session first
+        const Store = RedisStore(session);
+        return new Store({
+          client: redis,
+          prefix: "sess:",
+          ttl: 86400, // 1 day
+        });
+      }
+    }
+    
+    // If we couldn't figure out how to use it, fall back
+    throw new Error('Could not determine connect-redis usage pattern');
+    
+  } catch (error) {
+    // If Redis store fails for any reason, fall back to memory store
+    console.warn('⚠️  Could not initialize Redis store, using memory store instead:', error);
+    return new MemoryStore({
+      checkPeriod: 86400000, // 1 day
     });
   }
 }
