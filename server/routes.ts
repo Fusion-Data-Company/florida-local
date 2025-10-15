@@ -31,14 +31,23 @@ const stripe = stripeKey
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware with graceful fallback
+  console.log("🔧 Starting registerRoutes function");
+  console.log("🔧 REPLIT_DOMAINS:", process.env.REPLIT_DOMAINS);
+  console.log("🔧 SESSION_SECRET exists:", !!process.env.SESSION_SECRET);
+  console.log("🔧 REPL_ID exists:", !!process.env.REPL_ID);
+  
   try {
+    console.log("🔧 Calling setupAuth...");
     await setupAuth(app);
     console.log("✅ Authentication middleware initialized");
   } catch (error) {
     console.error("❌ Failed to setup authentication:", error);
+    console.error("❌ Error stack:", (error as Error).stack);
     console.log("⚠️ Server will start without session persistence");
     // Continue anyway - the app can still serve public routes
   }
+  
+  console.log("🔧 Setting up auth routes...");
 
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
