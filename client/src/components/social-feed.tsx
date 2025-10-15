@@ -86,10 +86,10 @@ export default function SocialFeed() {
       <div className="container mx-auto px-4 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 miami-gradient-text">
+            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 text-white" style={{textShadow: '0 2px 6px rgba(0,0,0,0.4)'}}>
               Community Activity
             </h2>
-            <p className="text-xl text-white leading-relaxed miami-body-text" style={{textShadow: '0 1px 3px rgba(0,0,0,0.3)'}}>
+            <p className="text-xl text-white leading-relaxed" style={{textShadow: '0 1px 3px rgba(0,0,0,0.3)'}}>
               Stay connected with what's happening in your local business community.
               See updates, celebrate successes, and discover opportunities.
             </p>

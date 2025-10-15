@@ -54,8 +54,8 @@ export default function CommunityPage() {
                   <div className="inline-flex p-4 rounded-full bg-purple-100 mb-4">
                     <Users className="h-8 w-8 text-purple-600" />
                   </div>
-                  <div className="text-4xl font-bold text-white mb-2" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>2,847</div>
-                  <div className="text-sm text-white" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>Active Businesses</div>
+                  <div className="text-4xl font-bold text-slate-900 mb-2">2,847</div>
+                  <div className="text-sm text-slate-700">Active Businesses</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -70,8 +70,8 @@ export default function CommunityPage() {
                   <div className="inline-flex p-4 rounded-full bg-blue-100 mb-4">
                     <Star className="h-8 w-8 text-blue-600" />
                   </div>
-                  <div className="text-4xl font-bold text-white mb-2" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>18,392</div>
-                  <div className="text-sm text-white" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>Reviews Posted</div>
+                  <div className="text-4xl font-bold text-slate-900 mb-2">18,392</div>
+                  <div className="text-sm text-slate-700">Reviews Posted</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -86,8 +86,8 @@ export default function CommunityPage() {
                   <div className="inline-flex p-4 rounded-full bg-green-100 mb-4">
                     <ShoppingBag className="h-8 w-8 text-green-600" />
                   </div>
-                  <div className="text-4xl font-bold text-white mb-2" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>45,621</div>
-                  <div className="text-sm text-white" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>Orders Completed</div>
+                  <div className="text-4xl font-bold text-slate-900 mb-2">45,621</div>
+                  <div className="text-sm text-slate-700">Orders Completed</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -102,8 +102,8 @@ export default function CommunityPage() {
                   <div className="inline-flex p-4 rounded-full bg-orange-100 mb-4">
                     <Heart className="h-8 w-8 text-orange-600" />
                   </div>
-                  <div className="text-4xl font-bold text-white mb-2" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>156K</div>
-                  <div className="text-sm text-white" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>Community Votes</div>
+                  <div className="text-4xl font-bold text-slate-900 mb-2">156K</div>
+                  <div className="text-sm text-slate-700">Community Votes</div>
                 </CardContent>
               </Card>
             </motion.div>

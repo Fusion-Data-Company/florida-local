@@ -71,7 +71,7 @@ export default function Home() {
           backgroundAttachment: 'fixed'
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-white/88 via-blue-50/85 to-orange-50/85 backdrop-blur-sm" />
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/75 via-slate-800/70 to-slate-900/75 backdrop-blur-sm" />
 
       {/* FLORIDA LOCAL ULTRA-ELITE HERO */}
       <div className="relative py-24 overflow-hidden gradient-shift">
@@ -125,10 +125,10 @@ export default function Home() {
                   <MicroIcon color="rgba(0, 139, 139, 0.8)">
                     <Users className="h-14 w-14 mx-auto mb-6 text-[var(--fl-teal-lagoon)]" />
                   </MicroIcon>
-                  <h3 className="font-bold text-xl mb-3 text-white" style={{textShadow: '0 1px 3px rgba(0,0,0,0.3)'}}>
+                  <h3 className="font-bold text-xl mb-3 text-slate-900">
                     Connect with Customers
                   </h3>
-                  <p className="text-sm text-white leading-relaxed" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>
+                  <p className="text-sm text-slate-700 leading-relaxed">
                     Build relationships and grow your customer base in Florida's local community
                   </p>
                 </CardContent>
@@ -141,10 +141,10 @@ export default function Home() {
                   <MicroIcon color="rgba(212, 175, 55, 0.8)">
                     <TrendingUp className="h-14 w-14 mx-auto mb-6 text-[var(--fl-sunset-gold)]" />
                   </MicroIcon>
-                  <h3 className="font-bold text-xl mb-3 text-white" style={{textShadow: '0 1px 3px rgba(0,0,0,0.3)'}}>
+                  <h3 className="font-bold text-xl mb-3 text-slate-900">
                     Boost Your Sales
                   </h3>
-                  <p className="text-sm text-white leading-relaxed" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>
+                  <p className="text-sm text-slate-700 leading-relaxed">
                     Showcase products, run promotions, and drive more revenue through our marketplace
                   </p>
                 </CardContent>
@@ -157,10 +157,10 @@ export default function Home() {
                   <MicroIcon color="rgba(205, 127, 50, 0.8)">
                     <Star className="h-14 w-14 mx-auto mb-6 text-[var(--fl-bronze)]" />
                   </MicroIcon>
-                  <h3 className="font-bold text-xl mb-3 text-white" style={{textShadow: '0 1px 3px rgba(0,0,0,0.3)'}}>
+                  <h3 className="font-bold text-xl mb-3 text-slate-900">
                     Build Your Brand
                   </h3>
-                  <p className="text-sm text-white leading-relaxed" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>
+                  <p className="text-sm text-slate-700 leading-relaxed">
                     Create a professional presence and get featured in our business spotlight
                   </p>
                 </CardContent>

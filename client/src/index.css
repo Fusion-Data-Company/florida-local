@@ -1235,18 +1235,14 @@ button[class*="btn-miami-primary"]:not([data-no-rainbow]) {
 .miami-heading {
   font-family: var(--font-serif);
   font-weight: 700;
-  background: linear-gradient(135deg, var(--foreground) 0%, var(--primary) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--foreground);
+  /* Gradient text as enhancement, with solid color fallback */
 }
 
 .miami-gradient-text {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 50%, var(--secondary) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--primary);
   font-weight: 700;
+  /* Gradient text removed for better readability */
 }
 
 .miami-accent-text {
@@ -1259,7 +1255,7 @@ button[class*="btn-miami-primary"]:not([data-no-rainbow]) {
 
 .miami-body-text {
   line-height: 1.7;
-  color: var(--muted-foreground);
+  /* Color removed - let text color be controlled by Tailwind classes */
 }
 
 /* === PERFECT TYPOGRAPHY SYSTEM === */
@@ -3997,7 +3993,7 @@ textarea:focus-visible {
   font-family: 'Inter', sans-serif;
   font-weight: 400;
   line-height: 1.7;
-  color: hsl(220, 15%, 25%);
+  /* Color removed - let text color be controlled by Tailwind classes */
 }
 
 /* Gradient Text Effects (legacy) */
@@ -5046,11 +5042,8 @@ textarea:focus-visible,
 
 /* Miami Marketplace Section */
 .miami-marketplace-section {
-  background: linear-gradient(180deg, 
-    rgba(255, 255, 255, 1) 0%, 
-    rgba(250, 250, 250, 0.8) 50%, 
-    rgba(255, 255, 255, 1) 100%);
   position: relative;
+  /* Background removed to inherit from parent */
 }
 
 .miami-marketplace-section::before {
@@ -7584,7 +7577,7 @@ textarea:focus-visible,
 /* Feed Section Container */
 .elite-feed-section {
   position: relative;
-  background: rgba(var(--muted), 0.3);
+  /* Background removed to inherit from parent */
 }
 
 .elite-feed-container {

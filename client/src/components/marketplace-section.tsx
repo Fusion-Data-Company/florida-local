@@ -71,11 +71,11 @@ export default function MarketplaceSection() {
   };
 
   return (
-    <section className="py-12 lg:py-20 bg-background miami-marketplace-section relative overflow-hidden dynamic-gradient-bg">
+    <section className="py-12 lg:py-20 miami-marketplace-section relative overflow-hidden dynamic-gradient-bg">
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         <div className="flex flex-col lg:flex-row items-center justify-between mb-16">
           <div className="lg:w-1/2 mb-8 lg:mb-0">
-            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 miami-gradient-text entrance-slide-right">
+            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 text-white entrance-slide-right" style={{textShadow: '0 2px 6px rgba(0,0,0,0.4)'}}>
               Local Marketplace
             </h2>
             <p className="text-xl text-white leading-relaxed mb-6 miami-body-text entrance-fade-up stagger-1" style={{textShadow: '0 1px 3px rgba(0,0,0,0.3)'}}>
@@ -140,20 +140,20 @@ export default function MarketplaceSection() {
               
               {/* Premium Filter Tags - ELITE LUXURY */}
               <div className="flex flex-wrap gap-3 justify-center mb-8">
-                <span className="luxury-badge-pill px-4 py-2 rounded-full text-sm font-semibold cursor-pointer" data-testid="filter-local-made">
-                  <Award className="inline h-3.5 w-3.5 mr-1.5" />
+                <span className="luxury-badge-pill bg-slate-800/80 px-4 py-2 rounded-full text-sm font-semibold cursor-pointer" data-testid="filter-local-made">
+                  <Award className="inline h-3.5 w-3.5 mr-1.5 text-white" />
                   <span className="relative z-10 text-white">Local Made</span>
                 </span>
-                <span className="luxury-badge-pill px-4 py-2 rounded-full text-sm font-semibold cursor-pointer" data-testid="filter-eco-friendly">
-                  <Heart className="inline h-3.5 w-3.5 mr-1.5" />
+                <span className="luxury-badge-pill bg-slate-800/80 px-4 py-2 rounded-full text-sm font-semibold cursor-pointer" data-testid="filter-eco-friendly">
+                  <Heart className="inline h-3.5 w-3.5 mr-1.5 text-white" />
                   <span className="relative z-10 text-white">Eco-Friendly</span>
                 </span>
-                <span className="luxury-badge-pill px-4 py-2 rounded-full text-sm font-semibold cursor-pointer" data-testid="filter-small-batch">
-                  <Star className="inline h-3.5 w-3.5 mr-1.5" />
+                <span className="luxury-badge-pill bg-slate-800/80 px-4 py-2 rounded-full text-sm font-semibold cursor-pointer" data-testid="filter-small-batch">
+                  <Star className="inline h-3.5 w-3.5 mr-1.5 text-white" />
                   <span className="relative z-10 text-white">Small Batch</span>
                 </span>
-                <span className="luxury-badge-pill px-4 py-2 rounded-full text-sm font-semibold cursor-pointer" data-testid="filter-free-shipping">
-                  <Truck className="inline h-3.5 w-3.5 mr-1.5" />
+                <span className="luxury-badge-pill bg-slate-800/80 px-4 py-2 rounded-full text-sm font-semibold cursor-pointer" data-testid="filter-free-shipping">
+                  <Truck className="inline h-3.5 w-3.5 mr-1.5 text-white" />
                   <span className="relative z-10 text-white">Free Shipping</span>
                 </span>
               </div>
@@ -251,7 +251,7 @@ export default function MarketplaceSection() {
         {searchData?.items && (debouncedQuery || categories.length || selectedCategory || minPrice || maxPrice || minRating || inStock || isDigital || tags.length) ? (
           <div className="mb-12">
             <div className="miami-section-header mb-6 flex items-center justify-between">
-              <h3 className="text-2xl font-serif font-bold miami-heading">Top Matches</h3>
+              <h3 className="text-2xl font-serif font-bold text-white">Top Matches</h3>
               <Link href={`/marketplace?${searchParams.toString()}`}>
                 <Button variant="outline" className="btn-magic">See all ({searchData?.total || 0})</Button>
               </Link>
@@ -266,7 +266,7 @@ export default function MarketplaceSection() {
 
         {/* Miami Elite Featured Products Grid */}
         <div className="miami-section-header mb-12">
-          <h3 className="text-3xl font-serif font-bold text-center mb-4 miami-heading">
+          <h3 className="text-3xl font-serif font-bold text-center mb-4 text-white">
             Featured Products
           </h3>
           <div className="w-24 h-1 bg-gradient-to-r from-cyan-400 to-emerald-400 mx-auto rounded-full"></div>

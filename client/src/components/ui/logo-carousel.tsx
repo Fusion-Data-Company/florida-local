@@ -78,10 +78,10 @@ export const AnimatedCarousel = ({
   const logoImageSizeClasses = `${logoImageWidth} ${logoImageHeight} ${logoMaxWidth} ${logoMaxHeight}`.trim();
 
   return (
-    <div className={`w-full ${padding} bg-background ${containerClassName}`}>
+    <div className={`w-full ${padding} ${containerClassName}`}>
       <div className="container mx-auto px-4">
         <div className={`flex flex-col ${spacing}`}>
-          <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl tracking-tighter font-semibold text-left whitespace-nowrap overflow-visible bg-gradient-to-r from-foreground via-primary/80 to-foreground bg-clip-text text-transparent ${titleClassName}`}>
+          <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl tracking-tighter font-semibold text-left whitespace-nowrap overflow-visible text-slate-900 ${titleClassName}`}>
             <TextRoll>{title}</TextRoll>
           </h2>
           

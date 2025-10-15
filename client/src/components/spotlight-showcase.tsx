@@ -269,12 +269,12 @@ export default function SpotlightShowcase() {
                         </div>
                       )}
                       <div className="flex-1">
-                        <h4 className="font-semibold text-slate-900 miami-heading">{business.name}</h4>
-                        <p className="text-sm text-gray-700 font-medium">{business.category}</p>
+                        <h4 className="font-semibold text-slate-900">{business.name}</h4>
+                        <p className="text-sm text-slate-700 font-medium">{business.category}</p>
                       </div>
                     </div>
 
-                    <p className="text-sm text-muted-foreground mb-6 line-clamp-2 leading-relaxed miami-body-text">
+                    <p className="text-sm text-slate-600 mb-6 line-clamp-2 leading-relaxed">
                       {business.tagline || business.description}
                     </p>
 
