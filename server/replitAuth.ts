@@ -193,7 +193,15 @@ export async function setupAuth(app: Express) {
   const replitDomains = process.env.REPLIT_DOMAINS.split(",");
   console.log("🔑 Registering authentication strategies for domains:", replitDomains);
   
-  for (const domain of replitDomains) {
+  // Add common production domains that might not be in REPLIT_DOMAINS
+  const additionalDomains = [];
+  if (process.env.NODE_ENV === 'production' && !replitDomains.some(d => d.includes('.replit.app'))) {
+    additionalDomains.push('florida-local.replit.app');
+  }
+  
+  const allDomains = [...replitDomains, ...additionalDomains];
+  
+  for (const domain of allDomains) {
     const trimmedDomain = domain.trim();
     const strategyName = `replitauth:${trimmedDomain}`;
     const strategy = new Strategy(
