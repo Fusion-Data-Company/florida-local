@@ -45,7 +45,8 @@
       "Bash(1)",
       "Bash(rm:*)",
       "Bash(journalctl:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(do echo \"=== $file ===\")"
     ],
     "deny": [],
     "ask": []

@@ -81,7 +81,7 @@ export const AnimatedCarousel = ({
     <div className={`w-full ${padding} bg-background ${containerClassName}`}>
       <div className="container mx-auto px-4">
         <div className={`flex flex-col ${spacing}`}>
-          <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl tracking-tighter font-regular text-left whitespace-nowrap overflow-visible ${titleClassName}`}>
+          <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl tracking-tighter font-semibold text-left whitespace-nowrap overflow-visible bg-gradient-to-r from-foreground via-primary/80 to-foreground bg-clip-text text-transparent ${titleClassName}`}>
             <TextRoll>{title}</TextRoll>
           </h2>
           
@@ -90,16 +90,17 @@ export const AnimatedCarousel = ({
               <CarouselContent>
                 {logoItems.map((logo, index) => (
                   <CarouselItem className={`basis-1/${itemsPerViewMobile} lg:basis-1/${itemsPerViewDesktop}`} key={index}>
-                    <div className={`flex rounded-md ${logoContainerWidth} ${logoContainerHeight} items-center justify-center p-4 hover:bg-accent/10 transition-all duration-300 hover:scale-105 ${logoClassName}`}>
+                    <div className={`flex rounded-xl ${logoContainerWidth} ${logoContainerHeight} items-center justify-center p-6 hover:bg-gradient-to-br hover:from-accent/5 hover:to-primary/5 transition-all duration-500 hover:scale-110 hover:-translate-y-1 border border-transparent hover:border-primary/20 ${logoClassName}`}>
                       <img
                         src={typeof logo === 'string' ? logo : logo}
                         alt={`Logo ${index + 1}`}
-                        className={`${logoImageSizeClasses} object-contain drop-shadow-lg`}
+                        className={`${logoImageSizeClasses} object-contain drop-shadow-2xl hover:drop-shadow-[0_0_15px_rgba(0,200,255,0.3)] transition-all duration-500`}
                         style={{
                           imageRendering: '-webkit-optimize-contrast',
                           WebkitFontSmoothing: 'antialiased',
                           backfaceVisibility: 'hidden',
                           transform: 'translateZ(0)',
+                          willChange: 'transform',
                         }}
                       />
                     </div>

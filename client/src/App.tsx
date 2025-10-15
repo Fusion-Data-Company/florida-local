@@ -58,72 +58,75 @@ import SystemMonitoring from "@/pages/admin/system-monitoring";
 
 // AI Components
 import AIBusinessCoachWidget from "@/components/ai-business-coach-widget";
+import Layout from "@/components/layout";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
 
   return (
-    <Switch>
-      {/* Public routes - accessible to everyone */}
-      <Route path="/florida-elite" component={FloridaLocalElite} />
-      <Route path="/florida-local" component={FloridaLocalElite} />
-      <Route path="/registry" component={Registry} />
-      <Route path="/subscription" component={SubscriptionPage} />
+    <Layout>
+      <Switch>
+        {/* Public routes - accessible to everyone */}
+        <Route path="/florida-elite" component={FloridaLocalElite} />
+        <Route path="/florida-local" component={FloridaLocalElite} />
+        <Route path="/registry" component={Registry} />
+        <Route path="/subscription" component={SubscriptionPage} />
 
-      {isLoading || !isAuthenticated ? (
-        <Route path="/" component={Landing} />
-      ) : (
-        <>
-          <Route path="/" component={Home} />
-          <Route path="/create-business" component={CreateBusiness} />
-          <Route path="/business/:id" component={BusinessProfile} />
-          <Route path="/business/:id/edit" component={EditBusiness} />
-          <Route path="/marketplace" component={Marketplace} />
-          <Route path="/messages" component={Messages} />
-          <Route path="/cart" component={Cart} />
-          <Route path="/checkout" component={Checkout} />
-          <Route path="/order-confirmation" component={OrderConfirmation} />
-          <Route path="/orders" component={Orders} />
-          <Route path="/vendor/products" component={VendorProducts} />
-          <Route path="/vendor/payouts" component={VendorPayouts} />
-          <Route path="/ai/content-generator" component={AIContentGenerator} />
-          <Route path="/ai/agents" component={AIAgentsPage} />
-          <Route path="/ai/tools" component={AIToolsPage} />
-          <Route path="/integrations/gmb" component={GMBHub} />
-          <Route path="/spotlight/voting" component={SpotlightVoting} />
-          <Route path="/community" component={Community} />
-          <Route path="/loyalty" component={Loyalty} />
+        {isLoading || !isAuthenticated ? (
+          <Route path="/" component={Landing} />
+        ) : (
+          <>
+            <Route path="/" component={Home} />
+            <Route path="/create-business" component={CreateBusiness} />
+            <Route path="/business/:id" component={BusinessProfile} />
+            <Route path="/business/:id/edit" component={EditBusiness} />
+            <Route path="/marketplace" component={Marketplace} />
+            <Route path="/messages" component={Messages} />
+            <Route path="/cart" component={Cart} />
+            <Route path="/checkout" component={Checkout} />
+            <Route path="/order-confirmation" component={OrderConfirmation} />
+            <Route path="/orders" component={Orders} />
+            <Route path="/vendor/products" component={VendorProducts} />
+            <Route path="/vendor/payouts" component={VendorPayouts} />
+            <Route path="/ai/content-generator" component={AIContentGenerator} />
+            <Route path="/ai/agents" component={AIAgentsPage} />
+            <Route path="/ai/tools" component={AIToolsPage} />
+            <Route path="/integrations/gmb" component={GMBHub} />
+            <Route path="/spotlight/voting" component={SpotlightVoting} />
+            <Route path="/community" component={Community} />
+            <Route path="/loyalty" component={Loyalty} />
 
-          {/* Admin Routes */}
-          <Route path="/admin" component={AdminDashboard} />
-          <Route path="/admin/analytics" component={AdminAnalytics} />
-          <Route path="/admin/monitoring" component={SystemMonitoring} />
+            {/* Admin Routes */}
+            <Route path="/admin" component={AdminDashboard} />
+            <Route path="/admin/analytics" component={AdminAnalytics} />
+            <Route path="/admin/monitoring" component={SystemMonitoring} />
 
-          {/* Business Dashboard Routes */}
-          <Route path="/business-dashboard" component={BusinessDashboard} />
-          <Route path="/business-analytics" component={BusinessAnalytics} />
+            {/* Business Dashboard Routes */}
+            <Route path="/business-dashboard" component={BusinessDashboard} />
+            <Route path="/business-analytics" component={BusinessAnalytics} />
 
-          {/* Marketing Hub Routes - NOW CONNECTED! */}
-          <Route path="/marketing" component={MarketingHub} />
-          <Route path="/marketing/workflows" component={WorkflowBuilder} />
-          <Route path="/marketing/forms" component={LeadFormBuilder} />
+            {/* Marketing Hub Routes - NOW CONNECTED! */}
+            <Route path="/marketing" component={MarketingHub} />
+            <Route path="/marketing/workflows" component={WorkflowBuilder} />
+            <Route path="/marketing/forms" component={LeadFormBuilder} />
 
-          {/* Social Media Hub */}
-          <Route path="/social-hub" component={SocialMediaHub} />
+            {/* Social Media Hub */}
+            <Route path="/social-hub" component={SocialMediaHub} />
 
-          {/* Entrepreneur Platform */}
-          <Route path="/entrepreneur/:id" component={EntrepreneurProfile} />
+            {/* Entrepreneur Platform */}
+            <Route path="/entrepreneur/:id" component={EntrepreneurProfile} />
 
-          {/* Blog Platform Routes - NOW CONNECTED! */}
-          <Route path="/blog" component={BlogDiscovery} />
-          <Route path="/blog/write" component={BlogEditor} />
-          <Route path="/blog/manage" component={BlogPostManagement} />
-          <Route path="/blog/engagement" component={BlogEngagement} />
-          <Route path="/blog/analytics" component={BlogAnalyticsDashboard} />
-        </>
-      )}
-      <Route component={NotFound} />
-    </Switch>
+            {/* Blog Platform Routes - NOW CONNECTED! */}
+            <Route path="/blog" component={BlogDiscovery} />
+            <Route path="/blog/write" component={BlogEditor} />
+            <Route path="/blog/manage" component={BlogPostManagement} />
+            <Route path="/blog/engagement" component={BlogEngagement} />
+            <Route path="/blog/analytics" component={BlogAnalyticsDashboard} />
+          </>
+        )}
+        <Route component={NotFound} />
+      </Switch>
+    </Layout>
   );
 }
 

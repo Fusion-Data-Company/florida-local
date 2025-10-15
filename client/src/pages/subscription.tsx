@@ -102,7 +102,7 @@ export default function SubscriptionPage() {
         <h1 className="text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl bg-gradient-to-r from-[#008B8B] via-[#d4af37] to-[#008B8B] bg-clip-text text-transparent">
           One Platform. <span className="bg-primary/20 p-2 rounded-md text-foreground">Infinite Growth.</span>
         </h1>
-        <p className="mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl font-light">
+        <p className="mt-6 max-w-2xl text-lg text-white md:text-xl font-light" style={{textShadow: '0 1px 3px rgba(0,0,0,0.3)'}}>
           Replace 12+ expensive tools. Save $47,000 annually. Join Florida's most successful businesses on the only platform designed for local domination.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-4">
@@ -149,9 +149,9 @@ export default function SubscriptionPage() {
           <h2 className="text-3xl md:text-5xl font-light mb-6 tracking-tight">
             The <span className="font-semibold bg-gradient-to-r from-[#008B8B] to-[#d4af37] bg-clip-text text-transparent">Florida Local</span> Advantage
           </h2>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto font-light leading-relaxed">
+          <p className="text-lg md:text-xl text-white max-w-3xl mx-auto font-light leading-relaxed" style={{textShadow: '0 1px 3px rgba(0,0,0,0.3)'}}>
             While competitors juggle dozens of disconnected tools, you operate from one intelligent command center.
-            <span className="block mt-2 font-medium text-foreground">This isn't just software. It's your competitive edge.</span>
+            <span className="block mt-2 font-medium text-white">This isn't just software. It's your competitive edge.</span>
           </p>
         </div>
 
@@ -159,17 +159,17 @@ export default function SubscriptionPage() {
           <div className="text-center group hover:scale-105 transition-transform duration-300">
             <div className="text-5xl md:text-6xl font-extralight text-transparent bg-gradient-to-br from-[#d4af37] to-[#ffd700] bg-clip-text mb-3">156%</div>
             <div className="text-xl font-medium mb-2">Revenue Growth</div>
-            <div className="text-sm text-muted-foreground font-light">Proven average in 6 months</div>
+            <div className="text-sm text-white font-light" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>Proven average in 6 months</div>
           </div>
           <div className="text-center group hover:scale-105 transition-transform duration-300">
             <div className="text-5xl md:text-6xl font-extralight text-transparent bg-gradient-to-br from-[#008B8B] to-[#00A8A8] bg-clip-text mb-3">$47K</div>
             <div className="text-xl font-medium mb-2">Annual Savings</div>
-            <div className="text-sm text-muted-foreground font-light">Replace your entire tech stack</div>
+            <div className="text-sm text-white font-light" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>Replace your entire tech stack</div>
           </div>
           <div className="text-center group hover:scale-105 transition-transform duration-300">
             <div className="text-5xl md:text-6xl font-extralight text-transparent bg-gradient-to-br from-[#d4af37] to-[#cd7f32] bg-clip-text mb-3">32hrs</div>
             <div className="text-xl font-medium mb-2">Time Reclaimed</div>
-            <div className="text-sm text-muted-foreground font-light">Every week through AI automation</div>
+            <div className="text-sm text-white font-light" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>Every week through AI automation</div>
           </div>
         </div>
 
