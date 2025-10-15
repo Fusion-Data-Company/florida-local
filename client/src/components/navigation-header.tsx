@@ -66,14 +66,13 @@ export default function NavigationHeader() {
     <>
       {/* Magic MCP Elite Navigation Header */}
       <header 
-        className={`
-          sticky top-0 z-50 w-full transition-all duration-500 border-b border-white/20 shadow-2xl
-        `}
+        className="sticky top-0 z-50 w-full transition-all duration-500 border-b border-white/20 shadow-2xl"
         style={{
           backgroundImage: `url(${headerBg})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          backgroundRepeat: 'no-repeat',
+          backgroundColor: 'transparent'
         }}
       >
         <div className="container mx-auto px-6 lg:px-12">
