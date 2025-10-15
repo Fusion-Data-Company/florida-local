@@ -32,8 +32,8 @@ export async function getSession() {
   // Use Redis store if available, otherwise fall back to PostgreSQL
   let sessionStore: any;
   
-  // Check if Redis is available and working
-  const redisAvailable = isRedisAvailable() && await checkRedisConnection().catch(() => false);
+  // Check if Redis is available and working (test connection first)
+  const redisAvailable = await checkRedisConnection().catch(() => false);
   const dbStatus = getDatabaseStatus();
   
   if (redisAvailable) {
@@ -48,34 +48,47 @@ export async function getSession() {
   
   // If Redis store creation failed or Redis isn't available, use PostgreSQL
   if (!sessionStore) {
-    console.log("⚠️ Redis not available, using PostgreSQL for sessions");
+    console.log("⚠️ Redis not available, attempting PostgreSQL for sessions");
     
-    // Ensure database is connected before creating PostgreSQL session store
-    if (!dbStatus.isConnected) {
-      console.log("🔄 Testing database connection for session store...");
-      const dbConnected = await testDatabaseConnection();
+    try {
+      // Test database connection with timeout before creating session store
+      const dbConnected = await Promise.race([
+        testDatabaseConnection(),
+        new Promise<boolean>((_, reject) => 
+          setTimeout(() => reject(new Error('Database connection timeout')), 5000)
+        )
+      ]);
+      
       if (!dbConnected) {
-        throw new Error("Database connection required for session storage but unavailable");
+        throw new Error("Database connection test failed");
       }
+      
+      const pgStore = connectPg(session);
+      sessionStore = new pgStore({
+        conString: process.env.DATABASE_URL,
+        createTableIfMissing: true,
+        ttl: sessionTtl,
+        tableName: "sessions",
+        schemaName: "public",
+        errorLog: (error: Error) => {
+          console.error("❌ PostgreSQL session store error:", error.message);
+        },
+      });
+      
+      sessionStore.on('error', (error: Error) => {
+        console.error("❌ Session store connection error:", error);
+      });
+      
+      console.log("✅ Using PostgreSQL for session storage");
+    } catch (dbError) {
+      console.error("❌ Failed to setup PostgreSQL session store:", dbError);
+      console.log("⚠️ Falling back to in-memory session store (sessions will not persist across restarts)");
+      
+      const MemoryStore = require("memorystore")(session);
+      sessionStore = new MemoryStore({
+        checkPeriod: 86400000,
+      });
     }
-    
-    const pgStore = connectPg(session);
-    sessionStore = new pgStore({
-      conString: process.env.DATABASE_URL,
-      createTableIfMissing: true, // Ensure sessions table exists
-      ttl: sessionTtl,
-      tableName: "sessions",
-      schemaName: "public",
-      // Error handling for PostgreSQL session store
-      errorLog: (error: Error) => {
-        console.error("❌ PostgreSQL session store error:", error.message);
-      },
-    });
-    
-    // Handle PostgreSQL session store connection errors
-    sessionStore.on('error', (error: Error) => {
-      console.error("❌ Session store connection error:", error);
-    });
   }
   
   return session({

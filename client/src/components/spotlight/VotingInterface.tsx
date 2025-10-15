@@ -83,7 +83,12 @@ export default function VotingInterface({
 
   useEffect(() => {
     if (userVotes) {
-      setVotedBusinessIds(new Set(userVotes));
+      setVotedBusinessIds(prev => {
+        const newSet = new Set(userVotes);
+        const hasChanged = prev.size !== newSet.size || 
+          [...newSet].some(id => !prev.has(id));
+        return hasChanged ? newSet : prev;
+      });
     }
   }, [userVotes]);
 
