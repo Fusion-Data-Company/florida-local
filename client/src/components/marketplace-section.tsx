@@ -78,7 +78,7 @@ export default function MarketplaceSection() {
             <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 miami-gradient-text entrance-slide-right">
               Local Marketplace
             </h2>
-            <p className="text-xl text-muted-foreground leading-relaxed mb-6 miami-body-text entrance-fade-up stagger-1">
+            <p className="text-xl text-white leading-relaxed mb-6 miami-body-text entrance-fade-up stagger-1" style={{textShadow: '0 1px 3px rgba(0,0,0,0.3)'}}>
               Discover unique products and services from Florida's most innovative businesses.
               Support local entrepreneurs while finding exactly what you need.
             </p>
@@ -292,8 +292,8 @@ export default function MarketplaceSection() {
                 <ShoppingBag className="text-6xl text-muted-foreground mx-auto" size={64} />
                 <div className="absolute inset-0 text-muted-foreground opacity-20 blur-lg"></div>
               </div>
-              <h3 className="text-2xl font-bold mb-4 miami-gradient-text text-luxury font-serif">No products available</h3>
-              <p className="text-muted-foreground max-w-md mx-auto">
+              <h3 className="text-2xl font-bold mb-4 text-white font-serif" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>No products available</h3>
+              <p className="text-white max-w-md mx-auto" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>
                 Check back soon for featured products from local businesses.
               </p>
             </div>

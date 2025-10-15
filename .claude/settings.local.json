@@ -44,7 +44,8 @@
       "Bash(fuser:*)",
       "Bash(1)",
       "Bash(rm:*)",
-      "Bash(journalctl:*)"
+      "Bash(journalctl:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

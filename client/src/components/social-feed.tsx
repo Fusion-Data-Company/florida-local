@@ -89,8 +89,8 @@ export default function SocialFeed() {
             <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 miami-gradient-text">
               Community Activity
             </h2>
-            <p className="text-xl text-muted-foreground leading-relaxed miami-body-text">
-              Stay connected with what's happening in your local business community. 
+            <p className="text-xl text-white leading-relaxed miami-body-text" style={{textShadow: '0 1px 3px rgba(0,0,0,0.3)'}}>
+              Stay connected with what's happening in your local business community.
               See updates, celebrate successes, and discover opportunities.
             </p>
           </div>

@@ -96,7 +96,7 @@ export default function SpotlightShowcase() {
             glowTextSize="lg"
             className="mb-6 entrance-fade-up"
           />
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed entrance-fade-up stagger-1">
+          <p className="text-xl text-white max-w-3xl mx-auto leading-relaxed entrance-fade-up stagger-1" style={{textShadow: '0 1px 3px rgba(0,0,0,0.3)'}}>
             Celebrating the businesses that make Florida communities thrive.
             Discover featured entrepreneurs selected by our intelligent promotion algorithms.
           </p>
@@ -215,8 +215,8 @@ export default function SpotlightShowcase() {
                 <div className="relative inline-block mb-6">
                   <i className="fas fa-star text-6xl spotlight-empty-icon"></i>
                 </div>
-                <h3 className="text-2xl font-bold mb-4 spotlight-empty-title">No spotlight businesses yet</h3>
-                <p className="text-muted-foreground max-w-md mx-auto">
+                <h3 className="text-2xl font-bold mb-4 spotlight-empty-title text-white" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>No spotlight businesses yet</h3>
+                <p className="text-white max-w-md mx-auto" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>
                   Check back soon to see featured businesses in this category.
                 </p>
               </div>
@@ -237,7 +237,7 @@ export default function SpotlightShowcase() {
                 </h3>
                 <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-px bg-gradient-to-r from-transparent via-accent to-transparent"></div>
               </div>
-              <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              <p className="text-white max-w-2xl mx-auto leading-relaxed" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>
                 Help choose next month's featured business! Your vote counts for 70% of the selection process.
               </p>
             </div>
