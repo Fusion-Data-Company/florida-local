@@ -95,7 +95,12 @@ export const AnimatedCarousel = ({
                         src={typeof logo === 'string' ? logo : logo}
                         alt={`Logo ${index + 1}`}
                         className={`${logoImageSizeClasses} object-contain drop-shadow-lg`}
-                        style={{ imageRendering: 'crisp-edges' }}
+                        style={{
+                          imageRendering: '-webkit-optimize-contrast',
+                          WebkitFontSmoothing: 'antialiased',
+                          backfaceVisibility: 'hidden',
+                          transform: 'translateZ(0)',
+                        }}
                       />
                     </div>
                   </CarouselItem>

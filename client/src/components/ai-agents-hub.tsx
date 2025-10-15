@@ -414,14 +414,20 @@ export default function AIAgentsHub() {
   const [tasks, setTasks] = useState<Record<string, TaskStatus>>({});
   const [activeCategory, setActiveCategory] = useState<'all' | 'marketing' | 'marketplace'>('all');
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  
+  // Check for reduced motion preference (with safe check for SSR/test environments)
+  const prefersReducedMotion = typeof window !== 'undefined' 
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches 
+    : false;
 
   // Execute agent task
   const executeMutation = useMutation({
     mutationFn: async ({ agent, data }: { agent: AIAgent; data: any }) => {
-      return await apiRequest('POST', agent.endpoint, data);
+      const response = await apiRequest('POST', agent.endpoint, data);
+      return await response.json();
     },
-    onSuccess: (response, { agent }) => {
-      const taskId = response.taskId || response.id;
+    onSuccess: (data, { agent }) => {
+      const taskId = data.taskId || data.id;
 
       if (taskId) {
         // Track task for status updates
@@ -441,7 +447,7 @@ export default function AIAgentsHub() {
           title: "AI Agent Started",
           description: `${agent.name} is processing your request. Task ID: ${taskId}`,
         });
-      } else if (response.result) {
+      } else if (data.result) {
         // Immediate result
         toast({
           title: "AI Agent Completed",
@@ -471,7 +477,8 @@ export default function AIAgentsHub() {
       attempts++;
 
       try {
-        const status = await apiRequest('GET', `/api/ai/tasks/${taskId}`);
+        const response = await apiRequest('GET', `/api/ai/tasks/${taskId}`);
+        const status = await response.json();
 
         setTasks(prev => ({
           ...prev,
@@ -567,7 +574,7 @@ export default function AIAgentsHub() {
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--fl-teal-lagoon)]/5 to-transparent" />
           <div className="relative">
             <motion.div
-              animate={{ 
+              animate={prefersReducedMotion ? {} : { 
                 scale: [1, 1.05, 1],
                 rotate: [0, 5, -5, 0]
               }}
@@ -592,7 +599,7 @@ export default function AIAgentsHub() {
             <div className="flex justify-center gap-6 mt-8">
               <motion.div 
                 className="px-6 py-3 rounded-full bg-white/80 dark:bg-black/40 backdrop-blur-xl border border-[var(--fl-teal-lagoon)]/30 shadow-lg"
-                whileHover={{ scale: 1.05, y: -2 }}
+                whileHover={prefersReducedMotion ? {} : { scale: 1.05, y: -2 }}
               >
                 <div className="flex items-center gap-2">
                   <Zap className="w-5 h-5 text-[var(--fl-sunset-gold)]" />
@@ -601,7 +608,7 @@ export default function AIAgentsHub() {
               </motion.div>
               <motion.div 
                 className="px-6 py-3 rounded-full bg-white/80 dark:bg-black/40 backdrop-blur-xl border border-[var(--fl-sunset-gold)]/30 shadow-lg"
-                whileHover={{ scale: 1.05, y: -2 }}
+                whileHover={prefersReducedMotion ? {} : { scale: 1.05, y: -2 }}
               >
                 <div className="flex items-center gap-2">
                   <Brain className="w-5 h-5 text-[var(--fl-teal-lagoon)]" />
@@ -628,7 +635,7 @@ export default function AIAgentsHub() {
               <CardHeader className="relative z-10">
                 <CardTitle className="text-xl flex items-center gap-3">
                   <motion.div
-                    animate={{ rotate: 360 }}
+                    animate={prefersReducedMotion ? {} : { rotate: 360 }}
                     transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                   >
                     <Workflow className="h-6 w-6 text-[var(--fl-teal-lagoon)]" />
@@ -658,7 +665,7 @@ export default function AIAgentsHub() {
                       
                       <div className="flex items-center gap-3 relative z-10">
                         <motion.div
-                          animate={task.status === 'processing' ? { 
+                          animate={task.status === 'processing' && !prefersReducedMotion ? { 
                             scale: [1, 1.2, 1],
                             rotate: [0, 180, 360]
                           } : {}}
@@ -671,7 +678,7 @@ export default function AIAgentsHub() {
                             Task {taskId.slice(0, 8)}
                           </span>
                           <Badge 
-                            variant={task.status === 'completed' ? 'success' : 'secondary'}
+                            variant="secondary"
                             className={`ml-2 ${
                               task.status === 'completed' 
                                 ? 'bg-green-500/20 text-green-700 dark:text-green-400 border-green-500/50'
@@ -771,12 +778,12 @@ export default function AIAgentsHub() {
               <motion.div
                 key={agent.id}
                 variants={cardVariants}
-                whileHover={{ 
+                whileHover={prefersReducedMotion ? {} : { 
                   scale: 1.03,
                   rotateY: 5,
                   z: 50
                 }}
-                whileTap={{ scale: 0.98 }}
+                whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
                 onHoverStart={() => setHoveredCard(agent.id)}
                 onHoverEnd={() => setHoveredCard(null)}
                 style={{
@@ -805,7 +812,7 @@ export default function AIAgentsHub() {
                     <div className="flex items-start justify-between mb-3">
                       <motion.div 
                         className={`p-3 rounded-xl bg-gradient-to-br ${agent.color} text-white shadow-lg relative overflow-hidden`}
-                        whileHover={{ rotate: 360 }}
+                        whileHover={prefersReducedMotion ? {} : { rotate: 360 }}
                         transition={{ duration: 0.6 }}
                       >
                         {/* Icon glow effect */}
@@ -885,7 +892,7 @@ export default function AIAgentsHub() {
                   <div className="flex items-center gap-4">
                     <motion.div 
                       className={`p-4 rounded-2xl bg-gradient-to-br ${selectedAgent.color} text-white shadow-2xl relative overflow-hidden`}
-                      whileHover={{ rotate: [0, -10, 10, -10, 0] }}
+                      whileHover={prefersReducedMotion ? {} : { rotate: [0, -10, 10, -10, 0] }}
                       transition={{ duration: 0.5 }}
                     >
                       <div className="absolute inset-0 bg-white/20 rounded-2xl blur-sm" />
@@ -901,8 +908,8 @@ export default function AIAgentsHub() {
                     </div>
                   </div>
                   <motion.div
-                    whileHover={{ scale: 1.1, rotate: 90 }}
-                    whileTap={{ scale: 0.9 }}
+                    whileHover={prefersReducedMotion ? {} : { scale: 1.1, rotate: 90 }}
+                    whileTap={prefersReducedMotion ? {} : { scale: 0.9 }}
                   >
                     <Button
                       variant="ghost"

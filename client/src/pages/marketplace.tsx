@@ -536,9 +536,9 @@ export default function Marketplace() {
             </div>
           ) : (searchQuery || selectedCategory) ? (
             <div className="text-center py-16 entrance-fade-up">
-              <i className="fas fa-search text-4xl text-muted-foreground mb-4"></i>
-              <h3 className="text-xl font-semibold mb-2">No products found</h3>
-              <p className="text-muted-foreground">
+              <i className="fas fa-search text-4xl text-white mb-4" style={{textShadow: '0 1px 3px rgba(0,0,0,0.3)'}}></i>
+              <h3 className="text-xl font-semibold mb-2 text-white" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>No products found</h3>
+              <p className="text-white" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>
                 Try adjusting your search terms or browse all categories.
               </p>
             </div>
