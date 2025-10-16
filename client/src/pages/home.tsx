@@ -196,12 +196,11 @@ export default function Home() {
         <SpotlightShowcase />
         <MarketplaceSection />
 
-        {/* Community Activity Section with Box Container */}
+        {/* Community Activity Section with White Overlay */}
         <section className="relative py-12">
-          <div className="container mx-auto px-4 lg:px-8">
-            <div className="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/50 p-8 lg:p-12">
-              <SocialFeed />
-            </div>
+          <div className="absolute inset-0 bg-white/90"></div>
+          <div className="relative z-10">
+            <SocialFeed />
           </div>
         </section>
       </div>

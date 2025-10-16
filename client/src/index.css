@@ -9888,4 +9888,8 @@ select:focus-visible,
   .cyber-data-stream::after {
     animation: none !important;
   }
+  
+  .cyber-3d-lift:hover {
+    transform: perspective(1000px) rotateX(0deg) !important;
+  }
 }

@@ -176,11 +176,11 @@ export default function AIToolsPage() {
           <div className="flex flex-col items-center text-center space-y-8">
             <Badge 
               variant="secondary" 
-              className="backdrop-blur-sm bg-white/10 border border-white/20 text-white hover:bg-white/20 px-4 py-2 rounded-full cyber-glow-pulse relative overflow-hidden"
+              className="bg-white/10 border border-white/20 text-white hover:bg-white/20 hover:backdrop-blur-sm px-4 py-2 rounded-full relative overflow-hidden"
               data-testid="badge-hero"
             >
               <span className="relative z-10">✨ AI Tools Command Center</span>
-              <div className="absolute inset-0 cyber-metallic-shine" />
+              <div className="absolute inset-0 opacity-0 hover:opacity-100 cyber-metallic-shine" />
             </Badge>
             
             <div className="space-y-6 flex items-center justify-center flex-col">
@@ -215,7 +215,7 @@ export default function AIToolsPage() {
             {stats.map((stat, idx) => (
               <div
                 key={idx}
-                className="backdrop-blur-sm bg-white/5 border-2 border-white/10 rounded-xl p-4 md:p-6 h-40 md:h-48 flex flex-col justify-start items-start space-y-2 md:space-y-3 hover:bg-white/10 transition-all duration-200 relative overflow-hidden group cyber-3d-lift cyber-glow-pulse"
+                className="backdrop-blur-sm bg-white/5 border-2 border-white/10 rounded-xl p-4 md:p-6 h-40 md:h-48 flex flex-col justify-start items-start space-y-2 md:space-y-3 hover:bg-white/10 transition-all duration-200 relative overflow-hidden group cyber-3d-lift"
                 data-testid={`card-stat-${idx}`}
               >
                 {/* Circuit pattern */}
@@ -224,10 +224,10 @@ export default function AIToolsPage() {
                 {/* Energy border */}
                 <div className="absolute inset-0 cyber-energy-border opacity-0 group-hover:opacity-100 transition-opacity" />
                 
-                <div className="text-white/80 md:w-5 md:h-5 relative z-10 cyber-text-glow">
+                <div className="text-white/80 md:w-5 md:h-5 relative z-10 group-hover:cyber-text-glow">
                   {stat.icon}
                 </div>
-                <h3 className="text-2xl font-bold relative z-10 cyber-chromatic-text">{stat.value}</h3>
+                <h3 className="text-2xl font-bold relative z-10 group-hover:cyber-chromatic-text">{stat.value}</h3>
                 <p className="text-xs md:text-sm text-neutral-400 relative z-10">{stat.label}</p>
               </div>
             ))}
@@ -247,7 +247,7 @@ export default function AIToolsPage() {
         <div className="absolute inset-0 cyber-circuit-pattern opacity-10 pointer-events-none" />
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6 relative z-10">
-          <TabsList className="grid w-full grid-cols-8 h-auto p-1 bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_8px_32px_rgba(0,255,255,0.1)] relative overflow-hidden cyber-energy-border">
+          <TabsList className="grid w-full grid-cols-8 h-auto p-1 bg-black/40 backdrop-blur-sm border border-white/10 rounded-2xl shadow-[0_8px_32px_rgba(0,255,255,0.1)] relative overflow-hidden cyber-energy-border">
             <TabsTrigger 
               value="overview" 
               className="flex flex-col py-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:border-cyan-400/50 data-[state=active]:border data-[state=active]:shadow-[0_0_20px_rgba(0,255,255,0.3)] rounded-xl transition-all duration-300 cyber-3d-lift"
@@ -325,7 +325,7 @@ export default function AIToolsPage() {
                   transition={{ delay: i * 0.1 }}
                 >
                   <Card 
-                    className="relative overflow-hidden cursor-pointer group h-full bg-black/40 backdrop-blur-xl border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] hover:-translate-y-1 cyber-border-animate cyber-glow-pulse"
+                    className="relative overflow-hidden cursor-pointer group h-full bg-black/40 border-2 border-white/10 hover:border-cyan-400/50 hover:backdrop-blur-xl transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] hover:-translate-y-1"
                     onClick={() => setActiveTab(tool.id)}
                     data-testid={`card-tool-${tool.id}`}
                   >
@@ -351,7 +351,7 @@ export default function AIToolsPage() {
                         {tool.badge && (
                           <Badge 
                             variant="secondary"
-                            className="bg-cyan-500/20 text-cyan-300 border-cyan-400/50 backdrop-blur-sm"
+                            className="bg-cyan-500/20 text-cyan-300 border-cyan-400/50"
                           >
                             {tool.badge}
                           </Badge>
@@ -384,7 +384,7 @@ export default function AIToolsPage() {
             </div>
 
             {/* Quick Actions */}
-            <Card className="relative overflow-hidden bg-black/40 backdrop-blur-xl border border-cyan-400/30 shadow-[0_0_30px_rgba(0,255,255,0.15)]">
+            <Card className="relative overflow-hidden bg-black/40 border border-cyan-400/30 shadow-[0_0_30px_rgba(0,255,255,0.15)] hover:backdrop-blur-xl transition-all duration-300">
               <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-blue-500/5" />
               <CardHeader className="relative z-10">
                 <CardTitle className="text-white">Quick AI Actions</CardTitle>
@@ -434,7 +434,7 @@ export default function AIToolsPage() {
 
             {/* Benefits Section */}
             <div className="grid gap-6 md:grid-cols-3">
-              <Card className="relative overflow-hidden bg-black/40 backdrop-blur-xl border border-purple-400/30 hover:border-purple-400/60 transition-all duration-500 hover:shadow-[0_0_30px_rgba(168,85,247,0.2)] group">
+              <Card className="relative overflow-hidden bg-black/40 border border-purple-400/30 hover:border-purple-400/60 hover:backdrop-blur-xl transition-all duration-500 hover:shadow-[0_0_30px_rgba(168,85,247,0.2)] group">
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 group-hover:from-purple-500/10 group-hover:to-pink-500/10 transition-all duration-500" />
                 <CardHeader className="relative z-10">
                   <Rocket className="w-8 h-8 text-purple-400 mb-2 drop-shadow-[0_0_10px_rgba(168,85,247,0.5)]" />
@@ -447,7 +447,7 @@ export default function AIToolsPage() {
                 </CardContent>
               </Card>
 
-              <Card className="relative overflow-hidden bg-black/40 backdrop-blur-xl border border-blue-400/30 hover:border-blue-400/60 transition-all duration-500 hover:shadow-[0_0_30px_rgba(59,130,246,0.2)] group">
+              <Card className="relative overflow-hidden bg-black/40 border border-blue-400/30 hover:border-blue-400/60 hover:backdrop-blur-xl transition-all duration-500 hover:shadow-[0_0_30px_rgba(59,130,246,0.2)] group">
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-cyan-500/5 group-hover:from-blue-500/10 group-hover:to-cyan-500/10 transition-all duration-500" />
                 <CardHeader className="relative z-10">
                   <BarChart className="w-8 h-8 text-blue-400 mb-2 drop-shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
@@ -460,7 +460,7 @@ export default function AIToolsPage() {
                 </CardContent>
               </Card>
 
-              <Card className="relative overflow-hidden bg-black/40 backdrop-blur-xl border border-green-400/30 hover:border-green-400/60 transition-all duration-500 hover:shadow-[0_0_30px_rgba(34,197,94,0.2)] group">
+              <Card className="relative overflow-hidden bg-black/40 border border-green-400/30 hover:border-green-400/60 hover:backdrop-blur-xl transition-all duration-500 hover:shadow-[0_0_30px_rgba(34,197,94,0.2)] group">
                 <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-emerald-500/5 group-hover:from-green-500/10 group-hover:to-emerald-500/10 transition-all duration-500" />
                 <CardHeader className="relative z-10">
                   <Users className="w-8 h-8 text-green-400 mb-2 drop-shadow-[0_0_10px_rgba(34,197,94,0.5)]" />

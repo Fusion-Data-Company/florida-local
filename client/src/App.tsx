@@ -66,6 +66,9 @@ import EliteNavigationHeader from "@/components/elite-navigation-header";
 import LuxuryFooter from "@/components/luxury-footer";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 
+// Demo Components
+import AnimatedHikeCardDemo from "@/components/ui/demo";
+
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
 
@@ -79,6 +82,7 @@ function Router() {
       <Route path="/florida-local" component={FloridaLocalElite} />
       <Route path="/registry" component={Registry} />
       <Route path="/subscription" component={SubscriptionPage} />
+      <Route path="/demo/card" component={AnimatedHikeCardDemo} />
 
       {isLoading || !isAuthenticated ? (
         <Route path="/" component={Landing} />

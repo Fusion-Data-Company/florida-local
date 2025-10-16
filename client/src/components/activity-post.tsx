@@ -201,7 +201,9 @@ export default function ActivityPost({ post }: ActivityPostProps) {
             
             {/* Post Content Text */}
             <div className="elite-post-content mb-4">
-              <p className="whitespace-pre-wrap leading-relaxed text-gray-900 font-medium" style={{ color: '#1a1a1a', textShadow: '0 1px 2px rgba(255, 255, 255, 0.5)' }}>{post.content}</p>
+              <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-gray-200 p-4 shadow-sm">
+                <p className="whitespace-pre-wrap leading-relaxed text-gray-900 font-medium" style={{ color: '#1a1a1a' }}>{post.content}</p>
+              </div>
             </div>
             
             {/* Post Images Gallery */}
