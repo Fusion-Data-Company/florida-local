@@ -7656,21 +7656,17 @@ textarea:focus-visible,
 
 /* User/Author Info */
 .elite-post-author {
-  color: hsl(220, 15%, 15%);
+  color: hsl(220, 20%, 10%);
   letter-spacing: -0.01em;
-  background: linear-gradient(135deg, 
-    hsl(220, 15%, 15%) 0%,
-    hsl(220, 15%, 25%) 100%
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
 }
 
 .elite-post-timestamp {
-  color: hsl(220, 10%, 50%);
-  font-weight: 500;
+  color: hsl(220, 15%, 35%);
+  font-weight: 600;
   letter-spacing: 0.01em;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
 }
 
 /* Post Content Typography */
@@ -7678,8 +7674,10 @@ textarea:focus-visible,
   font-family: var(--font-sans);
   font-size: 1rem;
   line-height: 1.7;
-  color: hsl(220, 15%, 20%);
+  color: hsl(220, 20%, 15%);
+  font-weight: 500;
   letter-spacing: -0.005em;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.4);
 }
 
 .elite-post-content p {

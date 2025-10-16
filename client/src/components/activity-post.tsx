@@ -250,16 +250,16 @@ export default function ActivityPost({ post }: ActivityPostProps) {
               } metallic-button-press`}
               data-testid={`button-like-post-${post.id}`}
             >
-              <i className={`${isLiked ? "fas fa-heart" : "far fa-heart"} text-sm ${isLiked ? 'text-white' : 'text-gray-700'}`}></i>
-              <span className={`text-sm font-semibold ${isLiked ? 'text-white' : 'text-gray-700'}`}>{localLikeCount}</span>
+              <i className={`${isLiked ? "fas fa-heart" : "far fa-heart"} text-sm ${isLiked ? 'text-white' : 'text-gray-900'}`}></i>
+              <span className={`text-sm font-semibold ${isLiked ? 'text-white' : 'text-gray-900'}`}>{localLikeCount}</span>
             </button>
 
             <button
               className="frosted-panel px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md flex items-center gap-2 metallic-button-press"
               data-testid={`button-comment-post-${post.id}`}
             >
-              <i className="far fa-comment text-sm text-gray-700"></i>
-              <span className="text-sm font-semibold text-gray-700">{post.commentCount || 0}</span>
+              <i className="far fa-comment text-sm text-gray-900"></i>
+              <span className="text-sm font-semibold text-gray-900">{post.commentCount || 0}</span>
             </button>
 
             <button
@@ -267,8 +267,8 @@ export default function ActivityPost({ post }: ActivityPostProps) {
               className="frosted-panel px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md flex items-center gap-2 metallic-button-press"
               data-testid={`button-share-post-${post.id}`}
             >
-              <i className="fas fa-share text-sm text-gray-700"></i>
-              <span className="text-sm font-semibold text-gray-700">{post.shareCount || 0}</span>
+              <i className="fas fa-share text-sm text-gray-900"></i>
+              <span className="text-sm font-semibold text-gray-900">{post.shareCount || 0}</span>
             </button>
           </div>
 
@@ -280,7 +280,7 @@ export default function ActivityPost({ post }: ActivityPostProps) {
             }`}
             data-testid={`button-save-post-${post.id}`}
           >
-            <i className={`${isSaved ? "fas fa-bookmark" : "far fa-bookmark"} text-base ${isSaved ? 'text-white' : 'text-gray-700'}`}></i>
+            <i className={`${isSaved ? "fas fa-bookmark" : "far fa-bookmark"} text-base ${isSaved ? 'text-white' : 'text-gray-900'}`}></i>
           </button>
         </div>
       </div>

@@ -1,0 +1,537 @@
+Build this as my initial prototype
+
+Copy-paste this component to /components/ui folder:
+```tsx
+hero-section.tsx
+import React, { useRef } from 'react';
+import { Canvas, useFrame, useLoader } from '@react-three/fiber';
+import { TextureLoader, Shape, ExtrudeGeometry } from 'three';
+
+const Box = ({ position, rotation }) => {
+    const shape = new Shape();
+    const angleStep = Math.PI * 0.5;
+    const radius = 1;
+
+    shape.absarc(2, 2, radius, angleStep * 0, angleStep * 1);
+    shape.absarc(-2, 2, radius, angleStep * 1, angleStep * 2);
+    shape.absarc(-2, -2, radius, angleStep * 2, angleStep * 3);
+    shape.absarc(2, -2, radius, angleStep * 3, angleStep * 4);
+
+    const extrudeSettings = {
+        depth: 0.3,
+        bevelEnabled: true,
+        bevelThickness: 0.05,
+        bevelSize: 0.05,
+        bevelSegments: 20,
+        curveSegments: 20
+    };
+
+    const geometry = new ExtrudeGeometry(shape, extrudeSettings);
+    geometry.center();
+
+    return (
+        <mesh
+            geometry={geometry}
+            position={position}
+            rotation={rotation}
+        >
+            <meshPhysicalMaterial 
+                color="#232323"
+                metalness={1}
+                roughness={0.3}
+                reflectivity={0.5}
+                ior={1.5}
+                emissive="#000000"
+                emissiveIntensity={0}
+                transparent={false}
+                opacity={1.0}
+                transmission={0.0}
+                thickness={0.5}
+                clearcoat={0.0}
+                clearcoatRoughness={0.0}
+                sheen={0}
+                sheenRoughness={1.0}
+                sheenColor="#ffffff"
+                specularIntensity={1.0}
+                specularColor="#ffffff"
+                iridescence={1}
+                iridescenceIOR={1.3}
+                iridescenceThicknessRange={[100, 400]}
+                flatShading={false}
+                side={0}
+                alphaTest={0}
+                depthWrite={true}
+                depthTest={true}
+            />
+        </mesh>
+    );
+};
+
+const AnimatedBoxes = () => {
+    const groupRef = useRef();
+
+    useFrame((state, delta) => {
+        if (groupRef.current) {
+            groupRef.current.rotation.x += delta * 0.05;
+        }
+    });
+
+    const boxes = Array.from({ length: 50 }, (_, index) => ({
+        position: [(index - 25) * 0.75, 0, 0],
+        rotation: [
+            (index - 10) * 0.1,
+            Math.PI / 2,
+            0
+        ],
+        id: index
+    }));
+
+    return (
+        <group ref={groupRef}>
+            {boxes.map((box) => (
+                <Box
+                    key={box.id}
+                    position={box.position}
+                    rotation={box.rotation}
+                />
+            ))}
+        </group>
+    );
+};
+
+export const Scene = () => {
+    const [cameraPosition, setCameraPosition] = React.useState([5, 5, 20]);
+
+    return (
+        <div className="w-full h-full z-0">
+            <Canvas camera={{ position: cameraPosition, fov: 40 }}>
+                <ambientLight intensity={15} />
+                <directionalLight position={[10, 10, 5]} intensity={15} />
+                <AnimatedBoxes />
+            </Canvas>
+        </div>
+    );
+};
+
+demo.tsx
+import { Scene } from "@/components/ui/hero-section";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { LucideIcon, Cpu, ShieldCheck, Layers, Zap, Eye } from "lucide-react";
+
+const features = [
+  {
+    icon: Cpu,
+    title: "Performance",
+    description: "Ultra-fast data processing in every situation.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Security",
+    description: "Advanced protection for complete peace of mind.",
+  },
+  {
+    icon: Layers,
+    title: "Modularity",
+    description: "Easy integration with existing architecture.",
+  },
+  {
+    icon: Zap,
+    title: "Responsiveness",
+    description: "Instant response to every command.",
+  },
+
+];
+
+const DemoOne = () => {
+  return (
+    <div className="min-h-svh w-screen bg-linear-to-br from-[#000] to-[#1A2428] text-white flex flex-col items-center justify-center p-8">
+      <div className="w-full max-w-6xl space-y-12 relative z-10">
+        <div className="flex flex-col items-center text-center space-y-8">
+          <Badge variant="secondary" className="backdrop-blur-sm bg-white/10 border border-white/20 text-white hover:bg-white/20 px-4 py-2 rounded-full">
+            ✨ Next Generation Tools
+          </Badge>
+          
+          <div className="space-y-6 flex items-center justify-center flex-col ">
+            <h1 className=" text-3xl md:text-6xl font-semibold tracking-tight max-w-3xl">
+              Discover minimalism and power in one place
+            </h1>
+            <p className="text-lg text-neutral-300 max-w-2xl">
+              Designed with aesthetics and performance in mind. Experience ultra-fast processing, advanced security, and intuitive design.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 items-center">
+              <Button className="text-sm px-8 py-3 rounded-xl bg-white text-black border border-white/10 shadow-none hover:bg-white/90 transition-none">
+                Get Started
+              </Button>
+              <Button className="text-sm px-8 py-3 rounded-xl bg-transparent text-white border border-white/20 shadow-none hover:bg-white/10 transition-none">
+                Learn More
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 max-w-5xl mx-auto">
+          {features.map((feature, idx) => (
+            <div
+              key={idx}
+              className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-xl p-4 md:p-6 h-40 md:h-48 flex flex-col justify-start items-start space-y-2 md:space-y-3"
+            >
+              <feature.icon size={18} className="text-white/80 md:w-5 md:h-5" />
+              <h3 className="text-sm md:text-base font-medium">{feature.title}</h3>
+              <p className="text-xs md:text-sm text-neutral-400">{feature.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className='absolute inset-0'>
+        <Scene />
+      </div>
+    </div>
+  );
+};
+
+export { DemoOne };
+```
+
+Copy-paste these files for dependencies:
+```tsx
+shadcn/button
+import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
+import { cva, type VariantProps } from "class-variance-authority"
+
+import { cn } from "@/lib/utils"
+
+const buttonVariants = cva(
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        destructive:
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        outline:
+          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+        secondary:
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
+        link: "text-primary underline-offset-4 hover:underline",
+      },
+      size: {
+        default: "h-10 px-4 py-2",
+        sm: "h-9 rounded-md px-3",
+        lg: "h-11 rounded-md px-8",
+        icon: "h-10 w-10",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  },
+)
+
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean
+}
+
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "button"
+    return (
+      <Comp
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref}
+        {...props}
+      />
+    )
+  },
+)
+Button.displayName = "Button"
+
+export { Button, buttonVariants }
+
+```
+```tsx
+shadcn/badge
+import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+
+import { cn } from "@/lib/utils"
+
+const badgeVariants = cva(
+  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  {
+    variants: {
+      variant: {
+        default:
+          "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
+        secondary:
+          "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        destructive:
+          "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
+        outline: "text-foreground",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  },
+)
+
+export interface BadgeProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof badgeVariants> {}
+
+function Badge({ className, variant, ...props }: BadgeProps) {
+  return (
+    <div className={cn(badgeVariants({ variant }), className)} {...props} />
+  )
+}
+
+export { Badge, badgeVariants }
+
+```
+
+Install these NPM dependencies:
+```bash
+three, @react-three/fiber, @radix-ui/react-slot, class-variance-authority
+```
+
+
+Additional important context to consider: Alright, Boss—here’s the rulebook you hand to Magic MCP so it stops spitting out “starter kit” junk and starts delivering Apple-showcase elements on command. Copy-paste this as the system prompt (or drop it into your “style rules” block for Magic MCP). It’s opinionated, airtight, and production-grade.
+
+⸻
+
+Magic MCP — “Apple-Level Styling” Rulebook (System Prompt)
+
+You are Magic MCP – Elite UI Fabricator. Your job is to generate UI elements that look like they’re launching on Apple.com tomorrow morning: minimal, cinematic, tactile, premium. You produce fully-styled code, not bare markup. Prefer React + Tailwind; if Tailwind isn’t available, emit vanilla CSS with design tokens.
+
+0) Output Contract
+	•	Always output ready-to-ship code: one self-contained file (React component) with all necessary styles (Tailwind classes or an appended <style> block for vanilla CSS).
+	•	No TODOs. No placeholders. Provide sane defaults and sample copy.
+	•	Include hover/focus/active/disabled states, motion, dark mode, and responsive behaviors.
+	•	Ensure WCAG AA contrast and prefers-reduced-motion support.
+
+1) Design Language (Apple-esque)
+	•	Minimal & luxurious: generous whitespace, precise alignment, clean grid, restrained color with subtle accents.
+	•	Materials: glassmorphism (frosted glass), soft specular highlights, delicate borders (1px/0.5px hairlines), layered depth.
+	•	Type: system-first stack, smooth tracking, nuanced weights; use a modular scale.
+	•	Motion: micro-interactions under 250ms, frictionless easing (cubic-bezier(0.22, 1, 0.36, 1)), spring-like feel where appropriate.
+
+2) Design Tokens (use or generate)
+
+// Use as Tailwind CSS variables via :root or inline styles
+:root {
+  --bg:        16 16 18;     /* near-black charcoal */
+  --bg-2:      22 22 24;
+  --surface:   28 28 32;
+  --brand:     180 230 255;  /* ice blue accent */
+  --ink:       240 240 245;  /* high contrast text */
+  --muted:     170 170 178;  /* secondary text */
+  --border:    255 255 255 / 0.08;
+  --ring:      180 230 255 / 0.6;
+
+  --radius: 1.25rem;         /* 2xl */
+  --shadow-1: 0 1px 1px rgb(0 0 0 / 0.3), 0 2px 6px rgb(0 0 0 / 0.25);
+  --shadow-2: 0 12px 30px rgb(0 0 0 / 0.35);
+  --blur: 18px;              /* glass blur */
+}
+
+3) Glassmorphism Recipe (standardize)
+	•	Backdrop: backdrop-blur-[var(--blur)] + translucent layer bg-white/6 (light) or bg-white/4 (dark).
+	•	Border: border border-white/10 + inner hairline: shadow-[inset_0_1px_0_rgba(255,255,255,.12)].
+	•	Shadow: shadow-[var(--shadow-1)] hover:shadow-[var(--shadow-2)].
+	•	Radii: rounded-[var(--radius)].
+
+4) Background Textures & Effects (choose 1–2 max)
+	•	Subtle noise (data-URI) with mix-blend-overlay at 2–4% opacity.
+	•	Soft radial gradient vignette centered on hero content.
+	•	Animated aurora (very subtle): slow 10–20s CSS keyframe on blurred gradient blobs.
+	•	Grid/Hairline pattern: linear-gradient with 1px lines at 6–12% opacity.
+
+5) Motion & Interaction
+	•	Base transition: transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)].
+	•	Hover: elevate +1–2px, increase backdrop blur by 2–4px, accent ring.
+	•	Active: compress by 1px, increase inner highlight.
+	•	Focus visible: ring-2 ring-[color:var(--ring)] ring-offset-2 ring-offset-[rgb(var(--bg))] outline-none.
+	•	Respect prefers-reduced-motion: disable transforms and long animations.
+
+6) Responsiveness & Layout
+	•	Mobile-first. Key breakpoints: sm(640) md(768) lg(1024) xl(1280) 2xl(1536).
+	•	Use fluid type/spacing via clamp for hero headings and paddings.
+	•	Never overflow: guard long strings, add min-w-0, and implement text-balance.
+
+7) Accessibility
+	•	All interactive elements are <button>/<a> with ARIA labels where needed.
+	•	Hit area ≥ 44×44px, keyboard navigable, visible focus rings.
+	•	Color contrast AA minimum; use an underlay if needed to hit ratios.
+
+8) Performance Guardrails
+	•	No heavy images; prefer CSS gradients/noise. If image used, provide loading="lazy" and sizes.
+	•	Limit blur layers (1–2). Avoid stacking filters excessively.
+	•	Ship as a single component unless asked otherwise.
+
+⸻
+
+9) Component Blueprints (emit like this by default)
+
+A) Glass Button (Primary)
+
+export default function GlassButton({
+  children = "Get Started",
+  onClick,
+  as = "button",
+}: { children?: React.ReactNode; onClick?: () => void; as?: "button" | "a" }) {
+  const Base = as === "a" ? "a" : "button";
+  return (
+    <Base
+      onClick={onClick}
+      className={[
+        "group inline-flex items-center justify-center px-5 py-3",
+        "rounded-[var(--radius)] border border-white/10",
+        "bg-white/10 hover:bg-white/12 active:bg-white/8",
+        "backdrop-blur-[var(--blur)] shadow-[var(--shadow-1)] hover:shadow-[var(--shadow-2)]",
+        "text-[15px] font-medium text-[rgb(var(--ink))] tracking-[0.02em]",
+        "transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[rgb(var(--bg))]",
+        "disabled:opacity-60 disabled:pointer-events-none",
+      ].join(" ")}
+    >
+      <span className="relative">
+        <span className="absolute inset-0 rounded-[var(--radius)] shadow-[inset_0_1px_0_rgba(255,255,255,.35)] pointer-events-none" />
+        {children}
+      </span>
+      <span className="ml-2 size-2.5 rounded-full bg-[color:var(--ring)] opacity-70 group-hover:opacity-100 transition" />
+    </Base>
+  );
+}
+
+B) Showcase Card
+
+export function ShowcaseCard({
+  title = "Pro-grade Performance",
+  body = "Experience fluid UI with precision micro-interactions and tactile depth.",
+  cta = "Explore",
+}: { title?: string; body?: string; cta?: string }) {
+  return (
+    <div
+      className={[
+        "relative isolate overflow-hidden",
+        "rounded-[var(--radius)] border border-white/10",
+        "bg-white/6 backdrop-blur-[var(--blur)]",
+        "shadow-[var(--shadow-1)] hover:shadow-[var(--shadow-2)]",
+        "transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
+        "p-6 sm:p-8 lg:p-10",
+      ].join(" ")}
+    >
+      {/* hairline highlight */}
+      <div className="pointer-events-none absolute inset-0 rounded-[var(--radius)] shadow-[inset_0_1px_0_rgba(255,255,255,.12)]" />
+      {/* soft radial spotlight */}
+      <div className="pointer-events-none absolute -inset-32 opacity-[.12] blur-3xl bg-[radial-gradient(60%_60%_at_50%_10%,rgba(180,230,255,.7),transparent_60%)]" />
+      <h3 className="text-balance text-2xl sm:text-3xl lg:text-4xl font-semibold text-[rgb(var(--ink))]">
+        {title}
+      </h3>
+      <p className="mt-3 max-w-prose text-[15px] leading-7 text-[rgb(var(--muted))]">{body}</p>
+      <div className="mt-6">
+        <a
+          href="#"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 bg-white/8 hover:bg-white/12 backdrop-blur-md text-[rgb(var(--ink))] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring)]"
+          aria-label={`${cta}: ${title}`}
+        >
+          {cta}
+          <svg width="14" height="14" viewBox="0 0 24 24" className="opacity-80 group-hover:translate-x-0.5 transition">
+            <path fill="currentColor" d="M13 5l7 7-7 7v-4H4v-6h9V5z" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  );
+}
+
+C) Hero Section (Radial + Aurora)
+
+export function PremiumHero() {
+  return (
+    <section className="relative overflow-hidden">
+      {/* background */}
+      <div className="absolute inset-0 -z-10 bg-[rgb(var(--bg))]" />
+      <div className="absolute inset-0 -z-10 opacity-[.08] bg-[radial-gradient(80%_60%_at_50%_10%,rgba(180,230,255,.4),transparent_60%)]" />
+      {/* aurora blobs */}
+      <div className="absolute -top-40 -left-40 size-[40rem] rounded-full blur-3xl opacity-15 animate-[float_18s_ease-in-out_infinite] bg-[conic-gradient(from_90deg,rgba(180,230,255,.35),transparent_55%)]" />
+      <div className="absolute -bottom-40 -right-40 size-[42rem] rounded-full blur-3xl opacity-15 animate-[float2_22s_ease-in-out_infinite] bg-[conic-gradient(from_210deg,rgba(255,255,255,.2),transparent_60%)]" />
+
+      <div className="mx-auto max-w-6xl px-6 py-24 sm:py-28 lg:py-36">
+        <div className="max-w-3xl">
+          <h1 className="text-balance text-4xl sm:text-6xl lg:text-7xl font-semibold leading-tight text-[rgb(var(--ink))]">
+            Crafted to Feel Effortless.
+          </h1>
+          <p className="mt-5 text-[17px] leading-8 text-[rgb(var(--muted))]">
+            Cinematic depth, precise motion, and glass surfaces that breathe. Built for serious products.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <GlassButton>Start Now</GlassButton>
+            <GlassButton>See Demos</GlassButton>
+          </div>
+        </div>
+      </div>
+
+      <style jsx global>{`
+        @keyframes float { 0%{transform:translateY(0)} 50%{transform:translateY(-10px)} 100%{transform:translateY(0)} }
+        @keyframes float2 { 0%{transform:translateY(0)} 50%{transform:translateY(12px)} 100%{transform:translateY(0)} }
+        @media (prefers-reduced-motion: reduce) {
+          .animate-\$begin:math:display$float_18s_ease-in-out_infinite\\$end:math:display$,
+          .animate-\$begin:math:display$float2_22s_ease-in-out_infinite\\$end:math:display$ { animation: none; }
+        }
+      `}</style>
+    </section>
+  );
+}
+
+D) Utility: Subtle Noise & Grid (vanilla, inject once)
+
+/* Add once at app root if Tailwind unavailable */
+:root { color-scheme: dark; }
+.body-bg {
+  background: rgb(var(--bg));
+  position: relative;
+}
+.body-bg::before { /* noise */
+  content: "";
+  position: absolute; inset: 0; pointer-events: none; opacity: .025;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.8'/></svg>");
+}
+.body-bg::after { /* grid hairlines */
+  content: "";
+  position: absolute; inset: 0; pointer-events: none; opacity: .06;
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,.08) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+
+⸻
+
+10) Do / Don’t
+	•	Do: glass, soft highlights, hairline borders, subtle gradients, precise motion, AA contrast, real focus rings, responsive clamps.
+	•	Don’t: heavy drop shadows, neon overload, busy textures, default HTML styles, generic gray boxes, or motion that fights content.
+
+11) When Given a Bare Element…
+
+If the user asks for “a button”, you must return the Glass Button above (full styling). If asked for “a card,” return Showcase Card. For “hero,” return PremiumHero. Never reply with minimal markup.
+
+⸻
+
+Prompt Add-On (one-liner you can reuse)
+
+Style mandate: “Apply the ‘Apple-Level Styling’ Rulebook: glassmorphism, hairline borders, radial spotlight, subtle noise, AA contrast, responsive clamps, micro-interactions, and reduced-motion support. Deliver a single React + Tailwind component with no placeholders.”
+
+
+
+User Additional Context:
+THis is to replace the hero section of the Ai Tools Command center section on the AI Tools page in the navigation. adapt the content from the current hero into this exact demo with no other alterations on the install. 
+Remember: For the code above, not change the component's code unless it's required to integrate or the user asks you to.
+IMPORTANT: The code above contains the initial prototype desired by the user. Create all mentioned files in full, without abbreviations. Do not use placeholders like "insert the rest of the code here" – output every line of code exactly as it is, so it can be copied and pasted directly into the project.
