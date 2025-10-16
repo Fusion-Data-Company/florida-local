@@ -449,7 +449,7 @@ export async function setupAuth(app: Express) {
       if (fallbackStrategy) {
         console.log(`🔄 Using fallback strategy for callback: ${fallbackStrategy}`);
         passport.authenticate(fallbackStrategy, {
-          successReturnToOrRedirect: "/",
+          successReturnToOrRedirect: "/",  // Direct to Discover page
           failureRedirect: "/api/login",
         })(req, res, next);
         return;
@@ -515,9 +515,9 @@ export async function setupAuth(app: Express) {
               return res.redirect(returnUrl);
             }
 
-            console.log(`🔐 Redirecting to /profile for intelligent routing`);
-            // Always redirect to profile page for intelligent routing
-            return res.redirect("/profile");
+            console.log(`🔐 Redirecting to Discover page (home)`);
+            // Redirect directly to Discover page (home)
+            return res.redirect("/");
           }
         } catch (profileError) {
           console.error("⚠️ Error retrieving user profile:", profileError);
