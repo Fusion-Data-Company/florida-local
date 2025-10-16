@@ -171,14 +171,10 @@ export default function AIToolsPage() {
 
       {/* Hero Section */}
       <div className="min-h-svh w-full text-white flex flex-col items-center justify-center p-8 relative overflow-hidden">
-        {/* Elite cyberpunk background effects */}
-        <div className="absolute inset-0 cyber-grid-bg opacity-10" />
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-purple-500/5 to-pink-500/5" />
-        
-        {/* Floating particles */}
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-cyan-400 rounded-full cyber-particle-field animate-pulse" />
-        <div className="absolute top-1/3 right-1/3 w-2 h-2 bg-purple-400 rounded-full cyber-particle-field animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute bottom-1/3 left-1/2 w-2 h-2 bg-pink-400 rounded-full cyber-particle-field animate-pulse" style={{ animationDelay: '2s' }} />
+        {/* 3D Animation Layer - Behind content */}
+        <div className='absolute inset-0 z-0'>
+          <Scene />
+        </div>
         
         <div className="w-full max-w-6xl space-y-12 relative z-10">
           <div className="flex flex-col items-center text-center space-y-8">
@@ -240,9 +236,6 @@ export default function AIToolsPage() {
               </div>
             ))}
           </div>
-        </div>
-        <div className='absolute inset-0'>
-          <Scene />
         </div>
       </div>
 
