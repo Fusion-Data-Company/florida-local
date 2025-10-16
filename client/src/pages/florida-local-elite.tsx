@@ -633,14 +633,14 @@ export default function FloridaLocalElite() {
         backgroundPosition: 'center'
       }}>
         <div className="container mx-auto px-4 max-w-6xl">
-          <h2 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+          <h2 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent drop-shadow-lg">
             Locals | East Orlando Flavor
           </h2>
 
           <div className="grid md:grid-cols-2 gap-8 mb-12">
             {/* Restaurant Info */}
-            <div>
-              <h3 className="text-4xl font-bold mb-4">Turull's Boqueria</h3>
+            <div className="bg-white/95 backdrop-blur-sm p-8 rounded-3xl shadow-xl">
+              <h3 className="text-4xl font-bold mb-4 text-gray-900" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>Turull's Boqueria</h3>
               <div className="flex items-center gap-2 mb-4">
                 <div className="flex">
                   {[...Array(4)].map((_, i) => (
@@ -648,20 +648,22 @@ export default function FloridaLocalElite() {
                   ))}
                   <Star className="h-5 w-5 fill-yellow-400 text-yellow-400 opacity-50" />
                 </div>
-                <span className="text-gray-600">(52 reviews)</span>
+                <span className="text-gray-900 font-semibold">(52 reviews)</span>
               </div>
-              <p className="text-lg mb-4">$30 and under • Spanish</p>
+              <p className="text-lg mb-4 text-gray-900 font-semibold">$30 and under • Spanish</p>
               <div className="flex flex-wrap gap-2 mb-6">
                 {["Great For Live Music", "Lively", "Great For Brunch"].map((tag, i) => (
-                  <Badge key={i} className="bg-purple-100 text-purple-700 px-4 py-2 rounded-full">
+                  <Badge key={i} className="bg-purple-100 text-purple-700 px-4 py-2 rounded-full font-semibold">
                     {tag}
                   </Badge>
                 ))}
               </div>
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-900 leading-relaxed mb-4 text-lg">
                 Diverse menu with authentic Spanish tapas, paella, and more. Perfect for group dining and celebrations.
               </p>
-              <a href="#" className="text-purple-600 font-semibold hover:underline">Read more →</a>
+              <a href="#" className="text-purple-700 font-bold hover:underline text-lg inline-flex items-center gap-1 hover:gap-2 transition-all">
+                Read more →
+              </a>
             </div>
 
             {/* Reservation Card */}
@@ -676,13 +678,13 @@ export default function FloridaLocalElite() {
 
           {/* Image Carousel */}
           <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-2xl font-bold">España Cuisine 🇪🇸 | Check Our Menu</h4>
+            <div className="flex items-center justify-between mb-4 bg-white/95 backdrop-blur-sm p-4 rounded-2xl shadow-lg">
+              <h4 className="text-2xl font-bold text-gray-900">España Cuisine 🇪🇸 | Check Our Menu</h4>
               <div className="flex gap-2">
-                <Button variant="outline" size="icon" className="rounded-full">
+                <Button variant="outline" size="icon" className="rounded-full bg-white">
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <Button variant="outline" size="icon" className="rounded-full">
+                <Button variant="outline" size="icon" className="rounded-full bg-white">
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
@@ -941,12 +943,14 @@ export default function FloridaLocalElite() {
         backgroundPosition: 'center'
       }}>
         <div className="container mx-auto px-4 max-w-6xl">
-          <h2 className="text-5xl font-bold text-center mb-4">
-            ORLANDO | Your SMILE Is Contagious
-          </h2>
-          <p className="text-2xl text-center mb-12 text-gray-600">
-            Dr. Mario | THE ORLANDO LOCAL DENTIST
-          </p>
+          <div className="bg-white/95 backdrop-blur-sm p-8 rounded-3xl shadow-xl mb-8">
+            <h2 className="text-5xl font-bold text-center mb-4 text-gray-900" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>
+              ORLANDO | Your SMILE Is Contagious
+            </h2>
+            <p className="text-2xl text-center mb-0 text-gray-900 font-semibold">
+              Dr. Mario | THE ORLANDO LOCAL DENTIST
+            </p>
+          </div>
 
           <div className="grid md:grid-cols-2 gap-8 mb-8">
             {/* Before/After Photos Slider */}
@@ -971,11 +975,11 @@ export default function FloridaLocalElite() {
             </div>
 
             {/* Map */}
-            <Card className="rounded-2xl overflow-hidden bg-gray-200">
+            <Card className="rounded-2xl overflow-hidden bg-white shadow-xl">
               <div className="w-full h-full flex flex-col items-center justify-center p-8">
                 <MapPin className="h-16 w-16 text-blue-600 mb-4" />
-                <h4 className="font-bold text-xl mb-2">Sian Dental Studio</h4>
-                <p className="text-center text-gray-600">508 N Mills Ave B, Orlando FL</p>
+                <h4 className="font-bold text-xl mb-2 text-gray-900">Sian Dental Studio</h4>
+                <p className="text-center text-gray-900 font-medium">508 N Mills Ave B, Orlando FL</p>
               </div>
             </Card>
           </div>
