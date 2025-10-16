@@ -134,11 +134,11 @@ export default function ActivityPost({ post }: ActivityPostProps) {
   const getPostBadge = () => {
     switch (post.type) {
       case 'achievement':
-        return <Badge className="bg-accent text-accent-foreground"><i className="fas fa-award mr-1"></i>Achievement</Badge>;
+        return <Badge className="metallic-gold text-white px-3 py-1 shine-sweep-hover"><i className="fas fa-award mr-1.5"></i>Achievement</Badge>;
       case 'partnership':
-        return <Badge className="bg-primary text-primary-foreground"><i className="fas fa-handshake mr-1"></i>Partnership</Badge>;
+        return <Badge className="metallic-teal text-white px-3 py-1 shine-sweep-hover"><i className="fas fa-handshake mr-1.5"></i>Partnership</Badge>;
       case 'product':
-        return <Badge className="bg-secondary text-secondary-foreground"><i className="fas fa-shopping-bag mr-1"></i>New Product</Badge>;
+        return <Badge className="led-badge-live px-3 py-1"><i className="fas fa-shopping-bag mr-1.5"></i>New Product</Badge>;
       default:
         return null;
     }
@@ -152,20 +152,14 @@ export default function ActivityPost({ post }: ActivityPostProps) {
   };
 
   return (
-    <article className="elite-post-card group" data-testid={`post-${post.id}`}>
-      {/* Marble Texture Overlay */}
-      <div className="elite-post-marble-overlay"></div>
-      
+    <article className="frosted-panel border border-white/30 rounded-2xl p-6 group apple-hover-depth transition-all duration-300" data-testid={`post-${post.id}`}>
       {/* Post Content */}
       <div className="relative z-10">
-        <div className="flex items-start space-x-4 mb-5">
-          {/* Elite Avatar with Glass Morphism */}
-          <div className="elite-post-avatar-container flex-shrink-0">
-            <div className="elite-post-avatar-frame">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary via-accent to-secondary rounded-full flex items-center justify-center relative overflow-hidden">
-                <i className={`${getPostIcon()} text-primary-foreground text-lg relative z-10`}></i>
-                <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
-              </div>
+        <div className="flex items-start space-x-4 mb-4">
+          {/* Futuristic Avatar with Metallic Border */}
+          <div className="flex-shrink-0">
+            <div className="metallic-chrome w-12 h-12 rounded-full flex items-center justify-center shine-sweep-hover">
+              <i className={`${getPostIcon()} text-gray-900 text-lg relative z-10`}></i>
             </div>
           </div>
           
@@ -246,43 +240,47 @@ export default function ActivityPost({ post }: ActivityPostProps) {
         </div>
         
         {/* Engagement Actions */}
-        <div className="flex items-center justify-between pt-5 border-t elite-post-divider">
-          <div className="flex space-x-2">
+        <div className="flex items-center justify-between pt-4 border-t border-white/20">
+          <div className="flex space-x-3">
             <button
               onClick={() => likeMutation.mutate()}
               disabled={likeMutation.isPending || !isAuthenticated}
-              className={`elite-post-interaction-btn ${isLiked ? 'elite-post-interaction-active' : ''}`}
+              className={`frosted-panel px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2 ${
+                isLiked ? 'metallic-gold text-white' : 'hover:shadow-md'
+              } metallic-button-press`}
               data-testid={`button-like-post-${post.id}`}
             >
-              <i className={`${isLiked ? "fas fa-heart" : "far fa-heart"} elite-post-icon`}></i>
-              <span className="elite-post-count">{localLikeCount}</span>
+              <i className={`${isLiked ? "fas fa-heart" : "far fa-heart"} text-sm ${isLiked ? 'text-white' : 'text-gray-700'}`}></i>
+              <span className={`text-sm font-semibold ${isLiked ? 'text-white' : 'text-gray-700'}`}>{localLikeCount}</span>
             </button>
-            
+
             <button
-              className="elite-post-interaction-btn"
+              className="frosted-panel px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md flex items-center gap-2 metallic-button-press"
               data-testid={`button-comment-post-${post.id}`}
             >
-              <i className="far fa-comment elite-post-icon"></i>
-              <span className="elite-post-count">{post.commentCount || 0}</span>
+              <i className="far fa-comment text-sm text-gray-700"></i>
+              <span className="text-sm font-semibold text-gray-700">{post.commentCount || 0}</span>
             </button>
-            
+
             <button
               onClick={sharePost}
-              className="elite-post-interaction-btn"
+              className="frosted-panel px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-md flex items-center gap-2 metallic-button-press"
               data-testid={`button-share-post-${post.id}`}
             >
-              <i className="fas fa-share elite-post-icon"></i>
-              <span className="elite-post-count">{post.shareCount || 0}</span>
+              <i className="fas fa-share text-sm text-gray-700"></i>
+              <span className="text-sm font-semibold text-gray-700">{post.shareCount || 0}</span>
             </button>
           </div>
-          
+
           <button
             onClick={() => saveMutation.mutate()}
             disabled={saveMutation.isPending || !isAuthenticated}
-            className={`elite-post-save-btn ${isSaved ? 'elite-post-save-active' : ''}`}
+            className={`p-3 rounded-lg transition-all duration-300 metallic-button-press ${
+              isSaved ? 'metallic-teal text-white' : 'frosted-panel hover:shadow-md'
+            }`}
             data-testid={`button-save-post-${post.id}`}
           >
-            <i className={`${isSaved ? "fas fa-bookmark" : "far fa-bookmark"} text-lg`}></i>
+            <i className={`${isSaved ? "fas fa-bookmark" : "far fa-bookmark"} text-base ${isSaved ? 'text-white' : 'text-gray-700'}`}></i>
           </button>
         </div>
       </div>
