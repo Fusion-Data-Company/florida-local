@@ -75,7 +75,7 @@ const AnimatedBoxes = memo(() => {
 
     useFrame((state, delta) => {
         if (groupRef.current) {
-            groupRef.current.rotation.x += delta * 0.05;
+            groupRef.current.rotation.x += delta * 0.15;
         }
     });
 
