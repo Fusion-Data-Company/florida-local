@@ -449,7 +449,7 @@ export default function VoiceCommerce() {
       </div>
 
       {/* Main Voice Interface */}
-      <Card className={`bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 ${state.isListening ? "border-cyan-400/80 shadow-[0_0_50px_rgba(0,255,255,0.4)]" : "border-white/10 hover:border-cyan-400/50"} transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group`}>
+      <Card className={`bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border-2 ${state.isListening ? "border-cyan-400/80 shadow-[0_0_50px_rgba(0,255,255,0.4)]" : "border-slate-700/50 hover:border-cyan-400/80"} transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group`}>
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
         <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
@@ -475,7 +475,7 @@ export default function VoiceCommerce() {
 
           {/* Conversation History */}
           {state.conversation.length > 0 && (
-            <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+            <Card className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border-2 border-slate-700/50 hover:border-cyan-400/80 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
               <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
               <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
@@ -521,7 +521,7 @@ export default function VoiceCommerce() {
 
           {/* Shopping Cart Summary */}
           {state.context.cart.length > 0 && (
-            <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-green-400/30 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+            <Card className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border-2 border-green-400/30 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
               <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
               <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
@@ -553,7 +553,7 @@ export default function VoiceCommerce() {
           )}
 
           {/* Voice Commands Help */}
-          <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+          <Card className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border-2 border-slate-700/50 hover:border-cyan-400/80 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
             <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
             <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />

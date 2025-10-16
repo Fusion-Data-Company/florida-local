@@ -323,7 +323,7 @@ export default function AIToolsPage() {
                   transition={{ delay: i * 0.1 }}
                 >
                   <Card 
-                    className="relative overflow-hidden cursor-pointer group h-full bg-slate-900/80 backdrop-blur-md border-2 border-white/20 hover:border-cyan-400/60 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.3)] cyber-3d-lift"
+                    className="relative overflow-hidden cursor-pointer group h-full bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border-2 border-slate-700/50 hover:border-cyan-400/80 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.4)] cyber-3d-lift"
                     onClick={() => setActiveTab(tool.id)}
                     data-testid={`card-tool-${tool.id}`}
                   >
@@ -382,7 +382,7 @@ export default function AIToolsPage() {
             </div>
 
             {/* Quick Actions */}
-            <Card className="bg-slate-900/80 backdrop-blur-md border-2 border-white/20 hover:border-cyan-400/60 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.3)] cyber-3d-lift relative overflow-hidden group">
+            <Card className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border-2 border-slate-700/50 hover:border-cyan-400/80 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.4)] cyber-3d-lift relative overflow-hidden group">
               {/* Metallic shine */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
               
@@ -400,7 +400,7 @@ export default function AIToolsPage() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <Button
                     variant="outline"
-                    className="h-auto flex flex-col py-4 bg-slate-900/70 backdrop-blur-sm border-2 border-white/20 hover:border-blue-400/60 hover:shadow-[0_0_30px_rgba(59,130,246,0.4)] transition-all duration-300 text-white cyber-3d-lift relative overflow-hidden group"
+                    className="h-auto flex flex-col py-4 bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 border-2 border-slate-600/50 hover:border-blue-400/80 hover:shadow-[0_0_30px_rgba(59,130,246,0.5)] transition-all duration-300 text-white cyber-3d-lift relative overflow-hidden group"
                     onClick={() => setActiveTab('agents')}
                     data-testid="button-quick-optimize"
                   >
@@ -410,7 +410,7 @@ export default function AIToolsPage() {
                   </Button>
                   <Button
                     variant="outline"
-                    className="h-auto flex flex-col py-4 bg-slate-900/70 backdrop-blur-sm border-2 border-white/20 hover:border-purple-400/60 hover:shadow-[0_0_30px_rgba(168,85,247,0.4)] transition-all duration-300 text-white cyber-3d-lift relative overflow-hidden group"
+                    className="h-auto flex flex-col py-4 bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 border-2 border-slate-600/50 hover:border-purple-400/80 hover:shadow-[0_0_30px_rgba(168,85,247,0.5)] transition-all duration-300 text-white cyber-3d-lift relative overflow-hidden group"
                     onClick={() => setActiveTab('generate')}
                     data-testid="button-quick-images"
                   >
@@ -420,7 +420,7 @@ export default function AIToolsPage() {
                   </Button>
                   <Button
                     variant="outline"
-                    className="h-auto flex flex-col py-4 bg-slate-900/70 backdrop-blur-sm border-2 border-white/20 hover:border-green-400/60 hover:shadow-[0_0_30px_rgba(34,197,94,0.4)] transition-all duration-300 text-white cyber-3d-lift relative overflow-hidden group"
+                    className="h-auto flex flex-col py-4 bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 border-2 border-slate-600/50 hover:border-green-400/80 hover:shadow-[0_0_30px_rgba(34,197,94,0.5)] transition-all duration-300 text-white cyber-3d-lift relative overflow-hidden group"
                     onClick={() => setActiveTab('content')}
                     data-testid="button-quick-content"
                   >
@@ -430,7 +430,7 @@ export default function AIToolsPage() {
                   </Button>
                   <Button
                     variant="outline"
-                    className="h-auto flex flex-col py-4 bg-slate-900/70 backdrop-blur-sm border-2 border-white/20 hover:border-red-400/60 hover:shadow-[0_0_30px_rgba(239,68,68,0.4)] transition-all duration-300 text-white cyber-3d-lift relative overflow-hidden group"
+                    className="h-auto flex flex-col py-4 bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 border-2 border-slate-600/50 hover:border-red-400/80 hover:shadow-[0_0_30px_rgba(239,68,68,0.5)] transition-all duration-300 text-white cyber-3d-lift relative overflow-hidden group"
                     onClick={() => setActiveTab('voice')}
                     data-testid="button-quick-voice"
                   >
@@ -444,7 +444,7 @@ export default function AIToolsPage() {
 
             {/* Benefits Section */}
             <div className="grid gap-6 md:grid-cols-3">
-              <Card className="bg-slate-900/80 backdrop-blur-md border-2 border-white/20 hover:border-purple-400/60 transition-all duration-500 hover:shadow-[0_0_40px_rgba(168,85,247,0.3)] cyber-3d-lift relative overflow-hidden group">
+              <Card className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border-2 border-slate-700/50 hover:border-purple-400/80 transition-all duration-500 hover:shadow-[0_0_40px_rgba(168,85,247,0.4)] cyber-3d-lift relative overflow-hidden group">
                 {/* Metallic shine */}
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
                 
@@ -470,7 +470,7 @@ export default function AIToolsPage() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-slate-900/80 backdrop-blur-md border-2 border-white/20 hover:border-cyan-400/60 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.3)] cyber-3d-lift relative overflow-hidden group">
+              <Card className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border-2 border-slate-700/50 hover:border-cyan-400/80 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.4)] cyber-3d-lift relative overflow-hidden group">
                 {/* Metallic shine */}
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
                 
@@ -496,7 +496,7 @@ export default function AIToolsPage() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-slate-900/80 backdrop-blur-md border-2 border-white/20 hover:border-green-400/60 transition-all duration-500 hover:shadow-[0_0_40px_rgba(34,197,94,0.3)] cyber-3d-lift relative overflow-hidden group">
+              <Card className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border-2 border-slate-700/50 hover:border-green-400/80 transition-all duration-500 hover:shadow-[0_0_40px_rgba(34,197,94,0.4)] cyber-3d-lift relative overflow-hidden group">
                 {/* Metallic shine */}
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
                 
@@ -542,7 +542,7 @@ export default function AIToolsPage() {
           </TabsContent>
 
           <TabsContent value="content">
-            <AIContentGenerator />
+            <AIContentGenerator businessId="demo" />
           </TabsContent>
 
           <TabsContent value="visual-commerce">

@@ -307,7 +307,7 @@ export default function VisualSearch() {
       </div>
 
       {/* Image Input Section */}
-      <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+      <Card className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border-2 border-slate-700/50 hover:border-cyan-400/80 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.4)] cyber-3d-lift relative overflow-hidden group">
         {/* Metallic shine */}
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
         
@@ -501,7 +501,7 @@ export default function VisualSearch() {
             className="space-y-6"
           >
             {/* Image Analysis */}
-            <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-purple-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(168,85,247,0.2)] cyber-3d-lift relative overflow-hidden group">
+            <Card className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border-2 border-slate-700/50 hover:border-purple-400/80 transition-all duration-500 hover:shadow-[0_0_40px_rgba(168,85,247,0.4)] cyber-3d-lift relative overflow-hidden group">
               {/* Metallic shine */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
               
@@ -564,7 +564,7 @@ export default function VisualSearch() {
             </Card>
 
             {/* Product Results */}
-            <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+            <Card className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border-2 border-slate-700/50 hover:border-cyan-400/80 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.4)] cyber-3d-lift relative overflow-hidden group">
               {/* Metallic shine */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
               
@@ -592,7 +592,7 @@ export default function VisualSearch() {
                         animate={{ opacity: 1 }}
                         className="group cursor-pointer"
                       >
-                        <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border border-white/10 hover:border-cyan-400/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] overflow-hidden">
+                        <Card className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border border-slate-700/50 hover:border-cyan-400/80 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] overflow-hidden">
                           <div className="relative">
                             <img
                               src={product.image}
@@ -642,7 +642,7 @@ export default function VisualSearch() {
             </Card>
 
             {/* Business Results */}
-            <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+            <Card className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border-2 border-slate-700/50 hover:border-cyan-400/80 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.4)] cyber-3d-lift relative overflow-hidden group">
               {/* Metallic shine */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
               
@@ -664,7 +664,7 @@ export default function VisualSearch() {
                 <div className="space-y-4">
                   {searchResults.businesses.map((business) => (
                     <Link key={business.id} href={`/business/${business.id}`}>
-                      <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border border-white/10 hover:border-cyan-400/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] cursor-pointer">
+                      <Card className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border border-slate-700/50 hover:border-cyan-400/80 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] cursor-pointer">
                         <CardContent className="p-4">
                           <div className="flex gap-4">
                             <img

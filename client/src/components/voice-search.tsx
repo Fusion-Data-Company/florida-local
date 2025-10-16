@@ -513,7 +513,7 @@ export default function VoiceSearch() {
       </div>
 
       {/* Voice Input Card */}
-      <Card className={`bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 transition-all duration-500 cyber-3d-lift relative overflow-hidden group ${isListening ? "border-cyan-400/70 shadow-[0_0_50px_rgba(0,255,255,0.3)]" : "border-white/10 hover:border-cyan-400/50 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)]"}`}>
+      <Card className={`bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border-2 transition-all duration-500 cyber-3d-lift relative overflow-hidden group ${isListening ? "border-cyan-400/70 shadow-[0_0_50px_rgba(0,255,255,0.3)]" : "border-slate-700/50 hover:border-cyan-400/80 hover:shadow-[0_0_40px_rgba(0,255,255,0.4)]"}`}>
         {/* Metallic shine */}
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
         
@@ -566,13 +566,13 @@ export default function VoiceSearch() {
 
           {/* Voice Commands Help */}
           <div className="grid grid-cols-2 gap-3">
-            <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border border-white/10 hover:border-cyan-400/50 transition-all duration-300">
+            <Card className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border border-slate-700/50 hover:border-cyan-400/80 transition-all duration-300">
               <CardContent className="pt-4">
                 <p className="text-xs font-medium text-blue-700 dark:text-blue-300 mb-1">Try saying:</p>
                 <p className="text-sm">"Find restaurants near me"</p>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border border-white/10 hover:border-purple-400/50 transition-all duration-300">
+            <Card className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border border-slate-700/50 hover:border-purple-400/80 transition-all duration-300">
               <CardContent className="pt-4">
                 <p className="text-xs font-medium text-purple-700 dark:text-purple-300 mb-1">Or:</p>
                 <p className="text-sm">"Show beach products under $50"</p>
@@ -592,7 +592,7 @@ export default function VoiceSearch() {
           >
             {/* Products */}
             {searchResults.products.length > 0 && (
-              <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+              <Card className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
                 {/* Metallic shine */}
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
                 <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
@@ -607,7 +607,7 @@ export default function VoiceSearch() {
                   <div className="space-y-3">
                     {searchResults.products.map((product) => (
                       <Link key={product.id} href={`/product/${product.id}`}>
-                        <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border border-white/10 hover:border-cyan-400/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] cursor-pointer">
+                        <Card className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border border-slate-700/50 hover:border-cyan-400/80 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] cursor-pointer">
                           <CardContent className="p-4">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-3">
@@ -639,7 +639,7 @@ export default function VoiceSearch() {
 
             {/* Businesses */}
             {searchResults.businesses.length > 0 && (
-              <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+              <Card className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
                 {/* Metallic shine */}
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
                 <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
@@ -654,7 +654,7 @@ export default function VoiceSearch() {
                   <div className="space-y-3">
                     {searchResults.businesses.map((business) => (
                       <Link key={business.id} href={`/business/${business.id}`}>
-                        <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border border-white/10 hover:border-cyan-400/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] cursor-pointer">
+                        <Card className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border border-slate-700/50 hover:border-cyan-400/80 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] cursor-pointer">
                           <CardContent className="p-4">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-3">
@@ -691,7 +691,7 @@ export default function VoiceSearch() {
 
             {/* Suggested Actions */}
             {searchResults.suggestedActions.length > 0 && (
-              <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+              <Card className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
                 {/* Metallic shine */}
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
                 <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
