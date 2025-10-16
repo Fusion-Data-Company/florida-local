@@ -54,6 +54,7 @@ export function AbstractBackground({
       {overlay === 'gradient' && (
         <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 via-blue-500/20 to-purple-500/20 backdrop-blur-sm" />
       )}
+      {overlay === 'none' && null}
 
       {/* Content Container */}
       <div className={cn('relative z-10', containerClassName)}>

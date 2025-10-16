@@ -130,79 +130,70 @@ app.use(requestLogger);
 // CRITICAL: Start server immediately in async IIFE
 (async () => {
   try {
-    const http = await import('http');
-    const port = parseInt(process.env.PORT || '5000', 10);
-    const server = http.createServer(app);
-
     // CRITICAL: Ultra-fast health check for deployment - returns 200 instantly
     // Define BEFORE any expensive operations
     app.get('/health', (_req: Request, res: Response) => {
       res.status(200).json({ status: 'ok' });
     });
 
-    // CRITICAL: Fast root handler for deployment health checks
-    // Returns 200 immediately while app initializes in background
-    app.get('/', (_req: Request, res: Response, next: NextFunction) => {
-      // If index.html exists, serve it (initialization complete)
-      // Otherwise return 200 to pass health check
-      const indexPath = path.join(process.cwd(), 'dist/public/index.html');
-      if (fs.existsSync(indexPath)) {
-        return next(); // Let static file handler serve it
-      }
-      // Health check response while initializing
-      res.status(200).send('OK');
+    // Setup metrics first
+    const { setupMetrics } = await import("./metrics");
+    setupMetrics(app);
+    
+    // Register routes - this creates and returns the HTTP server with WebSockets
+    const server = await registerRoutes(app);
+    
+    // Setup error handling after all routes
+    setupErrorHandling(app);
+
+    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+      const status = err.status || err.statusCode || 500;
+      const message = err.message || "Internal Server Error";
+
+      res.status(status).json({ message });
+      throw err;
     });
 
-    // START LISTENING IMMEDIATELY - before any async initialization
-    server.listen({
-      port,
-      host: "0.0.0.0",
-      reusePort: true,
-    }, () => {
-      log(`Server listening on port ${port} - health checks will pass`);
-    });
-
-    // NOW do all expensive initialization in the background
-    try {
-      // Setup metrics
-      const { setupMetrics } = await import("./metrics");
-      setupMetrics(app);
-      
-      // Register routes (this returns a new server with websockets, but we already have our HTTP server listening)
-      await registerRoutes(app);
-      
-      // Setup error handling after all routes
-      setupErrorHandling(app);
-
-      app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-        const status = err.status || err.statusCode || 500;
-        const message = err.message || "Internal Server Error";
-
-        res.status(status).json({ message });
-        throw err;
-      });
-
-      // Setup vite in development or serve static files in production
-      if (app.get("env") === "development") {
-        await setupVite(app, server);
-      } else {
-        // PRODUCTION: Prepare static assets before serving
-        try {
-          ensureStaticAssets();
-        } catch (assetError) {
-          logger.error('Failed to prepare static assets:', assetError);
-          logger.warn('Server will continue running but static files may not be available');
-        }
+    // Setup vite in development or serve static files in production
+    if (app.get("env") === "development") {
+      await setupVite(app, server);
+    } else {
+      // PRODUCTION: Prepare static assets before serving
+      try {
+        ensureStaticAssets();
         serveStatic(app);
+        logger.info('✅ Production static file serving initialized');
+      } catch (assetError) {
+        logger.error('❌ Failed to initialize static file serving:', assetError);
+        logger.warn('⚠️  Static files unavailable. API routes will still work.');
+        
+        // Serve a fallback response for non-API routes
+        app.use("*", (req: Request, res: Response) => {
+          if (req.path.startsWith('/api/') || req.path.startsWith('/auth/') || req.path.startsWith('/metrics')) {
+            return res.status(404).json({ error: 'Not found' });
+          }
+          res.status(503).send(`
+            <!DOCTYPE html>
+            <html><head><title>Service Initializing</title></head><body>
+              <h1>Application Starting</h1>
+              <p>The application is initializing. Please refresh in a moment.</p>
+              <script>setTimeout(() => location.reload(), 5000);</script>
+            </body></html>
+          `);
+        });
       }
-      
-      log('All routes and middleware initialized successfully');
-    } catch (initError) {
-      logger.error('Fatal error during initialization:', initError);
-      process.exit(1);
     }
-  } catch (serverError) {
-    logger.error('Fatal error starting server:', serverError);
+
+    // ALWAYS serve the app on the port specified in the environment variable PORT
+    // Other ports are firewalled. Default to 5000 if not specified.
+    // this serves both the API and the client.
+    // It is the only port that is not firewalled.
+    const port = parseInt(process.env.PORT || '5000', 10);
+    server.listen(port, "0.0.0.0", () => {
+      log(`serving on port ${port}`);
+    });
+  } catch (error) {
+    logger.error('Fatal error during server startup:', error);
     process.exit(1);
   }
 })();

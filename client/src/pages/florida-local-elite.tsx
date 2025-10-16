@@ -151,7 +151,7 @@ export default function FloridaLocalElite() {
           <div className="absolute bottom-32 md:bottom-40 lg:bottom-48 left-0 right-0 w-full px-4" style={{ zIndex: 50 }}>
             <p className="text-center text-5xl md:text-6xl lg:text-7xl leading-relaxed tracking-wide whitespace-nowrap" data-testid="text-hero-tagline">
               <span className="inline-block relative">
-                <span className="text-white/90" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8))' }}>Life is </span>
+                <span className="text-white" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8))' }}>Life is </span>
                 <span
                   className="font-bold tracking-wider gold-underline text-yellow-400"
                   style={{
@@ -160,7 +160,7 @@ export default function FloridaLocalElite() {
                 >
                   BETTER
                 </span>
-                <span className="text-white/90" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8))' }}> when you're </span>
+                <span className="text-white" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8))' }}> when you're </span>
                 <span
                   className="font-bold tracking-wider gold-underline text-yellow-400"
                   style={{
@@ -169,7 +169,7 @@ export default function FloridaLocalElite() {
                 >
                   LIVING
                 </span>
-                <span className="text-white/90" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8))' }}> </span>
+                <span className="text-white" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8))' }}> </span>
                 <span
                   className="font-bold tracking-wider gold-underline text-yellow-400"
                   style={{
@@ -178,7 +178,7 @@ export default function FloridaLocalElite() {
                 >
                   LIKE
                 </span>
-                <span className="text-white/90" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8))' }}> a </span>
+                <span className="text-white" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8))' }}> a </span>
                 <span
                   className="font-bold tracking-wider gold-underline text-yellow-400"
                   style={{
@@ -187,7 +187,7 @@ export default function FloridaLocalElite() {
                 >
                   LOCAL
                 </span>
-                <span className="text-white/90" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8))' }}>.</span>
+                <span className="text-white" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8))' }}>.</span>
               </span>
             </p>
           </div>
@@ -329,7 +329,7 @@ export default function FloridaLocalElite() {
                 </CardHoverRevealMain>
                 <CardHoverRevealContent className="space-y-4 rounded-2xl bg-[rgba(0,0,0,.5)] backdrop-blur-3xl p-4">
                   <div className="space-y-2">
-                    <h3 className="text-sm text-white/80">Type</h3>
+                    <h3 className="text-sm text-white font-bold">Type</h3>
                     <div className="flex flex-wrap gap-2">
                       <Badge className="capitalize rounded-full bg-indigo-500" data-testid={`badge-type-${slide.id}`}>
                         {slide.type}
@@ -337,7 +337,7 @@ export default function FloridaLocalElite() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <h3 className="text-sm text-white/80">Services</h3>
+                    <h3 className="text-sm text-white font-bold">Services</h3>
                     <div className="flex flex-wrap gap-2">
                       {slide.services.map((service) => (
                         <Badge
@@ -356,7 +356,7 @@ export default function FloridaLocalElite() {
                     <h3 className="text-white capitalize font-medium" data-testid={`title-${slide.id}`}>
                       {slide.title}
                     </h3>
-                    <p className="text-white/80 text-sm" data-testid={`description-${slide.id}`}>{slide.description}</p>
+                    <p className="text-white text-sm" data-testid={`description-${slide.id}`}>{slide.description}</p>
                   </div>
                 </CardHoverRevealContent>
               </CardHoverReveal>
@@ -675,7 +675,7 @@ export default function FloridaLocalElite() {
           <div className="grid md:grid-cols-2 gap-8">
             <Card className="rounded-2xl overflow-hidden h-64 bg-gray-200">
               {/* Google Map Placeholder */}
-              <div className="w-full h-full flex items-center justify-center text-gray-500">
+              <div className="w-full h-full flex items-center justify-center text-gray-900">
                 <MapPin className="h-12 w-12" />
               </div>
             </Card>
@@ -699,7 +699,7 @@ export default function FloridaLocalElite() {
             #ItsGoodAF | You've Gotta Try This!
           </Badge>
           <h2 className="text-6xl font-bold text-white mb-4">Every Day is A Vacation</h2>
-          <p className="text-2xl text-white/90">– #4EverTourist – | #TheOrlando Locals</p>
+          <p className="text-2xl text-white">– #4EverTourist – | #TheOrlando Locals</p>
         </div>
       </section>
 
@@ -767,14 +767,14 @@ export default function FloridaLocalElite() {
 
           <div className="max-w-6xl mx-auto">
             <h2 className="text-5xl font-bold text-center mb-4">iPOWERMOVES LIVE PODCAST</h2>
-            <p className="text-center text-2xl mb-12 text-gray-300">View Our Next Live Class!</p>
+            <p className="text-center text-2xl mb-12 text-white">View Our Next Live Class!</p>
 
             <div className="grid md:grid-cols-2 gap-12 items-center mb-12">
               {/* Video Player */}
               <Card className="rounded-3xl overflow-hidden aspect-video bg-black flex items-center justify-center border-4 border-white/10">
                 <div className="text-center">
-                  <Play className="h-20 w-20 text-white/50 mx-auto mb-4" />
-                  <p className="text-white/50">Video Unavailable</p>
+                  <Play className="h-20 w-20 text-white mx-auto mb-4" />
+                  <p className="text-white">Video Unavailable</p>
                 </div>
               </Card>
 
@@ -794,7 +794,7 @@ export default function FloridaLocalElite() {
             {/* Social Subscribe Links */}
             <div className="text-center">
               <p className="text-xl mb-6">Subscribe on your favorite platform:</p>
-              <div className="flex gap-6 justify-center text-gray-400">
+              <div className="flex gap-6 justify-center text-white">
                 <a href="#" className="hover:text-white transition-colors">
                   <Youtube className="h-8 w-8" />
                 </a>
@@ -1339,7 +1339,7 @@ export default function FloridaLocalElite() {
               <Card key={i} className="bg-white/10 backdrop-blur-md border-white/20 p-4 rounded-2xl hover:bg-white/20 transition-colors cursor-pointer">
                 <div className="flex items-center justify-between">
                   <p className="font-semibold text-sm">{title}</p>
-                  <div className="flex items-center gap-3 text-xs text-gray-300">
+                  <div className="flex items-center gap-3 text-xs text-white">
                     <span>0 View</span>
                     <span>0 Comment</span>
                   </div>

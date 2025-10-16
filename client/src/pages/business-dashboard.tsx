@@ -189,7 +189,7 @@ export default function BusinessDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold">{followers.toLocaleString()}</div>
-                  <p className="text-xs text-muted-foreground mt-1">Your audience reach</p>
+                  <p className="text-xs text-gray-900 mt-1">Your audience reach</p>
                 </CardContent>
               </Card>
 
@@ -200,7 +200,7 @@ export default function BusinessDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold">{totalProducts}</div>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-xs text-gray-900 mt-1">
                     Listed in your store
                   </p>
                 </CardContent>
@@ -213,7 +213,7 @@ export default function BusinessDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold">{avgRating.toFixed(1)} ⭐</div>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-xs text-gray-900 mt-1">
                     {reviewCount} reviews
                   </p>
                 </CardContent>
@@ -226,7 +226,7 @@ export default function BusinessDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold">{totalLikes + totalComments}</div>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-xs text-gray-900 mt-1">
                     {totalLikes} likes, {totalComments} comments
                   </p>
                 </CardContent>
@@ -365,7 +365,7 @@ export default function BusinessDashboard() {
                         <div key={product.id} className="flex items-center justify-between py-2 border-b last:border-0">
                           <div className="flex-1">
                             <p className="font-medium">{product.name}</p>
-                            <p className="text-sm text-muted-foreground">${product.price}</p>
+                            <p className="text-sm text-gray-900">${product.price}</p>
                           </div>
                           <Badge variant={product.isActive ? "default" : "secondary"}>
                             {product.isActive ? "Active" : "Inactive"}
@@ -375,8 +375,8 @@ export default function BusinessDashboard() {
                     </div>
                   ) : (
                     <div className="text-center py-8">
-                      <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                      <p className="text-muted-foreground mb-4">No products yet</p>
+                      <Package className="h-12 w-12 mx-auto text-gray-900 mb-4" />
+                      <p className="text-gray-900 mb-4">No products yet</p>
                       <Link href={`/vendor-products?businessId=${business.id}`}>
                         <Button>
                           <Plus className="mr-2 h-4 w-4" />
@@ -399,7 +399,7 @@ export default function BusinessDashboard() {
                       {posts.slice(0, 5).map((post) => (
                         <div key={post.id} className="py-2 border-b last:border-0">
                           <p className="text-sm line-clamp-2">{post.content}</p>
-                          <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
+                          <div className="flex gap-4 mt-2 text-xs text-gray-900">
                             <span>{post.likeCount || 0} likes</span>
                             <span>{post.commentCount || 0} comments</span>
                             <span>{post.shareCount || 0} shares</span>
@@ -409,8 +409,8 @@ export default function BusinessDashboard() {
                     </div>
                   ) : (
                     <div className="text-center py-8">
-                      <MessageSquare className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                      <p className="text-muted-foreground mb-4">No posts yet</p>
+                      <MessageSquare className="h-12 w-12 mx-auto text-gray-900 mb-4" />
+                      <p className="text-gray-900 mb-4">No posts yet</p>
                       <Button onClick={() => setActiveTab("content")}>
                         <Sparkles className="mr-2 h-4 w-4" />
                         Create Your First Post
@@ -482,7 +482,7 @@ export default function BusinessDashboard() {
                               {product.isActive ? "Active" : "Inactive"}
                             </Badge>
                           </div>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-gray-900">
                             Inventory: {product.stockQuantity || 0}
                           </p>
                         </CardContent>
@@ -491,9 +491,9 @@ export default function BusinessDashboard() {
                   </div>
                 ) : (
                   <div className="text-center py-12">
-                    <Package className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                    <Package className="h-16 w-16 mx-auto text-gray-900 mb-4" />
                     <h3 className="text-xl font-semibold mb-2">No products yet</h3>
-                    <p className="text-muted-foreground mb-6">
+                    <p className="text-gray-900 mb-6">
                       Start selling by adding your first product
                     </p>
                     <Link href={`/vendor-products?businessId=${business.id}`}>
@@ -530,7 +530,7 @@ export default function BusinessDashboard() {
                       <Card key={post.id}>
                         <CardContent className="pt-6">
                           <p className="mb-4">{post.content}</p>
-                          <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-6 text-sm text-gray-900">
                             <div className="flex items-center gap-2">
                               <Heart className="h-4 w-4" />
                               <span>{post.likeCount || 0} likes</span>
@@ -553,9 +553,9 @@ export default function BusinessDashboard() {
                   </div>
                 ) : (
                   <div className="text-center py-12">
-                    <MessageSquare className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                    <MessageSquare className="h-16 w-16 mx-auto text-gray-900 mb-4" />
                     <h3 className="text-xl font-semibold mb-2">No posts yet</h3>
-                    <p className="text-muted-foreground mb-6">
+                    <p className="text-gray-900 mb-6">
                       Start engaging your audience with your first post
                     </p>
                     <Button size="lg" onClick={() => setActiveTab("content")}>

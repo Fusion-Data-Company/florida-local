@@ -91,7 +91,7 @@ export default function UserProfile() {
               <div className="flex flex-col items-center gap-4">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
                 <h2 className="text-xl font-semibold">Verifying authentication...</h2>
-                <p className="text-muted-foreground">Please wait while we verify your session</p>
+                <p className="text-gray-900">Please wait while we verify your session</p>
               </div>
             </CardContent>
           </Card>
@@ -110,7 +110,7 @@ export default function UserProfile() {
               <div className="flex flex-col items-center gap-4">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
                 <h2 className="text-xl font-semibold">Loading your profile...</h2>
-                <p className="text-muted-foreground">Setting up your personalized dashboard</p>
+                <p className="text-gray-900">Setting up your personalized dashboard</p>
               </div>
             </CardContent>
           </Card>
@@ -166,7 +166,7 @@ export default function UserProfile() {
                     </Badge>
                   )}
                 </div>
-                <p className="text-muted-foreground mb-4">{user?.email}</p>
+                <p className="text-gray-900 mb-4">{user?.email}</p>
 
                 {/* Quick Stats */}
                 <div className="flex items-center gap-6 text-sm">
@@ -235,7 +235,7 @@ export default function UserProfile() {
                     </div>
                   ))}
                   {userBusinesses.length > 2 && (
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-gray-900">
                       +{userBusinesses.length - 2} more
                     </div>
                   )}

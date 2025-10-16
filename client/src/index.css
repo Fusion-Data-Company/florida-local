@@ -3631,9 +3631,10 @@ textarea:focus-visible {
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
+  /* Removed gradient overlays to show clear HD background */
+  /* background:
     radial-gradient(circle at 10% 20%, rgba(25, 182, 246, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 90% 80%, rgba(255, 152, 67, 0.05) 0%, transparent 50%);
+    radial-gradient(circle at 90% 80%, rgba(255, 152, 67, 0.05) 0%, transparent 50%); */
   pointer-events: none;
 }
 
@@ -5038,9 +5039,10 @@ textarea:focus-visible,
   content: '';
   position: absolute;
   inset: 0;
-  background: 
+  /* Removed gradient overlays to show clear HD background */
+  /* background:
     radial-gradient(circle at 20% 20%, rgba(25, 182, 246, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(255, 152, 67, 0.04) 0%, transparent 50%);
+    radial-gradient(circle at 80% 80%, rgba(255, 152, 67, 0.04) 0%, transparent 50%); */
   pointer-events: none;
 }
 
@@ -5538,27 +5540,33 @@ textarea:focus-visible,
 /* Dynamic Interactive Gradient */
 .dynamic-gradient-bg {
   position: relative;
-  background: linear-gradient(135deg,
+  /* Removed gradient background to show clear HD background */
+  /* background: linear-gradient(135deg,
     rgba(25, 182, 246, 0.05) 0%,
-    rgba(212, 175, 55, 0.05) 100%);
+    rgba(212, 175, 55, 0.05) 100%); */
+  background: transparent;
   transition: background 0.6s ease;
 }
 
 .dynamic-gradient-bg:hover {
-  background: linear-gradient(135deg,
+  /* Removed gradient background to show clear HD background */
+  /* background: linear-gradient(135deg,
     rgba(25, 182, 246, 0.12) 0%,
     rgba(255, 152, 67, 0.08) 50%,
-    rgba(212, 175, 55, 0.12) 100%);
+    rgba(212, 175, 55, 0.12) 100%); */
+  background: transparent;
 }
 
 /* Gradient Shift on Interaction */
 .gradient-shift {
-  background: linear-gradient(135deg,
+  /* Removed gradient background to show clear HD background */
+  /* background: linear-gradient(135deg,
     var(--gradient-start, rgba(25, 182, 246, 0.1)),
     var(--gradient-mid, rgba(212, 175, 55, 0.05)),
-    var(--gradient-end, rgba(255, 152, 67, 0.1)));
+    var(--gradient-end, rgba(255, 152, 67, 0.1))); */
+  background: transparent;
   background-size: 200% 200%;
-  animation: gradient-shift-animation 8s ease infinite;
+  /* animation: gradient-shift-animation 8s ease infinite; */
   transition: background-position 0.5s ease;
 }
 
@@ -6085,11 +6093,12 @@ textarea:focus-visible,
   content: '';
   position: absolute;
   inset: 0;
-  background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png');
-  background-size: cover;
-  background-position: center;
-  mix-blend-mode: multiply;
-  opacity: 0.6;
+  /* Removed marble texture overlay to show clear HD background */
+  /* background-image: url('@assets/generated_images/Calacatta_Gold_Marble_Texture_fbe43c38.png'); */
+  /* background-size: cover; */
+  /* background-position: center; */
+  /* mix-blend-mode: multiply; */
+  /* opacity: 0.6; */
   pointer-events: none;
   z-index: 0;
 }

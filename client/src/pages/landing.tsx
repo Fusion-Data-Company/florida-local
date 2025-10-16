@@ -18,13 +18,13 @@ export default function Landing() {
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* ULTRA PREMIUM EFFECTS - Background Layer */}
-      <AuroraAmbient intensity="medium" />
-      <HoverTrail />
+      {/* <AuroraAmbient intensity="medium" /> */}
+      {/* <HoverTrail /> */}
 
       {/* ABSTRACT BACKGROUND WRAPPER */}
       <AbstractBackground
         backgroundKey="flowing1"
-        overlay="gradient"
+        overlay="none"
         className="min-h-screen"
       >
       {/* CONTENT WRAPPER - Proper Z-Index */}

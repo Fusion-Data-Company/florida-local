@@ -215,7 +215,7 @@ export default function Marketplace() {
                   glowTextSize="xl"
                   className="mb-6"
                 />
-                <p className="text-xl text-muted-foreground max-w-2xl leading-relaxed font-light">
+                <p className="text-xl text-gray-900 max-w-2xl leading-relaxed font-light">
                   Discover <span className="font-semibold bg-gradient-to-r from-[var(--fl-teal-lagoon)] to-[var(--fl-sunset-gold)] bg-clip-text text-transparent">unique products</span> from Florida's most innovative businesses.
                   Support local entrepreneurs while finding exactly what you need.
                 </p>
@@ -508,7 +508,7 @@ export default function Marketplace() {
                     : `Products in ${selectedCategory}`
                   }
                 </h2>
-                <p className="text-muted-foreground font-medium">
+                <p className="text-gray-900 font-medium">
                   {products.length} product{products.length !== 1 ? 's' : ''} found
                 </p>
               </div>
@@ -530,10 +530,10 @@ export default function Marketplace() {
               <MagicEliteProductGrid products={products} />
             </div>
           ) : (searchQuery || selectedCategory) ? (
-            <div className="text-center py-16 entrance-fade-up">
-              <i className="fas fa-search text-4xl text-white mb-4" style={{textShadow: '0 1px 3px rgba(0,0,0,0.3)'}}></i>
-              <h3 className="text-xl font-semibold mb-2 text-white" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>No products found</h3>
-              <p className="text-white" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>
+            <div className="text-center py-16 entrance-fade-up bg-white/90 rounded-3xl p-12 backdrop-blur-sm">
+              <i className="fas fa-search text-4xl text-gray-900 mb-4"></i>
+              <h3 className="text-xl font-semibold mb-2 text-gray-900">No products found</h3>
+              <p className="text-gray-900">
                 Try adjusting your search terms or browse all categories.
               </p>
             </div>
@@ -572,7 +572,7 @@ export default function Marketplace() {
                 What Our Community Says
               </h2>
               <div className="w-32 h-1 mx-auto bg-gradient-to-r from-transparent via-[var(--fl-teal-lagoon)] to-transparent rounded-full mb-4"></div>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-light leading-relaxed">
+              <p className="text-xl text-gray-900 max-w-2xl mx-auto font-light leading-relaxed">
                 Join <span className="font-semibold bg-gradient-to-r from-[var(--fl-teal-lagoon)] to-[var(--fl-sunset-gold)] bg-clip-text text-transparent">thousands</span> of satisfied customers and business owners thriving on Florida Local
               </p>
             </div>
