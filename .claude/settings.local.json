@@ -47,7 +47,10 @@
       "Bash(journalctl:*)",
       "Bash(find:*)",
       "Bash(do echo \"=== $file ===\")",
-      "Bash(do echo \"=== Checking $file ===\")"
+      "Bash(do echo \"=== Checking $file ===\")",
+      "Bash(env)",
+      "Bash(echo:*)",
+      "Bash(timeout 10 cat:*)"
     ],
     "deny": [],
     "ask": []

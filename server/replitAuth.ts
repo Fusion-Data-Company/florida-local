@@ -165,28 +165,36 @@ export async function setupAuth(app: Express) {
     tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers,
     verified: passport.AuthenticateCallback
   ) => {
-    const claims = tokens.claims();
-    await upsertUser(claims);
-    
-    // Get the actual database user (which may have a different ID than Replit)
-    const dbUser = await storage.getUserByEmail(claims?.["email"]);
-    
-    if (!dbUser) {
-      return verified(new Error("User not found in database"));
+    try {
+      const claims = tokens.claims();
+      console.log(`🔐 Verifying user with email: ${claims?.["email"]}`);
+
+      // Upsert user and get the database user in one operation
+      const dbUser = await upsertUser(claims);
+
+      if (!dbUser) {
+        console.error(`❌ Failed to upsert user with email: ${claims?.["email"]}`);
+        return verified(new Error("Failed to create or update user in database"));
+      }
+
+      console.log(`✅ User verified successfully - DB ID: ${dbUser.id}, Email: ${dbUser.email}`);
+
+      // Create session user with database ID and Replit tokens
+      const user = {
+        claims: {
+          ...claims,
+          sub: dbUser.id, // Use DATABASE user ID, not Replit ID
+        },
+        access_token: tokens.access_token,
+        refresh_token: tokens.refresh_token,
+        expires_at: claims?.exp,
+      };
+
+      verified(null, user);
+    } catch (error) {
+      console.error(`❌ Error in verify callback:`, error);
+      verified(error as Error);
     }
-    
-    // Create session user with database ID and Replit tokens
-    const user = {
-      claims: {
-        ...claims,
-        sub: dbUser.id, // Use DATABASE user ID, not Replit ID
-      },
-      access_token: tokens.access_token,
-      refresh_token: tokens.refresh_token,
-      expires_at: claims?.exp,
-    };
-    
-    verified(null, user);
   };
 
   // Register strategy for Replit domains
@@ -278,7 +286,24 @@ export async function setupAuth(app: Express) {
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
   app.get("/api/login", (req, res, next) => {
-    const hostname = req.hostname;
+    // Check multiple headers to get the correct hostname
+    let hostname = req.hostname;
+    const xForwardedHost = req.get('x-forwarded-host');
+    const hostHeader = req.get('host');
+    
+    // Prefer x-forwarded-host for production domains
+    if (xForwardedHost) {
+      hostname = xForwardedHost.split(':')[0]; // Remove port if present
+    } else if (hostHeader) {
+      hostname = hostHeader.split(':')[0]; // Remove port if present
+    }
+    
+    // Special handling for florida-local-elite.replit.app
+    if (hostname === 'florida-local-elite.replit.app' || 
+        hostname.includes('florida-local-elite')) {
+      hostname = 'florida-local-elite.replit.app';
+    }
+    
     const strategyName = `replitauth:${hostname}`;
     
     console.log(`🔐 Login attempt - hostname: ${hostname}, strategy: ${strategyName}`);
@@ -292,10 +317,17 @@ export async function setupAuth(app: Express) {
       
       // Try to find a matching strategy or use the first available Replit domain
       let fallbackStrategy = null;
-      for (const strategy of registeredStrategies) {
-        if (strategy.includes('replit') && !strategy.includes('localhost')) {
-          fallbackStrategy = strategy;
-          break;
+      
+      // First, try florida-local-elite.replit.app strategy specifically
+      if (registeredStrategies.has('replitauth:florida-local-elite.replit.app')) {
+        fallbackStrategy = 'replitauth:florida-local-elite.replit.app';
+      } else {
+        // Then fall back to any Replit strategy
+        for (const strategy of registeredStrategies) {
+          if (strategy.includes('replit') && !strategy.includes('localhost')) {
+            fallbackStrategy = strategy;
+            break;
+          }
         }
       }
       
@@ -324,7 +356,24 @@ export async function setupAuth(app: Express) {
   });
 
   app.get("/api/callback", async (req, res, next) => {
-    const hostname = req.hostname;
+    // Check multiple headers to get the correct hostname (same as login)
+    let hostname = req.hostname;
+    const xForwardedHost = req.get('x-forwarded-host');
+    const hostHeader = req.get('host');
+    
+    // Prefer x-forwarded-host for production domains
+    if (xForwardedHost) {
+      hostname = xForwardedHost.split(':')[0]; // Remove port if present
+    } else if (hostHeader) {
+      hostname = hostHeader.split(':')[0]; // Remove port if present
+    }
+    
+    // Special handling for florida-local-elite.replit.app
+    if (hostname === 'florida-local-elite.replit.app' || 
+        hostname.includes('florida-local-elite')) {
+      hostname = 'florida-local-elite.replit.app';
+    }
+    
     const strategyName = `replitauth:${hostname}`;
     
     console.log(`🔐 Callback attempt - hostname: ${hostname}, strategy: ${strategyName}`);
@@ -335,10 +384,17 @@ export async function setupAuth(app: Express) {
       
       // Try to find a matching strategy
       let fallbackStrategy = null;
-      for (const strategy of registeredStrategies) {
-        if (strategy.includes('replit') && !strategy.includes('localhost')) {
-          fallbackStrategy = strategy;
-          break;
+      
+      // First, try florida-local-elite.replit.app strategy specifically
+      if (registeredStrategies.has('replitauth:florida-local-elite.replit.app')) {
+        fallbackStrategy = 'replitauth:florida-local-elite.replit.app';
+      } else {
+        // Then fall back to any Replit strategy
+        for (const strategy of registeredStrategies) {
+          if (strategy.includes('replit') && !strategy.includes('localhost')) {
+            fallbackStrategy = strategy;
+            break;
+          }
         }
       }
       
@@ -359,27 +415,35 @@ export async function setupAuth(app: Express) {
     passport.authenticate(strategyName, async (err: any, user: any, info: any) => {
       if (err) {
         console.error("❌ Authentication error:", err);
+        console.error("❌ Error details:", JSON.stringify(err, null, 2));
         return res.redirect("/api/login");
       }
-      
+
       if (!user) {
         console.error("❌ Authentication failed - no user");
+        console.error("❌ Info:", info);
         return res.redirect("/api/login");
       }
-      
+
+      console.log(`✅ Authentication successful for email: ${user.claims?.email}`);
+
       // Log the user in
       req.login(user, async (loginErr) => {
         if (loginErr) {
           console.error("❌ Login error:", loginErr);
+          console.error("❌ Login error details:", JSON.stringify(loginErr, null, 2));
           return res.redirect("/api/login");
         }
-        
+
+        console.log(`✅ Session created for user ID: ${user.claims?.sub}`);
+
         // Get user profile to determine redirect
         try {
           const userId = user.claims?.sub;
           if (userId) {
             const dbUser = await storage.getUser(userId);
-            
+            console.log(`✅ Retrieved user profile for ${dbUser?.email}, redirecting to /profile`);
+
             // Always redirect to profile page for intelligent routing
             return res.redirect("/profile");
           }
