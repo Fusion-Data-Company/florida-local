@@ -24,7 +24,11 @@ Preferred communication style: Simple, everyday language.
 - **Background Jobs:** Email queues and image processing workers.
 - **Database:** PostgreSQL with Drizzle ORM for type-safe operations, including comprehensive profiles, user management, product catalog, messaging, and spotlight data.
 
-**Deployment Configuration:** A specific `build-deploy.sh` script is required for production, handling client and server builds, and file copying for correct serving.
+**Deployment Configuration:** 
+- Production deployment uses `npm run build` which creates `client/dist/` (Vite output) and `dist/index.js` (server).
+- **Auto-healing Build Process:** `server/index.ts` includes `ensureStaticAssets()` function that automatically copies `client/dist/` to `dist/public/` on production startup. This ensures static files are in the correct location even if the build process doesn't copy them.
+- The `build-deploy.sh` script provides manual deployment with explicit file copying, but is not required due to the auto-healing mechanism in production.
+- **Authentication Flow:** Users authenticate via Replit OAuth and are redirected to `/` (Discover page) after successful login. Production domain `florida-local-elite.replit.app` is automatically supported through dynamic hostname detection.
 
 ## External Dependencies
 
