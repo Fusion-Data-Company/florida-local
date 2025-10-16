@@ -162,7 +162,7 @@ export default function AIToolsPage() {
     <div className="min-h-screen bg-[#000000]">
 
       {/* Hero Section */}
-      <div className="min-h-svh w-full bg-gradient-to-br from-[#000] to-[#1A2428] text-white flex flex-col items-center justify-center p-8 relative overflow-hidden">
+      <div className="min-h-svh w-full text-white flex flex-col items-center justify-center p-8 relative overflow-hidden">
         {/* Elite cyberpunk background effects */}
         <div className="absolute inset-0 cyber-grid-bg opacity-10" />
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-purple-500/5 to-pink-500/5" />
@@ -325,7 +325,7 @@ export default function AIToolsPage() {
                   transition={{ delay: i * 0.1 }}
                 >
                   <Card 
-                    className="relative overflow-hidden cursor-pointer group h-full bg-black/40 border-2 border-white/10 hover:border-cyan-400/50 hover:backdrop-blur-xl transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] hover:-translate-y-1"
+                    className="relative overflow-hidden cursor-pointer group h-full bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift"
                     onClick={() => setActiveTab(tool.id)}
                     data-testid={`card-tool-${tool.id}`}
                   >
