@@ -166,6 +166,7 @@ export default function AIToolsPage() {
         backgroundSize: '100% auto',
         backgroundPosition: 'center top',
         backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed',
         backgroundColor: '#000'
       }}
     >
