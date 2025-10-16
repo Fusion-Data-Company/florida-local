@@ -242,12 +242,7 @@ export default function AIToolsPage() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 bg-gradient-to-b from-[#000] to-[#0a0a0a] relative">
-        {/* Cyberpunk grid background */}
-        <div className="absolute inset-0 cyber-grid-bg opacity-20 pointer-events-none" />
-        
-        {/* Circuit pattern overlay */}
-        <div className="absolute inset-0 cyber-circuit-pattern opacity-10 pointer-events-none" />
+      <div className="container mx-auto px-4 py-8 relative">
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6 relative z-10">
           <TabsList className="grid w-full grid-cols-8 h-auto p-1 bg-black/40 backdrop-blur-sm border border-white/10 rounded-2xl shadow-[0_8px_32px_rgba(0,255,255,0.1)] relative overflow-hidden cyber-energy-border">
@@ -328,7 +323,7 @@ export default function AIToolsPage() {
                   transition={{ delay: i * 0.1 }}
                 >
                   <Card 
-                    className="relative overflow-hidden cursor-pointer group h-full bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift"
+                    className="relative overflow-hidden cursor-pointer group h-full bg-slate-900/80 backdrop-blur-md border-2 border-white/20 hover:border-cyan-400/60 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.3)] cyber-3d-lift"
                     onClick={() => setActiveTab(tool.id)}
                     data-testid={`card-tool-${tool.id}`}
                   >
@@ -387,7 +382,7 @@ export default function AIToolsPage() {
             </div>
 
             {/* Quick Actions */}
-            <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+            <Card className="bg-slate-900/80 backdrop-blur-md border-2 border-white/20 hover:border-cyan-400/60 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.3)] cyber-3d-lift relative overflow-hidden group">
               {/* Metallic shine */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
               
@@ -405,7 +400,7 @@ export default function AIToolsPage() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <Button
                     variant="outline"
-                    className="h-auto flex flex-col py-4 bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-blue-400/50 hover:shadow-[0_0_30px_rgba(59,130,246,0.3)] transition-all duration-300 text-white cyber-3d-lift relative overflow-hidden group"
+                    className="h-auto flex flex-col py-4 bg-slate-900/70 backdrop-blur-sm border-2 border-white/20 hover:border-blue-400/60 hover:shadow-[0_0_30px_rgba(59,130,246,0.4)] transition-all duration-300 text-white cyber-3d-lift relative overflow-hidden group"
                     onClick={() => setActiveTab('agents')}
                     data-testid="button-quick-optimize"
                   >
@@ -415,7 +410,7 @@ export default function AIToolsPage() {
                   </Button>
                   <Button
                     variant="outline"
-                    className="h-auto flex flex-col py-4 bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-purple-400/50 hover:shadow-[0_0_30px_rgba(168,85,247,0.3)] transition-all duration-300 text-white cyber-3d-lift relative overflow-hidden group"
+                    className="h-auto flex flex-col py-4 bg-slate-900/70 backdrop-blur-sm border-2 border-white/20 hover:border-purple-400/60 hover:shadow-[0_0_30px_rgba(168,85,247,0.4)] transition-all duration-300 text-white cyber-3d-lift relative overflow-hidden group"
                     onClick={() => setActiveTab('generate')}
                     data-testid="button-quick-images"
                   >
@@ -425,7 +420,7 @@ export default function AIToolsPage() {
                   </Button>
                   <Button
                     variant="outline"
-                    className="h-auto flex flex-col py-4 bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-green-400/50 hover:shadow-[0_0_30px_rgba(34,197,94,0.3)] transition-all duration-300 text-white cyber-3d-lift relative overflow-hidden group"
+                    className="h-auto flex flex-col py-4 bg-slate-900/70 backdrop-blur-sm border-2 border-white/20 hover:border-green-400/60 hover:shadow-[0_0_30px_rgba(34,197,94,0.4)] transition-all duration-300 text-white cyber-3d-lift relative overflow-hidden group"
                     onClick={() => setActiveTab('content')}
                     data-testid="button-quick-content"
                   >
@@ -435,7 +430,7 @@ export default function AIToolsPage() {
                   </Button>
                   <Button
                     variant="outline"
-                    className="h-auto flex flex-col py-4 bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-red-400/50 hover:shadow-[0_0_30px_rgba(239,68,68,0.3)] transition-all duration-300 text-white cyber-3d-lift relative overflow-hidden group"
+                    className="h-auto flex flex-col py-4 bg-slate-900/70 backdrop-blur-sm border-2 border-white/20 hover:border-red-400/60 hover:shadow-[0_0_30px_rgba(239,68,68,0.4)] transition-all duration-300 text-white cyber-3d-lift relative overflow-hidden group"
                     onClick={() => setActiveTab('voice')}
                     data-testid="button-quick-voice"
                   >
@@ -449,7 +444,7 @@ export default function AIToolsPage() {
 
             {/* Benefits Section */}
             <div className="grid gap-6 md:grid-cols-3">
-              <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-purple-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(168,85,247,0.2)] cyber-3d-lift relative overflow-hidden group">
+              <Card className="bg-slate-900/80 backdrop-blur-md border-2 border-white/20 hover:border-purple-400/60 transition-all duration-500 hover:shadow-[0_0_40px_rgba(168,85,247,0.3)] cyber-3d-lift relative overflow-hidden group">
                 {/* Metallic shine */}
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
                 
@@ -475,7 +470,7 @@ export default function AIToolsPage() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+              <Card className="bg-slate-900/80 backdrop-blur-md border-2 border-white/20 hover:border-cyan-400/60 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.3)] cyber-3d-lift relative overflow-hidden group">
                 {/* Metallic shine */}
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
                 
@@ -501,7 +496,7 @@ export default function AIToolsPage() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-green-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(34,197,94,0.2)] cyber-3d-lift relative overflow-hidden group">
+              <Card className="bg-slate-900/80 backdrop-blur-md border-2 border-white/20 hover:border-green-400/60 transition-all duration-500 hover:shadow-[0_0_40px_rgba(34,197,94,0.3)] cyber-3d-lift relative overflow-hidden group">
                 {/* Metallic shine */}
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
                 
