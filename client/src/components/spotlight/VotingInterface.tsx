@@ -203,36 +203,36 @@ export default function VotingInterface({
 
   if (variant === 'homepage') {
     return (
-      <Card className="border-2 border-purple-200 bg-gradient-to-br from-purple-50 via-white to-pink-50">
-        <CardHeader>
+      <Card className="glass-card-futuristic border-2 metallic-border-animated overflow-hidden">
+        <CardHeader className="relative z-10">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-3 rounded-full bg-gradient-to-r from-purple-600 to-pink-600">
-                <Trophy className="h-6 w-6 text-white" />
+              <div className="metallic-chrome p-3 rounded-full shine-sweep-hover">
+                <Trophy className="h-6 w-6 text-gray-900" />
               </div>
               <div>
                 <CardTitle className="text-2xl flex items-center gap-2">
-                  Monthly Spotlight Voting
-                  <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white">
+                  <span className="metallic-gradient-text">Monthly Spotlight Voting</span>
+                  <Badge className="led-badge-live px-3 py-1 rounded-full">
                     <Flame className="h-3 w-3 mr-1" />
                     Live
                   </Badge>
                 </CardTitle>
-                <CardDescription className="text-base">
+                <CardDescription className="text-base font-medium text-gray-700">
                   Vote for your favorite Florida businesses
                 </CardDescription>
               </div>
             </div>
             {votingStats && (
               <div className="text-right">
-                <div className="text-sm text-muted-foreground flex items-center gap-1">
+                <div className="text-sm text-gray-600 flex items-center gap-1 justify-end mb-1">
                   <Clock className="h-4 w-4" />
-                  {getTimeRemaining()}
+                  <span className="font-medium">{getTimeRemaining()}</span>
                 </div>
-                <div className="text-2xl font-bold text-purple-600">
+                <div className="led-counter inline-block px-4 py-1 rounded-lg">
                   {votingStats.totalVotes.toLocaleString()}
                 </div>
-                <div className="text-xs text-muted-foreground">total votes</div>
+                <div className="text-xs text-gray-600 mt-1 font-medium">total votes</div>
               </div>
             )}
           </div>

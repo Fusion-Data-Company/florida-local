@@ -80,20 +80,17 @@ export default function Home() {
 
       {/* FLORIDA LOCAL ULTRA-ELITE HERO */}
       <div className="relative py-24 overflow-hidden">
-        {/* Removed gradient backgrounds to show clear HD background */}
-        {/* <div className="absolute inset-0 bg-gradient-to-br from-[var(--fl-teal-lagoon)]/10 via-background to-[var(--fl-sunset-gold)]/10" /> */}
-
-        {/* Particle Field removed to show clear HD background */}
-        {/* <ParticleField count={50} color="cyan" /> */}
+        {/* Full-width glass tint overlay - covers entire section edge-to-edge */}
+        <div className="absolute inset-0 glass-section-overlay"></div>
 
         <div className="container mx-auto px-4 lg:px-8 text-center relative z-10">
-          {/* Liquid Glass Welcome Card - HERO SIZE WITH DARK TINT */}
+          {/* Liquid Glass Welcome Card - HERO SIZE */}
           <div className="max-w-7xl mx-auto mb-16 entrance-fade-up">
             <LiquidGlassHeaderCard
               title="Welcome Back to Your Community"
               subtitle="Stay connected with Florida's thriving business network. Discover new opportunities, showcase your latest updates, and grow your local presence."
               size="hero"
-              withDarkTint={true}
+              withDarkTint={false}
             />
           </div>
 
@@ -121,50 +118,50 @@ export default function Home() {
             </StardustButton>
           </div>
 
-          {/* FLORIDA LOCAL BENEFITS CARDS - Teal-Gold-Bronze Theme */}
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <Transform3DCard className="card-entrance stagger-1">
-              <Card className="bg-white group hover:shadow-[0_20px_45px_rgba(0,139,139,0.25)] transition-shadow duration-300">
-                <CardContent className="p-8 text-center">
-                  <MicroIcon color="rgba(0, 139, 139, 0.8)">
-                    <Users className="h-14 w-14 mx-auto mb-6 text-[var(--fl-teal-lagoon)]" />
-                  </MicroIcon>
-                  <h3 className="font-bold text-xl mb-3 text-gray-900">
+          {/* FLORIDA LOCAL BENEFITS CARDS - Futuristic Metallic Theme */}
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <Transform3DCard className="card-entrance stagger-1 apple-hover-depth">
+              <Card className="glass-card-futuristic group transition-all duration-300 overflow-hidden metallic-border-animated border-2 border-transparent hover:border-[rgba(0,139,139,0.4)]">
+                <CardContent className="p-6 text-center card-tight-layout">
+                  <div className="metallic-teal rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center shine-sweep-hover">
+                    <Users className="h-8 w-8 text-white" />
+                  </div>
+                  <h3 className="font-bold text-lg mb-2 text-gray-900">
                     Connect with Customers
                   </h3>
-                  <p className="text-sm text-gray-900 leading-relaxed">
+                  <p className="text-sm text-gray-700 leading-relaxed">
                     Build relationships and grow your customer base in Florida's local community
                   </p>
                 </CardContent>
               </Card>
             </Transform3DCard>
 
-            <Transform3DCard>
-              <Card className="bg-white group hover:shadow-[0_20px_45px_rgba(212,175,55,0.25)] transition-shadow duration-300">
-                <CardContent className="p-8 text-center">
-                  <MicroIcon color="rgba(212, 175, 55, 0.8)">
-                    <TrendingUp className="h-14 w-14 mx-auto mb-6 text-[var(--fl-sunset-gold)]" />
-                  </MicroIcon>
-                  <h3 className="font-bold text-xl mb-3 text-gray-900">
+            <Transform3DCard className="apple-hover-depth">
+              <Card className="glass-card-futuristic group transition-all duration-300 overflow-hidden metallic-border-animated border-2 border-transparent hover:border-[rgba(212,175,55,0.4)]">
+                <CardContent className="p-6 text-center card-tight-layout">
+                  <div className="metallic-gold rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center shine-sweep-hover">
+                    <TrendingUp className="h-8 w-8 text-white" />
+                  </div>
+                  <h3 className="font-bold text-lg mb-2 text-gray-900">
                     Boost Your Sales
                   </h3>
-                  <p className="text-sm text-gray-900 leading-relaxed">
+                  <p className="text-sm text-gray-700 leading-relaxed">
                     Showcase products, run promotions, and drive more revenue through our marketplace
                   </p>
                 </CardContent>
               </Card>
             </Transform3DCard>
 
-            <Transform3DCard>
-              <Card className="bg-white group hover:shadow-[0_20px_45px_rgba(205,127,50,0.25)] transition-shadow duration-300">
-                <CardContent className="p-8 text-center">
-                  <MicroIcon color="rgba(205, 127, 50, 0.8)">
-                    <Star className="h-14 w-14 mx-auto mb-6 text-[var(--fl-bronze)]" />
-                  </MicroIcon>
-                  <h3 className="font-bold text-xl mb-3 text-gray-900">
+            <Transform3DCard className="apple-hover-depth">
+              <Card className="glass-card-futuristic group transition-all duration-300 overflow-hidden metallic-border-animated border-2 border-transparent hover:border-[rgba(205,127,50,0.4)]">
+                <CardContent className="p-6 text-center card-tight-layout">
+                  <div className="metallic-bronze rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center shine-sweep-hover">
+                    <Star className="h-8 w-8 text-white" />
+                  </div>
+                  <h3 className="font-bold text-lg mb-2 text-gray-900">
                     Build Your Brand
                   </h3>
-                  <p className="text-sm text-gray-900 leading-relaxed">
+                  <p className="text-sm text-gray-700 leading-relaxed">
                     Create a professional presence and get featured in our business spotlight
                   </p>
                 </CardContent>

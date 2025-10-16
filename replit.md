@@ -8,6 +8,12 @@ The Florida Local is a comprehensive platform connecting Florida-based entrepren
 
 Preferred communication style: Simple, everyday language.
 
+**CRITICAL: Stripe Integration**
+- NEVER ask for Stripe API keys or testing secrets
+- Stripe integration is placeholdered/removed - do NOT implement it
+- All Stripe routes and functionality are commented out with placeholders
+- Testing should NEVER be blocked by missing Stripe configuration
+
 ## System Architecture
 
 **Frontend:** Built with React 18, TypeScript, Vite, Wouter for routing, and TanStack Query for state management. UI uses shadcn/ui components (Radix UI) and Tailwind CSS for responsive design.
@@ -16,7 +22,7 @@ Preferred communication style: Simple, everyday language.
 
 **Key Features & Implementations:**
 - **UI/UX:** Elite Luxury UI transformation with premium marble textures, advanced CSS effects, performance-optimized animations, full accessibility (WCAG AA compliance, prefers-reduced-motion support), glass morphism, floating animations, and luxury typography.
-- **E-commerce:** Cart, checkout (manual & Stripe), vendor portal for product management, and an orders system.
+- **E-commerce:** Cart, checkout (manual only - Stripe removed), vendor portal for product management, and an orders system.
 - **Social:** User-generated content (posts, updates), likes, comments, following, and real-time messaging via WebSockets.
 - **Spotlight System:** A three-tier rotation system using weighted algorithms and community voting to feature businesses.
 - **Security:** API key management, webhook signatures, hardened CSP, strict CORS, and session-based WebSocket authentication.
@@ -58,7 +64,7 @@ Preferred communication style: Simple, everyday language.
 - Google My Business API (OAuth, business sync, review management)
 - SendGrid (transactional emails)
 - TaxJar (1099 generation, sales tax reporting)
-- Stripe Connect (vendor payouts, payment processing)
+- ~~Stripe Connect~~ (REMOVED - placeholders only, DO NOT implement)
 - Object Storage (dynamic product images)
 
 **Monitoring & Analytics:**
