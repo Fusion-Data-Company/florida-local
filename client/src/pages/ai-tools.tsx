@@ -163,9 +163,10 @@ export default function AIToolsPage() {
       className="min-h-screen relative"
       style={{
         backgroundImage: "url('/backgrounds/glowing-bubbles-orange-blue.avif')",
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        backgroundSize: '100% auto',
+        backgroundPosition: 'center top',
+        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#000'
       }}
     >
 
