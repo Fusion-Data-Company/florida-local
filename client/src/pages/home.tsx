@@ -195,7 +195,14 @@ export default function Home() {
 
         <SpotlightShowcase />
         <MarketplaceSection />
-        <SocialFeed />
+
+        {/* Community Activity Section with White Overlay */}
+        <section className="relative py-12">
+          <div className="absolute inset-0 bg-white/90"></div>
+          <div className="relative z-10">
+            <SocialFeed />
+          </div>
+        </section>
       </div>
 
     </div>

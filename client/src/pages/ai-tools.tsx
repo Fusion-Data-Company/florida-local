@@ -301,15 +301,21 @@ export default function AIToolsPage() {
                   transition={{ delay: i * 0.1 }}
                 >
                   <Card 
-                    className="relative overflow-hidden cursor-pointer group h-full bg-black/40 backdrop-blur-xl border border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] hover:-translate-y-1"
+                    className="relative overflow-hidden cursor-pointer group h-full bg-black/40 backdrop-blur-xl border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] hover:-translate-y-1 cyber-border-animate cyber-glow-pulse"
                     onClick={() => setActiveTab(tool.id)}
                     data-testid={`card-tool-${tool.id}`}
                   >
                     {/* Metallic shine effect */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine" />
                     
                     {/* Animated border glow */}
                     <div className={`absolute inset-0 rounded-lg bg-gradient-to-r ${tool.color} opacity-0 group-hover:opacity-20 blur-xl transition-all duration-500`} />
+                    
+                    {/* Holographic overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none" />
+                    
+                    {/* Scan line effect */}
+                    <div className="absolute inset-0 cyber-scan-line pointer-events-none" />
                     
                     <CardHeader className="relative z-10">
                       <div className="flex items-start justify-between mb-4">

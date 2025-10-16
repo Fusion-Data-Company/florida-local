@@ -9606,3 +9606,286 @@ select:focus-visible,
     animation: none !important;
   }
 }
+
+/* ===== CYBERPUNK METALLIC FUTURISTIC ANIMATIONS - PHASES 3-6 ===== */
+
+/* Phase 3: Iridescent borders and holographic overlays */
+@keyframes iridescent-border {
+  0%, 100% {
+    filter: hue-rotate(0deg);
+  }
+  50% {
+    filter: hue-rotate(60deg);
+  }
+}
+
+@keyframes hologram-flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3),
+                0 0 40px rgba(0, 255, 255, 0.2),
+                inset 0 0 20px rgba(0, 255, 255, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.5),
+                0 0 60px rgba(0, 255, 255, 0.3),
+                inset 0 0 30px rgba(0, 255, 255, 0.2);
+  }
+}
+
+/* Phase 4: Scan lines and particle effects */
+@keyframes scan-line {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+@keyframes particle-float {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10%, 90% {
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-100px) translateX(20px);
+  }
+}
+
+@keyframes data-stream {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  10%, 90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+/* Phase 5: Circuit patterns and energy pulses */
+@keyframes circuit-pulse {
+  0%, 100% {
+    opacity: 0.3;
+    stroke-dashoffset: 1000;
+  }
+  50% {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes energy-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+@keyframes grid-pulse {
+  0%, 100% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* Phase 6: Elite maximum - advanced shader effects */
+@keyframes cyberpunk-grid {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 50px 50px;
+  }
+}
+
+@keyframes chromatic-aberration {
+  0%, 100% {
+    text-shadow: 
+      -2px 0 0 rgba(255, 0, 255, 0.7),
+      2px 0 0 rgba(0, 255, 255, 0.7);
+  }
+  50% {
+    text-shadow: 
+      -4px 0 0 rgba(255, 0, 255, 0.9),
+      4px 0 0 rgba(0, 255, 255, 0.9);
+  }
+}
+
+@keyframes neon-flicker {
+  0%, 100% { opacity: 1; }
+  2%, 8%, 12% { opacity: 0.8; }
+  4%, 10% { opacity: 0.95; }
+  6% { opacity: 0.85; }
+}
+
+@keyframes metallic-shine {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes float-up-fade {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0;
+  }
+  10%, 90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-200px) scale(0.5);
+    opacity: 0;
+  }
+}
+
+/* Utility classes for cyberpunk effects */
+.cyber-border-animate {
+  animation: iridescent-border 3s ease-in-out infinite;
+}
+
+.cyber-glow-pulse {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.cyber-scan-line::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.8), transparent);
+  animation: scan-line 4s linear infinite;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.cyber-hologram {
+  animation: hologram-flicker 0.15s infinite;
+}
+
+.cyber-grid-bg {
+  background-image: 
+    linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: cyberpunk-grid 20s linear infinite;
+}
+
+.cyber-text-glow {
+  text-shadow: 
+    0 0 10px rgba(0, 255, 255, 0.8),
+    0 0 20px rgba(0, 255, 255, 0.6),
+    0 0 30px rgba(0, 255, 255, 0.4);
+  animation: neon-flicker 3s infinite;
+}
+
+.cyber-metallic-shine {
+  background: linear-gradient(
+    110deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0) 40%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 60%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: metallic-shine 3s linear infinite;
+}
+
+.cyber-circuit-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10h30v30h-30zM60 60h30v30h-30z' fill='none' stroke='rgba(0,255,255,0.2)' stroke-width='1'/%3E%3Ccircle cx='25' cy='25' r='3' fill='rgba(0,255,255,0.4)'/%3E%3Ccircle cx='75' cy='75' r='3' fill='rgba(0,255,255,0.4)'/%3E%3C/svg%3E");
+  background-size: 100px 100px;
+}
+
+.cyber-particle-field::after {
+  content: '';
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: rgba(0, 255, 255, 0.8);
+  border-radius: 50%;
+  animation: particle-float 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Advanced 3D transforms */
+.cyber-3d-lift {
+  transform: perspective(1000px) rotateX(0deg);
+  transition: transform 0.3s ease;
+}
+
+.cyber-3d-lift:hover {
+  transform: perspective(1000px) rotateX(5deg) translateY(-10px);
+}
+
+/* Energy pulse border */
+.cyber-energy-border {
+  position: relative;
+}
+
+.cyber-energy-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(90deg, 
+    transparent,
+    rgba(0, 255, 255, 0.6),
+    transparent
+  );
+  background-size: 200% 100%;
+  border-radius: inherit;
+  animation: energy-flow 2s linear infinite;
+  z-index: -1;
+}
+
+/* Chromatic text effect */
+.cyber-chromatic-text {
+  animation: chromatic-aberration 2s ease-in-out infinite;
+}
+
+/* Data stream effect */
+.cyber-data-stream::after {
+  content: '010101';
+  position: absolute;
+  font-family: monospace;
+  font-size: 12px;
+  color: rgba(0, 255, 255, 0.6);
+  animation: data-stream 3s linear infinite;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cyber-border-animate,
+  .cyber-glow-pulse,
+  .cyber-scan-line::before,
+  .cyber-hologram,
+  .cyber-grid-bg,
+  .cyber-text-glow,
+  .cyber-metallic-shine,
+  .cyber-particle-field::after,
+  .cyber-energy-border::before,
+  .cyber-chromatic-text,
+  .cyber-data-stream::after {
+    animation: none !important;
+  }
+}
