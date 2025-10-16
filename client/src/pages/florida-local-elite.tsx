@@ -389,19 +389,11 @@ export default function FloridaLocalElite() {
               <div className="grid md:grid-cols-2 gap-0">
                 <div className="p-12 flex flex-col justify-center relative z-10">
                   <MetallicBadge color="ruby" className="mb-4">FEATURED LOCAL PAGES</MetallicBadge>
-                  <p className="text-sm text-gray-500 mb-3 font-semibold">By The Locals • March 25, 2024</p>
-                  <h3
-                    className="text-5xl font-black mb-6"
-                    style={{
-                      background: 'linear-gradient(135deg, #9333ea 0%, #ec4899 100%)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
-                    }}
-                  >
+                  <p className="text-sm text-gray-900 mb-3 font-semibold">By The Locals • March 25, 2024</p>
+                  <h3 className="text-5xl font-black mb-6 text-purple-600">
                     The Florida Local
                   </h3>
-                  <p className="text-xl text-gray-700 leading-relaxed font-medium">
+                  <p className="text-xl text-gray-900 leading-relaxed font-medium">
                     It's ALL ABOUT US. Be Featured #ItsGoodAF | #4EverTourist
                   </p>
                 </div>
@@ -451,16 +443,8 @@ export default function FloridaLocalElite() {
               <div className="grid md:grid-cols-2 gap-0">
                 <div className="p-12 flex flex-col justify-center relative z-10">
                   <MetallicBadge color="platinum" className="mb-4">FEATURED</MetallicBadge>
-                  <p className="text-sm text-gray-500 mb-3 font-semibold">The Locals • July 17, 2023</p>
-                  <h3
-                    className="text-5xl font-black mb-6"
-                    style={{
-                      background: 'linear-gradient(135deg, #2563eb 0%, #14b8a6 100%)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
-                    }}
-                  >
+                  <p className="text-sm text-gray-900 mb-3 font-semibold">The Locals • July 17, 2023</p>
+                  <h3 className="text-5xl font-black mb-6 text-blue-600">
                     Florida Lake Life With Kelli & Jason @TheOrlandoLocals
                   </h3>
                 </div>
