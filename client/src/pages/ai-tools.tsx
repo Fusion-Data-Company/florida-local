@@ -159,7 +159,15 @@ export default function AIToolsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#000000]">
+    <div 
+      className="min-h-screen relative"
+      style={{
+        backgroundImage: "url('/backgrounds/colorful-series-circles-with-orange-blue-colors_889056-245202.jpg')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
 
       {/* Hero Section */}
       <div className="min-h-svh w-full text-white flex flex-col items-center justify-center p-8 relative overflow-hidden">
