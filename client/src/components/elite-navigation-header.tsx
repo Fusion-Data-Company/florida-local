@@ -369,7 +369,15 @@ export default function EliteNavigationHeader() {
                     </Button>
                   </Link>
                   <Button
-                    onClick={() => window.location.href = '/api/login'}
+                    onClick={() => {
+                      try {
+                        console.log('🔐 Initiating login flow from header...');
+                        window.location.href = '/api/login';
+                      } catch (error) {
+                        console.error('❌ Login button error:', error);
+                        alert('Failed to initiate login. Please refresh the page and try again.');
+                      }
+                    }}
                     className="rounded-lg"
                     style={{ height: '40px', padding: '0 20px', fontSize: '15px', fontWeight: 500 }}
                     data-testid="button-signin"
