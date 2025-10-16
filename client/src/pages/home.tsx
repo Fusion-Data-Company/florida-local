@@ -87,11 +87,12 @@ export default function Home() {
         {/* <ParticleField count={50} color="cyan" /> */}
 
         <div className="container mx-auto px-4 lg:px-8 text-center relative z-10">
-          {/* Liquid Glass Welcome Card */}
-          <div className="max-w-4xl mx-auto mb-8 entrance-fade-up">
+          {/* Liquid Glass Welcome Card - HERO SIZE */}
+          <div className="max-w-7xl mx-auto mb-12 entrance-fade-up">
             <LiquidGlassHeaderCard
               title="Welcome Back to Your Community"
               subtitle="Stay connected with Florida's thriving business network. Discover new opportunities, showcase your latest updates, and grow your local presence."
+              size="hero"
             />
           </div>
 

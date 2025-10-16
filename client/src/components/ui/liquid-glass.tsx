@@ -254,15 +254,21 @@ export const LiquidGlassHeaderCard: React.FC<{
   subtitle?: string;
   className?: string;
   withAnimatedBackground?: boolean;
-}> = ({ title, subtitle, className = "", withAnimatedBackground = true }) => {
+  size?: 'default' | 'hero';
+}> = ({ title, subtitle, className = "", withAnimatedBackground = true, size = 'default' }) => {
+  const isHero = size === 'hero';
+  const paddingClass = isHero ? 'px-12 py-12 md:px-16 md:py-16' : 'px-8 py-6';
+  const titleClass = isHero ? 'text-5xl md:text-7xl' : 'text-4xl md:text-5xl';
+  const subtitleClass = isHero ? 'text-2xl md:text-3xl mt-6' : 'text-lg md:text-xl';
+
   const cardContent = (
-    <GlassEffect className={`rounded-3xl px-8 py-6 ${className}`}>
+    <GlassEffect className={`rounded-3xl ${paddingClass} ${className}`}>
       <div className="text-center w-full">
-        <h2 className="text-4xl md:text-5xl font-bold text-white" style={{ textShadow: '0 4px 12px rgba(0,0,0,0.8), 0 2px 6px rgba(0,0,0,0.6)', marginBottom: subtitle ? '0.75rem' : '0' }}>
+        <h2 className={`${titleClass} font-bold text-white`} style={{ textShadow: '0 6px 16px rgba(0,0,0,0.95), 0 3px 8px rgba(0,0,0,0.8), 0 1px 4px rgba(0,0,0,0.6)', marginBottom: subtitle ? '0.75rem' : '0' }}>
           {title}
         </h2>
         {subtitle && (
-          <p className="text-lg md:text-xl text-white leading-relaxed" style={{ textShadow: '0 3px 8px rgba(0,0,0,0.7), 0 1px 4px rgba(0,0,0,0.5)' }}>
+          <p className={`${subtitleClass} text-white leading-relaxed`} style={{ textShadow: '0 4px 12px rgba(0,0,0,0.9), 0 2px 6px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.5)' }}>
             {subtitle}
           </p>
         )}
