@@ -48,10 +48,12 @@ export default function Landing() {
               className="mb-6 entrance-fade-up"
             />
 
-            <p className="text-xl mb-12 text-white leading-relaxed entrance-fade-up stagger-1" style={{textShadow: '0 2px 8px rgba(0,0,0,0.5), 0 0 20px rgba(255,255,255,0.3)'}}>
-              Join thousands of Florida businesses building their digital presence,
-              connecting with customers, and growing their community impact.
-            </p>
+            <div className="bg-black/60 backdrop-blur-sm p-6 rounded-2xl mb-12 entrance-fade-up stagger-1">
+              <p className="text-xl text-white leading-relaxed" style={{textShadow: '0 2px 8px rgba(0,0,0,0.8)'}}>
+                Join thousands of Florida businesses building their digital presence,
+                connecting with customers, and growing their community impact.
+              </p>
+            </div>
 
             {/* Feature Grid */}
             <div className="grid md:grid-cols-3 gap-8 mb-12 entrance-fade-up stagger-2">
@@ -59,36 +61,36 @@ export default function Landing() {
                 {/* Glowing background effect */}
                 <div className="absolute -inset-1 bg-gradient-to-br from-primary/40 via-primary/20 to-transparent rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-                <div className="relative bg-card/95 backdrop-blur-xl border border-border/50 p-8 rounded-2xl hover-lift shadow-luxury-multi transition-all duration-500 group-hover:border-primary/30 group-hover:shadow-primary/20">
+                <div className="relative bg-white border border-border/50 p-8 rounded-2xl hover-lift shadow-luxury-multi transition-all duration-500 group-hover:border-primary/30 group-hover:shadow-primary/20">
                   <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg border-2 border-orange-400/30" style={{boxShadow: '0 8px 20px rgba(249, 115, 22, 0.4), inset 0 1px 0 rgba(255,255,255,0.3)'}}>
                     <Store className="text-white" size={32} />
                   </div>
-                  <h3 className="text-2xl font-bold mb-4 text-white" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>Rich Business Profiles</h3>
-                  <p className="text-white leading-relaxed" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>Showcase your brand with high-quality images, videos, and detailed descriptions that captivate your audience.</p>
+                  <h3 className="text-2xl font-bold mb-4 text-gray-900">Rich Business Profiles</h3>
+                  <p className="text-gray-900 leading-relaxed">Showcase your brand with high-quality images, videos, and detailed descriptions that captivate your audience.</p>
                 </div>
               </div>
 
               <div className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-br from-secondary/40 via-secondary/20 to-transparent rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-                <div className="relative bg-card/95 backdrop-blur-xl border border-border/50 p-8 rounded-2xl hover-lift shadow-luxury-multi transition-all duration-500 group-hover:border-secondary/30 group-hover:shadow-secondary/20">
+                <div className="relative bg-white border border-border/50 p-8 rounded-2xl hover-lift shadow-luxury-multi transition-all duration-500 group-hover:border-secondary/30 group-hover:shadow-secondary/20">
                   <div className="w-20 h-20 bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg border-2 border-teal-400/30" style={{boxShadow: '0 8px 20px rgba(20, 184, 166, 0.4), inset 0 1px 0 rgba(255,255,255,0.3)'}}>
                     <ShoppingCart className="text-white" size={32} />
                   </div>
-                  <h3 className="text-2xl font-bold mb-4 text-white" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>E-Commerce Integration</h3>
-                  <p className="text-white leading-relaxed" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>Sell products directly through your profile with secure built-in payment processing and inventory management.</p>
+                  <h3 className="text-2xl font-bold mb-4 text-gray-900">E-Commerce Integration</h3>
+                  <p className="text-gray-900 leading-relaxed">Sell products directly through your profile with secure built-in payment processing and inventory management.</p>
                 </div>
               </div>
 
               <div className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-br from-accent/40 via-accent/20 to-transparent rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-                <div className="relative bg-card/95 backdrop-blur-xl border border-border/50 p-8 rounded-2xl hover-lift shadow-luxury-multi transition-all duration-500 group-hover:border-accent/30 group-hover:shadow-accent/20">
+                <div className="relative bg-white border border-border/50 p-8 rounded-2xl hover-lift shadow-luxury-multi transition-all duration-500 group-hover:border-accent/30 group-hover:shadow-accent/20">
                   <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg border-2 border-purple-400/30" style={{boxShadow: '0 8px 20px rgba(168, 85, 247, 0.4), inset 0 1px 0 rgba(255,255,255,0.3)'}}>
                     <Users className="text-white" size={32} />
                   </div>
-                  <h3 className="text-2xl font-bold mb-4 text-white" style={{textShadow: '0 2px 6px rgba(0,0,0,0.35)'}}>Community Network</h3>
-                  <p className="text-white leading-relaxed" style={{textShadow: '0 1px 2px rgba(0,0,0,0.25)'}}>Connect with other businesses, collaborate on projects, and build lasting partnerships that grow your network.</p>
+                  <h3 className="text-2xl font-bold mb-4 text-gray-900">Community Network</h3>
+                  <p className="text-gray-900 leading-relaxed">Connect with other businesses, collaborate on projects, and build lasting partnerships that grow your network.</p>
                 </div>
               </div>
             </div>
@@ -140,11 +142,11 @@ export default function Landing() {
               <div className="flex items-center space-x-2 mb-6 group">
                 <i className="fas fa-palm-tree text-2xl text-primary group-hover:scale-110 transition-transform duration-300"></i>
                 <div>
-                  <h1 className="text-xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">Florida Local</h1>
-                  <p className="text-xs text-muted-foreground">Elite</p>
+                  <h1 className="text-xl font-bold text-primary">Florida Local</h1>
+                  <p className="text-xs text-gray-700">Elite</p>
                 </div>
               </div>
-              <p className="text-muted-foreground mb-6 leading-relaxed">
+              <p className="text-gray-700 mb-6 leading-relaxed">
                 Connecting Florida's business community through innovation, collaboration, and local pride.
                 Where entrepreneurs thrive together.
               </p>
@@ -170,32 +172,32 @@ export default function Landing() {
 
             {/* Quick Links */}
             <div className="entrance-fade-up stagger-1">
-              <h3 className="font-bold text-lg mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Platform</h3>
+              <h3 className="font-bold text-lg mb-6 text-primary">Platform</h3>
               <ul className="space-y-3">
-                <li><a href="#" className="text-muted-foreground hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block">Business Profiles</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block">Marketplace</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block">Community</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block">Spotlight</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block">Analytics</a></li>
+                <li><a href="#" className="text-gray-700 hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block">Business Profiles</a></li>
+                <li><a href="#" className="text-gray-700 hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block">Marketplace</a></li>
+                <li><a href="#" className="text-gray-700 hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block">Community</a></li>
+                <li><a href="#" className="text-gray-700 hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block">Spotlight</a></li>
+                <li><a href="#" className="text-gray-700 hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block">Analytics</a></li>
               </ul>
             </div>
 
             {/* Resources */}
             <div className="entrance-fade-up stagger-2">
-              <h3 className="font-bold text-lg mb-6 bg-gradient-to-r from-secondary to-accent bg-clip-text text-transparent">Resources</h3>
+              <h3 className="font-bold text-lg mb-6 text-secondary">Resources</h3>
               <ul className="space-y-3">
-                <li><a href="#" className="text-muted-foreground hover:text-secondary transition-all duration-300 hover:translate-x-1 inline-block">Help Center</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-secondary transition-all duration-300 hover:translate-x-1 inline-block">Getting Started</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-secondary transition-all duration-300 hover:translate-x-1 inline-block">API Documentation</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-secondary transition-all duration-300 hover:translate-x-1 inline-block">Success Stories</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-secondary transition-all duration-300 hover:translate-x-1 inline-block">Blog</a></li>
+                <li><a href="#" className="text-gray-700 hover:text-secondary transition-all duration-300 hover:translate-x-1 inline-block">Help Center</a></li>
+                <li><a href="#" className="text-gray-700 hover:text-secondary transition-all duration-300 hover:translate-x-1 inline-block">Getting Started</a></li>
+                <li><a href="#" className="text-gray-700 hover:text-secondary transition-all duration-300 hover:translate-x-1 inline-block">API Documentation</a></li>
+                <li><a href="#" className="text-gray-700 hover:text-secondary transition-all duration-300 hover:translate-x-1 inline-block">Success Stories</a></li>
+                <li><a href="#" className="text-gray-700 hover:text-secondary transition-all duration-300 hover:translate-x-1 inline-block">Blog</a></li>
               </ul>
             </div>
 
             {/* Newsletter */}
             <div className="entrance-fade-up stagger-3">
-              <h3 className="font-bold text-lg mb-6 bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">Stay Connected</h3>
-              <p className="text-muted-foreground mb-4">
+              <h3 className="font-bold text-lg mb-6 text-accent">Stay Connected</h3>
+              <p className="text-gray-700 mb-4">
                 Get the latest updates on new features, spotlight businesses, and community events.
               </p>
               <div className="space-y-3">
@@ -218,14 +220,14 @@ export default function Landing() {
           {/* Bottom Bar */}
           <div className="pt-8 border-t border-border/30">
             <div className="flex flex-col md:flex-row items-center justify-between entrance-fade-up stagger-4">
-              <p className="text-muted-foreground text-sm mb-4 md:mb-0">
+              <p className="text-gray-700 text-sm mb-4 md:mb-0">
                 © 2024 Florida Local Elite. All rights reserved.
               </p>
               <div className="flex space-x-6 text-sm">
-                <a href="#" className="text-muted-foreground hover:text-primary transition-all duration-300 hover:-translate-y-0.5 inline-block">Privacy Policy</a>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-all duration-300 hover:-translate-y-0.5 inline-block">Terms of Service</a>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-all duration-300 hover:-translate-y-0.5 inline-block">Cookie Policy</a>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-all duration-300 hover:-translate-y-0.5 inline-block">Contact</a>
+                <a href="#" className="text-gray-700 hover:text-primary transition-all duration-300 hover:-translate-y-0.5 inline-block">Privacy Policy</a>
+                <a href="#" className="text-gray-700 hover:text-primary transition-all duration-300 hover:-translate-y-0.5 inline-block">Terms of Service</a>
+                <a href="#" className="text-gray-700 hover:text-primary transition-all duration-300 hover:-translate-y-0.5 inline-block">Cookie Policy</a>
+                <a href="#" className="text-gray-700 hover:text-primary transition-all duration-300 hover:-translate-y-0.5 inline-block">Contact</a>
               </div>
             </div>
           </div>

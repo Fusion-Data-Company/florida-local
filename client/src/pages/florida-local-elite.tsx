@@ -51,10 +51,11 @@ const MetallicBadge = ({ children, color = "gold", className = "" }: { children:
   };
 
   const style = colorStyles[color];
+  const textColor = color === 'platinum' ? 'text-gray-900' : 'text-white';
 
   return (
     <div
-      className={`relative inline-flex items-center gap-2 px-4 py-2 rounded-xl overflow-hidden font-bold uppercase tracking-wide text-white transform hover:scale-105 transition-all duration-300 ${className}`}
+      className={`relative inline-flex items-center gap-2 px-4 py-2 rounded-xl overflow-hidden font-bold uppercase tracking-wide ${textColor} transform hover:scale-105 transition-all duration-300 ${className}`}
       style={{
         background: style.background,
         boxShadow: style.shadow,
@@ -152,52 +153,36 @@ export default function FloridaLocalElite() {
               <span className="inline-block relative">
                 <span className="text-white/90" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8))' }}>Life is </span>
                 <span
-                  className="font-bold tracking-wider gold-underline"
+                  className="font-bold tracking-wider gold-underline text-yellow-400"
                   style={{
-                    background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #fbbf24 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8)) drop-shadow(0 0 20px rgba(251,191,36,0.6))',
+                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8)) drop-shadow(0 0 20px rgba(251,191,36,0.8))',
                   }}
                 >
                   BETTER
                 </span>
                 <span className="text-white/90" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8))' }}> when you're </span>
                 <span
-                  className="font-bold tracking-wider gold-underline"
+                  className="font-bold tracking-wider gold-underline text-yellow-400"
                   style={{
-                    background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #fbbf24 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8)) drop-shadow(0 0 20px rgba(251,191,36,0.6))',
+                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8)) drop-shadow(0 0 20px rgba(251,191,36,0.8))',
                   }}
                 >
                   LIVING
                 </span>
                 <span className="text-white/90" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8))' }}> </span>
                 <span
-                  className="font-bold tracking-wider gold-underline"
+                  className="font-bold tracking-wider gold-underline text-yellow-400"
                   style={{
-                    background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #fbbf24 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8)) drop-shadow(0 0 20px rgba(251,191,36,0.6))',
+                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8)) drop-shadow(0 0 20px rgba(251,191,36,0.8))',
                   }}
                 >
                   LIKE
                 </span>
                 <span className="text-white/90" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8))' }}> a </span>
                 <span
-                  className="font-bold tracking-wider gold-underline"
+                  className="font-bold tracking-wider gold-underline text-yellow-400"
                   style={{
-                    background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #fbbf24 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8)) drop-shadow(0 0 20px rgba(251,191,36,0.6))',
+                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,1)) drop-shadow(0 4px 8px rgba(0,0,0,1)) drop-shadow(0 6px 12px rgba(0,0,0,0.8)) drop-shadow(0 0 20px rgba(251,191,36,0.8))',
                   }}
                 >
                   LOCAL
@@ -209,11 +194,11 @@ export default function FloridaLocalElite() {
 
           {/* SCROLLING BRAND BAR - BELOW TAGLINE */}
           <div className="absolute bottom-2 md:bottom-4 lg:bottom-6 left-0 right-0 w-full" style={{ zIndex: 30 }}>
-            <div className="mx-auto max-w-7xl px-6 py-4 bg-white/10 backdrop-blur-md rounded-2xl">
+            <div className="mx-auto max-w-7xl px-6 py-4 bg-black/70 backdrop-blur-sm rounded-2xl">
               <div className="group relative m-auto max-w-7xl px-6">
                 <div className="flex flex-col items-center md:flex-row">
                   <div className="md:max-w-44 md:border-r md:border-white/30 md:pr-6">
-                    <p className="text-end text-sm text-white/90 font-medium">Powering the best teams</p>
+                    <p className="text-end text-sm text-white font-bold">Powering the best teams</p>
                   </div>
                   <div className="relative py-6 md:w-[calc(100%-11rem)]">
                     <InfiniteSlider speedOnHover={40} speed={80} gap={112}>
@@ -943,11 +928,11 @@ export default function FloridaLocalElite() {
         backgroundPosition: 'center'
       }}>
         <div className="container mx-auto px-4 max-w-6xl">
-          <div className="bg-white/95 backdrop-blur-sm p-8 rounded-3xl shadow-xl mb-8">
-            <h2 className="text-5xl font-bold text-center mb-4 text-gray-900" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>
+          <div className="bg-white p-8 rounded-3xl shadow-2xl mb-8" style={{ backdropFilter: 'none' }}>
+            <h2 className="text-5xl font-bold text-center mb-4 text-black">
               ORLANDO | Your SMILE Is Contagious
             </h2>
-            <p className="text-2xl text-center mb-0 text-gray-900 font-semibold">
+            <p className="text-2xl text-center mb-0 text-black font-bold">
               Dr. Mario | THE ORLANDO LOCAL DENTIST
             </p>
           </div>
@@ -975,11 +960,11 @@ export default function FloridaLocalElite() {
             </div>
 
             {/* Map */}
-            <Card className="rounded-2xl overflow-hidden bg-white shadow-xl">
+            <Card className="rounded-2xl overflow-hidden bg-white shadow-2xl">
               <div className="w-full h-full flex flex-col items-center justify-center p-8">
                 <MapPin className="h-16 w-16 text-blue-600 mb-4" />
-                <h4 className="font-bold text-xl mb-2 text-gray-900">Sian Dental Studio</h4>
-                <p className="text-center text-gray-900 font-medium">508 N Mills Ave B, Orlando FL</p>
+                <h4 className="font-bold text-xl mb-2 text-black">Sian Dental Studio</h4>
+                <p className="text-center text-black font-bold">508 N Mills Ave B, Orlando FL</p>
               </div>
             </Card>
           </div>
@@ -1206,7 +1191,9 @@ export default function FloridaLocalElite() {
             </MetallicBadge>
           </div>
 
-          <h3 className="text-3xl font-bold text-center mb-12">The Florida Local Creators & Collaborators</h3>
+          <div className="bg-white p-6 rounded-3xl shadow-2xl mb-12 max-w-4xl mx-auto" style={{ backdropFilter: 'none' }}>
+            <h3 className="text-3xl font-bold text-center text-black">The Florida Local Creators & Collaborators</h3>
+          </div>
 
           <div className="grid md:grid-cols-2 gap-12 max-w-7xl mx-auto">
             {/* Left: Featured Posts Grid */}
@@ -1217,12 +1204,12 @@ export default function FloridaLocalElite() {
                 { title: "MAIN ENTREE's", tag: "Cilantrillo Entrees", date: "June 11, 2024" },
                 { title: "STUFFED MOFONGOS", tag: "Cilantrillo Entrees", date: "June 11, 2024" }
               ].map((post, i) => (
-                <Card key={i} className="p-6 rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer">
-                  <Badge className="bg-purple-100 text-purple-700 mb-3 px-3 py-1 rounded-full text-xs">
+                <Card key={i} className="p-6 rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer bg-white">
+                  <Badge className="bg-purple-100 text-purple-700 mb-3 px-3 py-1 rounded-full text-xs font-semibold">
                     {post.tag}
                   </Badge>
-                  <h4 className="font-bold text-xl mb-2">{post.title}</h4>
-                  <div className="flex items-center gap-4 text-sm text-gray-600">
+                  <h4 className="font-bold text-xl mb-2 text-black">{post.title}</h4>
+                  <div className="flex items-center gap-4 text-sm text-black font-medium">
                     <span>{post.date}</span>
                     <div className="flex items-center gap-2">
                       <Bookmark className="h-4 w-4" />
@@ -1235,7 +1222,9 @@ export default function FloridaLocalElite() {
 
             {/* Right: Additional Links */}
             <div className="space-y-4">
-              <h4 className="text-2xl font-bold mb-6">More Stories</h4>
+              <div className="bg-white p-4 rounded-2xl shadow-xl" style={{ backdropFilter: 'none' }}>
+                <h4 className="text-2xl font-bold text-black">More Stories</h4>
+              </div>
               {[
                 "Step into the AM | Orlando Aston Martin Unveils The New DB12",
                 "iFastSocial – Be Featured in Our Endorsement",
@@ -1244,8 +1233,8 @@ export default function FloridaLocalElite() {
                 "I ❤️ PR | Jan & Lauras Island Excursions",
                 "The City Council of Palm Bay Joins the Space Coast Locals"
               ].map((title, i) => (
-                <Card key={i} className="p-4 rounded-2xl hover:shadow-lg transition-shadow cursor-pointer">
-                  <p className="font-semibold text-sm">{title}</p>
+                <Card key={i} className="p-4 rounded-2xl hover:shadow-lg transition-shadow cursor-pointer bg-white shadow-lg">
+                  <p className="font-bold text-sm text-black">{title}</p>
                 </Card>
               ))}
             </div>
@@ -1273,11 +1262,11 @@ export default function FloridaLocalElite() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-7xl mx-auto">
             {/* Premium heading with glass effect */}
-            <div className="text-center mb-12">
-              <h2 className="text-5xl lg:text-6xl font-bold mb-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent tracking-tight">
+            <div className="text-center mb-12 bg-white p-8 rounded-3xl shadow-2xl max-w-4xl mx-auto" style={{ backdropFilter: 'none' }}>
+              <h2 className="text-5xl lg:text-6xl font-bold mb-4 text-black tracking-tight">
                 Explore By Category
               </h2>
-              <p className="text-lg text-gray-600 font-medium tracking-wide">
+              <p className="text-lg text-black font-bold tracking-wide">
                 Discover exclusive local offers and experiences
               </p>
             </div>

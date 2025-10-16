@@ -1,0 +1,168 @@
+2025-10-16 09:14:53.89
+1e38a89b
+User
+✅ Database client connected
+2025-10-16 09:14:59.63
+1e38a89b
+User
+✅ Database client connected
+2025-10-16 09:15:00.13
+1e38a89b
+User
+error: Error updating gauge metrics {"environment":"production","error":{},"service":"florida-elite","timestamp":"2025-10-16T16:15:00.133Z"}
+2025-10-16 09:15:01.45
+1e38a89b
+User
+✅ Database client connected
+2025-10-16 09:15:01.75
+1e38a89b
+User
+error: Error updating gauge metrics {"environment":"production","error":{},"service":"florida-elite","timestamp":"2025-10-16T16:15:01.750Z"}
+2025-10-16 09:15:23.66
+1e38a89b
+User
+error: Error updating gauge metrics {"environment":"production","error":{},"service":"florida-elite","timestamp":"2025-10-16T16:15:23.668Z"}
+2025-10-16 09:15:24.00
+1e38a89b
+User
+🔌 Database client disconnected
+2025-10-16 09:15:53.66
+1e38a89b
+User
+error: Error updating gauge metrics {"environment":"production","error":{},"service":"florida-elite","timestamp":"2025-10-16T16:15:53.668Z"}
+2025-10-16 09:15:53.76
+1e38a89b
+User
+✅ Database client connected
+2025-10-16 09:15:59.55
+1e38a89b
+User
+✅ Database client connected
+2025-10-16 09:16:00.13
+1e38a89b
+User
+error: Error updating gauge metrics {"environment":"production","error":{},"service":"florida-elite","timestamp":"2025-10-16T16:16:00.134Z"}
+2025-10-16 09:16:23.66
+1e38a89b
+User
+error: Error updating gauge metrics {"environment":"production","error":{},"service":"florida-elite","timestamp":"2025-10-16T16:16:23.668Z"}
+2025-10-16 09:16:24.16
+1e38a89b
+User
+🔌 Database client disconnected
+2025-10-16 09:16:29.67
+1e38a89b
+User
+🔌 Database client disconnected
+2025-10-16 09:16:30.13
+1e38a89b
+User
+error: Error updating gauge metrics {"environment":"production","error":{},"service":"florida-elite","timestamp":"2025-10-16T16:16:30.134Z"}
+2025-10-16 09:16:31.09
+1e38a89b
+User
+🔌 Database client disconnected
+2025-10-16 09:16:31.75
+1e38a89b
+User
+error: Error updating gauge metrics {"environment":"production","error":{},"service":"florida-elite","timestamp":"2025-10-16T16:16:31.752Z"}
+2025-10-16 09:16:53.66
+1e38a89b
+User
+✅ Database client connected
+2025-10-16 09:16:53.66
+1e38a89b
+User
+error: Error updating gauge metrics {"environment":"production","error":{},"service":"florida-elite","timestamp":"2025-10-16T16:16:53.668Z"}
+2025-10-16 09:16:54.48
+1e38a89b
+System
+system: received signal terminated
+2025-10-16 09:16:54.50
+1e38a89b
+System
+system: received signal terminated
+2025-10-16 09:16:58.84
+1e38a89b
+User
+✅ Database client connected
+2025-10-16 09:17:00.13
+1e38a89b
+User
+error: Error updating gauge metrics {"environment":"production","error":{},"service":"florida-elite","timestamp":"2025-10-16T16:17:00.134Z"}
+2025-10-16 09:17:01.15
+1e38a89b
+User
+✅ Database client connected
+2025-10-16 09:17:01.75
+1e38a89b
+User
+error: Error updating gauge metrics {"environment":"production","error":{},"service":"florida-elite","timestamp":"2025-10-16T16:17:01.753Z"}
+2025-10-16 09:17:31.55
+1e38a89b
+User
+🔌 Database client disconnected
+2025-10-16 09:17:31.75
+1e38a89b
+User
+error: Error updating gauge metrics {"environment":"production","error":{},"service":"florida-elite","timestamp":"2025-10-16T16:17:31.753Z"}
+2025-10-16 09:18:01.75
+1e38a89b
+User
+error: Error updating gauge metrics {"environment":"production","error":{},"service":"florida-elite","timestamp":"2025-10-16T16:18:01.753Z"}
+2025-10-16 09:18:31.17
+1e38a89b
+User
+🔌 Database client disconnected
+2025-10-16 09:18:31.75
+1e38a89b
+User
+error: Error updating gauge metrics {"environment":"production","error":{},"service":"florida-elite","timestamp":"2025-10-16T16:18:31.754Z"}
+2025-10-16 09:19:01.75
+1e38a89b
+User
+✅ Database client connected
+2025-10-16 09:19:01.85
+1e38a89b
+User
+error: Error updating gauge metrics {"environment":"production","error":{},"service":"florida-elite","timestamp":"2025-10-16T16:19:01.850Z"}
+2025-10-16 09:19:31.85
+1e38a89b
+User
+error: Error updating gauge metrics {"environment":"production","error":{},"service":"florida-elite","timestamp":"2025-10-16T16:19:31.851Z"}
+2025-10-16 09:19:32.05
+1e38a89b
+User
+🔌 Database client disconnected
+2025-10-16 09:20:01.85
+1e38a89b
+User
+error: Error updating gauge metrics {"environment":"production","error":{},"service":"florida-elite","timestamp":"2025-10-16T16:20:01.851Z"}
+2025-10-16 09:20:01.95
+1e38a89b
+User
+✅ Database client connected
+2025-10-16 09:20:31.85
+1e38a89b
+User
+error: Error updating gauge metrics {"environment":"production","error":{},"service":"florida-elite","timestamp":"2025-10-16T16:20:31.853Z"}
+2025-10-16 09:20:32.35
+1e38a89b
+User
+🔌 Database client disconnected
+2025-10-16 09:21:01.65
+1e38a89b
+User
+✅ Database client connected
+2025-10-16 09:21:01.73
+1e38a89b
+System
+system: received signal terminated
+2025-10-16 09:21:01.85
+1e38a89b
+User
+error: Error updating gauge metrics {"environment":"production","error":{},"service":"florida-elite","timestamp":"2025-10-16T16:21:01.853Z"}
+
+Wrap
+
+Colors

@@ -88,10 +88,12 @@ export default function Home() {
             glowTextSize="xl"
             className="mb-6 entrance-fade-up"
           />
-          <p className="text-xl text-white max-w-3xl mx-auto leading-relaxed mb-8 entrance-fade-up stagger-1" style={{textShadow: '0 1px 3px rgba(0,0,0,0.3)'}}>
-            Stay connected with Florida's thriving business network. Discover new opportunities,
-            showcase your latest updates, and grow your local presence.
-          </p>
+          <div className="bg-black/60 backdrop-blur-sm p-6 rounded-2xl max-w-3xl mx-auto mb-8 entrance-fade-up stagger-1">
+            <p className="text-xl text-white leading-relaxed" style={{textShadow: '0 2px 8px rgba(0,0,0,0.8)'}}>
+              Stay connected with Florida's thriving business network. Discover new opportunities,
+              showcase your latest updates, and grow your local presence.
+            </p>
+          </div>
 
           {/* Florida Local Branded Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
@@ -120,51 +122,51 @@ export default function Home() {
           {/* FLORIDA LOCAL BENEFITS CARDS - Teal-Gold-Bronze Theme */}
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <Transform3DCard className="card-entrance stagger-1">
-              <PremiumGlassCard className="group hover:shadow-[0_20px_45px_rgba(0,139,139,0.25)] transition-shadow duration-300 ambient-glow-teal">
+              <Card className="bg-white group hover:shadow-[0_20px_45px_rgba(0,139,139,0.25)] transition-shadow duration-300">
                 <CardContent className="p-8 text-center">
                   <MicroIcon color="rgba(0, 139, 139, 0.8)">
                     <Users className="h-14 w-14 mx-auto mb-6 text-[var(--fl-teal-lagoon)]" />
                   </MicroIcon>
-                  <h3 className="font-bold text-xl mb-3 text-slate-900">
+                  <h3 className="font-bold text-xl mb-3 text-gray-900">
                     Connect with Customers
                   </h3>
-                  <p className="text-sm text-slate-700 leading-relaxed">
+                  <p className="text-sm text-gray-900 leading-relaxed">
                     Build relationships and grow your customer base in Florida's local community
                   </p>
                 </CardContent>
-              </PremiumGlassCard>
+              </Card>
             </Transform3DCard>
 
             <Transform3DCard>
-              <PremiumGlassCard className="group hover:shadow-[0_20px_45px_rgba(212,175,55,0.25)] transition-shadow duration-300">
+              <Card className="bg-white group hover:shadow-[0_20px_45px_rgba(212,175,55,0.25)] transition-shadow duration-300">
                 <CardContent className="p-8 text-center">
                   <MicroIcon color="rgba(212, 175, 55, 0.8)">
                     <TrendingUp className="h-14 w-14 mx-auto mb-6 text-[var(--fl-sunset-gold)]" />
                   </MicroIcon>
-                  <h3 className="font-bold text-xl mb-3 text-slate-900">
+                  <h3 className="font-bold text-xl mb-3 text-gray-900">
                     Boost Your Sales
                   </h3>
-                  <p className="text-sm text-slate-700 leading-relaxed">
+                  <p className="text-sm text-gray-900 leading-relaxed">
                     Showcase products, run promotions, and drive more revenue through our marketplace
                   </p>
                 </CardContent>
-              </PremiumGlassCard>
+              </Card>
             </Transform3DCard>
 
             <Transform3DCard>
-              <PremiumGlassCard className="group hover:shadow-[0_20px_45px_rgba(205,127,50,0.25)] transition-shadow duration-300">
+              <Card className="bg-white group hover:shadow-[0_20px_45px_rgba(205,127,50,0.25)] transition-shadow duration-300">
                 <CardContent className="p-8 text-center">
                   <MicroIcon color="rgba(205, 127, 50, 0.8)">
                     <Star className="h-14 w-14 mx-auto mb-6 text-[var(--fl-bronze)]" />
                   </MicroIcon>
-                  <h3 className="font-bold text-xl mb-3 text-slate-900">
+                  <h3 className="font-bold text-xl mb-3 text-gray-900">
                     Build Your Brand
                   </h3>
-                  <p className="text-sm text-slate-700 leading-relaxed">
+                  <p className="text-sm text-gray-900 leading-relaxed">
                     Create a professional presence and get featured in our business spotlight
                   </p>
                 </CardContent>
-              </PremiumGlassCard>
+              </Card>
             </Transform3DCard>
           </div>
         </div>
@@ -177,9 +179,11 @@ export default function Home() {
 
         {/* Trending Businesses */}
         <section className="py-12 container mx-auto px-4 relative z-10">
-          <h2 className="text-3xl font-bold mb-8 text-center text-white" style={{textShadow: '0 2px 8px rgba(0,0,0,0.4)'}}>
-            Trending Now
-          </h2>
+          <div className="bg-white p-6 rounded-3xl shadow-2xl max-w-md mx-auto mb-8">
+            <h2 className="text-3xl font-bold text-center text-black">
+              Trending Now
+            </h2>
+          </div>
           <TrendingBusinesses limit={5} variant="compact" />
         </section>
 
