@@ -225,23 +225,58 @@ export function trackBusinessEvent(event: string, labels: Record<string, string>
 
 // Update gauge metrics periodically
 export async function updateGaugeMetrics() {
+  // Update active users - wrapped in try-catch to prevent cascade failures
   try {
-    // Update active users (example - implement actual logic)
-    const { getOnlineUsersCount } = await import("./websocket");
-    const onlineUsers = await getOnlineUsersCount();
-    activeUsers.labels("online").set(onlineUsers);
-
-    // Update queue sizes (example - implement actual logic)
-    const { emailQueue, imageQueue } = await import("./redis");
-    const emailQueueCounts = await emailQueue.getJobCounts();
-    queueSize.labels("email", "waiting").set(emailQueueCounts.waiting);
-    queueSize.labels("email", "active").set(emailQueueCounts.active);
-    
-    const imageQueueCounts = await imageQueue.getJobCounts();
-    queueSize.labels("image", "waiting").set(imageQueueCounts.waiting);
-    queueSize.labels("image", "active").set(imageQueueCounts.active);
+    const { getOnlineUsersCount, io } = await import("./websocket");
+    // Check if WebSocket is initialized before getting count
+    if (io) {
+      const onlineUsers = await getOnlineUsersCount();
+      activeUsers.labels("online").set(onlineUsers);
+    }
   } catch (error) {
-    logger.error("Error updating gauge metrics", { error });
+    logger.debug("Could not update active users metric", { error: error instanceof Error ? error.message : error });
+  }
+
+  // Update queue sizes - wrapped in try-catch to prevent cascade failures
+  try {
+    const { getQueues, isRedisAvailable } = await import("./redis");
+    
+    // Check if Redis is available before attempting queue operations
+    if (!isRedisAvailable()) {
+      logger.debug("Skipping queue metrics: Redis not available");
+      return;
+    }
+
+    // Get initialized queues (not the null exports)
+    const { emailQueue, imageQueue } = getQueues();
+    
+    // Update email queue metrics if queue exists
+    if (emailQueue) {
+      try {
+        const emailQueueCounts = await emailQueue.getJobCounts();
+        queueSize.labels("email", "waiting").set(emailQueueCounts.waiting || 0);
+        queueSize.labels("email", "active").set(emailQueueCounts.active || 0);
+        queueSize.labels("email", "completed").set(emailQueueCounts.completed || 0);
+        queueSize.labels("email", "failed").set(emailQueueCounts.failed || 0);
+      } catch (error) {
+        logger.debug("Could not update email queue metrics", { error: error instanceof Error ? error.message : error });
+      }
+    }
+    
+    // Update image queue metrics if queue exists
+    if (imageQueue) {
+      try {
+        const imageQueueCounts = await imageQueue.getJobCounts();
+        queueSize.labels("image", "waiting").set(imageQueueCounts.waiting || 0);
+        queueSize.labels("image", "active").set(imageQueueCounts.active || 0);
+        queueSize.labels("image", "completed").set(imageQueueCounts.completed || 0);
+        queueSize.labels("image", "failed").set(imageQueueCounts.failed || 0);
+      } catch (error) {
+        logger.debug("Could not update image queue metrics", { error: error instanceof Error ? error.message : error });
+      }
+    }
+  } catch (error) {
+    logger.debug("Could not update queue metrics", { error: error instanceof Error ? error.message : error });
   }
 }
 
