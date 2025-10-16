@@ -13,6 +13,8 @@ Preferred communication style: Simple, everyday language.
 - Stripe integration is placeholdered/removed - do NOT implement it
 - All Stripe routes and functionality are commented out with placeholders
 - Testing should NEVER be blocked by missing Stripe configuration
+- **DO NOT use run_test tool** - Replit's test infrastructure requires Stripe secrets even when Stripe is removed
+- Verify functionality through manual testing and architect review only
 
 ## System Architecture
 

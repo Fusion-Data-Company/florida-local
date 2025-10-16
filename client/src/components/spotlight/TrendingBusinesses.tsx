@@ -37,15 +37,15 @@ export default function TrendingBusinesses({
   });
 
   const getTrendIcon = (score: number) => {
-    if (score > 80) return <Flame className="h-4 w-4" />;
-    if (score > 60) return <Zap className="h-4 w-4" />;
-    return <TrendingUp className="h-4 w-4" />;
+    if (score > 80) return <Flame className="h-4 w-4 text-white" />;
+    if (score > 60) return <Zap className="h-4 w-4 text-white" />;
+    return <TrendingUp className="h-4 w-4 text-white" />;
   };
 
-  const getTrendColor = (score: number) => {
-    if (score > 80) return "from-red-500 to-orange-500";
-    if (score > 60) return "from-orange-500 to-yellow-500";
-    return "from-green-500 to-emerald-500";
+  const getTrendMetallic = (score: number) => {
+    if (score > 80) return "metallic-gold";
+    if (score > 60) return "metallic-bronze";
+    return "metallic-teal";
   };
 
   if (isLoading) {
@@ -71,55 +71,56 @@ export default function TrendingBusinesses({
 
   if (variant === 'compact') {
     return (
-      <div className="space-y-3">
+      <div className="space-y-2">
         {trendingBusinesses.map((business, index) => (
           <motion.div
             key={business.id}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.05 }}
+            className="apple-hover-depth"
           >
             <Link href={`/business/${business.id}`}>
-              <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer group">
-                <CardContent className="p-4">
+              <Card className="frosted-panel hover:shadow-xl transition-all duration-300 cursor-pointer group border border-white/30">
+                <CardContent className="p-3">
                   <div className="flex items-center gap-3">
                     {/* Rank & Trend Icon */}
-                    <div className="flex flex-col items-center gap-1">
-                      <div className="text-lg font-bold text-muted-foreground">
+                    <div className="flex flex-col items-center gap-1 flex-shrink-0">
+                      <div className="text-base font-bold text-gray-700">
                         #{index + 1}
                       </div>
-                      <div className={`p-1.5 rounded-full bg-gradient-to-r ${getTrendColor(business.trendScore)}`}>
+                      <div className={`p-1.5 rounded-full ${getTrendMetallic(business.trendScore)} shine-sweep-hover`}>
                         {getTrendIcon(business.trendScore)}
                       </div>
                     </div>
 
                     {/* Business Logo */}
-                    <Avatar className="h-12 w-12 border-2 border-white shadow-md">
+                    <Avatar className="h-10 w-10 border-2 border-white/50 shadow-md flex-shrink-0">
                       <AvatarImage src={business.logoUrl} />
-                      <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold">
+                      <AvatarFallback className="metallic-chrome text-gray-900 font-bold">
                         {business.name.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
 
                     {/* Business Info */}
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-bold truncate group-hover:text-purple-600 transition-colors">
+                      <h4 className="font-bold text-sm truncate text-gray-900 group-hover:text-blue-600 transition-colors">
                         {business.name}
                       </h4>
-                      <p className="text-xs text-muted-foreground truncate">
+                      <p className="text-xs text-gray-700 truncate font-medium">
                         {business.category}
                       </p>
                       {business.rating && (
-                        <div className="flex items-center gap-1 mt-1">
+                        <div className="flex items-center gap-1 mt-0.5">
                           <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                          <span className="text-xs font-semibold">{business.rating}</span>
+                          <span className="text-xs font-semibold text-gray-700">{business.rating}</span>
                         </div>
                       )}
                     </div>
 
                     {/* Trend Badge */}
-                    <Badge className={`bg-gradient-to-r ${getTrendColor(business.trendScore)} text-white`}>
-                      <ArrowUp className="h-3 w-3 mr-1" />
+                    <Badge className={`${getTrendMetallic(business.trendScore)} text-white px-2 py-1 shine-sweep-hover flex-shrink-0`}>
+                      <ArrowUp className="h-3 w-3 mr-0.5" />
                       {business.trendPercentage}%
                     </Badge>
                   </div>

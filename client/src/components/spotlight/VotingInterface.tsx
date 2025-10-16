@@ -141,9 +141,9 @@ export default function VotingInterface({
 
   const getRankBadge = (rank: number) => {
     const badges = {
-      1: { icon: Crown, color: "from-yellow-500 to-orange-500", text: "text-yellow-600" },
-      2: { icon: Trophy, color: "from-gray-400 to-gray-500", text: "text-gray-600" },
-      3: { icon: Trophy, color: "from-orange-700 to-orange-800", text: "text-orange-700" },
+      1: { icon: Crown, className: "metallic-gold", text: "text-white" },
+      2: { icon: Trophy, className: "metallic-chrome", text: "text-gray-900" },
+      3: { icon: Trophy, className: "metallic-bronze", text: "text-white" },
     };
 
     const badge = badges[rank as keyof typeof badges];
@@ -151,8 +151,8 @@ export default function VotingInterface({
 
     const Icon = badge.icon;
     return (
-      <div className={`inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br ${badge.color} text-white shadow-lg`}>
-        <Icon className="h-5 w-5" />
+      <div className={`inline-flex items-center justify-center w-10 h-10 rounded-full ${badge.className} shine-sweep-hover shadow-lg`}>
+        <Icon className={`h-5 w-5 ${badge.text}`} />
       </div>
     );
   };
@@ -264,59 +264,60 @@ export default function VotingInterface({
           )}
 
           {/* Top 3 Businesses */}
-          <div className="grid gap-4">
+          <div className="grid gap-3">
             {eligibleBusinesses.slice(0, 3).map((business, index) => (
               <motion.div
                 key={business.id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
+                className="apple-hover-depth"
               >
-                <Card className={`overflow-hidden transition-all duration-300 hover:shadow-lg ${
-                  business.rank === 1 ? 'border-2 border-yellow-400 shadow-yellow-200' : ''
+                <Card className={`frosted-panel overflow-hidden transition-all duration-300 ${
+                  business.rank === 1 ? 'metallic-border-animated border-2' : 'border border-white/30'
                 }`}>
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-4">
+                  <CardContent className="p-3">
+                    <div className="flex items-center gap-3">
                       {/* Rank Badge */}
                       <div className="flex-shrink-0">
                         {getRankBadge(business.rank)}
                       </div>
 
                       {/* Business Logo */}
-                      <Avatar className="h-12 w-12 border-2 border-white shadow-md">
+                      <Avatar className="h-10 w-10 border-2 border-white/50 shadow-md">
                         <AvatarImage src={business.logoUrl} />
-                        <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold">
+                        <AvatarFallback className="metallic-chrome text-gray-900 font-bold">
                           {business.name.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
 
                       {/* Business Info */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-bold text-lg truncate">{business.name}</h4>
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <h4 className="font-bold text-base truncate text-gray-900">{business.name}</h4>
                           {getRankChange(business)}
                           {business.isRising && (
-                            <Badge className="bg-gradient-to-r from-green-500 to-emerald-500">
+                            <Badge className="metallic-teal text-white px-2 py-0.5 text-xs">
                               <TrendingUp className="h-3 w-3 mr-1" />
                               Rising
                             </Badge>
                           )}
                         </div>
-                        <p className="text-sm text-muted-foreground truncate">
+                        <p className="text-xs text-gray-700 truncate font-medium">
                           {business.tagline || business.category}
                         </p>
-                        <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                          <span className="flex items-center gap-1">
+                        <div className="flex items-center gap-3 mt-1.5 text-xs">
+                          <span className="flex items-center gap-1 font-semibold text-gray-700">
                             <Heart className="h-3 w-3 fill-current text-red-500" />
-                            {business.voteCount} votes
+                            {business.voteCount}
                           </span>
                           {business.voteTrend !== 0 && (
-                            <span className={`flex items-center gap-1 font-semibold ${
-                              business.voteTrend > 0 ? 'text-green-600' : 'text-red-600'
+                            <Badge className={`px-2 py-0.5 text-xs ${
+                              business.voteTrend > 0 ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
                             }`}>
-                              <TrendingUp className={`h-3 w-3 ${business.voteTrend < 0 ? 'rotate-180' : ''}`} />
+                              <TrendingUp className={`h-3 w-3 mr-0.5 ${business.voteTrend < 0 ? 'rotate-180' : ''}`} />
                               {business.voteTrend > 0 ? '+' : ''}{business.voteTrend}%
-                            </span>
+                            </Badge>
                           )}
                         </div>
                       </div>
@@ -324,21 +325,21 @@ export default function VotingInterface({
                       {/* Vote Button */}
                       <div className="flex-shrink-0">
                         {votedBusinessIds.has(business.id) ? (
-                          <Button disabled className="bg-green-500 text-white">
-                            <Check className="h-4 w-4 mr-2" />
+                          <Button disabled className="metallic-teal text-white px-4 py-2 h-9">
+                            <Check className="h-4 w-4 mr-1" />
                             Voted
                           </Button>
                         ) : (
                           <Button
                             onClick={() => handleVote(business.id)}
                             disabled={voteMutation.isPending && selectedBusinessId === business.id}
-                            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                            className="metallic-chrome text-gray-900 hover:shadow-lg px-4 py-2 h-9 shine-sweep-hover metallic-button-press"
                           >
                             {voteMutation.isPending && selectedBusinessId === business.id ? (
                               <Loader2 className="h-4 w-4 animate-spin" />
                             ) : (
                               <>
-                                <Heart className="h-4 w-4 mr-2" />
+                                <Heart className="h-4 w-4 mr-1" />
                                 Vote
                               </>
                             )}
