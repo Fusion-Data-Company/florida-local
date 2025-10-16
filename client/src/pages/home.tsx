@@ -79,8 +79,8 @@ export default function Home() {
         {/* Removed gradient backgrounds to show clear HD background */}
         {/* <div className="absolute inset-0 bg-gradient-to-br from-[var(--fl-teal-lagoon)]/10 via-background to-[var(--fl-sunset-gold)]/10" /> */}
 
-        {/* Particle Field with Teal-Gold Colors */}
-        <ParticleField count={50} color="cyan" />
+        {/* Particle Field removed to show clear HD background */}
+        {/* <ParticleField count={50} color="cyan" /> */}
 
         <div className="container mx-auto px-4 lg:px-8 text-center relative z-10">
           {/* Florida Local Branded Headline */}
