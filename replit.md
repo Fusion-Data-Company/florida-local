@@ -33,11 +33,12 @@ Preferred communication style: Simple, everyday language.
 
 **Key Features & Implementations:**
 - **UI/UX:** Elite Luxury UI transformation with premium marble textures, advanced CSS effects, performance-optimized animations, full accessibility (WCAG AA compliance, prefers-reduced-motion support), glass morphism, floating animations, and luxury typography.
+- **AI Tools Page (Cyberpunk Theme):** Ultra-elite cyberpunk metallic futuristic experience with 3D animated hero section (Three.js with 15 optimized metallic boxes), comprehensive dark metallic gradients (slate-900/95 to slate-800/90), cyan/purple energy borders, three-layer overlay system (cyber-metallic-shine, holographic gradients, scan lines), 3D lift animations, and consistent styling across all 8 tabs (Overview, AI Agents, Visual Search, Voice Search, Image Studio, Content Generator, Visual Commerce, Voice Commerce). Performance-optimized with ≤15 geometries and full accessibility support.
 - **E-commerce:** Cart, checkout (manual only - Stripe removed), vendor portal for product management, and an orders system.
 - **Social:** User-generated content (posts, updates), likes, comments, following, and real-time messaging via WebSockets.
 - **Spotlight System:** A three-tier rotation system using weighted algorithms and community voting to feature businesses.
 - **Security:** API key management, webhook signatures, hardened CSP, strict CORS, and session-based WebSocket authentication.
-- **Monitoring:** Sentry for error tracking, PostHog for analytics, and Winston for logging.
+- **Monitoring:** Sentry for error tracking, PostHog for analytics, and Winston for logging. Metrics collection hardened with defensive Redis checks and graceful queue availability handling (server/metrics.ts).
 - **Background Jobs:** Email queues and image processing workers.
 - **Database:** PostgreSQL with Drizzle ORM for type-safe operations, including comprehensive profiles, user management, product catalog, messaging, and spotlight data.
 
