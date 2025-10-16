@@ -162,7 +162,7 @@ export default function AIToolsPage() {
     <div 
       className="min-h-screen relative"
       style={{
-        backgroundImage: "url('/backgrounds/colorful-series-circles-with-orange-blue-colors_889056-245202.jpg')",
+        backgroundImage: "url('/backgrounds/glowing-bubbles-orange-blue.avif')",
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
