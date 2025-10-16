@@ -97,7 +97,15 @@ export default function Landing() {
               <StardustButton
                 variant="gold"
                 size="lg"
-                onClick={() => window.location.href = '/api/login'}
+                onClick={() => {
+                  try {
+                    console.log('🔐 Initiating login flow...');
+                    window.location.href = '/api/login';
+                  } catch (error) {
+                    console.error('❌ Login button error:', error);
+                    alert('Failed to initiate login. Please refresh the page and try again.');
+                  }
+                }}
                 data-testid="button-create-profile"
                 className="shimmer-gold-hover"
               >
