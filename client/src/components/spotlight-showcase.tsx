@@ -105,71 +105,63 @@ export default function SpotlightShowcase() {
             <Button
               onClick={() => refetch()}
               variant="outline"
-              className="flex items-center gap-2 glass-panel border-border/30 hover:border-primary/50 hover-lift btn-press group ambient-glow-cyan shimmer-on-hover"
+              className="metallic-chrome flex items-center gap-2 shine-sweep-hover metallic-button-press group border-white/50 hover:shadow-lg"
               data-testid="button-refresh-spotlight"
             >
-              <TrendingUp className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
-              <span className="relative z-10">Refresh Spotlights</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md"></div>
+              <TrendingUp className="w-4 h-4 group-hover:scale-110 transition-transform duration-300 text-gray-900" />
+              <span className="relative z-10 text-gray-900">Refresh Spotlights</span>
             </Button>
             {activeTab === 'monthly' && (
-              <Button 
+              <Button
                 onClick={() => setShowVoting(!showVoting)}
-                variant={showVoting ? "default" : "outline"}
-                className={`flex items-center gap-2 hover-lift btn-press group transition-all duration-300 ${
-                  showVoting ? 'metallic shadow-sm' : 'glass-panel border-border/30 hover:border-accent/50'
-                }`}
+                className={`flex items-center gap-2 metallic-button-press group transition-all duration-300 ${
+                  showVoting ? 'metallic-teal text-white' : 'metallic-chrome text-gray-900'
+                } shine-sweep-hover`}
                 data-testid="button-toggle-voting"
               >
                 <Heart className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
                 <span className="relative z-10">{showVoting ? 'Hide Voting' : 'Vote for Monthly'}</span>
-                {!showVoting && <div className="absolute inset-0 bg-gradient-to-r from-accent/10 to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md"></div>}
               </Button>
             )}
           </div>
         </div>
 
-        {/* Spotlight Tabs - ELITE LUXURY */}
+        {/* Spotlight Tabs - FUTURISTIC METALLIC */}
         <div className="flex justify-center mb-8">
-          <div className="relative rounded-2xl p-2 card-rim-light transform-3d-card spotlight-tabs-container">
-            <div className="flex space-x-1 relative z-10">
-              <Button
-                variant={activeTab === 'daily' ? 'default' : 'ghost'}
-                onClick={() => setActiveTab('daily')}
-                className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 group relative ${
-                  activeTab === 'daily' ? 'spotlight-active-tab' : 'hover:bg-background/50'
-                }`}
-                data-testid="tab-daily-spotlight"
-              >
-                <Trophy className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-300" />
-                <span className="relative z-10">Daily</span>
-                {activeTab !== 'daily' && <div className="absolute inset-0 bg-gradient-to-r from-secondary/10 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>}
-              </Button>
-              <Button
-                variant={activeTab === 'weekly' ? 'default' : 'ghost'}
-                onClick={() => setActiveTab('weekly')}
-                className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 group relative ${
-                  activeTab === 'weekly' ? 'spotlight-active-tab' : 'hover:bg-background/50'
-                }`}
-                data-testid="tab-weekly-spotlight"
-              >
-                <Calendar className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-300" />
-                <span className="relative z-10">Weekly</span>
-                {activeTab !== 'weekly' && <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>}
-              </Button>
-              <Button
-                variant={activeTab === 'monthly' ? 'default' : 'ghost'}
-                onClick={() => setActiveTab('monthly')}
-                className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 group relative ${
-                  activeTab === 'monthly' ? 'spotlight-active-tab' : 'hover:bg-background/50'
-                }`}
-                data-testid="tab-monthly-spotlight"
-              >
-                <Heart className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-300" />
-                <span className="relative z-10">Monthly</span>
-                {activeTab !== 'monthly' && <div className="absolute inset-0 bg-gradient-to-r from-accent/10 to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>}
-              </Button>
-            </div>
+          <div className="glass-card-futuristic rounded-2xl p-2 inline-flex gap-2">
+            <Button
+              variant="ghost"
+              onClick={() => setActiveTab('daily')}
+              className={`px-6 py-3 rounded-xl font-semibold transition-all duration-400 group relative overflow-hidden ${
+                activeTab === 'daily' ? 'futuristic-tab active metallic-chrome' : 'futuristic-tab'
+              }`}
+              data-testid="tab-daily-spotlight"
+            >
+              <Trophy className={`w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-300 ${activeTab === 'daily' ? 'text-gray-900' : 'text-gray-700'}`} />
+              <span className={`relative z-10 ${activeTab === 'daily' ? 'text-gray-900' : 'text-gray-700'}`}>Daily</span>
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setActiveTab('weekly')}
+              className={`px-6 py-3 rounded-xl font-semibold transition-all duration-400 group relative overflow-hidden ${
+                activeTab === 'weekly' ? 'futuristic-tab active metallic-chrome' : 'futuristic-tab'
+              }`}
+              data-testid="tab-weekly-spotlight"
+            >
+              <Calendar className={`w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-300 ${activeTab === 'weekly' ? 'text-gray-900' : 'text-gray-700'}`} />
+              <span className={`relative z-10 ${activeTab === 'weekly' ? 'text-gray-900' : 'text-gray-700'}`}>Weekly</span>
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setActiveTab('monthly')}
+              className={`px-6 py-3 rounded-xl font-semibold transition-all duration-400 group relative overflow-hidden ${
+                activeTab === 'monthly' ? 'futuristic-tab active metallic-chrome' : 'futuristic-tab'
+              }`}
+              data-testid="tab-monthly-spotlight"
+            >
+              <Heart className={`w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-300 ${activeTab === 'monthly' ? 'text-gray-900' : 'text-gray-700'}`} />
+              <span className={`relative z-10 ${activeTab === 'monthly' ? 'text-gray-900' : 'text-gray-700'}`}>Monthly</span>
+            </Button>
           </div>
         </div>
 
