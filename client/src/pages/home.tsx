@@ -172,19 +172,25 @@ export default function Home() {
       </div>
 
         {/* Spotlight Voting Interface */}
-        <section className="py-12 container mx-auto px-4 relative z-10">
-          <VotingInterface variant="homepage" limit={6} />
+        <section className="relative py-12">
+          <div className="absolute inset-0 glass-tint-light"></div>
+          <div className="container mx-auto px-4 relative z-10">
+            <VotingInterface variant="homepage" limit={6} />
+          </div>
         </section>
 
         {/* Trending Businesses */}
-        <section className="py-12 container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto mb-8 entrance-fade-up">
-            <LiquidGlassHeaderCard
-              title="Trending Now"
-              subtitle="See what's hot in your community right now"
-            />
+        <section className="relative py-12">
+          <div className="absolute inset-0 backdrop-visible"></div>
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="max-w-4xl mx-auto mb-8 entrance-fade-up">
+              <LiquidGlassHeaderCard
+                title="Trending Now"
+                subtitle="See what's hot in your community right now"
+              />
+            </div>
+            <TrendingBusinesses limit={5} variant="compact" />
           </div>
-          <TrendingBusinesses limit={5} variant="compact" />
         </section>
 
         <SpotlightShowcase />

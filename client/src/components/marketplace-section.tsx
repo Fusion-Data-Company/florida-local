@@ -88,12 +88,12 @@ export default function MarketplaceSection() {
         <div className="flex flex-col lg:flex-row items-center justify-between mb-16">
           <div className="lg:w-1/2 mb-8 lg:mb-0">
             <Link href="/marketplace">
-              <GlassButton>
-                <div className="flex items-center text-white text-lg">
+              <button className="metallic-chrome px-12 py-6 rounded-3xl shine-sweep-hover apple-hover-depth metallic-button-press transition-all duration-300 hover:shadow-2xl">
+                <div className="flex items-center text-gray-900 text-lg font-semibold">
                   <ShoppingBag className="h-5 w-5 mr-3" />
                   <span>Explore Marketplace</span>
                 </div>
-              </GlassButton>
+              </button>
             </Link>
           </div>
           
