@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { WebSocketProvider } from "@/components/WebSocketProvider";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { useAuth } from "@/hooks/useAuth";
+import { AuthNotifications, SessionWarning } from "@/components/auth-notifications";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Home from "@/pages/home";
@@ -69,7 +70,10 @@ function Router() {
   const { isAuthenticated, isLoading } = useAuth();
 
   return (
-    <Switch>
+    <>
+      <AuthNotifications />
+      {isAuthenticated && <SessionWarning />}
+      <Switch>
       {/* Public routes - accessible to everyone */}
       <Route path="/florida-elite" component={FloridaLocalElite} />
       <Route path="/florida-local" component={FloridaLocalElite} />
@@ -130,7 +134,8 @@ function Router() {
         </>
       )}
       <Route component={NotFound} />
-    </Switch>
+      </Switch>
+    </>
   );
 }
 

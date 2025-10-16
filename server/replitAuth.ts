@@ -164,9 +164,27 @@ async function upsertUser(
       profileImageUrl: claims["profile_image_url"],
     };
     
-    const user = await storage.upsertUser(userData);
-    console.log(`✅ User upserted successfully: ${user.email} (DB ID: ${user.id})`);
-    return user;
+    // Retry logic for transient database failures
+    let retries = 3;
+    let lastError: Error | null = null;
+    
+    while (retries > 0) {
+      try {
+        const user = await storage.upsertUser(userData);
+        console.log(`✅ User upserted successfully: ${user.email} (DB ID: ${user.id})`);
+        return user;
+      } catch (err) {
+        lastError = err as Error;
+        retries--;
+        if (retries > 0) {
+          console.warn(`⚠️ User upsert failed, retrying... (${retries} attempts left)`);
+          await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+        }
+      }
+    }
+    
+    console.error(`❌ Failed to upsert user ${claims["email"]} after all retries:`, lastError);
+    throw lastError;
   } catch (error) {
     console.error(`❌ Failed to upsert user ${claims["email"]}:`, error);
     throw error;
@@ -467,13 +485,32 @@ export async function setupAuth(app: Express) {
         console.error("❌ Authentication error:", err);
         console.error("❌ Error stack:", err.stack);
         console.error("❌ Error details:", JSON.stringify(err, null, 2));
-        return res.redirect("/api/login");
+        
+        // Log detailed error for production debugging
+        const errorDetails = {
+          timestamp: new Date().toISOString(),
+          hostname,
+          strategyName,
+          errorType: err.name,
+          errorMessage: err.message,
+          errorStack: err.stack,
+          requestHeaders: {
+            host: req.get('host'),
+            xForwardedHost: req.get('x-forwarded-host'),
+            userAgent: req.get('user-agent')
+          }
+        };
+        console.error("🚨 PRODUCTION AUTH ERROR DETAILS:", JSON.stringify(errorDetails, null, 2));
+        
+        return res.redirect(`/api/login?error=auth_failed&reason=${encodeURIComponent(err.message || 'unknown')}`);
       }
 
       if (!user) {
         console.error("❌ Authentication failed - no user returned");
         console.error("❌ Info from passport:", JSON.stringify(info, null, 2));
-        return res.redirect("/api/login");
+        
+        const failureReason = info?.message || 'no_user_returned';
+        return res.redirect(`/api/login?error=auth_failed&reason=${encodeURIComponent(failureReason)}`);
       }
 
       console.log(`✅ Authentication successful for user:`, {
@@ -490,7 +527,20 @@ export async function setupAuth(app: Express) {
           console.error("❌ Session login error:", loginErr);
           console.error("❌ Login error stack:", loginErr.stack);
           console.error("❌ Login error details:", JSON.stringify(loginErr, null, 2));
-          return res.redirect("/api/login");
+          
+          // Log session error for production debugging
+          const sessionErrorDetails = {
+            timestamp: new Date().toISOString(),
+            userId: user.claims?.sub,
+            userEmail: user.claims?.email,
+            sessionId: req.sessionID,
+            errorType: loginErr.name,
+            errorMessage: loginErr.message,
+            errorStack: loginErr.stack
+          };
+          console.error("🚨 PRODUCTION SESSION ERROR:", JSON.stringify(sessionErrorDetails, null, 2));
+          
+          return res.redirect(`/api/login?error=session_failed&reason=${encodeURIComponent(loginErr.message || 'unknown')}`);
         }
 
         console.log(`✅ Session created successfully for user: ${user.claims?.email} (ID: ${user.claims?.sub})`);

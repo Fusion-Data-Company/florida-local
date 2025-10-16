@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Search, ShoppingBag, Star, Heart, Truck, Award, Filter, Layers, Check, SortAsc, DollarSign } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { LiquidGlassHeaderCard, GlassButton, GlassFilter } from "@/components/ui/liquid-glass";
 
 export default function MarketplaceSection() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -72,25 +73,27 @@ export default function MarketplaceSection() {
 
   return (
     <section className="py-12 lg:py-20 miami-marketplace-section relative overflow-hidden dynamic-gradient-bg">
+      {/* Glass Filter for Liquid Glass Effect */}
+      <GlassFilter />
+
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
+        {/* Liquid Glass Header Card */}
+        <div className="max-w-4xl mx-auto mb-16 entrance-fade-up">
+          <LiquidGlassHeaderCard
+            title="Local Marketplace"
+            subtitle="Discover unique products and services from Florida's most innovative businesses. Support local entrepreneurs while finding exactly what you need."
+          />
+        </div>
+
         <div className="flex flex-col lg:flex-row items-center justify-between mb-16">
           <div className="lg:w-1/2 mb-8 lg:mb-0">
-            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 text-white entrance-slide-right" style={{textShadow: '0 2px 6px rgba(0,0,0,0.4)'}}>
-              Local Marketplace
-            </h2>
-            <p className="text-xl text-white leading-relaxed mb-6 miami-body-text entrance-fade-up stagger-1" style={{textShadow: '0 1px 3px rgba(0,0,0,0.3)'}}>
-              Discover unique products and services from Florida's most innovative businesses.
-              Support local entrepreneurs while finding exactly what you need.
-            </p>
             <Link href="/marketplace">
-              <Button
-                className="gradient-metallic-gold border-animated-gradient miami-hover-lift px-8 py-4 font-semibold group transition-all duration-300 transform-3d-float shadow-lg ambient-glow-gold shimmer-gold-hover entrance-scale-fade stagger-2"
-                data-testid="button-explore-marketplace"
-              >
-                <ShoppingBag className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform duration-300" />
-                <span className="relative z-10">Explore Marketplace</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
-              </Button>
+              <GlassButton>
+                <div className="flex items-center text-white text-lg">
+                  <ShoppingBag className="h-5 w-5 mr-3" />
+                  <span>Explore Marketplace</span>
+                </div>
+              </GlassButton>
             </Link>
           </div>
           
@@ -265,11 +268,12 @@ export default function MarketplaceSection() {
         ) : null}
 
         {/* Miami Elite Featured Products Grid */}
-        <div className="miami-section-header mb-12">
-          <h3 className="text-3xl font-serif font-bold text-center mb-4 text-white">
-            Featured Products
-          </h3>
-          <div className="w-24 h-1 bg-gradient-to-r from-cyan-400 to-emerald-400 mx-auto rounded-full"></div>
+        <div className="max-w-3xl mx-auto mb-12 entrance-fade-up">
+          <LiquidGlassHeaderCard
+            title="Featured Products"
+            subtitle=""
+            className="py-4"
+          />
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {isLoading ? (

@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Image as ImageIcon, MessageSquare, TrendingUp } from "lucide-react";
+import { LiquidGlassHeaderCard, GlassFilter } from "@/components/ui/liquid-glass";
 
 const createPostSchema = insertPostSchema.extend({
   content: z.string().min(1, "Post content is required").max(2000, "Post content must be less than 2000 characters"),
@@ -83,16 +84,16 @@ export default function SocialFeed() {
 
   return (
     <section className="elite-feed-section py-20">
+      {/* Glass Filter for Liquid Glass Effect */}
+      <GlassFilter />
+
       <div className="container mx-auto px-4 lg:px-8">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 text-white" style={{textShadow: '0 2px 6px rgba(0,0,0,0.4)'}}>
-              Community Activity
-            </h2>
-            <p className="text-xl text-white leading-relaxed" style={{textShadow: '0 1px 3px rgba(0,0,0,0.3)'}}>
-              Stay connected with what's happening in your local business community.
-              See updates, celebrate successes, and discover opportunities.
-            </p>
+          <div className="text-center mb-16 entrance-fade-up">
+            <LiquidGlassHeaderCard
+              title="Community Activity"
+              subtitle="Stay connected with what's happening in your local business community. See updates, celebrate successes, and discover opportunities."
+            />
           </div>
 
           {/* Create Post Section */}

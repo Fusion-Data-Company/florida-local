@@ -22,6 +22,7 @@ import {
   MicroIcon,
 } from "@/components/premium-ultra";
 import { PremiumButton, PremiumGlassCard } from "@/components/premium-ui";
+import { LiquidGlassHeaderCard, GlassButton, GlassFilter } from "@/components/ui/liquid-glass";
 
 export default function Home() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -50,6 +51,9 @@ export default function Home() {
       data-surface-intensity="delicate"
       data-surface-tone="cool"
     >
+      {/* Glass Filter for Liquid Glass Effect */}
+      <GlassFilter />
+
       {/* ULTRA PREMIUM EFFECTS */}
       {/* <AuroraAmbient intensity="medium" /> */}
 
@@ -83,17 +87,12 @@ export default function Home() {
         {/* <ParticleField count={50} color="cyan" /> */}
 
         <div className="container mx-auto px-4 lg:px-8 text-center relative z-10">
-          {/* Florida Local Branded Headline */}
-          <GlowHero
-            glowText="Welcome Back to Your Community"
-            glowTextSize="xl"
-            className="mb-6 entrance-fade-up"
-          />
-          <div className="bg-white/90 backdrop-blur-sm p-6 rounded-2xl max-w-3xl mx-auto mb-8 entrance-fade-up stagger-1">
-            <p className="text-xl text-gray-900 leading-relaxed">
-              Stay connected with Florida's thriving business network. Discover new opportunities,
-              showcase your latest updates, and grow your local presence.
-            </p>
+          {/* Liquid Glass Welcome Card */}
+          <div className="max-w-4xl mx-auto mb-8 entrance-fade-up">
+            <LiquidGlassHeaderCard
+              title="Welcome Back to Your Community"
+              subtitle="Stay connected with Florida's thriving business network. Discover new opportunities, showcase your latest updates, and grow your local presence."
+            />
           </div>
 
           {/* Florida Local Branded Buttons */}
@@ -180,10 +179,11 @@ export default function Home() {
 
         {/* Trending Businesses */}
         <section className="py-12 container mx-auto px-4 relative z-10">
-          <div className="bg-white p-6 rounded-3xl shadow-2xl max-w-md mx-auto mb-8">
-            <h2 className="text-3xl font-bold text-center text-black">
-              Trending Now
-            </h2>
+          <div className="max-w-4xl mx-auto mb-8 entrance-fade-up">
+            <LiquidGlassHeaderCard
+              title="Trending Now"
+              subtitle="See what's hot in your community right now"
+            />
           </div>
           <TrendingBusinesses limit={5} variant="compact" />
         </section>

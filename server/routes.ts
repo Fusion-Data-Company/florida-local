@@ -5,6 +5,7 @@ import { setupAuth, isAuthenticated } from "./replitAuth";
 import { isAdmin, adminRateLimit } from "./adminAuth";
 import { votingRateLimit, businessActionRateLimit, generalAPIRateLimit, strictRateLimit, publicEndpointRateLimit } from "./rateLimit";
 import { checkRedisConnection } from "./redis";
+import { getDatabaseStatus } from "./db";
 import { insertBusinessSchema, updateBusinessSchema, insertProductSchema, insertPostSchema, insertMessageSchema, insertCartItemSchema, insertOrderSchema } from "@shared/schema";
 import { z } from "zod";
 import path from "path";
@@ -49,7 +50,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   console.log("🔧 Setting up auth routes...");
 
+  // Authentication health check endpoint
+  app.get('/api/auth/health', async (_req, res) => {
+    try {
+      const healthData = {
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        sessionStore: 'unknown',
+        database: 'unknown',
+        redis: 'unknown'
+      };
+
+      // Check session store availability
+      try {
+        const redisAvailable = await checkRedisConnection().catch(() => false);
+        healthData.redis = redisAvailable ? 'connected' : 'disconnected';
+        
+        if (redisAvailable) {
+          healthData.sessionStore = 'redis';
+        } else {
+          const dbStatus = getDatabaseStatus();
+          healthData.database = dbStatus?.connected ? 'connected' : 'disconnected';
+          healthData.sessionStore = dbStatus?.connected ? 'postgresql' : 'memory';
+        }
+      } catch (err) {
+        console.error('Auth health check error:', err);
+        healthData.sessionStore = 'error';
+      }
+
+      res.json(healthData);
+    } catch (error) {
+      res.status(500).json({ 
+        status: 'error',
+        timestamp: new Date().toISOString(),
+        message: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
   // Auth routes
+  
+  // Session info endpoint (for session expiry warnings)
+  app.get('/api/auth/session-info', isAuthenticated, async (req: any, res) => {
+    try {
+      const session = req.session as any;
+      const expires = session.cookie.expires;
+      
+      // Return expiry time for client-side calculation
+      res.json({
+        expires: expires ? expires.toISOString() : null,
+        maxAge: session.cookie.maxAge,
+        isRolling: session.cookie.rolling ?? true
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to retrieve session info" });
+    }
+  });
+
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
       // Log the authentication check

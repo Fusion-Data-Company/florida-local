@@ -10,6 +10,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Heart, Trophy, TrendingUp, Calendar } from "lucide-react";
 import GlowHero from "@/components/ui/glow-hero";
+import { LiquidGlassHeaderCard, GlassFilter } from "@/components/ui/liquid-glass";
 
 export default function SpotlightShowcase() {
   const [activeTab, setActiveTab] = useState<'daily' | 'weekly' | 'monthly'>('daily');
@@ -84,22 +85,22 @@ export default function SpotlightShowcase() {
 
   return (
     <section className="py-12 lg:py-20 relative overflow-hidden spotlight-section gradient-shift">
+      {/* Glass Filter for Liquid Glass Effect */}
+      <GlassFilter />
+
       {/* Floating Gradient Orbs - Limited to 2 for performance */}
       <div className="absolute top-10 right-20 w-96 h-96 gradient-iridescent float-dynamic rounded-full opacity-[0.08] blur-3xl will-change-transform premium-pop stagger-1"></div>
       <div className="absolute bottom-10 left-20 w-80 h-80 gradient-iridescent float-gentle rounded-full opacity-[0.08] blur-3xl will-change-transform premium-pop stagger-2"></div>
-      
+
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
-        {/* Section Header - ELITE LUXURY */}
-        <div className="text-center mb-16">
-          <GlowHero
-            glowText="Community Spotlight"
-            glowTextSize="lg"
-            className="mb-6 entrance-fade-up"
-          />
-          <p className="text-xl text-white max-w-3xl mx-auto leading-relaxed entrance-fade-up stagger-1" style={{textShadow: '0 1px 3px rgba(0,0,0,0.3)'}}>
-            Celebrating the businesses that make Florida communities thrive.
-            Discover featured entrepreneurs selected by our intelligent promotion algorithms.
-          </p>
+        {/* Section Header - LIQUID GLASS CARD */}
+        <div className="text-center mb-16 entrance-fade-up">
+          <div className="max-w-4xl mx-auto mb-8">
+            <LiquidGlassHeaderCard
+              title="Community Spotlight"
+              subtitle="Celebrating the businesses that make Florida communities thrive. Discover featured entrepreneurs selected by our intelligent promotion algorithms."
+            />
+          </div>
           <div className="mt-8 flex justify-center gap-4 entrance-scale-fade stagger-2">
             <Button
               onClick={() => refetch()}
