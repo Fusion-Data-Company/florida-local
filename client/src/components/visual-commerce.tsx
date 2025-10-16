@@ -331,14 +331,17 @@ export default function VisualCommerce() {
 
         {/* Create Tab */}
         <TabsContent value="create" className="space-y-4">
-          <Card>
-            <CardHeader>
+          <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+            <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+            <CardHeader className="relative z-10">
               <CardTitle>Create Shoppable Image</CardTitle>
               <CardDescription>
                 Upload an image and tag products to make them shoppable
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 relative z-10">
               {!imagePreview ? (
                 <div className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-12 text-center">
                   <Upload className="w-12 h-12 mx-auto text-gray-400 mb-4" />
@@ -533,14 +536,17 @@ export default function VisualCommerce() {
           </Card>
 
           {/* Tips Card */}
-          <Card className="border-purple-200 dark:border-purple-900">
-            <CardHeader>
+          <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-purple-400/30 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+            <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+            <CardHeader className="relative z-10">
               <CardTitle className="text-base flex items-center gap-2">
                 <Info className="w-4 h-4 text-purple-600" />
                 Pro Tips
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative z-10">
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex items-start gap-2">
                   <span className="text-purple-600 mt-0.5">•</span>
@@ -583,8 +589,11 @@ export default function VisualCommerce() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                 >
-                  <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
-                    <div className="relative group">
+                  <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group cursor-pointer">
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+                    <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+                    <div className="relative group z-10">
                       <img
                         src={image.imageUrl}
                         alt={image.title || "Shoppable image"}
@@ -631,8 +640,11 @@ export default function VisualCommerce() {
                 </motion.div>
               ))
             ) : (
-              <Card className="col-span-full">
-                <CardContent className="py-12 text-center">
+              <Card className="col-span-full bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+                <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+                <CardContent className="py-12 text-center relative z-10">
                   <ImageIcon className="w-16 h-16 mx-auto text-gray-400 mb-4" />
                   <p className="text-muted-foreground mb-4">No shoppable images yet</p>
                   <Button onClick={() => setActiveTab("create")}>

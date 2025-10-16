@@ -628,9 +628,15 @@ export default function AIAgentsHub() {
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
             transition={{ duration: 0.4 }}
           >
-            <Card className="border-2 border-[var(--fl-teal-lagoon)]/40 bg-gradient-to-br from-white/90 dark:from-black/60 to-[var(--fl-teal-lagoon)]/10 backdrop-blur-xl shadow-2xl relative overflow-hidden">
-              {/* Animated background gradient */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[var(--fl-teal-lagoon)]/5 via-[var(--fl-sunset-gold)]/5 to-[var(--fl-teal-lagoon)]/5 animate-pulse" style={{ animationDuration: '3s' }} />
+            <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+              {/* Metallic shine */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+              
+              {/* Holographic overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+              
+              {/* Scan line */}
+              <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
               
               <CardHeader className="relative z-10">
                 <CardTitle className="text-xl flex items-center gap-3">
@@ -792,21 +798,25 @@ export default function AIAgentsHub() {
                 }}
               >
                 <Card
-                  className={`h-full cursor-pointer transition-all duration-500 bg-white/80 dark:bg-black/40 backdrop-blur-xl border-2 relative overflow-hidden group ${
+                  className={`h-full cursor-pointer bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group ${
                     selectedAgent?.id === agent.id
-                      ? 'ring-4 ring-[var(--fl-sunset-gold)]/50 shadow-[0_0_40px_rgba(212,175,55,0.4)] border-[var(--fl-sunset-gold)]'
-                      : 'hover:border-[var(--fl-teal-lagoon)]/50 border-gray-200/50 dark:border-gray-700/50'
+                      ? 'ring-4 ring-cyan-400/50 shadow-[0_0_50px_rgba(0,255,255,0.4)] border-cyan-400'
+                      : ''
                   }`}
                   onClick={() => setSelectedAgent(agent)}
                   data-testid={`card-agent-${agent.id}`}
                 >
-                  {/* Animated gradient border effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-[var(--fl-teal-lagoon)]/0 via-[var(--fl-sunset-gold)]/20 to-[var(--fl-teal-lagoon)]/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl" />
+                  {/* Metallic shine */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
                   
-                  {/* Shimmer effect */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
-                  </div>
+                  {/* Holographic overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+                  
+                  {/* Scan line */}
+                  <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+                  
+                  {/* Circuit pattern */}
+                  <div className="absolute inset-0 cyber-circuit-pattern opacity-5 group-hover:opacity-10 transition-opacity z-0" />
 
                   <CardHeader className="relative z-10">
                     <div className="flex items-start justify-between mb-3">
@@ -879,13 +889,18 @@ export default function AIAgentsHub() {
               damping: 20
             }}
           >
-            <Card className="border-2 border-[var(--fl-sunset-gold)]/50 bg-gradient-to-br from-white/95 dark:from-black/80 to-[var(--fl-sunset-gold)]/10 shadow-[0_20px_60px_rgba(212,175,55,0.3)] backdrop-blur-xl relative overflow-hidden">
-              {/* Animated gradient background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[var(--fl-teal-lagoon)]/5 via-transparent to-[var(--fl-sunset-gold)]/10 animate-pulse" style={{ animationDuration: '4s' }} />
+            <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+              {/* Metallic shine */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
               
-              {/* Sparkle effects */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--fl-sunset-gold)]/10 rounded-full blur-3xl" />
-              <div className="absolute bottom-0 left-0 w-32 h-32 bg-[var(--fl-teal-lagoon)]/10 rounded-full blur-3xl" />
+              {/* Holographic overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+              
+              {/* Scan line */}
+              <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+              
+              {/* Circuit pattern */}
+              <div className="absolute inset-0 cyber-circuit-pattern opacity-5 group-hover:opacity-10 transition-opacity z-0" />
               
               <CardHeader className="bg-gradient-to-r from-[var(--fl-teal-lagoon)]/10 to-[var(--fl-sunset-gold)]/10 relative z-10">
                 <div className="flex items-center justify-between">

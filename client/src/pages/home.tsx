@@ -23,6 +23,19 @@ import {
 } from "@/components/premium-ultra";
 import { PremiumButton, PremiumGlassCard } from "@/components/premium-ui";
 import { LiquidGlassHeaderCard, GlassButton, GlassFilter } from "@/components/ui/liquid-glass";
+import { AnimatedHikeCard, type Stat } from "@/components/ui/card-25";
+import { Clock, MapPin, Heart, Sparkles } from "lucide-react";
+
+// Import Florida Local business images
+import elegantRestaurant1 from "@/assets/stock_images/elegant_restaurant_f_aa323e17.jpg";
+import elegantRestaurant2 from "@/assets/stock_images/elegant_restaurant_f_cc520cc1.jpg";
+import fineDiningFood from "@/assets/stock_images/fine_dining_food_pre_6c60b0bf.jpg";
+import beachWedding1 from "@/assets/stock_images/beachwedding1.jpg";
+import beachWedding2 from "@/assets/stock_images/beach_wedding_ceremo_313889d0.jpg";
+import beachWedding3 from "@/assets/stock_images/beach_wedding_ceremo_59009157.jpg";
+import luxurySpa1 from "@/assets/stock_images/luxury_spa_wellness__78221b18.jpg";
+import luxurySpa2 from "@/assets/stock_images/luxury_wellness_spa__482737df.jpg";
+import luxurySpa3 from "@/assets/stock_images/luxury_wellness_spa__8f194a3c.jpg";
 
 export default function Home() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -170,6 +183,58 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+        {/* Featured Florida Businesses */}
+        <section className="relative py-16">
+          <div className="absolute inset-0 glass-section-overlay"></div>
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="max-w-4xl mx-auto mb-12 entrance-fade-up">
+              <LiquidGlassHeaderCard
+                title="Featured Local Businesses"
+                subtitle="Discover exceptional businesses across Florida"
+                withDarkTint={false}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+              <AnimatedHikeCard
+                title="Fine Dining"
+                images={[elegantRestaurant1, elegantRestaurant2, fineDiningFood]}
+                stats={[
+                  { icon: <Clock className="h-4 w-4" />, label: "Open Daily" } as Stat,
+                  { icon: <MapPin className="h-4 w-4" />, label: "Miami, FL" } as Stat,
+                  { icon: <Star className="h-4 w-4" />, label: "Premium" } as Stat,
+                ]}
+                description="Experience Florida's finest dining with world-class cuisine and elegant atmosphere."
+                href="/marketplace?category=dining"
+              />
+
+              <AnimatedHikeCard
+                title="Beach Weddings"
+                images={[beachWedding1, beachWedding2, beachWedding3]}
+                stats={[
+                  { icon: <Heart className="h-4 w-4" />, label: "Full Service" } as Stat,
+                  { icon: <MapPin className="h-4 w-4" />, label: "Coastal FL" } as Stat,
+                  { icon: <Users className="h-4 w-4" />, label: "50-200 Guests" } as Stat,
+                ]}
+                description="Create unforgettable memories with stunning beach wedding ceremonies."
+                href="/marketplace?category=weddings"
+              />
+
+              <AnimatedHikeCard
+                title="Luxury Spa & Wellness"
+                images={[luxurySpa1, luxurySpa2, luxurySpa3]}
+                stats={[
+                  { icon: <Sparkles className="h-4 w-4" />, label: "Premium" } as Stat,
+                  { icon: <Clock className="h-4 w-4" />, label: "7 Days/Week" } as Stat,
+                  { icon: <Star className="h-4 w-4" />, label: "5-Star" } as Stat,
+                ]}
+                description="Rejuvenate your mind and body with luxury spa treatments and wellness programs."
+                href="/marketplace?category=wellness"
+              />
+            </div>
+          </div>
+        </section>
 
         {/* Spotlight Voting Interface */}
         <section className="relative py-12">

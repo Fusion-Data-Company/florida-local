@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
-import { Post } from "@shared/types";
+import { Post, Business } from "@shared/types";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { useToast } from "@/hooks/use-toast";
@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AIGeneratedBadge from "@/components/ai-generated-badge";
+import { AnimatedHikeCard, type Stat } from "@/components/ui/card-25";
+import { Clock, Heart, Award, Handshake, ShoppingBag, Store } from "lucide-react";
 
 interface ActivityPostProps {
   post: Post;
@@ -21,6 +23,12 @@ export default function ActivityPost({ post }: ActivityPostProps) {
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [localLikeCount, setLocalLikeCount] = useState(post.likeCount || 0);
+
+  // Fetch business data for the post
+  const { data: business } = useQuery<Business>({
+    queryKey: [`/api/businesses/${post.businessId}`],
+    enabled: !!post.businessId,
+  });
 
   // Check if current user has liked this post
   const { data: likeStatus } = useQuery<{ isLiked: boolean }>({
@@ -150,6 +158,75 @@ export default function ActivityPost({ post }: ActivityPostProps) {
     }
     return [];
   };
+
+  // Get icon based on post type for AnimatedHikeCard stats
+  const getPostTypeIcon = () => {
+    switch (post.type) {
+      case 'achievement':
+        return <Award className="h-4 w-4" />;
+      case 'partnership':
+        return <Handshake className="h-4 w-4" />;
+      case 'product':
+        return <ShoppingBag className="h-4 w-4" />;
+      default:
+        return <Store className="h-4 w-4" />;
+    }
+  };
+
+  // Get post type label
+  const getPostTypeLabel = () => {
+    switch (post.type) {
+      case 'achievement':
+        return 'Achievement';
+      case 'partnership':
+        return 'Partnership';
+      case 'product':
+        return 'New Product';
+      default:
+        return 'Update';
+    }
+  };
+
+  // Check if we should render as AnimatedHikeCard (3 images)
+  const shouldRenderAsAnimatedCard = () => {
+    const images = getPostImages();
+    return images.length === 3 && business;
+  };
+
+  // Render AnimatedHikeCard version for posts with exactly 3 images
+  if (shouldRenderAsAnimatedCard()) {
+    const images = getPostImages();
+    const stats: Stat[] = [
+      {
+        icon: <Clock className="h-4 w-4" />,
+        label: post.createdAt ? new Date(post.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Recent'
+      },
+      {
+        icon: getPostTypeIcon(),
+        label: getPostTypeLabel()
+      },
+      {
+        icon: <Heart className="h-4 w-4" />,
+        label: `${localLikeCount} likes`
+      },
+    ];
+
+    // Truncate description if too long
+    const description = post.content.length > 150
+      ? post.content.substring(0, 150) + '...'
+      : post.content;
+
+    return (
+      <AnimatedHikeCard
+        title={business!.name}
+        images={images}
+        stats={stats}
+        description={description}
+        href={`/business/${post.businessId}`}
+        className="max-w-full"
+      />
+    );
+  }
 
   return (
     <article className="frosted-panel border border-white/30 rounded-2xl p-6 group apple-hover-depth transition-all duration-300" data-testid={`post-${post.id}`}>

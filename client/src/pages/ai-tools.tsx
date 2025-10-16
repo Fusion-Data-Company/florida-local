@@ -384,8 +384,16 @@ export default function AIToolsPage() {
             </div>
 
             {/* Quick Actions */}
-            <Card className="relative overflow-hidden bg-black/40 border border-cyan-400/30 shadow-[0_0_30px_rgba(0,255,255,0.15)] hover:backdrop-blur-xl transition-all duration-300">
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-blue-500/5" />
+            <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+              {/* Metallic shine */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+              
+              {/* Holographic overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+              
+              {/* Scan line */}
+              <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+              
               <CardHeader className="relative z-10">
                 <CardTitle className="text-white">Quick AI Actions</CardTitle>
                 <CardDescription className="text-gray-400">Get started with common AI tasks</CardDescription>
@@ -394,39 +402,43 @@ export default function AIToolsPage() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <Button
                     variant="outline"
-                    className="h-auto flex flex-col py-4 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border-blue-400/30 hover:border-blue-400/60 hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] transition-all duration-300 text-white"
+                    className="h-auto flex flex-col py-4 bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-blue-400/50 hover:shadow-[0_0_30px_rgba(59,130,246,0.3)] transition-all duration-300 text-white cyber-3d-lift relative overflow-hidden group"
                     onClick={() => setActiveTab('agents')}
                     data-testid="button-quick-optimize"
                   >
-                    <TrendingUp className="w-6 h-6 mb-2 text-blue-400" />
-                    <span className="text-xs">Optimize Campaign</span>
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+                    <TrendingUp className="w-6 h-6 mb-2 text-blue-400 relative z-10" />
+                    <span className="text-xs relative z-10">Optimize Campaign</span>
                   </Button>
                   <Button
                     variant="outline"
-                    className="h-auto flex flex-col py-4 bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-400/30 hover:border-purple-400/60 hover:shadow-[0_0_20px_rgba(168,85,247,0.3)] transition-all duration-300 text-white"
+                    className="h-auto flex flex-col py-4 bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-purple-400/50 hover:shadow-[0_0_30px_rgba(168,85,247,0.3)] transition-all duration-300 text-white cyber-3d-lift relative overflow-hidden group"
                     onClick={() => setActiveTab('generate')}
                     data-testid="button-quick-images"
                   >
-                    <Package className="w-6 h-6 mb-2 text-purple-400" />
-                    <span className="text-xs">Product Images</span>
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+                    <Package className="w-6 h-6 mb-2 text-purple-400 relative z-10" />
+                    <span className="text-xs relative z-10">Product Images</span>
                   </Button>
                   <Button
                     variant="outline"
-                    className="h-auto flex flex-col py-4 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-400/30 hover:border-green-400/60 hover:shadow-[0_0_20px_rgba(34,197,94,0.3)] transition-all duration-300 text-white"
+                    className="h-auto flex flex-col py-4 bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-green-400/50 hover:shadow-[0_0_30px_rgba(34,197,94,0.3)] transition-all duration-300 text-white cyber-3d-lift relative overflow-hidden group"
                     onClick={() => setActiveTab('content')}
                     data-testid="button-quick-content"
                   >
-                    <FileText className="w-6 h-6 mb-2 text-green-400" />
-                    <span className="text-xs">Write Content</span>
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+                    <FileText className="w-6 h-6 mb-2 text-green-400 relative z-10" />
+                    <span className="text-xs relative z-10">Write Content</span>
                   </Button>
                   <Button
                     variant="outline"
-                    className="h-auto flex flex-col py-4 bg-gradient-to-br from-red-500/10 to-orange-500/10 border-red-400/30 hover:border-red-400/60 hover:shadow-[0_0_20px_rgba(239,68,68,0.3)] transition-all duration-300 text-white"
+                    className="h-auto flex flex-col py-4 bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-red-400/50 hover:shadow-[0_0_30px_rgba(239,68,68,0.3)] transition-all duration-300 text-white cyber-3d-lift relative overflow-hidden group"
                     onClick={() => setActiveTab('voice')}
                     data-testid="button-quick-voice"
                   >
-                    <Shield className="w-6 h-6 mb-2 text-red-400" />
-                    <span className="text-xs">Voice Search</span>
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+                    <Shield className="w-6 h-6 mb-2 text-red-400 relative z-10" />
+                    <span className="text-xs relative z-10">Voice Search</span>
                   </Button>
                 </div>
               </CardContent>
@@ -434,10 +446,23 @@ export default function AIToolsPage() {
 
             {/* Benefits Section */}
             <div className="grid gap-6 md:grid-cols-3">
-              <Card className="relative overflow-hidden bg-black/40 border border-purple-400/30 hover:border-purple-400/60 hover:backdrop-blur-xl transition-all duration-500 hover:shadow-[0_0_30px_rgba(168,85,247,0.2)] group">
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 group-hover:from-purple-500/10 group-hover:to-pink-500/10 transition-all duration-500" />
+              <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-purple-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(168,85,247,0.2)] cyber-3d-lift relative overflow-hidden group">
+                {/* Metallic shine */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+                
+                {/* Holographic overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-pink-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+                
+                {/* Scan line */}
+                <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+                
+                {/* Circuit pattern */}
+                <div className="absolute inset-0 cyber-circuit-pattern opacity-5 group-hover:opacity-10 transition-opacity z-0" />
+                
                 <CardHeader className="relative z-10">
-                  <Rocket className="w-8 h-8 text-purple-400 mb-2 drop-shadow-[0_0_10px_rgba(168,85,247,0.5)]" />
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 text-white w-fit shadow-[0_0_20px_rgba(168,85,247,0.4)] group-hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] transition-all duration-300 mb-2">
+                    <Rocket className="w-6 h-6" />
+                  </div>
                   <CardTitle className="text-white">Accelerate Growth</CardTitle>
                 </CardHeader>
                 <CardContent className="relative z-10">
@@ -447,10 +472,23 @@ export default function AIToolsPage() {
                 </CardContent>
               </Card>
 
-              <Card className="relative overflow-hidden bg-black/40 border border-blue-400/30 hover:border-blue-400/60 hover:backdrop-blur-xl transition-all duration-500 hover:shadow-[0_0_30px_rgba(59,130,246,0.2)] group">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-cyan-500/5 group-hover:from-blue-500/10 group-hover:to-cyan-500/10 transition-all duration-500" />
+              <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+                {/* Metallic shine */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+                
+                {/* Holographic overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+                
+                {/* Scan line */}
+                <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+                
+                {/* Circuit pattern */}
+                <div className="absolute inset-0 cyber-circuit-pattern opacity-5 group-hover:opacity-10 transition-opacity z-0" />
+                
                 <CardHeader className="relative z-10">
-                  <BarChart className="w-8 h-8 text-blue-400 mb-2 drop-shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 text-white w-fit shadow-[0_0_20px_rgba(6,182,212,0.4)] group-hover:shadow-[0_0_30px_rgba(6,182,212,0.6)] transition-all duration-300 mb-2">
+                    <BarChart className="w-6 h-6" />
+                  </div>
                   <CardTitle className="text-white">Data-Driven Insights</CardTitle>
                 </CardHeader>
                 <CardContent className="relative z-10">
@@ -460,10 +498,23 @@ export default function AIToolsPage() {
                 </CardContent>
               </Card>
 
-              <Card className="relative overflow-hidden bg-black/40 border border-green-400/30 hover:border-green-400/60 hover:backdrop-blur-xl transition-all duration-500 hover:shadow-[0_0_30px_rgba(34,197,94,0.2)] group">
-                <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-emerald-500/5 group-hover:from-green-500/10 group-hover:to-emerald-500/10 transition-all duration-500" />
+              <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-green-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(34,197,94,0.2)] cyber-3d-lift relative overflow-hidden group">
+                {/* Metallic shine */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+                
+                {/* Holographic overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-green-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+                
+                {/* Scan line */}
+                <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+                
+                {/* Circuit pattern */}
+                <div className="absolute inset-0 cyber-circuit-pattern opacity-5 group-hover:opacity-10 transition-opacity z-0" />
+                
                 <CardHeader className="relative z-10">
-                  <Users className="w-8 h-8 text-green-400 mb-2 drop-shadow-[0_0_10px_rgba(34,197,94,0.5)]" />
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 text-white w-fit shadow-[0_0_20px_rgba(34,197,94,0.4)] group-hover:shadow-[0_0_30px_rgba(34,197,94,0.6)] transition-all duration-300 mb-2">
+                    <Users className="w-6 h-6" />
+                  </div>
                   <CardTitle className="text-white">Enhanced Experience</CardTitle>
                 </CardHeader>
                 <CardContent className="relative z-10">

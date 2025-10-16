@@ -188,8 +188,11 @@ export default function AIContentGenerator({ businessId }: AIContentGeneratorPro
   }
 
   return (
-    <Card className="border-2 shadow-lg">
-      <CardHeader className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-950 dark:to-blue-950">
+    <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+      <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+      <CardHeader className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-950 dark:to-blue-950 relative z-10">
         <div className="flex items-center gap-3">
           <div className="p-3 rounded-lg bg-gradient-to-r from-purple-600 to-blue-600">
             <Sparkles className="h-6 w-6 text-white" />
@@ -203,9 +206,11 @@ export default function AIContentGenerator({ businessId }: AIContentGeneratorPro
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-6 pt-6">
+      <CardContent className="space-y-6 pt-6 relative z-10">
         {/* Business Info Display */}
-        <div className="p-4 rounded-lg bg-gradient-to-r from-teal-50 to-cyan-50 dark:from-teal-950 dark:to-cyan-950 border">
+        <div className="p-4 rounded-lg bg-gradient-to-r from-teal-50 to-cyan-50 dark:from-teal-950 dark:to-cyan-950 border relative overflow-hidden group">
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+          <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
           <div className="flex items-start gap-4">
             {business?.logoUrl && (
               <img
@@ -243,7 +248,9 @@ export default function AIContentGenerator({ businessId }: AIContentGeneratorPro
           </Tabs>
 
           {/* Platform Features */}
-          <div className={`p-4 rounded-lg ${currentPlatform.bgColor} border`}>
+          <div className={`p-4 rounded-lg ${currentPlatform.bgColor} border relative overflow-hidden group`}>
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
             <div className="flex items-center gap-2 mb-2">
               <PlatformIcon className={`h-5 w-5 ${currentPlatform.color}`} />
               <span className="font-semibold">{currentPlatform.name}</span>
@@ -303,7 +310,7 @@ export default function AIContentGenerator({ businessId }: AIContentGeneratorPro
         <Button
           onClick={handleGenerate}
           disabled={generateContentMutation.isPending || !postIdea.trim()}
-          className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-lg py-6"
+          className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 shadow-[0_0_30px_rgba(6,182,212,0.4)] hover:shadow-[0_0_40px_rgba(6,182,212,0.6)] transition-all duration-300 cyber-3d-lift text-lg py-6"
           size="lg"
         >
           {generateContentMutation.isPending ? (
@@ -330,8 +337,11 @@ export default function AIContentGenerator({ businessId }: AIContentGeneratorPro
               </Badge>
             </div>
 
-            <Card className="border-2">
-              <CardHeader className="bg-muted/50">
+            <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+              <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+              <CardHeader className="bg-muted/50 relative z-10">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <PlatformIcon className={`h-5 w-5 ${currentPlatform.color}`} />

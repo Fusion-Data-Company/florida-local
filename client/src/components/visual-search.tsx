@@ -84,11 +84,19 @@ export default function VisualSearch() {
       }
 
       // Call GPT-4 Vision API endpoint
-      return await apiRequest('POST', '/api/ai/visual-search', formData, {
-        headers: {} // Let browser set content-type for FormData
+      const res = await fetch('/api/ai/visual-search', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
       });
+
+      if (!res.ok) {
+        throw new Error(`${res.status}: ${res.statusText}`);
+      }
+
+      return await res.json();
     },
-    onSuccess: (data) => {
+    onSuccess: (data: VisualSearchResult) => {
       setSearchResults(data);
       toast({
         title: "Visual Search Complete",
@@ -299,12 +307,21 @@ export default function VisualSearch() {
       </div>
 
       {/* Image Input Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Select Image</CardTitle>
+      <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+        {/* Metallic shine */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+        
+        {/* Holographic overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+        
+        {/* Scan line */}
+        <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+        
+        <CardHeader className="relative z-10">
+          <CardTitle className="text-white">Select Image</CardTitle>
           <CardDescription>Choose how you want to provide an image for search</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="relative z-10">
           <Tabs value={searchMode} onValueChange={(v) => setSearchMode(v as any)}>
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="upload">
@@ -484,14 +501,23 @@ export default function VisualSearch() {
             className="space-y-6"
           >
             {/* Image Analysis */}
-            <Card className="border-2 border-purple-200 dark:border-purple-900">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-purple-600" />
+            <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-purple-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(168,85,247,0.2)] cyber-3d-lift relative overflow-hidden group">
+              {/* Metallic shine */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+              
+              {/* Holographic overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-pink-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+              
+              {/* Scan line */}
+              <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+              
+              <CardHeader className="relative z-10">
+                <CardTitle className="flex items-center gap-2 text-white">
+                  <Sparkles className="w-5 h-5 text-purple-400" />
                   AI Image Analysis
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 relative z-10">
                 <div>
                   <p className="text-sm font-medium mb-2">Detected Objects:</p>
                   <div className="flex flex-wrap gap-2">
@@ -538,16 +564,25 @@ export default function VisualSearch() {
             </Card>
 
             {/* Product Results */}
-            <Card>
-              <CardHeader>
+            <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+              {/* Metallic shine */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+              
+              {/* Holographic overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+              
+              {/* Scan line */}
+              <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+              
+              <CardHeader className="relative z-10">
                 <div className="flex items-center justify-between">
-                  <CardTitle>Similar Products</CardTitle>
+                  <CardTitle className="text-white">Similar Products</CardTitle>
                   <Badge variant="secondary">
                     {searchResults.products.length} found
                   </Badge>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="relative z-10">
                 <ScrollArea className="h-[400px]">
                   <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     {searchResults.products.map((product) => (
@@ -557,7 +592,7 @@ export default function VisualSearch() {
                         animate={{ opacity: 1 }}
                         className="group cursor-pointer"
                       >
-                        <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+                        <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border border-white/10 hover:border-cyan-400/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] overflow-hidden">
                           <div className="relative">
                             <img
                               src={product.image}
@@ -607,20 +642,29 @@ export default function VisualSearch() {
             </Card>
 
             {/* Business Results */}
-            <Card>
-              <CardHeader>
+            <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+              {/* Metallic shine */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+              
+              {/* Holographic overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+              
+              {/* Scan line */}
+              <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+              
+              <CardHeader className="relative z-10">
                 <div className="flex items-center justify-between">
-                  <CardTitle>Related Businesses</CardTitle>
+                  <CardTitle className="text-white">Related Businesses</CardTitle>
                   <Badge variant="secondary">
                     {searchResults.businesses.length} found
                   </Badge>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="relative z-10">
                 <div className="space-y-4">
                   {searchResults.businesses.map((business) => (
                     <Link key={business.id} href={`/business/${business.id}`}>
-                      <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                      <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border border-white/10 hover:border-cyan-400/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] cursor-pointer">
                         <CardContent className="p-4">
                           <div className="flex gap-4">
                             <img

@@ -85,11 +85,19 @@ export default function VoiceSearch() {
       formData.append('model', 'whisper-1');
       formData.append('language', 'en');
 
-      return await apiRequest('POST', '/api/ai/voice/transcribe', formData, {
-        headers: {} // Let browser set content-type
+      const res = await fetch('/api/ai/voice/transcribe', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
       });
+
+      if (!res.ok) {
+        throw new Error(`${res.status}: ${res.statusText}`);
+      }
+
+      return await res.json();
     },
-    onSuccess: (data) => {
+    onSuccess: (data: { text: string; confidence: number }) => {
       const { text, confidence } = data;
       setTranscript(text);
 
@@ -106,9 +114,10 @@ export default function VoiceSearch() {
   // Search mutation
   const searchMutation = useMutation({
     mutationFn: async (query: string) => {
-      return await apiRequest('POST', '/api/search/voice', { query });
+      const res = await apiRequest('POST', '/api/search/voice', { query });
+      return await res.json();
     },
-    onSuccess: (data) => {
+    onSuccess: (data: VoiceSearchResult) => {
       setSearchResults(data);
 
       // Speak the results if voice is enabled
@@ -503,14 +512,23 @@ export default function VoiceSearch() {
       </div>
 
       {/* Voice Input Card */}
-      <Card className={isListening ? "border-2 border-blue-500 shadow-lg shadow-blue-500/20" : ""}>
-        <CardHeader>
-          <CardTitle>Voice Command</CardTitle>
+      <Card className={`bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 transition-all duration-500 cyber-3d-lift relative overflow-hidden group ${isListening ? "border-cyan-400/70 shadow-[0_0_50px_rgba(0,255,255,0.3)]" : "border-white/10 hover:border-cyan-400/50 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)]"}`}>
+        {/* Metallic shine */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+        
+        {/* Holographic overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+        
+        {/* Scan line */}
+        <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+        
+        <CardHeader className="relative z-10">
+          <CardTitle className="text-white">Voice Command</CardTitle>
           <CardDescription>
             Click the microphone and speak your search query or command
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-6 relative z-10">
           {/* Microphone Button */}
           <div className="flex flex-col items-center space-y-4">
             <motion.button
@@ -572,7 +590,7 @@ export default function VoiceSearch() {
 
           {/* Transcript Display */}
           {(transcript || interimTranscript) && (
-            <Card className="bg-gray-50 dark:bg-gray-900">
+            <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border border-white/10">
               <CardContent className="pt-4">
                 <p className="text-sm text-muted-foreground mb-1">Transcript:</p>
                 <p className="text-lg">
@@ -609,13 +627,13 @@ export default function VoiceSearch() {
 
           {/* Voice Commands Help */}
           <div className="grid grid-cols-2 gap-3">
-            <Card className="bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
+            <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border border-white/10 hover:border-cyan-400/50 transition-all duration-300">
               <CardContent className="pt-4">
                 <p className="text-xs font-medium text-blue-700 dark:text-blue-300 mb-1">Try saying:</p>
                 <p className="text-sm">"Find restaurants near me"</p>
               </CardContent>
             </Card>
-            <Card className="bg-purple-50 dark:bg-purple-950 border-purple-200 dark:border-purple-800">
+            <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border border-white/10 hover:border-purple-400/50 transition-all duration-300">
               <CardContent className="pt-4">
                 <p className="text-xs font-medium text-purple-700 dark:text-purple-300 mb-1">Or:</p>
                 <p className="text-sm">"Show beach products under $50"</p>
@@ -635,18 +653,22 @@ export default function VoiceSearch() {
           >
             {/* Products */}
             {searchResults.products.length > 0 && (
-              <Card>
-                <CardHeader>
+              <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+                {/* Metallic shine */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+                <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+                <CardHeader className="relative z-10">
                   <div className="flex items-center justify-between">
-                    <CardTitle>Products Found</CardTitle>
+                    <CardTitle className="text-white">Products Found</CardTitle>
                     <Badge>{searchResults.products.length} results</Badge>
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="relative z-10">
                   <div className="space-y-3">
                     {searchResults.products.map((product) => (
                       <Link key={product.id} href={`/product/${product.id}`}>
-                        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                        <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border border-white/10 hover:border-cyan-400/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] cursor-pointer">
                           <CardContent className="p-4">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-3">
@@ -678,18 +700,22 @@ export default function VoiceSearch() {
 
             {/* Businesses */}
             {searchResults.businesses.length > 0 && (
-              <Card>
-                <CardHeader>
+              <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+                {/* Metallic shine */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+                <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+                <CardHeader className="relative z-10">
                   <div className="flex items-center justify-between">
-                    <CardTitle>Businesses</CardTitle>
+                    <CardTitle className="text-white">Businesses</CardTitle>
                     <Badge variant="secondary">{searchResults.businesses.length} results</Badge>
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="relative z-10">
                   <div className="space-y-3">
                     {searchResults.businesses.map((business) => (
                       <Link key={business.id} href={`/business/${business.id}`}>
-                        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                        <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border border-white/10 hover:border-cyan-400/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] cursor-pointer">
                           <CardContent className="p-4">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-3">
@@ -726,9 +752,13 @@ export default function VoiceSearch() {
 
             {/* Suggested Actions */}
             {searchResults.suggestedActions.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Suggested Actions</CardTitle>
+              <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+                {/* Metallic shine */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+                <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+                <CardHeader className="relative z-10">
+                  <CardTitle className="text-white">Suggested Actions</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2">

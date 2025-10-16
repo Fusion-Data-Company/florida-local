@@ -448,14 +448,17 @@ export default function VoiceCommerce() {
       </div>
 
       {/* Main Voice Interface */}
-      <Card className={state.isListening ? "border-2 border-blue-500 shadow-lg shadow-blue-500/20" : ""}>
-        <CardHeader>
+      <Card className={`bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 ${state.isListening ? "border-cyan-400/80 shadow-[0_0_50px_rgba(0,255,255,0.4)]" : "border-white/10 hover:border-cyan-400/50"} transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group`}>
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+        <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+        <CardHeader className="relative z-10">
           <CardTitle>Voice Shopping</CardTitle>
           <CardDescription>
             Press the microphone to start shopping with voice commands
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-6 relative z-10">
           {/* Microphone Button */}
           <div className="flex flex-col items-center space-y-4">
             <motion.button
@@ -533,11 +536,14 @@ export default function VoiceCommerce() {
 
           {/* Conversation History */}
           {state.conversation.length > 0 && (
-            <Card className="bg-gray-50 dark:bg-gray-900">
-              <CardHeader className="pb-3">
+            <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+              <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+              <CardHeader className="pb-3 relative z-10">
                 <CardTitle className="text-base">Conversation</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="relative z-10">
                 <ScrollArea className="h-64">
                   <div className="space-y-3">
                     {state.conversation.map((entry, i) => (
@@ -576,14 +582,17 @@ export default function VoiceCommerce() {
 
           {/* Shopping Cart Summary */}
           {state.context.cart.length > 0 && (
-            <Card className="border-green-200 dark:border-green-900">
-              <CardHeader className="pb-3">
+            <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-green-400/30 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+              <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+              <CardHeader className="pb-3 relative z-10">
                 <CardTitle className="text-base flex items-center gap-2">
                   <ShoppingCart className="w-4 h-4" />
                   Shopping Cart
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="relative z-10">
                 <div className="space-y-2">
                   {state.context.cart.map((item, i) => (
                     <div key={i} className="flex items-center justify-between text-sm">
@@ -605,14 +614,17 @@ export default function VoiceCommerce() {
           )}
 
           {/* Voice Commands Help */}
-          <Card>
-            <CardHeader className="pb-3">
+          <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+            <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+            <CardHeader className="pb-3 relative z-10">
               <CardTitle className="text-base flex items-center gap-2">
                 <HelpCircle className="w-4 h-4" />
                 Voice Commands
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative z-10">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {VOICE_COMMANDS.map((cmd, i) => (
                   <div key={i} className="flex items-start gap-2 text-sm">

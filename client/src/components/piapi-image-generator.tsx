@@ -336,12 +336,15 @@ export default function PiAPIImageGenerator() {
           <div className="grid gap-6 lg:grid-cols-2">
             {/* Left Column - Prompt & Settings */}
             <div className="space-y-4">
-              <Card>
-                <CardHeader>
+              <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+                <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+                <CardHeader className="relative z-10">
                   <CardTitle>Prompt</CardTitle>
                   <CardDescription>Describe what you want to generate</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 relative z-10">
                   <div>
                     <Label htmlFor="prompt">Main Prompt</Label>
                     <Textarea
@@ -402,11 +405,14 @@ export default function PiAPIImageGenerator() {
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
+              <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+                <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+                <CardHeader className="relative z-10">
                   <CardTitle>Model Settings</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 relative z-10">
                   <div>
                     <Label htmlFor="model">AI Model</Label>
                     <Select
@@ -503,11 +509,14 @@ export default function PiAPIImageGenerator() {
 
             {/* Right Column - Style & Preview */}
             <div className="space-y-4">
-              <Card>
-                <CardHeader>
+              <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+                <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+                <CardHeader className="relative z-10">
                   <CardTitle>Style Options</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 relative z-10">
                   <div>
                     <Label>Style Preset</Label>
                     <Select
@@ -568,8 +577,11 @@ export default function PiAPIImageGenerator() {
               </Card>
 
               {/* Preview Card */}
-              <Card className="border-2 border-dashed">
-                <CardContent className="pt-6">
+              <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-cyan-400/30 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+                <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+                <CardContent className="pt-6 relative z-10">
                   <div className="aspect-square bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-950 dark:to-pink-950 rounded-lg flex items-center justify-center">
                     {generateMutation.isPending ? (
                       <div className="text-center">
@@ -590,7 +602,7 @@ export default function PiAPIImageGenerator() {
 
               {/* Generate Button */}
               <Button
-                className="w-full"
+                className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 shadow-[0_0_30px_rgba(6,182,212,0.4)] hover:shadow-[0_0_40px_rgba(6,182,212,0.6)] transition-all duration-300 cyber-3d-lift"
                 size="lg"
                 onClick={() => generateMutation.mutate(options)}
                 disabled={!options.prompt || generateMutation.isPending}
@@ -613,8 +625,11 @@ export default function PiAPIImageGenerator() {
 
         <TabsContent value="gallery" className="space-y-4">
           {generatedImages.length === 0 ? (
-            <Card>
-              <CardContent className="py-12 text-center">
+            <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+              <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+              <CardContent className="py-12 text-center relative z-10">
                 <ImageIcon className="w-16 h-16 mx-auto mb-4 text-gray-400" />
                 <p className="text-muted-foreground">No images generated yet</p>
                 <Button
@@ -633,8 +648,11 @@ export default function PiAPIImageGenerator() {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                 >
-                  <Card className="overflow-hidden group hover:shadow-lg transition-shadow">
-                    <div className="relative aspect-square">
+                  <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+                    <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+                    <div className="relative aspect-square z-10">
                       <img
                         src={image.url}
                         alt={image.prompt}
@@ -695,8 +713,11 @@ export default function PiAPIImageGenerator() {
 
         <TabsContent value="saved" className="space-y-4">
           {savedImages.length === 0 ? (
-            <Card>
-              <CardContent className="py-12 text-center">
+            <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
+              <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
+              <CardContent className="py-12 text-center relative z-10">
                 <Heart className="w-16 h-16 mx-auto mb-4 text-gray-400" />
                 <p className="text-muted-foreground">No saved images yet</p>
                 <p className="text-sm text-muted-foreground mt-2">
@@ -707,7 +728,7 @@ export default function PiAPIImageGenerator() {
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {savedImages.map((image) => (
-                <Card key={image.id} className="overflow-hidden">
+                <Card key={image.id} className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] cyber-3d-lift relative overflow-hidden group">
                   <img
                     src={image.url}
                     alt={image.prompt}
