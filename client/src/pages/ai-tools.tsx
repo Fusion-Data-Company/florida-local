@@ -221,71 +221,77 @@ export default function AIToolsPage() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 bg-gradient-to-b from-[#000] to-[#0a0a0a]">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-8 h-auto p-1 bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_8px_32px_rgba(0,255,255,0.1)]">
+      <div className="container mx-auto px-4 py-8 bg-gradient-to-b from-[#000] to-[#0a0a0a] relative">
+        {/* Cyberpunk grid background */}
+        <div className="absolute inset-0 cyber-grid-bg opacity-20 pointer-events-none" />
+        
+        {/* Circuit pattern overlay */}
+        <div className="absolute inset-0 cyber-circuit-pattern opacity-10 pointer-events-none" />
+        
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6 relative z-10">
+          <TabsList className="grid w-full grid-cols-8 h-auto p-1 bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_8px_32px_rgba(0,255,255,0.1)] relative overflow-hidden cyber-energy-border">
             <TabsTrigger 
               value="overview" 
-              className="flex flex-col py-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:border-cyan-400/50 data-[state=active]:border data-[state=active]:shadow-[0_0_20px_rgba(0,255,255,0.3)] rounded-xl transition-all duration-300"
+              className="flex flex-col py-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:border-cyan-400/50 data-[state=active]:border data-[state=active]:shadow-[0_0_20px_rgba(0,255,255,0.3)] rounded-xl transition-all duration-300 cyber-3d-lift"
               data-testid="tab-overview"
             >
-              <Sparkles className="w-4 h-4 mb-1" />
+              <Sparkles className="w-4 h-4 mb-1 cyber-text-glow" />
               <span className="text-xs">Overview</span>
             </TabsTrigger>
             <TabsTrigger 
               value="agents" 
-              className="flex flex-col py-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-500/20 data-[state=active]:to-pink-500/20 data-[state=active]:border-purple-400/50 data-[state=active]:border data-[state=active]:shadow-[0_0_20px_rgba(168,85,247,0.3)] rounded-xl transition-all duration-300"
+              className="flex flex-col py-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-500/20 data-[state=active]:to-pink-500/20 data-[state=active]:border-purple-400/50 data-[state=active]:border data-[state=active]:shadow-[0_0_20px_rgba(168,85,247,0.3)] rounded-xl transition-all duration-300 cyber-3d-lift"
               data-testid="tab-agents"
             >
-              <Bot className="w-4 h-4 mb-1" />
+              <Bot className="w-4 h-4 mb-1 cyber-text-glow" />
               <span className="text-xs">Agents</span>
             </TabsTrigger>
             <TabsTrigger 
               value="visual" 
-              className="flex flex-col py-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-500/20 data-[state=active]:to-cyan-500/20 data-[state=active]:border-blue-400/50 data-[state=active]:border data-[state=active]:shadow-[0_0_20px_rgba(59,130,246,0.3)] rounded-xl transition-all duration-300"
+              className="flex flex-col py-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-500/20 data-[state=active]:to-cyan-500/20 data-[state=active]:border-blue-400/50 data-[state=active]:border data-[state=active]:shadow-[0_0_20px_rgba(59,130,246,0.3)] rounded-xl transition-all duration-300 cyber-3d-lift"
               data-testid="tab-visual"
             >
-              <Eye className="w-4 h-4 mb-1" />
+              <Eye className="w-4 h-4 mb-1 cyber-text-glow" />
               <span className="text-xs">Visual</span>
             </TabsTrigger>
             <TabsTrigger 
               value="voice" 
-              className="flex flex-col py-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-green-500/20 data-[state=active]:to-emerald-500/20 data-[state=active]:border-green-400/50 data-[state=active]:border data-[state=active]:shadow-[0_0_20px_rgba(34,197,94,0.3)] rounded-xl transition-all duration-300"
+              className="flex flex-col py-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-green-500/20 data-[state=active]:to-emerald-500/20 data-[state=active]:border-green-400/50 data-[state=active]:border data-[state=active]:shadow-[0_0_20px_rgba(34,197,94,0.3)] rounded-xl transition-all duration-300 cyber-3d-lift"
               data-testid="tab-voice"
             >
-              <Mic className="w-4 h-4 mb-1" />
+              <Mic className="w-4 h-4 mb-1 cyber-text-glow" />
               <span className="text-xs">Voice</span>
             </TabsTrigger>
             <TabsTrigger 
               value="generate" 
-              className="flex flex-col py-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-500/20 data-[state=active]:to-pink-500/20 data-[state=active]:border-purple-400/50 data-[state=active]:border data-[state=active]:shadow-[0_0_20px_rgba(168,85,247,0.3)] rounded-xl transition-all duration-300"
+              className="flex flex-col py-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-500/20 data-[state=active]:to-pink-500/20 data-[state=active]:border-purple-400/50 data-[state=active]:border data-[state=active]:shadow-[0_0_20px_rgba(168,85,247,0.3)] rounded-xl transition-all duration-300 cyber-3d-lift"
               data-testid="tab-generate"
             >
-              <Wand2 className="w-4 h-4 mb-1" />
+              <Wand2 className="w-4 h-4 mb-1 cyber-text-glow" />
               <span className="text-xs">Images</span>
             </TabsTrigger>
             <TabsTrigger 
               value="content" 
-              className="flex flex-col py-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-orange-500/20 data-[state=active]:to-red-500/20 data-[state=active]:border-orange-400/50 data-[state=active]:border data-[state=active]:shadow-[0_0_20px_rgba(249,115,22,0.3)] rounded-xl transition-all duration-300"
+              className="flex flex-col py-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-orange-500/20 data-[state=active]:to-red-500/20 data-[state=active]:border-orange-400/50 data-[state=active]:border data-[state=active]:shadow-[0_0_20px_rgba(249,115,22,0.3)] rounded-xl transition-all duration-300 cyber-3d-lift"
               data-testid="tab-content"
             >
-              <FileText className="w-4 h-4 mb-1" />
+              <FileText className="w-4 h-4 mb-1 cyber-text-glow" />
               <span className="text-xs">Content</span>
             </TabsTrigger>
             <TabsTrigger 
               value="visual-commerce" 
-              className="flex flex-col py-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-500/20 data-[state=active]:to-pink-500/20 data-[state=active]:border-purple-400/50 data-[state=active]:border data-[state=active]:shadow-[0_0_20px_rgba(168,85,247,0.3)] rounded-xl transition-all duration-300"
+              className="flex flex-col py-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-500/20 data-[state=active]:to-pink-500/20 data-[state=active]:border-purple-400/50 data-[state=active]:border data-[state=active]:shadow-[0_0_20px_rgba(168,85,247,0.3)] rounded-xl transition-all duration-300 cyber-3d-lift"
               data-testid="tab-visual-commerce"
             >
-              <Layers className="w-4 h-4 mb-1" />
+              <Layers className="w-4 h-4 mb-1 cyber-text-glow" />
               <span className="text-xs">Shop Visual</span>
             </TabsTrigger>
             <TabsTrigger 
               value="voice-commerce" 
-              className="flex flex-col py-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-500/20 data-[state=active]:to-purple-500/20 data-[state=active]:border-blue-400/50 data-[state=active]:border data-[state=active]:shadow-[0_0_20px_rgba(59,130,246,0.3)] rounded-xl transition-all duration-300"
+              className="flex flex-col py-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-500/20 data-[state=active]:to-purple-500/20 data-[state=active]:border-blue-400/50 data-[state=active]:border data-[state=active]:shadow-[0_0_20px_rgba(59,130,246,0.3)] rounded-xl transition-all duration-300 cyber-3d-lift"
               data-testid="tab-voice-commerce"
             >
-              <Headphones className="w-4 h-4 mb-1" />
+              <Headphones className="w-4 h-4 mb-1 cyber-text-glow" />
               <span className="text-xs">Shop Voice</span>
             </TabsTrigger>
           </TabsList>
