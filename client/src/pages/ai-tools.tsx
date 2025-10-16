@@ -162,19 +162,29 @@ export default function AIToolsPage() {
     <div className="min-h-screen bg-[#000000]">
 
       {/* Hero Section */}
-      <div className="min-h-svh w-full bg-gradient-to-br from-[#000] to-[#1A2428] text-white flex flex-col items-center justify-center p-8 relative">
+      <div className="min-h-svh w-full bg-gradient-to-br from-[#000] to-[#1A2428] text-white flex flex-col items-center justify-center p-8 relative overflow-hidden">
+        {/* Elite cyberpunk background effects */}
+        <div className="absolute inset-0 cyber-grid-bg opacity-10" />
+        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-purple-500/5 to-pink-500/5" />
+        
+        {/* Floating particles */}
+        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-cyan-400 rounded-full cyber-particle-field animate-pulse" />
+        <div className="absolute top-1/3 right-1/3 w-2 h-2 bg-purple-400 rounded-full cyber-particle-field animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-1/3 left-1/2 w-2 h-2 bg-pink-400 rounded-full cyber-particle-field animate-pulse" style={{ animationDelay: '2s' }} />
+        
         <div className="w-full max-w-6xl space-y-12 relative z-10">
           <div className="flex flex-col items-center text-center space-y-8">
             <Badge 
               variant="secondary" 
-              className="backdrop-blur-sm bg-white/10 border border-white/20 text-white hover:bg-white/20 px-4 py-2 rounded-full"
+              className="backdrop-blur-sm bg-white/10 border border-white/20 text-white hover:bg-white/20 px-4 py-2 rounded-full cyber-glow-pulse relative overflow-hidden"
               data-testid="badge-hero"
             >
-              ✨ AI Tools Command Center
+              <span className="relative z-10">✨ AI Tools Command Center</span>
+              <div className="absolute inset-0 cyber-metallic-shine" />
             </Badge>
             
             <div className="space-y-6 flex items-center justify-center flex-col">
-              <h1 className="text-3xl md:text-6xl font-semibold tracking-tight max-w-3xl" data-testid="text-hero-title">
+              <h1 className="text-3xl md:text-6xl font-semibold tracking-tight max-w-3xl cyber-chromatic-text" data-testid="text-hero-title">
                 Harness the power of advanced AI automation
               </h1>
               <p className="text-lg text-neutral-300 max-w-2xl" data-testid="text-hero-description">
@@ -182,18 +192,20 @@ export default function AIToolsPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 items-center">
                 <Button 
-                  className="text-sm px-8 py-3 rounded-xl bg-white text-black border border-white/10 shadow-none hover:bg-white/90 transition-all duration-200"
+                  className="text-sm px-8 py-3 rounded-xl bg-white text-black border border-white/10 shadow-none hover:bg-white/90 transition-all duration-200 relative overflow-hidden group cyber-3d-lift"
                   onClick={() => setActiveTab('agents')}
                   data-testid="button-get-started"
                 >
-                  Get Started
+                  <span className="relative z-10">Get Started</span>
+                  <div className="absolute inset-0 cyber-metallic-shine opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </Button>
                 <Button 
-                  className="text-sm px-8 py-3 rounded-xl bg-transparent text-white border border-white/20 shadow-none hover:bg-white/10 transition-all duration-200"
+                  className="text-sm px-8 py-3 rounded-xl bg-transparent text-white border border-white/20 shadow-none hover:bg-white/10 transition-all duration-200 relative overflow-hidden group cyber-3d-lift cyber-energy-border"
                   onClick={() => setActiveTab('overview')}
                   data-testid="button-learn-more"
                 >
-                  Learn More
+                  <span className="relative z-10">Learn More</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </Button>
               </div>
             </div>
@@ -203,14 +215,20 @@ export default function AIToolsPage() {
             {stats.map((stat, idx) => (
               <div
                 key={idx}
-                className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-xl p-4 md:p-6 h-40 md:h-48 flex flex-col justify-start items-start space-y-2 md:space-y-3 hover:bg-white/10 transition-all duration-200"
+                className="backdrop-blur-sm bg-white/5 border-2 border-white/10 rounded-xl p-4 md:p-6 h-40 md:h-48 flex flex-col justify-start items-start space-y-2 md:space-y-3 hover:bg-white/10 transition-all duration-200 relative overflow-hidden group cyber-3d-lift cyber-glow-pulse"
                 data-testid={`card-stat-${idx}`}
               >
-                <div className="text-white/80 md:w-5 md:h-5">
+                {/* Circuit pattern */}
+                <div className="absolute inset-0 cyber-circuit-pattern opacity-5 group-hover:opacity-10 transition-opacity" />
+                
+                {/* Energy border */}
+                <div className="absolute inset-0 cyber-energy-border opacity-0 group-hover:opacity-100 transition-opacity" />
+                
+                <div className="text-white/80 md:w-5 md:h-5 relative z-10 cyber-text-glow">
                   {stat.icon}
                 </div>
-                <h3 className="text-2xl font-bold">{stat.value}</h3>
-                <p className="text-xs md:text-sm text-neutral-400">{stat.label}</p>
+                <h3 className="text-2xl font-bold relative z-10 cyber-chromatic-text">{stat.value}</h3>
+                <p className="text-xs md:text-sm text-neutral-400 relative z-10">{stat.label}</p>
               </div>
             ))}
           </div>
