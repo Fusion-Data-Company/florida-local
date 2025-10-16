@@ -196,10 +196,20 @@ export default function ActivityPost({ post }: ActivityPostProps) {
   // Render AnimatedHikeCard version for posts with exactly 3 images
   if (shouldRenderAsAnimatedCard()) {
     const images = getPostImages();
+
+    // Format date more elegantly
+    const formattedDate = post.createdAt
+      ? new Date(post.createdAt).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: new Date(post.createdAt).getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
+        })
+      : 'Recent';
+
     const stats: Stat[] = [
       {
         icon: <Clock className="h-4 w-4" />,
-        label: post.createdAt ? new Date(post.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Recent'
+        label: formattedDate
       },
       {
         icon: getPostTypeIcon(),
@@ -207,24 +217,26 @@ export default function ActivityPost({ post }: ActivityPostProps) {
       },
       {
         icon: <Heart className="h-4 w-4" />,
-        label: `${localLikeCount} likes`
+        label: `${localLikeCount} ${localLikeCount === 1 ? 'like' : 'likes'}`
       },
     ];
 
-    // Truncate description if too long
+    // Truncate description intelligently at word boundary
     const description = post.content.length > 150
-      ? post.content.substring(0, 150) + '...'
+      ? post.content.substring(0, 150).split(' ').slice(0, -1).join(' ') + '...'
       : post.content;
 
     return (
-      <AnimatedHikeCard
-        title={business!.name}
-        images={images}
-        stats={stats}
-        description={description}
-        href={`/business/${post.businessId}`}
-        className="max-w-full"
-      />
+      <div className="mb-4">
+        <AnimatedHikeCard
+          title={business!.name}
+          images={images}
+          stats={stats}
+          description={description}
+          href={`/business/${post.businessId}`}
+          className="max-w-full"
+        />
+      </div>
     );
   }
 
