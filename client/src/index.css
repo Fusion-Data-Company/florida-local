@@ -7656,32 +7656,34 @@ textarea:focus-visible,
 
 /* User/Author Info */
 .elite-post-author {
-  color: hsl(220, 20%, 10%);
+  color: #0a0a0a !important;
   letter-spacing: -0.01em;
-  font-weight: 700;
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+  font-weight: 700 !important;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6) !important;
 }
 
 .elite-post-timestamp {
-  color: hsl(220, 15%, 35%);
-  font-weight: 600;
+  color: #404040 !important;
+  font-weight: 600 !important;
   letter-spacing: 0.01em;
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.4) !important;
 }
 
 /* Post Content Typography */
 .elite-post-content {
   font-family: var(--font-sans);
-  font-size: 1rem;
+  font-size: 1rem !important;
   line-height: 1.7;
-  color: hsl(220, 20%, 15%);
-  font-weight: 500;
+  color: #1a1a1a !important;
+  font-weight: 500 !important;
   letter-spacing: -0.005em;
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.4);
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5) !important;
 }
 
 .elite-post-content p {
   margin: 0;
+  color: #1a1a1a !important;
+  font-weight: 500 !important;
 }
 
 /* Post Action Button */

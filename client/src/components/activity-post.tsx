@@ -167,10 +167,10 @@ export default function ActivityPost({ post }: ActivityPostProps) {
             {/* User Info Header */}
             <div className="flex items-start justify-between mb-3">
               <div className="flex-1">
-                <h4 className="elite-post-author font-serif font-bold text-lg mb-1">
+                <h4 className="elite-post-author font-serif font-bold text-lg mb-1 text-gray-900" style={{ color: '#0a0a0a', textShadow: '0 1px 2px rgba(255, 255, 255, 0.6)' }}>
                   Local Business
                 </h4>
-                <time className="elite-post-timestamp text-sm">
+                <time className="elite-post-timestamp text-sm text-gray-700" style={{ color: '#404040', textShadow: '0 1px 2px rgba(255, 255, 255, 0.4)' }}>
                   {post.createdAt ? new Date(post.createdAt).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
@@ -201,7 +201,7 @@ export default function ActivityPost({ post }: ActivityPostProps) {
             
             {/* Post Content Text */}
             <div className="elite-post-content mb-4">
-              <p className="whitespace-pre-wrap leading-relaxed">{post.content}</p>
+              <p className="whitespace-pre-wrap leading-relaxed text-gray-900 font-medium" style={{ color: '#1a1a1a', textShadow: '0 1px 2px rgba(255, 255, 255, 0.5)' }}>{post.content}</p>
             </div>
             
             {/* Post Images Gallery */}
