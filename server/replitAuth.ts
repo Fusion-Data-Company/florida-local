@@ -89,18 +89,50 @@ export async function getSession() {
     }
   }
   
+  // Determine if we're in production
+  const isProduction = process.env.NODE_ENV === 'production' || 
+                       process.env.REPLIT_DEPLOYMENT === '1' ||
+                       process.env.REPL_SLUG?.includes('florida-local-elite');
+  
+  // Configure cookie settings based on environment
+  const cookieConfig: any = {
+    httpOnly: true,
+    secure: isProduction, // Only secure in production
+    maxAge: sessionTtlMs,
+    sameSite: "lax" as const, // Important for OAuth flow
+  };
+  
+  // Add domain configuration for production
+  if (isProduction && process.env.REPLIT_DOMAINS) {
+    // Use the production domain if available
+    const productionDomain = process.env.REPLIT_DOMAINS.split(',')
+      .find(d => d.includes('.replit.app'))
+      ?.trim();
+      
+    if (productionDomain) {
+      // Extract the base domain for cookie sharing across subdomains
+      const baseDomain = productionDomain.replace(/^[^.]+\./, '.');
+      cookieConfig.domain = baseDomain; // e.g., ".replit.app"
+      console.log(`🍪 Cookie domain set to: ${cookieConfig.domain}`);
+    }
+  }
+  
+  console.log(`🔐 Session configuration:`, {
+    isProduction,
+    secure: cookieConfig.secure,
+    sameSite: cookieConfig.sameSite,
+    domain: cookieConfig.domain || 'default',
+    store: sessionStore ? sessionStore.constructor.name : 'MemoryStore'
+  });
+  
   return session({
     secret: process.env.SESSION_SECRET!,
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
     rolling: true, // Extend session on activity
-    cookie: {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // Only secure in production
-      maxAge: sessionTtlMs,
-      sameSite: "lax",
-    },
+    cookie: cookieConfig,
+    name: 'florida.elite.sid', // Custom session name to avoid conflicts
     // Add session error handling
     genid: () => {
       return randomBytes(32).toString('hex');
@@ -121,13 +153,24 @@ function updateUserSession(
 async function upsertUser(
   claims: any,
 ) {
-  await storage.upsertUser({
-    id: claims["sub"],
-    email: claims["email"],
-    firstName: claims["first_name"],
-    lastName: claims["last_name"],
-    profileImageUrl: claims["profile_image_url"],
-  });
+  console.log(`🔐 Upserting user: ${claims["email"]} (Replit ID: ${claims["sub"]})`);
+  
+  try {
+    const userData = {
+      id: claims["sub"],
+      email: claims["email"],
+      firstName: claims["first_name"],
+      lastName: claims["last_name"],
+      profileImageUrl: claims["profile_image_url"],
+    };
+    
+    const user = await storage.upsertUser(userData);
+    console.log(`✅ User upserted successfully: ${user.email} (DB ID: ${user.id})`);
+    return user;
+  } catch (error) {
+    console.error(`❌ Failed to upsert user ${claims["email"]}:`, error);
+    throw error;
+  }
 }
 
 export async function setupAuth(app: Express) {
@@ -356,6 +399,10 @@ export async function setupAuth(app: Express) {
   });
 
   app.get("/api/callback", async (req, res, next) => {
+    console.log(`🔐 === AUTHENTICATION CALLBACK START ===`);
+    console.log(`🔐 Query params:`, req.query);
+    console.log(`🔐 Headers - Host: ${req.get('host')}, X-Forwarded-Host: ${req.get('x-forwarded-host')}, Referer: ${req.get('referer')}`);
+    
     // Check multiple headers to get the correct hostname (same as login)
     let hostname = req.hostname;
     const xForwardedHost = req.get('x-forwarded-host');
@@ -376,7 +423,8 @@ export async function setupAuth(app: Express) {
     
     const strategyName = `replitauth:${hostname}`;
     
-    console.log(`🔐 Callback attempt - hostname: ${hostname}, strategy: ${strategyName}`);
+    console.log(`🔐 Resolved hostname: ${hostname}, strategy: ${strategyName}`);
+    console.log(`🔐 Available strategies: ${Array.from(registeredStrategies).join(', ')}`);
     
     // Check if the strategy exists
     if (!registeredStrategies.has(strategyName)) {
@@ -413,44 +461,69 @@ export async function setupAuth(app: Express) {
     
     // Use custom callback to handle post-authentication routing
     passport.authenticate(strategyName, async (err: any, user: any, info: any) => {
+      console.log(`🔐 Passport authenticate callback triggered`);
+      
       if (err) {
         console.error("❌ Authentication error:", err);
+        console.error("❌ Error stack:", err.stack);
         console.error("❌ Error details:", JSON.stringify(err, null, 2));
         return res.redirect("/api/login");
       }
 
       if (!user) {
-        console.error("❌ Authentication failed - no user");
-        console.error("❌ Info:", info);
+        console.error("❌ Authentication failed - no user returned");
+        console.error("❌ Info from passport:", JSON.stringify(info, null, 2));
         return res.redirect("/api/login");
       }
 
-      console.log(`✅ Authentication successful for email: ${user.claims?.email}`);
+      console.log(`✅ Authentication successful for user:`, {
+        email: user.claims?.email,
+        sub: user.claims?.sub,
+        hasAccessToken: !!user.access_token,
+        hasRefreshToken: !!user.refresh_token,
+        expiresAt: user.expires_at
+      });
 
       // Log the user in
       req.login(user, async (loginErr) => {
         if (loginErr) {
-          console.error("❌ Login error:", loginErr);
+          console.error("❌ Session login error:", loginErr);
+          console.error("❌ Login error stack:", loginErr.stack);
           console.error("❌ Login error details:", JSON.stringify(loginErr, null, 2));
           return res.redirect("/api/login");
         }
 
-        console.log(`✅ Session created for user ID: ${user.claims?.sub}`);
+        console.log(`✅ Session created successfully for user: ${user.claims?.email} (ID: ${user.claims?.sub})`);
+        console.log(`🔐 Session ID: ${req.sessionID}`);
 
         // Get user profile to determine redirect
         try {
           const userId = user.claims?.sub;
           if (userId) {
             const dbUser = await storage.getUser(userId);
-            console.log(`✅ Retrieved user profile for ${dbUser?.email}, redirecting to /profile`);
+            console.log(`✅ Retrieved DB user profile:`, {
+              id: dbUser?.id,
+              email: dbUser?.email,
+              isAdmin: dbUser?.isAdmin
+            });
+            
+            // Check if there's a return URL in the session
+            const returnUrl = (req.session as any)?.returnTo;
+            if (returnUrl) {
+              console.log(`🔐 Found return URL in session: ${returnUrl}`);
+              delete (req.session as any).returnTo;
+              return res.redirect(returnUrl);
+            }
 
+            console.log(`🔐 Redirecting to /profile for intelligent routing`);
             // Always redirect to profile page for intelligent routing
             return res.redirect("/profile");
           }
         } catch (profileError) {
-          console.error("⚠️ Error determining user profile:", profileError);
+          console.error("⚠️ Error retrieving user profile:", profileError);
         }
         
+        console.log(`🔐 Falling back to redirect to home page`);
         // Default redirect to home
         return res.redirect("/");
       });

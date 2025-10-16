@@ -41,9 +41,9 @@ interface UserProfileData {
 }
 
 export default function UserProfile() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [, navigate] = useLocation();
-  const [isRouting, setIsRouting] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
 
   // Fetch user businesses
   const { data: userBusinesses = [], isLoading: businessesLoading } = useQuery<Business[]>({
@@ -63,35 +63,26 @@ export default function UserProfile() {
     enabled: isAuthenticated,
   });
 
-  // Auto-route logic based on user profile
+  // Show profile after authentication is confirmed
   useEffect(() => {
-    // Wait for all data to load before routing
-    if (!isAuthenticated || businessesLoading || loyaltyLoading || isRouting) return;
+    // Don't redirect if auth is still loading
+    if (authLoading) return;
+    
+    // If not authenticated, redirect to login
+    if (!authLoading && !isAuthenticated) {
+      console.log("User not authenticated, redirecting to login");
+      navigate("/api/login");
+      return;
+    }
+    
+    // If authenticated and data is loaded, show the profile
+    if (isAuthenticated && !businessesLoading && !loyaltyLoading) {
+      setShowProfile(true);
+    }
+  }, [authLoading, isAuthenticated, businessesLoading, loyaltyLoading, navigate]);
 
-    setIsRouting(true);
-
-    // Route all users to Discover page (home)
-    const routeUser = async () => {
-      try {
-        // Everyone starts on the Discover page
-        navigate("/");
-      } catch (error) {
-        console.error("Error routing user:", error);
-        // Default to home on error
-        navigate("/");
-      }
-    };
-
-    // Add slight delay to prevent flashing
-    setTimeout(routeUser, 500);
-  }, [isAuthenticated, user, userBusinesses, businessesLoading, loyaltyAccount, loyaltyLoading, isRouting]);
-
-  if (!isAuthenticated) {
-    navigate("/");
-    return null;
-  }
-
-  if (businessesLoading || isRouting) {
+  // Show loading while checking authentication
+  if (authLoading) {
     return (
       <AbstractBackground backgroundKey="geometric1" overlay="light" className="min-h-screen">
         <div className="container mx-auto px-4 py-20">
@@ -99,8 +90,27 @@ export default function UserProfile() {
             <CardContent className="py-12">
               <div className="flex flex-col items-center gap-4">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                <h2 className="text-xl font-semibold">Determining your profile...</h2>
-                <p className="text-muted-foreground">Redirecting you to your personalized dashboard</p>
+                <h2 className="text-xl font-semibold">Verifying authentication...</h2>
+                <p className="text-muted-foreground">Please wait while we verify your session</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </AbstractBackground>
+    );
+  }
+
+  // Show loading while fetching user data
+  if (!showProfile || businessesLoading || loyaltyLoading) {
+    return (
+      <AbstractBackground backgroundKey="geometric1" overlay="light" className="min-h-screen">
+        <div className="container mx-auto px-4 py-20">
+          <Card className="max-w-2xl mx-auto">
+            <CardContent className="py-12">
+              <div className="flex flex-col items-center gap-4">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                <h2 className="text-xl font-semibold">Loading your profile...</h2>
+                <p className="text-muted-foreground">Setting up your personalized dashboard</p>
               </div>
             </CardContent>
           </Card>

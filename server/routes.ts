@@ -52,12 +52,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      // Log the authentication check
+      const userId = req.user?.claims?.sub;
+      const email = req.user?.claims?.email;
+      
+      if (!userId) {
+        console.error("❌ /api/auth/user - No user ID in claims");
+        console.error("Claims:", req.user?.claims);
+        return res.status(401).json({ 
+          message: "Invalid session: No user ID found",
+          code: "NO_USER_ID" 
+        });
+      }
+      
+      console.log(`🔐 /api/auth/user - Fetching user: ${email} (ID: ${userId})`);
+      
       const user = await storage.getUser(userId);
+      
+      if (!user) {
+        console.error(`❌ /api/auth/user - User not found in database: ${userId}`);
+        return res.status(404).json({ 
+          message: "User not found in database",
+          code: "USER_NOT_FOUND" 
+        });
+      }
+      
+      console.log(`✅ /api/auth/user - Successfully returned user: ${user.email}`);
       res.json(user);
     } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
+      console.error("❌ /api/auth/user - Error fetching user:", error);
+      console.error("Error stack:", (error as Error).stack);
+      res.status(500).json({ 
+        message: "Failed to fetch user",
+        code: "INTERNAL_ERROR" 
+      });
     }
   });
 
