@@ -8,6 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import VoiceOrbInput from "@/components/voice-orb-input";
 import {
   Select,
   SelectContent,
@@ -459,80 +460,18 @@ export default function VoiceCommerce() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 relative z-10">
-          {/* Microphone Button */}
-          <div className="flex flex-col items-center space-y-4">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={toggleListening}
-              className={`relative p-12 rounded-full transition-all ${
-                state.isListening
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-500 shadow-2xl'
-                  : 'bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800'
-              }`}
-            >
-              {state.isListening ? (
-                <MicOff className="w-16 h-16 text-white" />
-              ) : (
-                <Mic className="w-16 h-16 text-gray-600 dark:text-gray-300" />
-              )}
-
-              {/* Pulse animation when listening */}
-              {state.isListening && (
-                <>
-                  <motion.div
-                    className="absolute inset-0 rounded-full border-4 border-blue-400"
-                    animate={{
-                      scale: [1, 1.3, 1],
-                      opacity: [0.5, 0.2, 0.5],
-                    }}
-                    transition={{
-                      duration: 1.5,
-                      repeat: Infinity,
-                    }}
-                  />
-                  <motion.div
-                    className="absolute inset-0 rounded-full border-4 border-purple-400"
-                    animate={{
-                      scale: [1, 1.5, 1],
-                      opacity: [0.5, 0.1, 0.5],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                    }}
-                  />
-                </>
-              )}
-            </motion.button>
-
-            {/* Status */}
-            <div className="text-center">
-              {state.isListening ? (
-                <div>
-                  <p className="text-lg font-medium text-blue-600 dark:text-blue-400">
-                    Listening...
-                  </p>
-                  {state.currentTranscript && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 italic mt-2">
-                      "{state.currentTranscript}"
-                    </p>
-                  )}
-                </div>
-              ) : state.isSpeaking ? (
-                <div className="flex items-center gap-2">
-                  <Volume2 className="w-5 h-5 text-purple-600 animate-pulse" />
-                  <p className="text-lg font-medium text-purple-600 dark:text-purple-400">
-                    Speaking...
-                  </p>
-                </div>
-              ) : (
-                <p className="text-muted-foreground">
-                  Click to start voice shopping
-                </p>
-              )}
-            </div>
-          </div>
+          {/* Voice Orb Input */}
+          <VoiceOrbInput
+            isListening={state.isListening}
+            isSpeaking={state.isSpeaking}
+            transcript={state.conversation.length > 0 ? state.conversation[state.conversation.length - 1]?.content : undefined}
+            interimTranscript={state.currentTranscript}
+            onToggleListening={toggleListening}
+            statusText="Click to start voice shopping"
+            size="lg"
+            hue={200}
+            showControls={true}
+          />
 
           {/* Conversation History */}
           {state.conversation.length > 0 && (

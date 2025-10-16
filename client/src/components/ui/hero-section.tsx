@@ -118,7 +118,11 @@ export const Scene = memo(() => {
 
     return (
         <div className="w-full h-full z-0">
-            <Canvas camera={{ position: cameraPosition, fov: 40 }}>
+            <Canvas 
+                camera={{ position: cameraPosition, fov: 40 }}
+                gl={{ alpha: true }}
+                style={{ background: 'transparent' }}
+            >
                 <ambientLight intensity={5} />
                 <directionalLight position={[10, 10, 5]} intensity={5} />
                 <AnimatedBoxes />
