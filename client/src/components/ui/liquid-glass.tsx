@@ -255,7 +255,8 @@ export const LiquidGlassHeaderCard: React.FC<{
   className?: string;
   withAnimatedBackground?: boolean;
   size?: 'default' | 'hero';
-}> = ({ title, subtitle, className = "", withAnimatedBackground = true, size = 'default' }) => {
+  withDarkTint?: boolean;
+}> = ({ title, subtitle, className = "", withAnimatedBackground = true, size = 'default', withDarkTint = false }) => {
   const isHero = size === 'hero';
   const paddingClass = isHero ? 'px-12 py-12 md:px-16 md:py-16' : 'px-8 py-6';
   const titleClass = isHero ? 'text-5xl md:text-7xl' : 'text-4xl md:text-5xl';
@@ -276,15 +277,32 @@ export const LiquidGlassHeaderCard: React.FC<{
     </GlassEffect>
   );
 
-  if (withAnimatedBackground) {
+  const wrappedContent = withAnimatedBackground ? (
+    <LiquidGlassAnimatedBackground className="rounded-3xl p-1">
+      {cardContent}
+    </LiquidGlassAnimatedBackground>
+  ) : cardContent;
+
+  // Add dark tint overlay wrapper for hero sections
+  if (withDarkTint) {
     return (
-      <LiquidGlassAnimatedBackground className="rounded-3xl p-1">
-        {cardContent}
-      </LiquidGlassAnimatedBackground>
+      <div className="relative">
+        {/* Dark tint layer behind glass with fade at bottom */}
+        <div
+          className="absolute inset-0 -mx-4 -my-8 lg:-mx-8 pointer-events-none"
+          style={{
+            background: 'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.4) 70%, rgba(0,0,0,0) 100%)',
+            zIndex: 0,
+          }}
+        />
+        <div className="relative z-10">
+          {wrappedContent}
+        </div>
+      </div>
     );
   }
 
-  return cardContent;
+  return wrappedContent;
 };
 
 // Export all components

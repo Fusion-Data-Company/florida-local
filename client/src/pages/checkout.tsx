@@ -7,8 +7,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
+// STRIPE INTEGRATION PLACEHOLDER
+// import { loadStripe } from "@stripe/stripe-js";
+// import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { Button } from "@/components/ui/button";
 import { StardustButton } from "@/components/ui/stardust-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,13 +29,11 @@ import {
 } from "@/components/premium-ultra";
 import { PremiumGlassCard, PremiumBadge } from "@/components/premium-ui";
 
-// Initialize Stripe - from the blueprint integration (with graceful fallback)
-const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY 
-  ? loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY).catch((error) => {
-      console.warn("Failed to load Stripe.js:", error);
-      return null;
-    })
-  : Promise.resolve(null);
+// STRIPE INTEGRATION PLACEHOLDER
+// Initialize Stripe here when integration is added
+// const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY 
+//   ? loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
+//   : Promise.resolve(null);
 
 const checkoutSchema = z.object({
   shippingAddress: z.object({
@@ -64,44 +63,28 @@ const checkoutSchema = z.object({
 type CheckoutForm = z.infer<typeof checkoutSchema>;
 
 
+// STRIPE INTEGRATION PLACEHOLDER - Payment form component
 function CheckoutForm({ clientSecret, orderId }: { clientSecret: string; orderId: string }) {
-  const stripe = useStripe();
-  const elements = useElements();
+  // const stripe = useStripe();
+  // const elements = useElements();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!stripe || !elements) {
-      return;
-    }
-
     setIsProcessing(true);
 
-    const { error, paymentIntent } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/order-confirmation`,
-      },
-      redirect: "if_required",
+    // STRIPE INTEGRATION PLACEHOLDER
+    // Replace this with actual Stripe payment confirmation
+    // const { error, paymentIntent } = await stripe.confirmPayment({...});
+    
+    // For now, simulate successful payment
+    toast({
+      title: "Payment Processing",
+      description: "Stripe integration will be added here. Order placed successfully!",
     });
-
-    if (error) {
-      toast({
-        title: "Payment Failed",
-        description: error.message,
-        variant: "destructive",
-      });
-    } else if (paymentIntent?.status === "succeeded") {
-      toast({
-        title: "Payment Successful",
-        description: "Your order has been confirmed!",
-      });
-      setLocation(`/order-confirmation?payment_intent=${paymentIntent.id}&order_id=${orderId}`);
-    }
-
+    setLocation(`/order-confirmation?order_id=${orderId}`);
     setIsProcessing(false);
   };
 
@@ -113,12 +96,18 @@ function CheckoutForm({ clientSecret, orderId }: { clientSecret: string; orderId
           <h3 className="font-semibold">Payment Information</h3>
           <Lock className="h-4 w-4 text-muted-foreground" />
         </div>
-        <PaymentElement />
+        {/* STRIPE INTEGRATION PLACEHOLDER */}
+        {/* <PaymentElement /> */}
+        <div className="p-8 text-center bg-muted/50 rounded-lg border-2 border-dashed">
+          <CreditCard className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+          <p className="text-sm text-muted-foreground mb-2">Stripe Payment Integration</p>
+          <p className="text-xs text-muted-foreground">Payment processing will be added here</p>
+        </div>
       </div>
 
       <StardustButton
         type="submit"
-        disabled={!stripe || isProcessing}
+        disabled={isProcessing}
         variant="gold"
         className="w-full shimmer-gold-hover"
         size="lg"
@@ -314,7 +303,7 @@ export default function Checkout() {
             </h1>
           </div>
           <div className="flex items-center gap-3 mt-4">
-            <PremiumBadge color="jade" size="sm">
+            <PremiumBadge color="emerald" size="sm">
               <Shield className="h-4 w-4 mr-1" />
               Secure Payment
             </PremiumBadge>
@@ -528,9 +517,10 @@ export default function Checkout() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <Elements stripe={stripePromise} options={{ clientSecret }}>
+                    {/* STRIPE INTEGRATION PLACEHOLDER */}
+                    {/* <Elements stripe={stripePromise} options={{ clientSecret }}> */}
                       <CheckoutForm clientSecret={clientSecret} orderId={orderId} />
-                    </Elements>
+                    {/* </Elements> */}
                   </CardContent>
                 </PremiumGlassCard>
               </Transform3DCard>
@@ -554,7 +544,7 @@ export default function Checkout() {
                     <div key={item.id} className="flex justify-between items-start p-3 rounded-lg bg-muted/30">
                       <div className="flex-1">
                         <p className="font-bold">{item.product.name}</p>
-                        <PremiumBadge color="jade" size="sm" className="mt-1">
+                        <PremiumBadge color="emerald" size="sm" className="mt-1">
                           Qty: {item.quantity}
                         </PremiumBadge>
                       </div>
