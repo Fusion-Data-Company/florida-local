@@ -330,16 +330,16 @@ export default function AIToolsPage() {
                     data-testid={`card-tool-${tool.id}`}
                   >
                     {/* Metallic shine effect */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine" />
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 cyber-metallic-shine z-0" />
                     
                     {/* Animated border glow */}
-                    <div className={`absolute inset-0 rounded-lg bg-gradient-to-r ${tool.color} opacity-0 group-hover:opacity-20 blur-xl transition-all duration-500`} />
+                    <div className={`absolute inset-0 rounded-lg bg-gradient-to-r ${tool.color} opacity-0 group-hover:opacity-20 blur-xl transition-all duration-500 z-0`} />
                     
                     {/* Holographic overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 mix-blend-overlay pointer-events-none z-0" />
                     
                     {/* Scan line effect */}
-                    <div className="absolute inset-0 cyber-scan-line pointer-events-none" />
+                    <div className="absolute inset-0 cyber-scan-line pointer-events-none z-0" />
                     
                     <CardHeader className="relative z-10">
                       <div className="flex items-start justify-between mb-4">
