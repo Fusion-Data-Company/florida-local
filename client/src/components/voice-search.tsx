@@ -7,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import VoiceOrbInput from "@/components/voice-orb-input";
 import {
   Mic,
   MicOff,
@@ -529,79 +530,17 @@ export default function VoiceSearch() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 relative z-10">
-          {/* Microphone Button */}
-          <div className="flex flex-col items-center space-y-4">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={toggleListening}
-              className={`relative p-8 rounded-full transition-all ${
-                isListening
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-500 shadow-2xl'
-                  : 'bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800'
-              }`}
-            >
-              {isListening ? (
-                <MicOff className="w-12 h-12 text-white" />
-              ) : (
-                <Mic className="w-12 h-12 text-gray-600 dark:text-gray-300" />
-              )}
-
-              {/* Audio level indicator */}
-              {isListening && (
-                <motion.div
-                  className="absolute inset-0 rounded-full border-4 border-blue-400"
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.5, 0.2, 0.5],
-                  }}
-                  transition={{
-                    duration: 1.5,
-                    repeat: Infinity,
-                  }}
-                />
-              )}
-            </motion.button>
-
-            {/* Audio Level Bar */}
-            {isListening && (
-              <div className="w-64 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                <motion.div
-                  className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
-                  animate={{ width: `${audioLevel}%` }}
-                  transition={{ duration: 0.1 }}
-                />
-              </div>
-            )}
-
-            {/* Status Text */}
-            <div className="text-center">
-              {isListening ? (
-                <p className="text-lg font-medium text-blue-600 dark:text-blue-400">
-                  Listening...
-                </p>
-              ) : (
-                <p className="text-muted-foreground">
-                  Press to start voice search
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Transcript Display */}
-          {(transcript || interimTranscript) && (
-            <Card className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border border-white/10">
-              <CardContent className="pt-4">
-                <p className="text-sm text-muted-foreground mb-1">Transcript:</p>
-                <p className="text-lg">
-                  {transcript}
-                  {interimTranscript && (
-                    <span className="text-gray-400 italic"> {interimTranscript}</span>
-                  )}
-                </p>
-              </CardContent>
-            </Card>
-          )}
+          {/* Voice Orb Input */}
+          <VoiceOrbInput
+            isListening={isListening}
+            transcript={transcript}
+            interimTranscript={interimTranscript}
+            onToggleListening={toggleListening}
+            statusText="Press to start voice search"
+            size="lg"
+            hue={160}
+            showControls={true}
+          />
 
           {/* Recent Commands */}
           {recentCommands.length > 0 && (
