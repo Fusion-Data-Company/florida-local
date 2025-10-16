@@ -51,7 +51,7 @@ export default function Home() {
       data-surface-tone="cool"
     >
       {/* ULTRA PREMIUM EFFECTS */}
-      <AuroraAmbient intensity="medium" />
+      {/* <AuroraAmbient intensity="medium" /> */}
 
       {/* SHADER ANIMATION HERO */}
       <div className="relative flex h-[650px] w-full flex-col items-center justify-center overflow-hidden">
@@ -71,12 +71,13 @@ export default function Home() {
           backgroundAttachment: 'fixed'
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/75 via-slate-800/70 to-slate-900/75 backdrop-blur-sm" />
+        {/* Removed dark overlay to show clear HD background */}
+        {/* <div className="absolute inset-0 bg-gradient-to-br from-slate-900/75 via-slate-800/70 to-slate-900/75 backdrop-blur-sm" /> */}
 
       {/* FLORIDA LOCAL ULTRA-ELITE HERO */}
-      <div className="relative py-24 overflow-hidden gradient-shift">
-        {/* Teal-Gold Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[var(--fl-teal-lagoon)]/10 via-background to-[var(--fl-sunset-gold)]/10" />
+      <div className="relative py-24 overflow-hidden">
+        {/* Removed gradient backgrounds to show clear HD background */}
+        {/* <div className="absolute inset-0 bg-gradient-to-br from-[var(--fl-teal-lagoon)]/10 via-background to-[var(--fl-sunset-gold)]/10" /> */}
 
         {/* Particle Field with Teal-Gold Colors */}
         <ParticleField count={50} color="cyan" />
@@ -88,8 +89,8 @@ export default function Home() {
             glowTextSize="xl"
             className="mb-6 entrance-fade-up"
           />
-          <div className="bg-black/60 backdrop-blur-sm p-6 rounded-2xl max-w-3xl mx-auto mb-8 entrance-fade-up stagger-1">
-            <p className="text-xl text-white leading-relaxed" style={{textShadow: '0 2px 8px rgba(0,0,0,0.8)'}}>
+          <div className="bg-white/90 backdrop-blur-sm p-6 rounded-2xl max-w-3xl mx-auto mb-8 entrance-fade-up stagger-1">
+            <p className="text-xl text-gray-900 leading-relaxed">
               Stay connected with Florida's thriving business network. Discover new opportunities,
               showcase your latest updates, and grow your local presence.
             </p>
