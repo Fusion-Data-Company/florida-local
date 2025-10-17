@@ -12,6 +12,7 @@
  */
 
 import type { Request, Response, NextFunction } from 'express';
+import * as Sentry from '@sentry/node';
 
 export enum ErrorSeverity {
   LOW = 'low',
@@ -126,24 +127,124 @@ class ErrorLogger {
     }
   }
 
-  private sendAlert(error: AppError): void {
+  private async sendAlert(error: AppError): Promise<void> {
     // Send alerts for critical errors
-    // e.g., Slack, PagerDuty, email, etc.
     console.log('📧 Sending alert for critical error:', error.message);
 
-    // TODO: Implement actual alert mechanism
-    // Example: Send Slack webhook
-    // Example: Send email to ops team
-    // Example: Trigger PagerDuty incident
+    // Send to Slack if webhook is configured
+    if (process.env.SLACK_WEBHOOK_URL) {
+      try {
+        await this.sendSlackAlert(error);
+      } catch (slackError) {
+        console.error('Failed to send Slack alert:', slackError);
+      }
+    }
+
+    // Could add more alert channels here:
+    // - PagerDuty API
+    // - Email via SendGrid/Mailgun
+    // - SMS via Twilio
+  }
+
+  private async sendSlackAlert(error: AppError): Promise<void> {
+    const payload = {
+      text: `🚨 CRITICAL ERROR ALERT`,
+      blocks: [
+        {
+          type: 'header',
+          text: {
+            type: 'plain_text',
+            text: '🚨 Critical Error Detected',
+            emoji: true,
+          },
+        },
+        {
+          type: 'section',
+          fields: [
+            {
+              type: 'mrkdwn',
+              text: `*Error:*\n${error.message}`,
+            },
+            {
+              type: 'mrkdwn',
+              text: `*Category:*\n${error.category}`,
+            },
+            {
+              type: 'mrkdwn',
+              text: `*User ID:*\n${error.userId || 'N/A'}`,
+            },
+            {
+              type: 'mrkdwn',
+              text: `*Request ID:*\n${error.requestId || 'N/A'}`,
+            },
+            {
+              type: 'mrkdwn',
+              text: `*Timestamp:*\n${error.timestamp.toISOString()}`,
+            },
+            {
+              type: 'mrkdwn',
+              text: `*Environment:*\n${process.env.NODE_ENV || 'unknown'}`,
+            },
+          ],
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `*Stack Trace:*\n\`\`\`${error.stack?.substring(0, 500) || 'N/A'}\`\`\``,
+          },
+        },
+      ],
+    };
+
+    const response = await fetch(process.env.SLACK_WEBHOOK_URL!, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Slack webhook failed: ${response.statusText}`);
+    }
   }
 
   private sendToMonitoringService(error: AppError): void {
-    // Send to external monitoring service
-    // TODO: Implement based on your monitoring stack
-    // Examples:
-    // - Sentry.captureException(error)
-    // - DataDog.recordError(error)
-    // - AWS CloudWatch Logs
+    // Send to Sentry with full context
+    Sentry.withScope((scope) => {
+      // Add user context
+      if (error.userId) {
+        scope.setUser({ id: error.userId });
+      }
+
+      // Add tags for filtering in Sentry
+      scope.setTag('error_category', error.category);
+      scope.setTag('error_severity', error.severity);
+      scope.setTag('status_code', error.statusCode.toString());
+
+      // Add extra context
+      scope.setContext('error_details', {
+        category: error.category,
+        severity: error.severity,
+        statusCode: error.statusCode,
+        requestId: error.requestId,
+        timestamp: error.timestamp.toISOString(),
+        isOperational: error.isOperational,
+      });
+
+      // Add custom context data
+      if (error.context) {
+        scope.setContext('request_context', error.context);
+      }
+
+      // Set fingerprint for grouping similar errors
+      scope.setFingerprint([
+        error.category,
+        error.message.substring(0, 100),
+      ]);
+
+      // Capture the exception
+      Sentry.captureException(error);
+    });
   }
 
   getRecentErrors(limit: number = 100): AppError[] {
@@ -558,18 +659,5 @@ class HealthChecker {
 
 export const healthChecker = new HealthChecker();
 
-// Register default health checks
-healthChecker.register('database', async () => {
-  // TODO: Check database connection
-  return true;
-});
-
-healthChecker.register('email_service', async () => {
-  // TODO: Check email service availability
-  return true;
-});
-
-healthChecker.register('ai_service', async () => {
-  // TODO: Check AI service availability
-  return true;
-});
+// Health checks are registered in the main application
+// See server/index.ts for implementations

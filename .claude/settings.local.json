@@ -51,7 +51,13 @@
       "Bash(env)",
       "Bash(echo:*)",
       "Bash(timeout 10 cat:*)",
-      "Bash(tsx scripts/check-users.ts:*)"
+      "Bash(tsx scripts/check-users.ts:*)",
+      "Read(//home/runner/.config/**)",
+      "Read(//home/runner/.claude/**)",
+      "Read(//home/runner/**)",
+      "Bash(command -v:*)",
+      "Bash(npm test:*)",
+      "Bash(npm audit:*)"
     ],
     "deny": [],
     "ask": []

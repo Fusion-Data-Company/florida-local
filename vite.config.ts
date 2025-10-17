@@ -9,6 +9,8 @@
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 
+  const isTest = process.env.NODE_ENV === 'test';
+
   export default defineConfig({
     root: './client',
     plugins: [
@@ -162,6 +164,30 @@
     server: {
       hmr: {
         overlay: false,
+      },
+    },
+    test: {
+      globals: true,
+      environment: 'happy-dom',
+      setupFiles: ['./client/src/__tests__/setup.ts'],
+      coverage: {
+        provider: 'v8',
+        reporter: ['text', 'json', 'html', 'lcov'],
+        reportsDirectory: './coverage/client',
+        exclude: [
+          'node_modules/',
+          'client/src/__tests__/',
+          '**/*.d.ts',
+          '**/*.config.*',
+          '**/mockData',
+          'dist/',
+        ],
+        thresholds: {
+          lines: 70,
+          functions: 70,
+          branches: 70,
+          statements: 70,
+        },
       },
     },
   });

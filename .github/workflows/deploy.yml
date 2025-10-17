@@ -28,9 +28,12 @@ jobs:
         run: npm run check
       
       - name: Run tests
-        run: npm test
+        run: npm run test:coverage
         env:
           CI: true
+          NODE_ENV: test
+          SESSION_SECRET: test-secret-key-minimum-32-characters-long
+          SKIP_EXTERNAL_SERVICES: 'true'
 
   build:
     needs: test

@@ -25,6 +25,7 @@ import { dataSyncService } from "./dataSyncService";
 
 // Social Media OAuth Services
 import { registerSocialAuthRoutes } from "./socialAuthRoutes";
+import { startTokenRefreshService, getTokenRefreshStatus } from "./socialTokenRefresh";
 
 // Initialize Stripe optionally; if key missing, endpoints will short-circuit
 // STRIPE INTEGRATION PLACEHOLDER
@@ -3555,6 +3556,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Register social media OAuth routes
   registerSocialAuthRoutes(app);
+
+  // Start automatic token refresh service (runs every 4 hours)
+  startTokenRefreshService(4);
+  console.log('✅ Automatic social media token refresh service started');
+
+  // Admin endpoint to check token refresh status
+  app.get('/api/admin/token-status', isAuthenticated, isAdmin, async (_req, res) => {
+    try {
+      const status = await getTokenRefreshStatus();
+      res.json({ tokens: status });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get token status' });
+    }
+  });
 
   const httpServer = createServer(app);
 

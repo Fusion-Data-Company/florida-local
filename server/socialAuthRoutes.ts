@@ -16,6 +16,7 @@ import { db } from './db';
 import { socialAccounts, socialTokens } from '@shared/schema';
 import { eq, and } from 'drizzle-orm';
 import crypto from 'crypto';
+import { redis, cache } from './redis';
 
 // OAuth configurations for each platform
 const OAUTH_CONFIGS = {
@@ -120,18 +121,39 @@ function generateState(): string {
   return crypto.randomBytes(32).toString('hex');
 }
 
-// Store OAuth states temporarily (in production, use Redis)
-const oauthStates = new Map<string, { userId: string; businessId: string; platform: string; timestamp: number }>();
+// ============================================================================
+// PRODUCTION-READY: OAuth State Management with Redis
+// ============================================================================
+// OAuth state TTL: 10 minutes (states expire automatically)
+const OAUTH_STATE_TTL = 600;
 
-// Clean up old states every hour
-setInterval(() => {
-  const oneHourAgo = Date.now() - 3600000;
-  for (const [state, data] of oauthStates.entries()) {
-    if (data.timestamp < oneHourAgo) {
-      oauthStates.delete(state);
-    }
+async function storeOAuthState(
+  state: string,
+  data: { userId: string; businessId: string; platform: string }
+): Promise<void> {
+  const key = `oauth:state:${state}`;
+  await cache.set(key, data, OAUTH_STATE_TTL);
+  console.log(`✅ OAuth state stored: ${state.substring(0, 8)}... (platform: ${data.platform})`);
+}
+
+async function getOAuthState(
+  state: string
+): Promise<{ userId: string; businessId: string; platform: string } | null> {
+  const key = `oauth:state:${state}`;
+  const data = await cache.get<{ userId: string; businessId: string; platform: string }>(key);
+  if (data) {
+    console.log(`✅ OAuth state retrieved: ${state.substring(0, 8)}... (platform: ${data.platform})`);
+  } else {
+    console.warn(`❌ OAuth state not found or expired: ${state.substring(0, 8)}...`);
   }
-}, 3600000);
+  return data;
+}
+
+async function deleteOAuthState(state: string): Promise<void> {
+  const key = `oauth:state:${state}`;
+  await redis.del(key);
+  console.log(`🗑️  OAuth state deleted: ${state.substring(0, 8)}...`);
+}
 
 export function registerSocialAuthRoutes(app: Express) {
 
@@ -160,13 +182,12 @@ export function registerSocialAuthRoutes(app: Express) {
         });
       }
 
-      // Generate state and store it
+      // Generate state and store it in Redis (production-ready)
       const state = generateState();
-      oauthStates.set(state, {
+      await storeOAuthState(state, {
         userId,
         businessId: businessId as string,
-        platform,
-        timestamp: Date.now()
+        platform
       });
 
       // Build redirect URL
@@ -208,13 +229,15 @@ export function registerSocialAuthRoutes(app: Express) {
         return res.redirect('/social-hub?error=missing_params');
       }
 
-      // Verify state
-      const stateData = oauthStates.get(state as string);
+      // Verify state from Redis (production-ready)
+      const stateData = await getOAuthState(state as string);
       if (!stateData) {
+        console.error('❌ Invalid or expired OAuth state:', state);
         return res.redirect('/social-hub?error=invalid_state');
       }
 
-      oauthStates.delete(state as string);
+      // Delete state after use to prevent replay attacks
+      await deleteOAuthState(state as string);
 
       const config = OAUTH_CONFIGS[platform as keyof typeof OAUTH_CONFIGS];
       if (!config) {

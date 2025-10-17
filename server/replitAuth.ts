@@ -480,12 +480,18 @@ export async function setupAuth(app: Express) {
     // Use custom callback to handle post-authentication routing
     passport.authenticate(strategyName, async (err: any, user: any, info: any) => {
       console.log(`🔐 Passport authenticate callback triggered`);
-      
+
+      // Import auth audit logging
+      const { logLoginFailure, logLoginSuccess } = await import('./middleware/authAudit');
+
       if (err) {
         console.error("❌ Authentication error:", err);
         console.error("❌ Error stack:", err.stack);
         console.error("❌ Error details:", JSON.stringify(err, null, 2));
-        
+
+        // Log failed authentication attempt
+        await logLoginFailure(req, err.message || 'Authentication error');
+
         // Log detailed error for production debugging
         const errorDetails = {
           timestamp: new Date().toISOString(),
@@ -501,15 +507,19 @@ export async function setupAuth(app: Express) {
           }
         };
         console.error("🚨 PRODUCTION AUTH ERROR DETAILS:", JSON.stringify(errorDetails, null, 2));
-        
+
         return res.redirect(`/api/login?error=auth_failed&reason=${encodeURIComponent(err.message || 'unknown')}`);
       }
 
       if (!user) {
         console.error("❌ Authentication failed - no user returned");
         console.error("❌ Info from passport:", JSON.stringify(info, null, 2));
-        
+
         const failureReason = info?.message || 'no_user_returned';
+
+        // Log failed authentication
+        await logLoginFailure(req, failureReason);
+
         return res.redirect(`/api/login?error=auth_failed&reason=${encodeURIComponent(failureReason)}`);
       }
 
@@ -527,7 +537,10 @@ export async function setupAuth(app: Express) {
           console.error("❌ Session login error:", loginErr);
           console.error("❌ Login error stack:", loginErr.stack);
           console.error("❌ Login error details:", JSON.stringify(loginErr, null, 2));
-          
+
+          // Log session failure
+          await logLoginFailure(req, `Session creation failed: ${loginErr.message}`);
+
           // Log session error for production debugging
           const sessionErrorDetails = {
             timestamp: new Date().toISOString(),
@@ -539,12 +552,19 @@ export async function setupAuth(app: Express) {
             errorStack: loginErr.stack
           };
           console.error("🚨 PRODUCTION SESSION ERROR:", JSON.stringify(sessionErrorDetails, null, 2));
-          
+
           return res.redirect(`/api/login?error=session_failed&reason=${encodeURIComponent(loginErr.message || 'unknown')}`);
         }
 
         console.log(`✅ Session created successfully for user: ${user.claims?.email} (ID: ${user.claims?.sub})`);
         console.log(`🔐 Session ID: ${req.sessionID}`);
+
+        // Log successful login
+        await logLoginSuccess(req, user.claims?.sub);
+
+        // Clear any failed login attempts after successful login
+        const { clearFailedAttempts } = await import('./failedLoginTracker');
+        await clearFailedAttempts(user.claims?.email);
 
         // Get user profile to determine redirect
         try {
@@ -556,7 +576,7 @@ export async function setupAuth(app: Express) {
               email: dbUser?.email,
               isAdmin: dbUser?.isAdmin
             });
-            
+
             // Check if there's a return URL in the session
             const returnUrl = (req.session as any)?.returnTo;
             if (returnUrl) {
@@ -572,7 +592,7 @@ export async function setupAuth(app: Express) {
         } catch (profileError) {
           console.error("⚠️ Error retrieving user profile:", profileError);
         }
-        
+
         console.log(`🔐 Falling back to redirect to home page`);
         // Default redirect to home
         return res.redirect("/");
@@ -580,7 +600,18 @@ export async function setupAuth(app: Express) {
     })(req, res, next);
   });
 
-  app.get("/api/logout", (req, res) => {
+  app.get("/api/logout", async (req, res) => {
+    const user = req.user as any;
+    const userId = user?.claims?.sub;
+
+    // Import auth audit logging
+    const { logLogout } = await import('./middleware/authAudit');
+
+    // Log the logout event
+    if (userId) {
+      await logLogout(req, userId);
+    }
+
     req.logout(() => {
       res.redirect(
         client.buildEndSessionUrl(config, {

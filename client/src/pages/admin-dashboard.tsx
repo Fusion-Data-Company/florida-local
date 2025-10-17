@@ -75,6 +75,7 @@ import { ContentModerationSection } from "@/components/admin/ContentModerationSe
 import { MarketingHubSection } from "@/components/admin/MarketingHubSection";
 import { LoyaltyAdminSection } from "@/components/admin/LoyaltyAdminSection";
 import { SystemMonitoringSection } from "@/components/admin/SystemMonitoringSection";
+import { SecuritySection } from "@/components/admin/SecuritySection";
 
 interface AdminStats {
   totalUsers: number;
@@ -237,10 +238,14 @@ export default function AdminDashboard() {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 md:grid-cols-8 lg:w-auto lg:inline-grid gap-1">
+          <TabsList className="grid w-full grid-cols-5 md:grid-cols-9 lg:w-auto lg:inline-grid gap-1">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
               <span className="hidden sm:inline">Overview</span>
+            </TabsTrigger>
+            <TabsTrigger value="security" className="flex items-center gap-2">
+              <Shield className="h-4 w-4" />
+              <span className="hidden sm:inline">Security</span>
             </TabsTrigger>
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
@@ -373,6 +378,11 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          {/* Security Tab */}
+          <TabsContent value="security">
+            <SecuritySection />
           </TabsContent>
 
           {/* Users Tab */}
