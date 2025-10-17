@@ -128,7 +128,21 @@ import {
   insertSocialMediaListenerSchema,
   insertSocialMediaAutomationSchema,
   insertSocialMediaTeamSchema,
+  // Blog schemas
+  insertBlogPostSchema,
+  updateBlogPostSchema,
+  insertBlogCategorySchema,
+  insertBlogTagSchema,
+  insertBlogCommentSchema,
+  updateBlogCommentSchema,
+  insertBlogReactionSchema,
+  insertBlogBookmarkSchema,
+  insertBlogSubscriptionSchema,
+  insertBlogAnalyticsSchema,
 } from "@shared/schema";
+
+// Blog Service
+import { blogService } from "./blogService";
 
 // Stripe initialization is handled lazily in stripeConnect module
 // No global stripe client needed - stripeConnect handles all Stripe operations
@@ -2490,6 +2504,514 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(500).json({ message: "Internal server error" });
     }
 });
+
+  // ========== BLOG API ROUTES ==========
+  // Blog Post Management
+  
+  app.post('/api/blog/posts', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const authorId = req.user.claims.sub;
+      const postData = insertBlogPostSchema.parse({
+        ...req.body,
+        authorId,
+      });
+      
+      const post = await blogService.createPost(postData);
+      res.json(post);
+    } catch (error: any) {
+      console.error("Error creating blog post:", error);
+      if (error.name === 'ZodError') {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.put('/api/blog/posts/:id', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const postData = updateBlogPostSchema.parse(req.body);
+      
+      const post = await blogService.updatePost(id, postData);
+      res.json(post);
+    } catch (error: any) {
+      console.error("Error updating blog post:", error);
+      if (error.name === 'ZodError') {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.delete('/api/blog/posts/:id', strictRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const userId = req.user.claims.sub;
+      
+      // Check ownership
+      const post = await blogService.getPostById(id);
+      if (!post) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+      if (post.authorId !== userId && !req.user.isAdmin) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
+      
+      await blogService.deletePost(id);
+      res.json({ message: "Post deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting blog post:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get('/api/blog/posts/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const post = await blogService.getPostById(id);
+      
+      if (!post) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+      
+      res.json(post);
+    } catch (error) {
+      console.error("Error fetching blog post:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get('/api/blog/posts/slug/:slug', async (req, res) => {
+    try {
+      const { slug } = req.params;
+      const post = await blogService.getPostBySlug(slug);
+      
+      if (!post) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+      
+      res.json(post);
+    } catch (error) {
+      console.error("Error fetching blog post by slug:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get('/api/blog/posts', async (req, res) => {
+    try {
+      const params = {
+        query: req.query.q as string,
+        categoryId: req.query.category as string,
+        tags: req.query.tags ? (req.query.tags as string).split(',') : undefined,
+        authorId: req.query.author as string,
+        status: req.query.status as string || 'published',
+        startDate: req.query.startDate ? new Date(req.query.startDate as string) : undefined,
+        endDate: req.query.endDate ? new Date(req.query.endDate as string) : undefined,
+        sort: req.query.sort as any || 'newest',
+        page: parseInt(req.query.page as string) || 1,
+        limit: parseInt(req.query.limit as string) || 10,
+      };
+      
+      const result = await blogService.searchPosts(params);
+      res.json(result);
+    } catch (error) {
+      console.error("Error searching blog posts:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get('/api/blog/posts/:id/related', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const limit = parseInt(req.query.limit as string) || 5;
+      
+      const posts = await blogService.getRelatedPosts(id, limit);
+      res.json(posts);
+    } catch (error) {
+      console.error("Error fetching related posts:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get('/api/blog/posts/popular', async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const period = parseInt(req.query.period as string) || 30;
+      
+      const posts = await blogService.getPopularPosts(limit, period);
+      res.json(posts);
+    } catch (error) {
+      console.error("Error fetching popular posts:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Category Management
+  
+  app.post('/api/blog/categories', businessActionRateLimit, isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const categoryData = insertBlogCategorySchema.parse(req.body);
+      const category = await blogService.createCategory(categoryData);
+      res.json(category);
+    } catch (error: any) {
+      console.error("Error creating category:", error);
+      return res.status(400).json({ message: "Validation error" });
+    }
+  });
+
+  app.put('/api/blog/categories/:id', businessActionRateLimit, isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const category = await blogService.updateCategory(id, req.body);
+      res.json(category);
+    } catch (error) {
+      console.error("Error updating category:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get('/api/blog/categories', async (req, res) => {
+    try {
+      const categories = await blogService.getCategories();
+      res.json(categories);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Tag Management
+  
+  app.post('/api/blog/tags', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const tagData = insertBlogTagSchema.parse(req.body);
+      const tag = await blogService.createTag(tagData);
+      res.json(tag);
+    } catch (error: any) {
+      console.error("Error creating tag:", error);
+      return res.status(400).json({ message: "Validation error" });
+    }
+  });
+
+  app.get('/api/blog/tags', async (req, res) => {
+    try {
+      const tags = await blogService.getTags();
+      res.json(tags);
+    } catch (error) {
+      console.error("Error fetching tags:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.post('/api/blog/posts/:id/tags', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const { tagIds } = req.body;
+      
+      await blogService.attachTagsToPost(id, tagIds);
+      res.json({ message: "Tags attached successfully" });
+    } catch (error) {
+      console.error("Error attaching tags:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Comment System
+  
+  app.post('/api/blog/posts/:postId/comments', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const { postId } = req.params;
+      const authorId = req.user.claims.sub;
+      
+      const commentData = insertBlogCommentSchema.parse({
+        ...req.body,
+        postId,
+        authorId,
+      });
+      
+      const comment = await blogService.createComment(commentData);
+      res.json(comment);
+    } catch (error: any) {
+      console.error("Error creating comment:", error);
+      return res.status(400).json({ message: "Validation error" });
+    }
+  });
+
+  app.put('/api/blog/comments/:id', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const userId = req.user.claims.sub;
+      
+      // Check ownership
+      const comment = await storage.getBlogCommentById(id);
+      if (!comment || comment.authorId !== userId) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
+      
+      const updateData = updateBlogCommentSchema.parse(req.body);
+      const updated = await blogService.updateComment(id, updateData);
+      res.json(updated);
+    } catch (error: any) {
+      console.error("Error updating comment:", error);
+      return res.status(400).json({ message: "Validation error" });
+    }
+  });
+
+  app.delete('/api/blog/comments/:id', strictRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const userId = req.user.claims.sub;
+      
+      // Check ownership or admin
+      const comment = await storage.getBlogCommentById(id);
+      if (!comment || (comment.authorId !== userId && !req.user.isAdmin)) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
+      
+      await blogService.deleteComment(id);
+      res.json({ message: "Comment deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get('/api/blog/posts/:postId/comments', async (req, res) => {
+    try {
+      const { postId } = req.params;
+      const options = {
+        parentId: req.query.parentId as string || null,
+        page: parseInt(req.query.page as string) || 1,
+        limit: parseInt(req.query.limit as string) || 20,
+        sortBy: req.query.sortBy as any || 'newest',
+      };
+      
+      const comments = await blogService.getComments(postId, options);
+      res.json(comments);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.put('/api/blog/comments/:id/moderate', strictRateLimit, isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { approved } = req.body;
+      
+      await blogService.moderateComment(id, approved);
+      res.json({ message: `Comment ${approved ? 'approved' : 'rejected'} successfully` });
+    } catch (error) {
+      console.error("Error moderating comment:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Reactions & Bookmarks
+  
+  app.post('/api/blog/posts/:id/reactions', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const { id: postId } = req.params;
+      const userId = req.user.claims.sub;
+      
+      const reactionData = insertBlogReactionSchema.parse({
+        ...req.body,
+        postId,
+        userId,
+      });
+      
+      const reaction = await blogService.addReaction(reactionData);
+      res.json(reaction);
+    } catch (error: any) {
+      console.error("Error adding reaction:", error);
+      return res.status(400).json({ message: "Validation error" });
+    }
+  });
+
+  app.delete('/api/blog/posts/:id/reactions', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const { id: postId } = req.params;
+      const userId = req.user.claims.sub;
+      const reactionType = req.query.type as string || 'like';
+      
+      await blogService.removeReaction(postId, userId, reactionType);
+      res.json({ message: "Reaction removed successfully" });
+    } catch (error) {
+      console.error("Error removing reaction:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.post('/api/blog/posts/:id/bookmarks', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const { id: postId } = req.params;
+      const userId = req.user.claims.sub;
+      
+      const bookmarkData = insertBlogBookmarkSchema.parse({
+        postId,
+        userId,
+        readingListId: req.body.readingListId,
+        notes: req.body.notes,
+      });
+      
+      const bookmark = await blogService.bookmarkPost(bookmarkData);
+      res.json(bookmark);
+    } catch (error: any) {
+      console.error("Error bookmarking post:", error);
+      return res.status(400).json({ message: "Validation error" });
+    }
+  });
+
+  app.delete('/api/blog/posts/:id/bookmarks', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const { id: postId } = req.params;
+      const userId = req.user.claims.sub;
+      
+      await blogService.removeBookmark(postId, userId);
+      res.json({ message: "Bookmark removed successfully" });
+    } catch (error) {
+      console.error("Error removing bookmark:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Subscriptions
+  
+  app.post('/api/blog/subscribe', generalAPIRateLimit, async (req, res) => {
+    try {
+      const subscriptionData = insertBlogSubscriptionSchema.parse(req.body);
+      const subscription = await blogService.subscribe(subscriptionData);
+      res.json(subscription);
+    } catch (error: any) {
+      console.error("Error subscribing:", error);
+      return res.status(400).json({ message: "Validation error" });
+    }
+  });
+
+  app.delete('/api/blog/unsubscribe/:token', async (req, res) => {
+    try {
+      const { token } = req.params;
+      await blogService.unsubscribe(token);
+      res.json({ message: "Unsubscribed successfully" });
+    } catch (error) {
+      console.error("Error unsubscribing:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Analytics
+  
+  app.post('/api/blog/posts/:id/track-view', async (req, res) => {
+    try {
+      const { id: postId } = req.params;
+      const analyticsData = req.body;
+      
+      await blogService.trackView(postId, analyticsData);
+      res.json({ message: "View tracked" });
+    } catch (error) {
+      console.error("Error tracking view:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.post('/api/blog/posts/:id/track-engagement', async (req, res) => {
+    try {
+      const { id: postId } = req.params;
+      const { type, ...data } = req.body;
+      
+      await blogService.trackEngagement(postId, type, data);
+      res.json({ message: "Engagement tracked" });
+    } catch (error) {
+      console.error("Error tracking engagement:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get('/api/blog/posts/:id/analytics', isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { id: postId } = req.params;
+      const period = {
+        start: req.query.start ? new Date(req.query.start as string) : undefined,
+        end: req.query.end ? new Date(req.query.end as string) : undefined,
+      };
+      
+      const analytics = await blogService.getPostAnalytics(postId, period.start && period.end ? period : undefined);
+      res.json(analytics);
+    } catch (error) {
+      console.error("Error fetching analytics:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // SEO Endpoints
+  
+  app.get('/api/blog/posts/:id/seo', isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const post = await blogService.getPostById(id);
+      
+      if (!post) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+      
+      const seoAnalysis = await blogService.analyzeSEO(post);
+      res.json(seoAnalysis);
+    } catch (error) {
+      console.error("Error analyzing SEO:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get('/api/blog/posts/:id/structured-data', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const post = await blogService.getPostById(id);
+      
+      if (!post) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+      
+      const author = await storage.getUser(post.authorId);
+      const siteInfo = {
+        name: "The Florida Local",
+        url: process.env.SITE_URL || "https://thefloridaLocal.com",
+        logo: "/logo.png",
+      };
+      
+      const structuredData = blogService.generateStructuredData(post, author, siteInfo);
+      res.json(structuredData);
+    } catch (error) {
+      console.error("Error generating structured data:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get('/api/blog/sitemap.xml', async (req, res) => {
+    try {
+      const baseUrl = process.env.SITE_URL || `https://${req.get('host')}`;
+      const sitemap = await blogService.generateSitemap(baseUrl);
+      
+      res.set('Content-Type', 'application/xml');
+      res.send(sitemap);
+    } catch (error) {
+      console.error("Error generating sitemap:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get('/api/blog/rss.xml', async (req, res) => {
+    try {
+      const baseUrl = process.env.SITE_URL || `https://${req.get('host')}`;
+      const limit = parseInt(req.query.limit as string) || 20;
+      const rssFeed = await blogService.generateRSSFeed(baseUrl, limit);
+      
+      res.set('Content-Type', 'application/rss+xml; charset=utf-8');
+      res.send(rssFeed);
+    } catch (error) {
+      console.error("Error generating RSS feed:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
 
   // Enhanced Message routes with file sharing and business networking
   app.post('/api/messages', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {

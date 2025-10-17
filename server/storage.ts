@@ -464,6 +464,118 @@ export interface IStorage {
   createSocialContentCategory(data: InsertSocialContentCategory): Promise<SocialContentCategory>;
   getSocialContentCategories(businessId: string): Promise<SocialContentCategory[]>;
   deleteSocialContentCategory(id: string): Promise<void>;
+
+  // ====== BLOG OPERATIONS ======
+  // Blog Post operations
+  createBlogPost(data: InsertBlogPost): Promise<BlogPost>;
+  updateBlogPost(id: string, data: UpdateBlogPost): Promise<BlogPost>;
+  deleteBlogPost(id: string): Promise<void>;
+  getBlogPostById(id: string): Promise<BlogPost | null>;
+  getBlogPostBySlug(slug: string): Promise<BlogPost | null>;
+  searchBlogPosts(params: {
+    query?: string;
+    categoryId?: string;
+    tags?: string[];
+    authorId?: string;
+    status?: string;
+    startDate?: Date;
+    endDate?: Date;
+    sort?: 'newest' | 'popular' | 'trending';
+    page?: number;
+    limit?: number;
+  }): Promise<{ posts: BlogPost[]; pagination: any }>;
+  getRelatedBlogPosts(postId: string, limit?: number): Promise<BlogPost[]>;
+  getPopularBlogPosts(limit?: number, period?: number): Promise<BlogPost[]>;
+  getFeaturedBlogPosts(limit?: number): Promise<BlogPost[]>;
+  getRecentBlogPosts(limit?: number): Promise<BlogPost[]>;
+  getBlogPostsByAuthor(authorId: string): Promise<BlogPost[]>;
+  getBlogPostsByCategory(categoryId: string): Promise<BlogPost[]>;
+  getBlogPostsByTag(tagId: string): Promise<BlogPost[]>;
+  
+  // Blog Category operations
+  createBlogCategory(data: InsertBlogCategory): Promise<BlogCategory>;
+  updateBlogCategory(id: string, data: Partial<InsertBlogCategory>): Promise<BlogCategory>;
+  deleteBlogCategory(id: string): Promise<void>;
+  getBlogCategories(): Promise<BlogCategory[]>;
+  getBlogCategoryById(id: string): Promise<BlogCategory | null>;
+  getBlogCategoryBySlug(slug: string): Promise<BlogCategory | null>;
+  
+  // Blog Tag operations
+  createBlogTag(data: InsertBlogTag): Promise<BlogTag>;
+  updateBlogTag(id: string, data: Partial<InsertBlogTag>): Promise<BlogTag>;
+  deleteBlogTag(id: string): Promise<void>;
+  getBlogTags(): Promise<BlogTag[]>;
+  getBlogTagById(id: string): Promise<BlogTag | null>;
+  getBlogTagBySlug(slug: string): Promise<BlogTag | null>;
+  attachTagsToPost(postId: string, tagIds: string[]): Promise<void>;
+  detachTagsFromPost(postId: string, tagIds: string[]): Promise<void>;
+  getPostTags(postId: string): Promise<BlogTag[]>;
+  
+  // Blog Comment operations
+  createBlogComment(data: InsertBlogComment): Promise<BlogComment>;
+  updateBlogComment(id: string, data: UpdateBlogComment): Promise<BlogComment>;
+  deleteBlogComment(id: string): Promise<void>;
+  getBlogCommentById(id: string): Promise<BlogComment | null>;
+  getBlogComments(postId: string, options?: {
+    parentId?: string | null;
+    page?: number;
+    limit?: number;
+    sortBy?: 'newest' | 'oldest' | 'popular';
+  }): Promise<BlogComment[]>;
+  moderateBlogComment(id: string, approved: boolean): Promise<void>;
+  flagBlogComment(id: string): Promise<void>;
+  likeBlogComment(commentId: string, userId: string): Promise<void>;
+  unlikeBlogComment(commentId: string, userId: string): Promise<void>;
+  
+  // Blog Reaction operations
+  addBlogReaction(data: InsertBlogReaction): Promise<BlogReaction>;
+  removeBlogReaction(postId: string, userId: string, reactionType?: string): Promise<void>;
+  getBlogReactions(postId: string): Promise<BlogReaction[]>;
+  getUserBlogReaction(postId: string, userId: string): Promise<BlogReaction | null>;
+  
+  // Blog Bookmark operations
+  bookmarkBlogPost(data: InsertBlogBookmark): Promise<BlogBookmark>;
+  removeBookmark(postId: string, userId: string): Promise<void>;
+  getUserBookmarks(userId: string): Promise<BlogBookmark[]>;
+  isPostBookmarked(postId: string, userId: string): Promise<boolean>;
+  
+  // Blog Subscription operations
+  subscribeToBlog(data: InsertBlogSubscription): Promise<BlogSubscription>;
+  unsubscribeFromBlog(token: string): Promise<void>;
+  getBlogSubscribers(options?: {
+    categories?: string[];
+    frequency?: string;
+    active?: boolean;
+  }): Promise<BlogSubscription[]>;
+  updateSubscriptionPreferences(id: string, preferences: Partial<InsertBlogSubscription>): Promise<void>;
+  confirmSubscription(token: string): Promise<void>;
+  
+  // Blog Analytics operations
+  trackBlogView(postId: string, data?: Partial<InsertBlogAnalytics>): Promise<void>;
+  trackBlogEngagement(postId: string, type: string, data?: any): Promise<void>;
+  getBlogPostAnalytics(postId: string, period?: { start: Date; end: Date }): Promise<any>;
+  getBlogOverallAnalytics(period?: { start: Date; end: Date }): Promise<any>;
+  getTopPerformingPosts(limit?: number): Promise<BlogPost[]>;
+  
+  // Blog Revision operations
+  createBlogRevision(postId: string, data: any, changesSummary?: string): Promise<void>;
+  getBlogRevisions(postId: string): Promise<any[]>;
+  restoreBlogRevision(postId: string, revisionId: string): Promise<BlogPost>;
+  compareBlogRevisions(revisionId1: string, revisionId2: string): Promise<any>;
+  
+  // Blog SEO operations
+  generateBlogSlug(title: string): Promise<string>;
+  analyzeBlogSEO(post: BlogPost): Promise<any>;
+  generateBlogStructuredData(post: BlogPost, author: any, siteInfo: any): Promise<any>;
+  generateBlogOpenGraphTags(post: BlogPost, siteInfo: any): Promise<Record<string, string>>;
+  generateBlogTwitterCardTags(post: BlogPost): Promise<Record<string, string>>;
+  generateBlogSitemap(baseUrl: string): Promise<string>;
+  generateBlogRSSFeed(baseUrl: string, limit?: number): Promise<string>;
+  
+  // Blog Archive operations
+  getBlogArchive(type: 'month' | 'year'): Promise<any[]>;
+  getBlogPostsByMonth(year: number, month: number): Promise<BlogPost[]>;
+  getBlogPostsByYear(year: number): Promise<BlogPost[]>;
 }
 
 export class DatabaseStorage implements IStorage {

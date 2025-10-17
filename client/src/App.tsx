@@ -57,6 +57,11 @@ import BlogDiscovery from "@/components/blog-discovery";
 import BlogEngagement from "@/components/blog-engagement";
 import BlogAnalyticsDashboard from "@/components/blog-analytics-dashboard";
 
+// Blog Pages - New comprehensive blog system
+import Blog from "@/pages/Blog";
+import BlogPost from "@/pages/BlogPost";
+import BlogAdmin from "@/pages/BlogAdmin";
+
 // Admin Components
 import SystemMonitoring from "@/pages/admin/system-monitoring";
 
@@ -130,7 +135,9 @@ function Router() {
           <Route path="/entrepreneur/:id" component={EntrepreneurProfile} />
 
           {/* Blog Platform Routes - NOW CONNECTED! */}
-          <Route path="/blog" component={BlogDiscovery} />
+          <Route path="/blog" component={Blog} />
+          <Route path="/blog/:slug" component={BlogPost} />
+          <Route path="/blog/admin" component={BlogAdmin} />
           <Route path="/blog/write" component={BlogEditor} />
           <Route path="/blog/manage" component={BlogPostManagement} />
           <Route path="/blog/engagement" component={BlogEngagement} />
