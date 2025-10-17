@@ -65,6 +65,25 @@ import {
   type InsertGmbReview,
   type ApiKey,
   type InsertApiKey,
+  // AI Content types
+  aiGeneratedContent,
+  aiContentTemplates,
+  aiGeneratedImages,
+  aiUsageTracking,
+  aiContentTests,
+  aiModerationLog,
+  type AIGeneratedContent,
+  type InsertAIGeneratedContent,
+  type AIContentTemplate,
+  type InsertAIContentTemplate,
+  type AIGeneratedImage,
+  type InsertAIGeneratedImage,
+  type AIUsageTracking,
+  type InsertAIUsageTracking,
+  type AIContentTest,
+  type InsertAIContentTest,
+  type AIModerationLog,
+  type InsertAIModerationLog,
   // Blog types
   type BlogPost,
   type InsertBlogPost,
@@ -274,6 +293,63 @@ export interface IStorage {
   createApiKey(apiKeyData: InsertApiKey): Promise<ApiKey>;
   getApiKeyByHash(keyHash: string): Promise<ApiKey | undefined>;
   updateApiKeyLastUsed(keyId: string): Promise<void>;
+
+  // AI Content Generation operations
+  createGeneratedContent(content: InsertAIGeneratedContent): Promise<AIGeneratedContent>;
+  getGeneratedContent(contentId: string): Promise<AIGeneratedContent | undefined>;
+  getGeneratedContentHistory(businessId: string, options?: {
+    type?: string;
+    platform?: string;
+    status?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<AIGeneratedContent[]>;
+  updateGeneratedContent(contentId: string, updates: Partial<AIGeneratedContent>): Promise<void>;
+  markContentAsFavorite(contentId: string, isFavorite: boolean): Promise<void>;
+  deleteGeneratedContent(contentId: string): Promise<void>;
+
+  // AI Content Template operations
+  createContentTemplate(template: InsertAIContentTemplate): Promise<AIContentTemplate>;
+  getContentTemplate(templateId: string): Promise<AIContentTemplate | undefined>;
+  getContentTemplates(businessId?: string, options?: {
+    type?: string;
+    category?: string;
+    isGlobal?: boolean;
+    isActive?: boolean;
+  }): Promise<AIContentTemplate[]>;
+  updateContentTemplate(templateId: string, updates: Partial<AIContentTemplate>): Promise<void>;
+  deleteContentTemplate(templateId: string): Promise<void>;
+
+  // AI Generated Image operations
+  createGeneratedImage(image: InsertAIGeneratedImage): Promise<AIGeneratedImage>;
+  getGeneratedImage(imageId: string): Promise<AIGeneratedImage | undefined>;
+  getGeneratedImages(businessId: string, options?: {
+    category?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<AIGeneratedImage[]>;
+  updateGeneratedImage(imageId: string, updates: Partial<AIGeneratedImage>): Promise<void>;
+  deleteGeneratedImage(imageId: string): Promise<void>;
+
+  // AI Usage Tracking operations
+  trackAIUsage(usage: InsertAIUsageTracking): Promise<void>;
+  getAIUsageByBusiness(businessId: string, billingPeriod?: string): Promise<AIUsageTracking[]>;
+  getAIUsageSummary(businessId: string): Promise<{
+    totalTokens: number;
+    totalCost: number;
+    byModel: Record<string, { tokens: number; cost: number }>;
+    byType: Record<string, { count: number; cost: number }>;
+  }>;
+
+  // AI Content A/B Testing operations
+  createContentTest(test: InsertAIContentTest): Promise<AIContentTest>;
+  getContentTest(testId: string): Promise<AIContentTest | undefined>;
+  getContentTests(businessId: string, status?: string): Promise<AIContentTest[]>;
+  updateContentTest(testId: string, updates: Partial<AIContentTest>): Promise<void>;
+
+  // AI Moderation operations
+  logModeration(moderation: InsertAIModerationLog): Promise<void>;
+  getModerationHistory(businessId: string): Promise<AIModerationLog[]>;
 }
 
 export class DatabaseStorage implements IStorage {

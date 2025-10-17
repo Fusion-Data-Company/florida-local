@@ -833,6 +833,150 @@ export const premiumFeatures = pgTable("premium_features", {
   index("idx_premium_features_type").on(table.featureType)
 ]);
 
+// ======= AI CONTENT GENERATION SYSTEM =======
+
+// AI Generated Content History
+export const aiGeneratedContent = pgTable("ai_generated_content", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").references(() => businesses.id, { onDelete: 'cascade' }),
+  userId: varchar("user_id").references(() => users.id, { onDelete: 'set null' }),
+  type: varchar("type", { length: 50 }).notNull(), // business_description, product_description, blog_post, social_media, email_template, review_response, faq, tagline
+  platform: varchar("platform", { length: 30 }), // facebook, instagram, twitter, linkedin, gmb, email, general
+  content: text("content").notNull(),
+  prompt: text("prompt"),
+  enhancedPrompt: text("enhanced_prompt"),
+  tone: varchar("tone", { length: 30 }), // professional, casual, friendly, formal, humorous, inspirational
+  language: varchar("language", { length: 10 }).default("en"),
+  keywords: jsonb("keywords"), // Array of SEO keywords
+  hashtags: jsonb("hashtags"), // Array of hashtags
+  metadata: jsonb("metadata"), // { model, tokensUsed, cost, characterCount, wordCount, readingTime, seoScore, sentimentScore }
+  qualityMetrics: jsonb("quality_metrics"), // { clarity, engagement, brandSafety, hasProfanity, plagiarismScore }
+  version: integer("version").default(1),
+  parentId: uuid("parent_id"), // For content iterations/versions
+  isFavorite: boolean("is_favorite").default(false),
+  isTemplate: boolean("is_template").default(false),
+  templateName: varchar("template_name", { length: 255 }),
+  usageCount: integer("usage_count").default(0),
+  performanceMetrics: jsonb("performance_metrics"), // { views, clicks, conversions, engagement }
+  status: varchar("status", { length: 20 }).default("draft"), // draft, published, archived
+  publishedAt: timestamp("published_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_ai_content_business").on(table.businessId),
+  index("idx_ai_content_type").on(table.type),
+  index("idx_ai_content_created").on(table.createdAt),
+  index("idx_ai_content_favorite").on(table.isFavorite)
+]);
+
+// AI Content Templates
+export const aiContentTemplates = pgTable("ai_content_templates", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").references(() => businesses.id, { onDelete: 'cascade' }),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  type: varchar("type", { length: 50 }).notNull(),
+  category: varchar("category", { length: 100 }),
+  prompt: text("prompt").notNull(),
+  variables: jsonb("variables"), // Array of variable names that can be replaced
+  examples: jsonb("examples"), // Array of example outputs
+  tone: varchar("tone", { length: 30 }),
+  platform: varchar("platform", { length: 30 }),
+  isGlobal: boolean("is_global").default(false), // Available to all businesses
+  isActive: boolean("is_active").default(true),
+  usageCount: integer("usage_count").default(0),
+  rating: decimal("rating", { precision: 3, scale: 2 }).default("0"),
+  createdBy: varchar("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_ai_templates_business").on(table.businessId),
+  index("idx_ai_templates_type").on(table.type),
+  index("idx_ai_templates_global").on(table.isGlobal)
+]);
+
+// AI Generated Images
+export const aiGeneratedImages = pgTable("ai_generated_images", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").references(() => businesses.id, { onDelete: 'cascade' }),
+  userId: varchar("user_id").references(() => users.id, { onDelete: 'set null' }),
+  prompt: text("prompt").notNull(),
+  enhancedPrompt: text("enhanced_prompt"),
+  negativePrompt: text("negative_prompt"),
+  url: text("url").notNull(),
+  localPath: text("local_path"),
+  s3Url: text("s3_url"),
+  metadata: jsonb("metadata"), // { size, style, quality, model, cost, generationTime, fileSize, dimensions }
+  category: varchar("category", { length: 50 }), // product, logo, social, banner, background, marketing
+  tags: jsonb("tags"), // Array of tags
+  variations: jsonb("variations"), // Array of variation URLs if generated
+  isFavorite: boolean("is_favorite").default(false),
+  usageCount: integer("usage_count").default(0),
+  status: varchar("status", { length: 20 }).default("active"), // active, deleted, archived
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_ai_images_business").on(table.businessId),
+  index("idx_ai_images_category").on(table.category),
+  index("idx_ai_images_created").on(table.createdAt)
+]);
+
+// AI Usage Tracking (for billing)
+export const aiUsageTracking = pgTable("ai_usage_tracking", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  userId: varchar("user_id").references(() => users.id, { onDelete: 'set null' }),
+  service: varchar("service", { length: 30 }).notNull(), // openai, dalle, gpt5, etc
+  model: varchar("model", { length: 50 }).notNull(),
+  type: varchar("type", { length: 50 }).notNull(), // content_generation, image_generation, embeddings
+  tokensUsed: integer("tokens_used").default(0),
+  cost: decimal("cost", { precision: 10, scale: 6 }).notNull(),
+  metadata: jsonb("metadata"), // Additional usage details
+  billingPeriod: varchar("billing_period", { length: 20 }), // YYYY-MM
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("idx_ai_usage_business").on(table.businessId),
+  index("idx_ai_usage_period").on(table.billingPeriod),
+  index("idx_ai_usage_created").on(table.createdAt)
+]);
+
+// AI Content A/B Testing
+export const aiContentTests = pgTable("ai_content_tests", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  type: varchar("type", { length: 50 }).notNull(), // email_subject, ad_copy, landing_page, etc
+  status: varchar("status", { length: 20 }).default("running"), // draft, running, completed, paused
+  variants: jsonb("variants"), // Array of { id, content, metrics }
+  winnerVariantId: varchar("winner_variant_id", { length: 50 }),
+  startDate: timestamp("start_date"),
+  endDate: timestamp("end_date"),
+  metrics: jsonb("metrics"), // { totalViews, conversions, clickThrough, etc }
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_ai_tests_business").on(table.businessId),
+  index("idx_ai_tests_status").on(table.status)
+]);
+
+// AI Content Moderation Log
+export const aiModerationLog = pgTable("ai_moderation_log", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  contentId: uuid("content_id"),
+  contentType: varchar("content_type", { length: 50 }).notNull(), // generated_content, generated_image
+  businessId: uuid("business_id").references(() => businesses.id, { onDelete: 'cascade' }),
+  moderationResult: jsonb("moderation_result"), // { profanity, violence, adult, etc }
+  flaggedReasons: jsonb("flagged_reasons"), // Array of reasons
+  isSafe: boolean("is_safe").default(true),
+  action: varchar("action", { length: 30 }), // approved, rejected, modified
+  moderatedBy: varchar("moderated_by"), // system or user_id
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("idx_ai_moderation_content").on(table.contentId),
+  index("idx_ai_moderation_business").on(table.businessId)
+]);
+
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({
   businesses: many(businesses),
@@ -3478,6 +3622,32 @@ export type InsertUserRole = z.infer<typeof insertUserRoleSchema>;
 export type AdminAuditLog = typeof adminAuditLogs.$inferSelect;
 export type InsertAdminAuditLog = z.infer<typeof insertAdminAuditLogSchema>;
 export type ErrorLog = typeof errorLogs.$inferSelect;
+
+// AI Content Types
+export const insertAIGeneratedContentSchema = createInsertSchema(aiGeneratedContent);
+export const insertAIContentTemplateSchema = createInsertSchema(aiContentTemplates);
+export const insertAIGeneratedImageSchema = createInsertSchema(aiGeneratedImages);
+export const insertAIUsageTrackingSchema = createInsertSchema(aiUsageTracking);
+export const insertAIContentTestSchema = createInsertSchema(aiContentTests);
+export const insertAIModerationLogSchema = createInsertSchema(aiModerationLog);
+
+export type AIGeneratedContent = typeof aiGeneratedContent.$inferSelect;
+export type InsertAIGeneratedContent = z.infer<typeof insertAIGeneratedContentSchema>;
+
+export type AIContentTemplate = typeof aiContentTemplates.$inferSelect;
+export type InsertAIContentTemplate = z.infer<typeof insertAIContentTemplateSchema>;
+
+export type AIGeneratedImage = typeof aiGeneratedImages.$inferSelect;
+export type InsertAIGeneratedImage = z.infer<typeof insertAIGeneratedImageSchema>;
+
+export type AIUsageTracking = typeof aiUsageTracking.$inferSelect;
+export type InsertAIUsageTracking = z.infer<typeof insertAIUsageTrackingSchema>;
+
+export type AIContentTest = typeof aiContentTests.$inferSelect;
+export type InsertAIContentTest = z.infer<typeof insertAIContentTestSchema>;
+
+export type AIModerationLog = typeof aiModerationLog.$inferSelect;
+export type InsertAIModerationLog = z.infer<typeof insertAIModerationLogSchema>;
 export type InsertErrorLog = z.infer<typeof insertErrorLogSchema>;
 
 // Chat system TypeScript types

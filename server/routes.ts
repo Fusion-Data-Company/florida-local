@@ -4786,6 +4786,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 });
 
+  // Register AI content generation routes
+  const { aiContentRoutes } = await import("./aiContentRoutes");
+  app.use('/api/ai', aiContentRoutes);
+
   // Register blog routes (Phase 4)
   const { registerBlogRoutes } = await import("./blogRoutes");
   registerBlogRoutes(app);
