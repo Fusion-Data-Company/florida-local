@@ -170,6 +170,8 @@ export interface IStorage {
   updateBusiness(id: string, business: UpdateBusiness): Promise<Business>;
   deleteBusiness(id: string): Promise<void>;
   getBusinessById(id: string): Promise<Business | undefined>;
+  getBusinesses(page?: number, limit?: number, category?: string): Promise<Business[]>;
+  getFeaturedBusinesses(limit?: number): Promise<Business[]>;
   getBusinessesByOwner(ownerId: string): Promise<Business[]>;
   searchBusinesses(query: string, category?: string): Promise<Business[]>;
   getSpotlightBusinesses(type: 'daily' | 'weekly' | 'monthly'): Promise<Business[]>;
@@ -182,6 +184,7 @@ export interface IStorage {
   updateProduct(id: string, product: Partial<InsertProduct>): Promise<Product>;
   updateProductImages(productId: string, images: string[]): Promise<Product>;
   getProductById(id: string): Promise<Product | undefined>;
+  getProducts(page?: number, limit?: number, category?: string): Promise<Product[]>;
   getProductsByBusiness(businessId: string): Promise<Product[]>;
   searchProducts(query: string, options?: {
     categories?: string[];
@@ -866,6 +869,32 @@ export class DatabaseStorage implements IStorage {
     return business;
   }
 
+  async getBusinesses(page: number = 1, limit: number = 20, category?: string): Promise<Business[]> {
+    const offset = (page - 1) * limit;
+    const conditions = [];
+    
+    if (category) {
+      conditions.push(eq(businesses.category, category));
+    }
+
+    return await db
+      .select()
+      .from(businesses)
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .orderBy(desc(businesses.createdAt))
+      .limit(limit)
+      .offset(offset);
+  }
+
+  async getFeaturedBusinesses(limit: number = 12): Promise<Business[]> {
+    // Get businesses that have been featured recently or have high ratings
+    return await db
+      .select()
+      .from(businesses)
+      .orderBy(desc(businesses.rating), desc(businesses.createdAt))
+      .limit(limit);
+  }
+
   async getBusinessesByOwner(ownerId: string): Promise<Business[]> {
     return await db
       .select()
@@ -1033,6 +1062,23 @@ export class DatabaseStorage implements IStorage {
       .from(products)
       .where(eq(products.id, id));
     return product;
+  }
+
+  async getProducts(page: number = 1, limit: number = 20, category?: string): Promise<Product[]> {
+    const offset = (page - 1) * limit;
+    const conditions = [eq(products.isActive, true)];
+    
+    if (category) {
+      conditions.push(eq(products.category, category));
+    }
+
+    return await db
+      .select()
+      .from(products)
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .orderBy(desc(products.createdAt))
+      .limit(limit)
+      .offset(offset);
   }
 
   async getProductsByBusiness(businessId: string): Promise<Product[]> {

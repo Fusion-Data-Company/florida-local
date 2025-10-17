@@ -254,6 +254,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
 });
 
   // Business routes (SECURITY: Rate limited)
+  
+  // Get all businesses (public endpoint)
+  app.get('/api/businesses', publicEndpointRateLimit, asyncHandler(async (req, res) => {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = Math.min(parseInt(req.query.limit as string) || 20, 100);
+    const category = req.query.category as string | undefined;
+    
+    const businesses = await storage.getBusinesses(page, limit, category);
+    return ApiResponse.success(res, businesses);
+  }));
+
+  // Get featured businesses (public endpoint) 
+  app.get('/api/businesses/featured', publicEndpointRateLimit, asyncHandler(async (req, res) => {
+    const limit = Math.min(parseInt(req.query.limit as string) || 12, 50);
+    const businesses = await storage.getFeaturedBusinesses(limit);
+    return ApiResponse.success(res, businesses);
+  }));
+
   app.post('/api/businesses', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
@@ -2211,6 +2229,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 });
 
+  // Get all products (public endpoint)
+  app.get('/api/products', publicEndpointRateLimit, asyncHandler(async (req, res) => {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = Math.min(parseInt(req.query.limit as string) || 20, 100);
+    const category = req.query.category as string | undefined;
+    
+    const products = await storage.getProducts(page, limit, category);
+    return ApiResponse.success(res, products);
+  }));
+
   app.get('/api/products/featured', async (req, res) => {
     try {
       const limitParam = parseInt(req.query.limit as string);
@@ -2563,6 +2591,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Popular posts route must be before :id route
+  app.get('/api/blog/posts/popular', async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const period = parseInt(req.query.period as string) || 30;
+      
+      const posts = await blogService.getPopularPosts(limit, period);
+      res.json(posts);
+    } catch (error) {
+      console.error("Error fetching popular posts:", error);
+      return ApiResponse.internalError(res, "Internal server error");
+    }
+  });
+
   app.get('/api/blog/posts/:id', async (req, res) => {
     try {
       const { id } = req.params;
@@ -2627,19 +2669,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(posts);
     } catch (error) {
       console.error("Error fetching related posts:", error);
-      return ApiResponse.internalError(res, "Internal server error");
-    }
-  });
-
-  app.get('/api/blog/posts/popular', async (req, res) => {
-    try {
-      const limit = parseInt(req.query.limit as string) || 10;
-      const period = parseInt(req.query.period as string) || 30;
-      
-      const posts = await blogService.getPopularPosts(limit, period);
-      res.json(posts);
-    } catch (error) {
-      console.error("Error fetching popular posts:", error);
       return ApiResponse.internalError(res, "Internal server error");
     }
   });

@@ -42,6 +42,7 @@ import SocialMediaHub from "@/pages/social-media-hub";
 
 // Entrepreneur Pages
 import EntrepreneurProfile from "@/pages/entrepreneur-profile";
+import EntrepreneursBusinesses from "@/pages/entrepreneurs-businesses";
 
 // User Profile Page
 import UserProfile from "@/pages/user-profile";
@@ -88,6 +89,12 @@ function Router() {
       <Route path="/registry" component={Registry} />
       <Route path="/subscription" component={SubscriptionPage} />
       <Route path="/demo/card" component={AnimatedHikeCardDemo} />
+      <Route path="/businesses" component={EntrepreneursBusinesses} />
+      <Route path="/marketplace" component={Marketplace} />
+      <Route path="/blog" component={Blog} />
+      <Route path="/blog/:slug" component={BlogPost} />
+      <Route path="/contact" component={Landing} />
+      <Route path="/cart" component={Cart} />
 
       {isLoading || !isAuthenticated ? (
         <Route path="/" component={Landing} />
@@ -98,9 +105,7 @@ function Router() {
           <Route path="/create-business" component={CreateBusiness} />
           <Route path="/business/:id" component={BusinessProfile} />
           <Route path="/business/:id/edit" component={EditBusiness} />
-          <Route path="/marketplace" component={Marketplace} />
           <Route path="/messages" component={Messages} />
-          <Route path="/cart" component={Cart} />
           <Route path="/checkout" component={Checkout} />
           <Route path="/order-confirmation" component={OrderConfirmation} />
           <Route path="/orders" component={Orders} />
@@ -134,9 +139,7 @@ function Router() {
           {/* Entrepreneur Platform */}
           <Route path="/entrepreneur/:id" component={EntrepreneurProfile} />
 
-          {/* Blog Platform Routes - NOW CONNECTED! */}
-          <Route path="/blog" component={Blog} />
-          <Route path="/blog/:slug" component={BlogPost} />
+          {/* Blog Admin Routes - Protected */}
           <Route path="/blog/admin" component={BlogAdmin} />
           <Route path="/blog/write" component={BlogEditor} />
           <Route path="/blog/manage" component={BlogPostManagement} />
