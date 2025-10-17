@@ -117,6 +117,19 @@ import * as stripeConnect from "./stripeConnect";
 import { registerSocialAuthRoutes } from "./socialAuthRoutes";
 import { startTokenRefreshService, getTokenRefreshStatus } from "./socialTokenRefresh";
 
+// Social Media Service
+import { socialMediaService } from "./socialMediaService";
+import { 
+  insertSocialMediaAccountSchema, 
+  insertSocialMediaPostSchema,
+  insertSocialMediaCampaignSchema,
+  insertSocialContentCategorySchema,
+  insertSocialResponseTemplateSchema,
+  insertSocialMediaListenerSchema,
+  insertSocialMediaAutomationSchema,
+  insertSocialMediaTeamSchema,
+} from "@shared/schema";
+
 // Stripe initialization is handled lazily in stripeConnect module
 // No global stripe client needed - stripeConnect handles all Stripe operations
 
@@ -4785,6 +4798,420 @@ export async function registerRoutes(app: Express): Promise<Server> {
 });
     }
 });
+
+  // ====================================================================
+  // SOCIAL MEDIA HUB ROUTES
+  // ====================================================================
+
+  // Social Media Account Management
+  app.get('/api/social-media/accounts/:businessId', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const accounts = await socialMediaService.getAccounts(req.params.businessId);
+      res.json(accounts);
+    } catch (error: any) {
+      console.error("Error fetching social media accounts:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch accounts" });
+    }
+  });
+
+  app.post('/api/social-media/accounts/connect', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const data = insertSocialMediaAccountSchema.parse({
+        ...req.body,
+        userId,
+      });
+      const account = await socialMediaService.connectAccount(data);
+      res.json(account);
+    } catch (error: any) {
+      console.error("Error connecting social media account:", error);
+      res.status(500).json({ message: error.message || "Failed to connect account" });
+    }
+  });
+
+  app.post('/api/social-media/accounts/:accountId/disconnect', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      await socialMediaService.disconnectAccount(req.params.accountId);
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error disconnecting account:", error);
+      res.status(500).json({ message: error.message || "Failed to disconnect account" });
+    }
+  });
+
+  // Content Publishing
+  app.post('/api/social-media/posts', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const data = insertSocialMediaPostSchema.parse({
+        ...req.body,
+        authorId: userId,
+      });
+      const post = await socialMediaService.createPost(data);
+      res.json(post);
+    } catch (error: any) {
+      console.error("Error creating social media post:", error);
+      res.status(500).json({ message: error.message || "Failed to create post" });
+    }
+  });
+
+  app.get('/api/social-media/posts/:businessId', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const { status, platform, campaignId, startDate, endDate } = req.query;
+      const posts = await storage.getSocialMediaPosts(req.params.businessId, {
+        status: status as string,
+        platform: platform as string,
+        campaignId: campaignId as string,
+        startDate: startDate ? new Date(startDate as string) : undefined,
+        endDate: endDate ? new Date(endDate as string) : undefined,
+      });
+      res.json(posts);
+    } catch (error: any) {
+      console.error("Error fetching social media posts:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch posts" });
+    }
+  });
+
+  app.post('/api/social-media/posts/:postId/publish', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const post = await storage.getSocialMediaPostById(req.params.postId);
+      if (!post) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+      await socialMediaService.publishPost(post);
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error publishing post:", error);
+      res.status(500).json({ message: error.message || "Failed to publish post" });
+    }
+  });
+
+  app.post('/api/social-media/posts/bulk-schedule', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { csvData, businessId } = req.body;
+      const posts = await socialMediaService.bulkSchedulePosts(csvData, businessId, userId);
+      res.json(posts);
+    } catch (error: any) {
+      console.error("Error bulk scheduling posts:", error);
+      res.status(500).json({ message: error.message || "Failed to bulk schedule posts" });
+    }
+  });
+
+  // Analytics
+  app.get('/api/social-media/analytics/:businessId', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const { startDate, endDate } = req.query;
+      const dateRange = {
+        start: new Date(startDate as string || Date.now() - 30 * 24 * 60 * 60 * 1000),
+        end: new Date(endDate as string || Date.now()),
+      };
+      const analytics = await socialMediaService.fetchAnalytics(req.params.businessId, dateRange);
+      res.json(analytics);
+    } catch (error: any) {
+      console.error("Error fetching analytics:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch analytics" });
+    }
+  });
+
+  app.get('/api/social-media/analytics/:businessId/summary', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const { platform, dateRange } = req.query;
+      const analytics = await storage.getSocialMediaAnalytics(req.params.businessId, {
+        platform: platform as string,
+        dateRange: dateRange ? JSON.parse(dateRange as string) : undefined,
+      });
+      
+      // Calculate summary metrics
+      const summary = {
+        totalImpressions: analytics.reduce((sum, a) => sum + (a.impressions || 0), 0),
+        totalEngagements: analytics.reduce((sum, a) => sum + (a.engagements || 0), 0),
+        totalReach: analytics.reduce((sum, a) => sum + (a.reach || 0), 0),
+        avgEngagementRate: analytics.reduce((sum, a) => sum + Number(a.engagementRate || 0), 0) / analytics.length,
+        platforms: [...new Set(analytics.map(a => a.platform))],
+      };
+      
+      res.json({ analytics, summary });
+    } catch (error: any) {
+      console.error("Error fetching analytics summary:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch analytics summary" });
+    }
+  });
+
+  // Messages & Inbox
+  app.get('/api/social-media/messages/:businessId', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      await socialMediaService.fetchMessages(req.params.businessId);
+      const messages = await storage.getSocialMediaMessages(req.params.businessId, {
+        platform: req.query.platform as string,
+        status: req.query.status as string,
+        priority: req.query.priority as string,
+        assignedTo: req.query.assignedTo as string,
+      });
+      res.json(messages);
+    } catch (error: any) {
+      console.error("Error fetching messages:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch messages" });
+    }
+  });
+
+  app.post('/api/social-media/messages/:messageId/reply', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const { response } = req.body;
+      await socialMediaService.sendMessage(req.params.messageId, response);
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error replying to message:", error);
+      res.status(500).json({ message: error.message || "Failed to send reply" });
+    }
+  });
+
+  app.put('/api/social-media/messages/:messageId/status', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const { status, assignedTo, priority } = req.body;
+      await storage.updateSocialMediaMessage(req.params.messageId, {
+        status,
+        assignedTo,
+        priority,
+      });
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error updating message status:", error);
+      res.status(500).json({ message: error.message || "Failed to update message status" });
+    }
+  });
+
+  // Campaigns
+  app.post('/api/social-media/campaigns', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const data = insertSocialMediaCampaignSchema.parse({
+        ...req.body,
+        createdBy: userId,
+      });
+      const campaign = await socialMediaService.createCampaign(data);
+      res.json(campaign);
+    } catch (error: any) {
+      console.error("Error creating campaign:", error);
+      res.status(500).json({ message: error.message || "Failed to create campaign" });
+    }
+  });
+
+  app.get('/api/social-media/campaigns/:businessId', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const campaigns = await storage.getSocialMediaCampaigns(req.params.businessId);
+      res.json(campaigns);
+    } catch (error: any) {
+      console.error("Error fetching campaigns:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch campaigns" });
+    }
+  });
+
+  app.put('/api/social-media/campaigns/:campaignId/metrics', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      await socialMediaService.updateCampaignMetrics(req.params.campaignId);
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error updating campaign metrics:", error);
+      res.status(500).json({ message: error.message || "Failed to update campaign metrics" });
+    }
+  });
+
+  // Content Suggestions
+  app.post('/api/social-media/hashtags/suggest', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const { content, platform } = req.body;
+      const hashtags = await socialMediaService.generateHashtags(content, platform);
+      res.json(hashtags);
+    } catch (error: any) {
+      console.error("Error generating hashtags:", error);
+      res.status(500).json({ message: error.message || "Failed to generate hashtags" });
+    }
+  });
+
+  app.get('/api/social-media/optimal-times/:businessId', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const { platform } = req.query;
+      const times = await socialMediaService.suggestOptimalTimes(
+        req.params.businessId, 
+        platform as string
+      );
+      res.json(times);
+    } catch (error: any) {
+      console.error("Error suggesting optimal times:", error);
+      res.status(500).json({ message: error.message || "Failed to suggest optimal times" });
+    }
+  });
+
+  // Social Listening
+  app.post('/api/social-media/listeners', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const data = insertSocialMediaListenerSchema.parse(req.body);
+      const listener = await socialMediaService.createListener(data);
+      res.json(listener);
+    } catch (error: any) {
+      console.error("Error creating listener:", error);
+      res.status(500).json({ message: error.message || "Failed to create listener" });
+    }
+  });
+
+  app.get('/api/social-media/mentions/:businessId', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const mentions = await socialMediaService.checkMentions(req.params.businessId);
+      res.json(mentions);
+    } catch (error: any) {
+      console.error("Error fetching mentions:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch mentions" });
+    }
+  });
+
+  // Automation
+  app.post('/api/social-media/automation', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const data = insertSocialMediaAutomationSchema.parse(req.body);
+      const automation = await socialMediaService.createAutomation(data);
+      res.json(automation);
+    } catch (error: any) {
+      console.error("Error creating automation:", error);
+      res.status(500).json({ message: error.message || "Failed to create automation" });
+    }
+  });
+
+  app.post('/api/social-media/automation/:automationId/run', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      await socialMediaService.runAutomation(req.params.automationId);
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error running automation:", error);
+      res.status(500).json({ message: error.message || "Failed to run automation" });
+    }
+  });
+
+  app.get('/api/social-media/automation/:businessId', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const automations = await storage.getSocialMediaAutomations(req.params.businessId);
+      res.json(automations);
+    } catch (error: any) {
+      console.error("Error fetching automations:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch automations" });
+    }
+  });
+
+  // Team Management
+  app.post('/api/social-media/team', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const invitedBy = req.user.claims.sub;
+      const data = insertSocialMediaTeamSchema.parse({
+        ...req.body,
+        invitedBy,
+      });
+      const member = await socialMediaService.addTeamMember(data);
+      res.json(member);
+    } catch (error: any) {
+      console.error("Error adding team member:", error);
+      res.status(500).json({ message: error.message || "Failed to add team member" });
+    }
+  });
+
+  app.put('/api/social-media/team/:memberId/permissions', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      await socialMediaService.updateTeamMemberPermissions(req.params.memberId, req.body);
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error updating permissions:", error);
+      res.status(500).json({ message: error.message || "Failed to update permissions" });
+    }
+  });
+
+  app.get('/api/social-media/team/:businessId', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const members = await socialMediaService.getTeamMembers(req.params.businessId);
+      res.json(members);
+    } catch (error: any) {
+      console.error("Error fetching team members:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch team members" });
+    }
+  });
+
+  // Content Categories
+  app.post('/api/social-media/categories', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const data = insertSocialContentCategorySchema.parse(req.body);
+      const category = await socialMediaService.createCategory(data);
+      res.json(category);
+    } catch (error: any) {
+      console.error("Error creating category:", error);
+      res.status(500).json({ message: error.message || "Failed to create category" });
+    }
+  });
+
+  app.get('/api/social-media/categories/:businessId', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const categories = await socialMediaService.getCategories(req.params.businessId);
+      res.json(categories);
+    } catch (error: any) {
+      console.error("Error fetching categories:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch categories" });
+    }
+  });
+
+  // Response Templates
+  app.post('/api/social-media/templates', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const data = insertSocialResponseTemplateSchema.parse(req.body);
+      const template = await socialMediaService.createResponseTemplate(data);
+      res.json(template);
+    } catch (error: any) {
+      console.error("Error creating template:", error);
+      res.status(500).json({ message: error.message || "Failed to create template" });
+    }
+  });
+
+  app.get('/api/social-media/templates/:businessId', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const templates = await socialMediaService.getResponseTemplates(req.params.businessId);
+      res.json(templates);
+    } catch (error: any) {
+      console.error("Error fetching templates:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch templates" });
+    }
+  });
+
+  app.post('/api/social-media/templates/:templateId/use', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const content = await socialMediaService.useResponseTemplate(req.params.templateId);
+      res.json({ content });
+    } catch (error: any) {
+      console.error("Error using template:", error);
+      res.status(500).json({ message: error.message || "Failed to use template" });
+    }
+  });
+
+  // Refresh tokens for all connected accounts
+  app.post('/api/social-media/refresh-tokens/:businessId', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const accounts = await storage.getSocialMediaAccounts(req.params.businessId);
+      const results = [];
+      
+      for (const account of accounts) {
+        try {
+          await socialMediaService.refreshTokens(account.id);
+          results.push({ accountId: account.id, status: 'success' });
+        } catch (error) {
+          results.push({ 
+            accountId: account.id, 
+            status: 'failed', 
+            error: error instanceof Error ? error.message : 'Unknown error' 
+          });
+        }
+      }
+      
+      res.json(results);
+    } catch (error: any) {
+      console.error("Error refreshing tokens:", error);
+      res.status(500).json({ message: error.message || "Failed to refresh tokens" });
+    }
+  });
 
   // Register AI content generation routes
   const { aiContentRoutes } = await import("./aiContentRoutes");

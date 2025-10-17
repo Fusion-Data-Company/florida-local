@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,16 +26,40 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { motion, AnimatePresence } from "framer-motion";
-import { format } from "date-fns";
+import { format, addDays, startOfWeek } from "date-fns";
+import {
+  LineChart,
+  Line,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 import {
   Facebook,
   Instagram,
@@ -55,7 +79,7 @@ import {
   MessageCircle,
   Share2,
   TrendingUp,
-  BarChart,
+  BarChart as BarChartIcon,
   Users,
   Sparkles,
   Zap,
@@ -70,9 +94,30 @@ import {
   ChevronRight,
   Upload,
   Loader2,
-  X
+  X,
+  Filter,
+  Download,
+  FileSpreadsheet,
+  Bell,
+  BellOff,
+  Star,
+  Target,
+  Activity,
+  DollarSign,
+  Repeat,
+  Bot,
+  Rss,
+  Gift,
+  UserPlus,
+  Mic,
+  TrendingDown,
+  AlertTriangle,
+  MoreVertical,
 } from "lucide-react";
+import { SiTiktok, SiPinterest } from "react-icons/si";
+import { cn } from "@/lib/utils";
 
+// Comprehensive interfaces
 interface SocialAccount {
   id: string;
   platform: string;
@@ -82,12 +127,17 @@ interface SocialAccount {
   profileImageUrl: string;
   isActive: boolean;
   lastSyncedAt: string;
-  metadata?: any;
+  followers?: number;
+  following?: number;
+  posts?: number;
+  accessToken?: string;
+  refreshToken?: string;
 }
 
 interface SocialPost {
   id: string;
-  platform: string;
+  businessId: string;
+  platform: string[];
   content: string;
   mediaUrls?: string[];
   hashtags?: string[];
@@ -95,36 +145,105 @@ interface SocialPost {
   scheduledFor?: string;
   publishedAt?: string;
   status: 'draft' | 'scheduled' | 'published' | 'failed';
-  metrics?: {
-    likes: number;
-    comments: number;
-    shares: number;
-    views: number;
-  };
+  campaignId?: string;
+  categoryId?: string;
+  metrics?: PostMetrics;
 }
 
-interface PlatformConfig {
+interface PostMetrics {
+  likes: number;
+  comments: number;
+  shares: number;
+  views: number;
+  reach: number;
+  impressions: number;
+  engagementRate: number;
+  saves?: number;
+  clicks?: number;
+}
+
+interface Campaign {
+  id: string;
   name: string;
-  icon: React.ReactNode;
-  color: string;
-  bgColor: string;
-  maxChars: number;
-  features: {
-    images: boolean;
-    videos: boolean;
-    stories: boolean;
-    reels: boolean;
-    hashtags: boolean;
-    mentions: boolean;
-  };
+  startDate: string;
+  endDate: string;
+  platforms: string[];
+  budget?: number;
+  spent?: number;
+  status: 'draft' | 'active' | 'paused' | 'completed';
+  goals: string[];
+  kpis: Record<string, number>;
+  posts: number;
+  reach: number;
+  engagement: number;
 }
 
-const PLATFORMS: Record<string, PlatformConfig> = {
+interface Message {
+  id: string;
+  platform: string;
+  senderName: string;
+  senderImage?: string;
+  content: string;
+  timestamp: string;
+  isRead: boolean;
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  sentiment?: 'positive' | 'neutral' | 'negative';
+  status: 'unread' | 'read' | 'replied' | 'archived';
+  assignedTo?: string;
+}
+
+interface Mention {
+  id: string;
+  platform: string;
+  authorName: string;
+  authorHandle: string;
+  content: string;
+  url: string;
+  timestamp: string;
+  sentiment: 'positive' | 'neutral' | 'negative';
+  reach: number;
+}
+
+interface Automation {
+  id: string;
+  name: string;
+  type: 'rss' | 'product' | 'review' | 'event' | 'welcome' | 'birthday';
+  trigger: string;
+  action: string;
+  isActive: boolean;
+  lastRun?: string;
+  runsCount: number;
+  platforms: string[];
+}
+
+interface TeamMember {
+  id: string;
+  name: string;
+  email: string;
+  role: 'admin' | 'manager' | 'editor' | 'viewer';
+  permissions: string[];
+  avatar?: string;
+  lastActive?: string;
+}
+
+interface ResponseTemplate {
+  id: string;
+  name: string;
+  category: string;
+  content: string;
+  usageCount: number;
+  lastUsed?: string;
+  tags: string[];
+}
+
+// Platform configurations
+const PLATFORMS: Record<string, any> = {
   facebook: {
     name: 'Facebook',
     icon: <Facebook className="w-5 h-5" />,
     color: 'text-blue-600',
-    bgColor: 'bg-blue-100',
+    bgColor: 'bg-blue-50',
+    borderColor: 'border-blue-200',
     maxChars: 63206,
     features: {
       images: true,
@@ -132,14 +251,16 @@ const PLATFORMS: Record<string, PlatformConfig> = {
       stories: true,
       reels: true,
       hashtags: true,
-      mentions: true
-    }
+      mentions: true,
+      carousel: true,
+    },
   },
   instagram: {
     name: 'Instagram',
     icon: <Instagram className="w-5 h-5" />,
     color: 'text-pink-600',
-    bgColor: 'bg-pink-100',
+    bgColor: 'bg-pink-50',
+    borderColor: 'border-pink-200',
     maxChars: 2200,
     features: {
       images: true,
@@ -147,550 +268,770 @@ const PLATFORMS: Record<string, PlatformConfig> = {
       stories: true,
       reels: true,
       hashtags: true,
-      mentions: true
-    }
+      mentions: true,
+      carousel: true,
+    },
   },
   twitter: {
     name: 'X (Twitter)',
     icon: <Twitter className="w-5 h-5" />,
     color: 'text-gray-900',
-    bgColor: 'bg-gray-100',
+    bgColor: 'bg-gray-50',
+    borderColor: 'border-gray-200',
     maxChars: 280,
     features: {
       images: true,
       videos: true,
-      stories: false,
-      reels: false,
       hashtags: true,
-      mentions: true
-    }
+      mentions: true,
+      threads: true,
+    },
   },
   linkedin: {
     name: 'LinkedIn',
     icon: <Linkedin className="w-5 h-5" />,
     color: 'text-blue-700',
-    bgColor: 'bg-blue-100',
+    bgColor: 'bg-blue-50',
+    borderColor: 'border-blue-200',
     maxChars: 3000,
     features: {
       images: true,
       videos: true,
-      stories: false,
-      reels: false,
       hashtags: true,
-      mentions: true
-    }
-  },
-  tiktok: {
-    name: 'TikTok',
-    icon: <Video className="w-5 h-5" />,
-    color: 'text-gray-900',
-    bgColor: 'bg-gray-100',
-    maxChars: 2200,
-    features: {
-      images: false,
-      videos: true,
-      stories: false,
-      reels: true,
-      hashtags: true,
-      mentions: true
-    }
-  },
-  pinterest: {
-    name: 'Pinterest',
-    icon: <ImageIcon className="w-5 h-5" />,
-    color: 'text-red-600',
-    bgColor: 'bg-red-100',
-    maxChars: 500,
-    features: {
-      images: true,
-      videos: true,
-      stories: false,
-      reels: false,
-      hashtags: true,
-      mentions: false
-    }
+      mentions: true,
+      articles: true,
+    },
   },
   youtube: {
     name: 'YouTube',
     icon: <Youtube className="w-5 h-5" />,
     color: 'text-red-600',
-    bgColor: 'bg-red-100',
+    bgColor: 'bg-red-50',
+    borderColor: 'border-red-200',
     maxChars: 5000,
     features: {
-      images: false,
       videos: true,
-      stories: false,
-      reels: false,
+      thumbnails: true,
       hashtags: true,
-      mentions: false
-    }
-  }
+      playlists: true,
+      shorts: true,
+    },
+  },
+  tiktok: {
+    name: 'TikTok',
+    icon: <SiTiktok className="w-5 h-5" />,
+    color: 'text-gray-900',
+    bgColor: 'bg-gray-50',
+    borderColor: 'border-gray-200',
+    maxChars: 2200,
+    features: {
+      videos: true,
+      hashtags: true,
+      mentions: true,
+      sounds: true,
+      effects: true,
+    },
+  },
+  pinterest: {
+    name: 'Pinterest',
+    icon: <SiPinterest className="w-5 h-5" />,
+    color: 'text-red-600',
+    bgColor: 'bg-red-50',
+    borderColor: 'border-red-200',
+    maxChars: 500,
+    features: {
+      images: true,
+      videos: true,
+      hashtags: true,
+      boards: true,
+      pins: true,
+    },
+  },
 };
 
-export default function SocialMediaHubEnhanced() {
+interface SocialMediaHubEnhancedProps {
+  businessId: string;
+}
+
+export function SocialMediaHubEnhanced({ businessId }: SocialMediaHubEnhancedProps) {
   const { toast } = useToast();
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [showComposer, setShowComposer] = useState(false);
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [postContent, setPostContent] = useState("");
   const [mediaFiles, setMediaFiles] = useState<File[]>([]);
-  const [scheduledDate, setScheduledDate] = useState<Date>();
-  const [isScheduled, setIsScheduled] = useState(false);
-  const [activeTab, setActiveTab] = useState("compose");
+  const [scheduledDate, setScheduledDate] = useState<Date | undefined>();
+  const [hashtags, setHashtags] = useState<string[]>([]);
+  const [selectedCampaign, setSelectedCampaign] = useState<string>("");
+  const [showAnalytics, setShowAnalytics] = useState(false);
+  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+  const [replyContent, setReplyContent] = useState("");
+  const [bulkUploadFile, setBulkUploadFile] = useState<File | null>(null);
+  const [selectedAutomation, setSelectedAutomation] = useState<Automation | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<ResponseTemplate | null>(null);
 
-  // Fetch connected social accounts
-  const { data: socialAccounts, isLoading: accountsLoading } = useQuery<SocialAccount[]>({
-    queryKey: ['/api/social/accounts'],
+  // Queries
+  const { data: accounts = [], isLoading: loadingAccounts } = useQuery({
+    queryKey: ['/api/social-media/accounts', businessId],
+    enabled: !!businessId,
   });
 
-  // Fetch recent posts
-  const { data: recentPosts } = useQuery<SocialPost[]>({
-    queryKey: ['/api/social/posts'],
+  const { data: posts = [], isLoading: loadingPosts } = useQuery({
+    queryKey: ['/api/social-media/posts', businessId],
+    enabled: !!businessId,
   });
 
-  // Connect social account
-  const connectMutation = useMutation({
-    mutationFn: async (platform: string) => {
-      const response = await apiRequest('GET', `/api/social/auth/${platform}?businessId=${businessId}`);
-      if (response.authUrl) {
-        window.location.href = response.authUrl;
-      }
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Connection Failed",
-        description: error.message || "Failed to connect social account",
-        variant: "destructive",
-      });
-    }
+  const { data: analyticsData } = useQuery({
+    queryKey: ['/api/social-media/analytics', businessId, 'summary'],
+    enabled: !!businessId,
   });
 
-  // Disconnect social account
-  const disconnectMutation = useMutation({
-    mutationFn: async (accountId: string) => {
-      return await apiRequest('DELETE', `/api/social/accounts/${accountId}`);
-    },
+  const { data: campaigns = [] } = useQuery({
+    queryKey: ['/api/social-media/campaigns', businessId],
+    enabled: !!businessId,
+  });
+
+  const { data: messages = [] } = useQuery({
+    queryKey: ['/api/social-media/messages', businessId],
+    enabled: !!businessId,
+  });
+
+  const { data: mentions = [] } = useQuery({
+    queryKey: ['/api/social-media/mentions', businessId],
+    enabled: !!businessId,
+  });
+
+  const { data: automations = [] } = useQuery({
+    queryKey: ['/api/social-media/automation', businessId],
+    enabled: !!businessId,
+  });
+
+  const { data: templates = [] } = useQuery({
+    queryKey: ['/api/social-media/templates', businessId],
+    enabled: !!businessId,
+  });
+
+  const { data: teamMembers = [] } = useQuery({
+    queryKey: ['/api/social-media/team', businessId],
+    enabled: !!businessId,
+  });
+
+  // Mutations
+  const connectAccount = useMutation({
+    mutationFn: (data: any) =>
+      apiRequest('/api/social-media/accounts/connect', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/social/accounts'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/social-media/accounts'] });
       toast({
-        title: "Account Disconnected",
-        description: "Social account has been disconnected",
+        title: "Account connected",
+        description: "Social media account has been connected successfully.",
       });
-    }
+    },
   });
 
-  // Publish post
-  const publishMutation = useMutation({
-    mutationFn: async (postData: any) => {
-      return await apiRequest('POST', '/api/social/posts', postData);
-    },
+  const createPost = useMutation({
+    mutationFn: (data: any) =>
+      apiRequest('/api/social-media/posts', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/social/posts'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/social-media/posts'] });
       toast({
-        title: "Post Published",
-        description: isScheduled ? "Your post has been scheduled" : "Your post has been published",
+        title: "Post created",
+        description: "Your post has been scheduled successfully.",
       });
-      // Reset form
-      setPostContent("");
-      setMediaFiles([]);
-      setSelectedPlatforms([]);
-      setScheduledDate(undefined);
-      setIsScheduled(false);
+      setShowComposer(false);
+      resetComposer();
     },
-    onError: (error: any) => {
-      toast({
-        title: "Publishing Failed",
-        description: error.message || "Failed to publish post",
-        variant: "destructive",
-      });
-    }
   });
 
-  // Check URL params for OAuth callback
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const connected = params.get('connected');
-    const error = params.get('error');
-
-    if (connected) {
+  const publishPost = useMutation({
+    mutationFn: (postId: string) =>
+      apiRequest(`/api/social-media/posts/${postId}/publish`, {
+        method: 'POST',
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/social-media/posts'] });
       toast({
-        title: "Account Connected",
-        description: `Successfully connected ${connected} account`,
+        title: "Post published",
+        description: "Your post has been published successfully.",
       });
-      // Remove params from URL
-      window.history.replaceState({}, document.title, window.location.pathname);
-    } else if (error) {
+    },
+  });
+
+  const bulkSchedule = useMutation({
+    mutationFn: (data: any) =>
+      apiRequest('/api/social-media/posts/bulk-schedule', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/social-media/posts'] });
       toast({
-        title: "Connection Error",
-        description: `Failed to connect account: ${error}`,
-        variant: "destructive",
+        title: "Bulk schedule complete",
+        description: "Posts have been scheduled successfully.",
       });
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-  }, [toast]);
+      setBulkUploadFile(null);
+    },
+  });
 
-  const handleMediaUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    setMediaFiles(prev => [...prev, ...files]);
-  };
-
-  const removeMedia = (index: number) => {
-    setMediaFiles(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const handlePublish = () => {
-    if (selectedPlatforms.length === 0) {
+  const sendReply = useMutation({
+    mutationFn: (data: { messageId: string; response: string }) =>
+      apiRequest(`/api/social-media/messages/${data.messageId}/reply`, {
+        method: 'POST',
+        body: JSON.stringify({ response: data.response }),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/social-media/messages'] });
       toast({
-        title: "No Platforms Selected",
-        description: "Please select at least one platform",
-        variant: "destructive",
+        title: "Reply sent",
+        description: "Your reply has been sent successfully.",
       });
-      return;
-    }
+      setReplyContent("");
+    },
+  });
 
-    const formData = new FormData();
-    formData.append('content', postContent);
-    formData.append('platforms', JSON.stringify(selectedPlatforms));
+  const createAutomation = useMutation({
+    mutationFn: (data: any) =>
+      apiRequest('/api/social-media/automation', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/social-media/automation'] });
+      toast({
+        title: "Automation created",
+        description: "Your automation has been set up successfully.",
+      });
+    },
+  });
 
-    if (isScheduled && scheduledDate) {
-      formData.append('scheduledFor', scheduledDate.toISOString());
-    }
-
-    mediaFiles.forEach(file => {
-      formData.append('media', file);
-    });
-
-    publishMutation.mutate(formData);
+  const resetComposer = () => {
+    setPostContent("");
+    setSelectedPlatforms([]);
+    setMediaFiles([]);
+    setScheduledDate(undefined);
+    setHashtags([]);
+    setSelectedCampaign("");
   };
 
-  const getCharCount = () => {
-    if (selectedPlatforms.length === 0) return { current: 0, max: 280 };
-
-    const minMax = Math.min(...selectedPlatforms.map(p => PLATFORMS[p]?.maxChars || 280));
-    return { current: postContent.length, max: minMax };
+  // Platform OAuth handlers
+  const handlePlatformConnect = async (platform: string) => {
+    // In production, this would initiate OAuth flow
+    window.location.href = `/api/social-media/auth/${platform}?businessId=${businessId}`;
   };
 
-  const charCount = getCharCount();
-  const charPercentage = (charCount.current / charCount.max) * 100;
+  // Calculate analytics summary
+  const analyticsSummary = analyticsData?.summary || {
+    totalImpressions: 0,
+    totalEngagements: 0,
+    totalReach: 0,
+    avgEngagementRate: 0,
+  };
 
-  // Get business ID from URL or context
-  const businessId = new URLSearchParams(window.location.search).get('businessId') || '';
+  // Get unread messages count
+  const unreadMessagesCount = messages.filter((m: Message) => !m.isRead).length;
+
+  // Calendar view data preparation
+  const calendarPosts = posts.reduce((acc: any, post: SocialPost) => {
+    if (post.scheduledFor) {
+      const date = format(new Date(post.scheduledFor), 'yyyy-MM-dd');
+      if (!acc[date]) acc[date] = [];
+      acc[date].push(post);
+    }
+    return acc;
+  }, {});
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Social Media Hub</h2>
-          <p className="text-muted-foreground">Manage all your social accounts in one place</p>
+          <h1 className="text-3xl font-bold">Social Media Hub</h1>
+          <p className="text-muted-foreground">
+            Manage all your social media from one place
+          </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="secondary">
-            {socialAccounts?.filter(a => a.isActive).length || 0} Connected
-          </Badge>
-          <Sparkles className="w-5 h-5 text-purple-600 animate-pulse" />
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            onClick={() => queryClient.invalidateQueries()}
+            data-testid="button-refresh"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Refresh
+          </Button>
+          <Button onClick={() => setShowComposer(true)} data-testid="button-compose">
+            <Plus className="w-4 h-4 mr-2" />
+            Create Post
+          </Button>
         </div>
       </div>
 
-      {/* Connected Accounts */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Connected Accounts</CardTitle>
-          <CardDescription>Connect your social media accounts to start posting</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-            {Object.entries(PLATFORMS).map(([platform, config]) => {
-              const account = socialAccounts?.find(a => a.platform === platform && a.isActive);
-              const isConnected = !!account;
+      {/* Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">Total Reach</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {analyticsSummary.totalReach.toLocaleString()}
+            </div>
+            <p className="text-xs text-muted-foreground">Last 30 days</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">Engagement Rate</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {analyticsSummary.avgEngagementRate.toFixed(2)}%
+            </div>
+            <p className="text-xs text-muted-foreground">
+              <TrendingUp className="w-3 h-3 inline text-green-600" /> +12.5%
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">Scheduled Posts</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {posts.filter((p: SocialPost) => p.status === 'scheduled').length}
+            </div>
+            <p className="text-xs text-muted-foreground">Ready to publish</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">Messages</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{unreadMessagesCount}</div>
+            <p className="text-xs text-muted-foreground">Unread messages</p>
+          </CardContent>
+        </Card>
+      </div>
 
-              return (
-                <div key={platform} className="text-center">
-                  <div className="relative">
-                    <Button
-                      variant={isConnected ? "default" : "outline"}
-                      className={`w-full h-20 flex flex-col gap-2 ${
-                        isConnected ? config.bgColor : ''
-                      }`}
-                      onClick={() => {
-                        if (isConnected && account) {
-                          disconnectMutation.mutate(account.id);
-                        } else {
-                          connectMutation.mutate(platform);
-                        }
-                      }}
-                    >
-                      <div className={config.color}>
-                        {config.icon}
-                      </div>
-                      <span className="text-xs">{config.name}</span>
-                      {isConnected && (
-                        <CheckCircle className="absolute top-1 right-1 w-3 h-3 text-green-600" />
-                      )}
-                    </Button>
-                  </div>
-                  {isConnected && account && (
-                    <p className="text-xs text-muted-foreground mt-1 truncate">
-                      @{account.accountHandle || account.accountName}
-                    </p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Main Content Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="compose">
-            <Send className="w-4 h-4 mr-2" />
-            Compose
-          </TabsTrigger>
-          <TabsTrigger value="scheduled">
-            <Clock className="w-4 h-4 mr-2" />
-            Scheduled
-            {recentPosts?.filter(p => p.status === 'scheduled').length ? (
-              <Badge variant="secondary" className="ml-2">
-                {recentPosts.filter(p => p.status === 'scheduled').length}
-              </Badge>
-            ) : null}
-          </TabsTrigger>
-          <TabsTrigger value="published">
-            <CheckCircle className="w-4 h-4 mr-2" />
-            Published
-          </TabsTrigger>
-          <TabsTrigger value="analytics">
-            <BarChart className="w-4 h-4 mr-2" />
-            Analytics
-          </TabsTrigger>
+      {/* Main Tabs */}
+      <Tabs defaultValue="dashboard" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-8">
+          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+          <TabsTrigger value="accounts">Accounts</TabsTrigger>
+          <TabsTrigger value="composer">Composer</TabsTrigger>
+          <TabsTrigger value="calendar">Calendar</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="inbox">Inbox</TabsTrigger>
+          <TabsTrigger value="listening">Listening</TabsTrigger>
+          <TabsTrigger value="automation">Automation</TabsTrigger>
         </TabsList>
 
-        {/* Compose Tab */}
-        <TabsContent value="compose" className="space-y-4">
+        {/* Dashboard Tab */}
+        <TabsContent value="dashboard" className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Recent Posts */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Posts</CardTitle>
+                <CardDescription>Your latest published content</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-[400px]">
+                  <div className="space-y-4">
+                    {posts
+                      .filter((p: SocialPost) => p.status === 'published')
+                      .slice(0, 5)
+                      .map((post: SocialPost) => (
+                        <div
+                          key={post.id}
+                          className="p-4 border rounded-lg space-y-2"
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex gap-2">
+                              {post.platform.map((p) => (
+                                <div
+                                  key={p}
+                                  className={cn(
+                                    "p-1 rounded",
+                                    PLATFORMS[p]?.bgColor
+                                  )}
+                                >
+                                  {PLATFORMS[p]?.icon}
+                                </div>
+                              ))}
+                            </div>
+                            <Badge variant="outline">Published</Badge>
+                          </div>
+                          <p className="text-sm line-clamp-2">{post.content}</p>
+                          {post.metrics && (
+                            <div className="flex gap-4 text-xs text-muted-foreground">
+                              <span className="flex items-center gap-1">
+                                <Eye className="w-3 h-3" />
+                                {post.metrics.views}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <Heart className="w-3 h-3" />
+                                {post.metrics.likes}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <MessageCircle className="w-3 h-3" />
+                                {post.metrics.comments}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <Share2 className="w-3 h-3" />
+                                {post.metrics.shares}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                  </div>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+
+            {/* Performance Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Engagement Overview</CardTitle>
+                <CardDescription>Last 7 days performance</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={400}>
+                  <LineChart
+                    data={[
+                      { name: 'Mon', engagement: 4.2, reach: 2400 },
+                      { name: 'Tue', engagement: 3.8, reach: 1398 },
+                      { name: 'Wed', engagement: 5.1, reach: 9800 },
+                      { name: 'Thu', engagement: 4.7, reach: 3908 },
+                      { name: 'Fri', engagement: 4.9, reach: 4800 },
+                      { name: 'Sat', engagement: 3.6, reach: 3800 },
+                      { name: 'Sun', engagement: 4.3, reach: 4300 },
+                    ]}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis yAxisId="left" />
+                    <YAxis yAxisId="right" orientation="right" />
+                    <Tooltip />
+                    <Legend />
+                    <Line
+                      yAxisId="left"
+                      type="monotone"
+                      dataKey="engagement"
+                      stroke="#8884d8"
+                      name="Engagement Rate (%)"
+                    />
+                    <Line
+                      yAxisId="right"
+                      type="monotone"
+                      dataKey="reach"
+                      stroke="#82ca9d"
+                      name="Reach"
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        {/* Accounts Tab */}
+        <TabsContent value="accounts" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Connected Accounts</CardTitle>
+              <CardDescription>Manage your social media accounts</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {Object.entries(PLATFORMS).map(([key, platform]) => {
+                  const account = accounts.find((a: SocialAccount) => a.platform === key);
+                  return (
+                    <div
+                      key={key}
+                      className={cn(
+                        "p-4 rounded-lg border-2",
+                        platform.borderColor,
+                        account ? platform.bgColor : "bg-gray-50"
+                      )}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className={cn("p-2 rounded", platform.bgColor)}>
+                            {platform.icon}
+                          </div>
+                          <div>
+                            <h4 className="font-medium">{platform.name}</h4>
+                            {account ? (
+                              <>
+                                <p className="text-sm text-muted-foreground">
+                                  @{account.accountHandle}
+                                </p>
+                                <div className="flex gap-3 mt-1 text-xs">
+                                  <span>{account.followers?.toLocaleString()} followers</span>
+                                  <span>{account.posts?.toLocaleString()} posts</span>
+                                </div>
+                              </>
+                            ) : (
+                              <p className="text-sm text-muted-foreground">
+                                Not connected
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        {account ? (
+                          <Badge variant="outline" className="bg-green-50">
+                            <CheckCircle className="w-3 h-3 mr-1 text-green-600" />
+                            Connected
+                          </Badge>
+                        ) : (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handlePlatformConnect(key)}
+                            data-testid={`button-connect-${key}`}
+                          >
+                            <Link2 className="w-4 h-4 mr-2" />
+                            Connect
+                          </Button>
+                        )}
+                      </div>
+                      {account && (
+                        <div className="mt-4 pt-4 border-t flex justify-between items-center">
+                          <span className="text-xs text-muted-foreground">
+                            Last synced: {format(new Date(account.lastSyncedAt), 'PPp')}
+                          </span>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handlePlatformConnect(key)}
+                          >
+                            <RefreshCw className="w-3 h-3 mr-1" />
+                            Sync
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Composer Tab */}
+        <TabsContent value="composer" className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>Create Post</CardTitle>
-              <CardDescription>
-                Compose and publish to multiple social platforms at once
-              </CardDescription>
+              <CardDescription>Compose and schedule your social media content</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
               {/* Platform Selection */}
               <div>
                 <Label>Select Platforms</Label>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {socialAccounts?.filter(a => a.isActive).map(account => {
-                    const config = PLATFORMS[account.platform];
-                    if (!config) return null;
-
-                    const isSelected = selectedPlatforms.includes(account.platform);
-
-                    return (
-                      <Button
-                        key={account.id}
-                        variant={isSelected ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => {
-                          if (isSelected) {
-                            setSelectedPlatforms(prev => prev.filter(p => p !== account.platform));
-                          } else {
-                            setSelectedPlatforms(prev => [...prev, account.platform]);
-                          }
-                        }}
-                      >
-                        <div className={`${config.color} mr-2`}>
-                          {config.icon}
-                        </div>
-                        {config.name}
-                      </Button>
-                    );
-                  })}
+                <div className="flex flex-wrap gap-3 mt-2">
+                  {Object.entries(PLATFORMS).map(([key, platform]) => (
+                    <Button
+                      key={key}
+                      variant={selectedPlatforms.includes(key) ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => {
+                        setSelectedPlatforms(prev =>
+                          prev.includes(key)
+                            ? prev.filter(p => p !== key)
+                            : [...prev, key]
+                        );
+                      }}
+                      data-testid={`button-platform-${key}`}
+                    >
+                      {platform.icon}
+                      <span className="ml-2">{platform.name}</span>
+                    </Button>
+                  ))}
                 </div>
-                {selectedPlatforms.length === 0 && socialAccounts?.some(a => a.isActive) && (
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Select platforms to publish to
-                  </p>
-                )}
               </div>
 
-              {/* Post Content */}
-              <div>
-                <Label htmlFor="content">Post Content</Label>
+              {/* Content Input */}
+              <div className="space-y-2">
+                <Label htmlFor="content">Content</Label>
                 <Textarea
                   id="content"
-                  placeholder="What's on your mind?"
+                  placeholder="What would you like to share?"
                   value={postContent}
                   onChange={(e) => setPostContent(e.target.value)}
-                  className="min-h-[120px] mt-2"
+                  className="min-h-[150px]"
+                  data-testid="textarea-content"
                 />
-                <div className="flex items-center justify-between mt-2">
-                  <div className="flex items-center gap-2">
-                    <Progress
-                      value={charPercentage}
-                      className={`w-24 h-2 ${
-                        charPercentage > 100 ? 'bg-red-200' : ''
-                      }`}
-                    />
-                    <span className={`text-sm ${
-                      charPercentage > 100 ? 'text-red-600' : 'text-muted-foreground'
-                    }`}>
-                      {charCount.current} / {charCount.max}
+                <div className="flex justify-between text-sm text-muted-foreground">
+                  <span>{postContent.length} characters</span>
+                  {selectedPlatforms.length > 0 && (
+                    <span>
+                      Max: {Math.min(...selectedPlatforms.map(p => PLATFORMS[p]?.maxChars || 280))}
                     </span>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        const hashtags = postContent.match(/#\w+/g) || [];
-                        toast({
-                          title: "Hashtags",
-                          description: hashtags.length ? hashtags.join(', ') : 'No hashtags found',
-                        });
-                      }}
-                    >
-                      <Hash className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        const mentions = postContent.match(/@\w+/g) || [];
-                        toast({
-                          title: "Mentions",
-                          description: mentions.length ? mentions.join(', ') : 'No mentions found',
-                        });
-                      }}
-                    >
-                      <AtSign className="w-4 h-4" />
-                    </Button>
-                  </div>
+                  )}
                 </div>
               </div>
 
               {/* Media Upload */}
-              <div>
+              <div className="space-y-2">
                 <Label>Media</Label>
-                <div className="mt-2">
-                  {mediaFiles.length > 0 && (
-                    <div className="grid grid-cols-3 gap-2 mb-3">
-                      {mediaFiles.map((file, index) => (
-                        <div key={index} className="relative">
-                          {file.type.startsWith('image/') ? (
-                            <img
-                              src={URL.createObjectURL(file)}
-                              alt={`Upload ${index + 1}`}
-                              className="w-full h-24 object-cover rounded-lg"
-                            />
-                          ) : (
-                            <div className="w-full h-24 bg-gray-100 rounded-lg flex items-center justify-center">
-                              <Video className="w-8 h-8 text-gray-400" />
-                            </div>
-                          )}
-                          <Button
-                            variant="destructive"
-                            size="icon"
-                            className="absolute top-1 right-1 h-6 w-6"
-                            onClick={() => removeMedia(index)}
-                          >
-                            <X className="w-3 h-3" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" asChild>
-                      <label>
-                        <ImageIcon className="w-4 h-4 mr-2" />
-                        Add Image
-                        <input
-                          type="file"
-                          accept="image/*"
-                          multiple
-                          className="hidden"
-                          onChange={handleMediaUpload}
-                        />
-                      </label>
-                    </Button>
-                    <Button variant="outline" size="sm" asChild>
-                      <label>
-                        <Video className="w-4 h-4 mr-2" />
-                        Add Video
-                        <input
-                          type="file"
-                          accept="video/*"
-                          className="hidden"
-                          onChange={handleMediaUpload}
-                        />
-                      </label>
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Scheduling */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Switch
-                    id="schedule"
-                    checked={isScheduled}
-                    onCheckedChange={setIsScheduled}
+                <div className="border-2 border-dashed rounded-lg p-6 text-center">
+                  <Upload className="w-12 h-12 mx-auto text-muted-foreground mb-3" />
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Drag & drop or click to upload
+                  </p>
+                  <Input
+                    type="file"
+                    multiple
+                    accept="image/*,video/*"
+                    className="hidden"
+                    id="media-upload"
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files || []);
+                      setMediaFiles(files);
+                    }}
+                    data-testid="input-media"
                   />
-                  <Label htmlFor="schedule">Schedule Post</Label>
+                  <Button variant="outline" size="sm" asChild>
+                    <label htmlFor="media-upload" className="cursor-pointer">
+                      Choose Files
+                    </label>
+                  </Button>
                 </div>
-                {isScheduled && (
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        <CalendarIcon className="w-4 h-4 mr-2" />
-                        {scheduledDate ? format(scheduledDate, 'PPP') : 'Pick date'}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        selected={scheduledDate}
-                        onSelect={setScheduledDate}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
+                {mediaFiles.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {mediaFiles.map((file, index) => (
+                      <div
+                        key={index}
+                        className="relative p-2 border rounded flex items-center gap-2"
+                      >
+                        <ImageIcon className="w-4 h-4" />
+                        <span className="text-sm">{file.name}</span>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => {
+                            setMediaFiles(prev => prev.filter((_, i) => i !== index));
+                          }}
+                        >
+                          <X className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
 
-              {/* Action Buttons */}
+              {/* Hashtags */}
+              <div className="space-y-2">
+                <Label>Hashtags</Label>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Add hashtags..."
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const input = e.currentTarget;
+                        if (input.value) {
+                          setHashtags(prev => [...prev, input.value]);
+                          input.value = '';
+                        }
+                      }
+                    }}
+                    data-testid="input-hashtags"
+                  />
+                  <Button variant="outline" size="icon">
+                    <Sparkles className="w-4 h-4" />
+                  </Button>
+                </div>
+                {hashtags.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {hashtags.map((tag, index) => (
+                      <Badge key={index} variant="secondary">
+                        #{tag}
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="ml-1 p-0 h-auto"
+                          onClick={() => {
+                            setHashtags(prev => prev.filter((_, i) => i !== index));
+                          }}
+                        >
+                          <X className="w-3 h-3" />
+                        </Button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Schedule */}
+              <div className="space-y-2">
+                <Label>Schedule</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal"
+                      data-testid="button-schedule"
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {scheduledDate ? format(scheduledDate, "PPP p") : "Publish now"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={scheduledDate}
+                      onSelect={setScheduledDate}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              {/* Actions */}
               <div className="flex justify-between">
-                <Button variant="outline">
-                  Save as Draft
+                <Button variant="outline" onClick={resetComposer}>
+                  <X className="w-4 h-4 mr-2" />
+                  Cancel
                 </Button>
                 <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      // Preview functionality
-                      toast({
-                        title: "Preview",
-                        description: "Preview feature coming soon",
-                      });
-                    }}
-                  >
-                    <Eye className="w-4 h-4 mr-2" />
-                    Preview
+                  <Button variant="outline">
+                    Save as Draft
                   </Button>
                   <Button
-                    onClick={handlePublish}
-                    disabled={!postContent || selectedPlatforms.length === 0 || publishMutation.isPending}
+                    onClick={() => {
+                      createPost.mutate({
+                        businessId,
+                        platform: selectedPlatforms,
+                        content: postContent,
+                        hashtags,
+                        scheduledFor: scheduledDate,
+                        status: scheduledDate ? 'scheduled' : 'published',
+                      });
+                    }}
+                    disabled={!postContent || selectedPlatforms.length === 0}
+                    data-testid="button-publish"
                   >
-                    {publishMutation.isPending ? (
+                    {scheduledDate ? (
                       <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Publishing...
+                        <Clock className="w-4 h-4 mr-2" />
+                        Schedule Post
                       </>
                     ) : (
                       <>
                         <Send className="w-4 h-4 mr-2" />
-                        {isScheduled ? 'Schedule' : 'Publish Now'}
+                        Publish Now
                       </>
                     )}
                   </Button>
@@ -699,268 +1040,716 @@ export default function SocialMediaHubEnhanced() {
             </CardContent>
           </Card>
 
-          {/* AI Suggestions */}
-          <Card className="border-purple-200 dark:border-purple-900">
+          {/* Bulk Upload */}
+          <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-purple-600" />
-                AI Content Assistant
-              </CardTitle>
+              <CardTitle>Bulk Schedule</CardTitle>
+              <CardDescription>Upload CSV/Excel file to schedule multiple posts</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-3">
-                <Button
-                  variant="outline"
-                  className="justify-start"
-                  onClick={() => {
-                    toast({
-                      title: "AI Suggestions",
-                      description: "AI hashtag suggestions coming soon",
-                    });
+              <div className="border-2 border-dashed rounded-lg p-6 text-center">
+                <FileSpreadsheet className="w-12 h-12 mx-auto text-muted-foreground mb-3" />
+                <p className="text-sm text-muted-foreground mb-2">
+                  Upload CSV or Excel file with your posts
+                </p>
+                <Input
+                  type="file"
+                  accept=".csv,.xlsx"
+                  className="hidden"
+                  id="bulk-upload"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) setBulkUploadFile(file);
                   }}
-                >
-                  <Hash className="w-4 h-4 mr-2 text-blue-600" />
-                  Suggest Hashtags
+                  data-testid="input-bulk-upload"
+                />
+                <Button variant="outline" size="sm" asChild>
+                  <label htmlFor="bulk-upload" className="cursor-pointer">
+                    Choose File
+                  </label>
                 </Button>
-                <Button
-                  variant="outline"
-                  className="justify-start"
-                  onClick={() => {
-                    toast({
-                      title: "AI Enhancement",
-                      description: "AI content enhancement coming soon",
-                    });
-                  }}
-                >
-                  <Zap className="w-4 h-4 mr-2 text-yellow-600" />
-                  Enhance Content
-                </Button>
-                <Button
-                  variant="outline"
-                  className="justify-start"
-                  onClick={() => {
-                    toast({
-                      title: "AI Captions",
-                      description: "AI caption generation coming soon",
-                    });
-                  }}
-                >
-                  <MessageCircle className="w-4 h-4 mr-2 text-green-600" />
-                  Generate Caption
-                </Button>
-                <Button
-                  variant="outline"
-                  className="justify-start"
-                  onClick={() => {
-                    toast({
-                      title: "Best Time",
-                      description: "Optimal posting time analysis coming soon",
-                    });
-                  }}
-                >
-                  <Clock className="w-4 h-4 mr-2 text-purple-600" />
-                  Best Time to Post
-                </Button>
+                {bulkUploadFile && (
+                  <div className="mt-4 p-3 bg-gray-50 rounded flex items-center justify-between">
+                    <span className="text-sm">{bulkUploadFile.name}</span>
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                          bulkSchedule.mutate({
+                            csvData: e.target?.result,
+                            businessId,
+                          });
+                        };
+                        reader.readAsText(bulkUploadFile);
+                      }}
+                    >
+                      <Upload className="w-4 h-4 mr-2" />
+                      Process
+                    </Button>
+                  </div>
+                )}
+                <p className="text-xs text-muted-foreground mt-3">
+                  Download <a href="#" className="underline">template file</a> for reference
+                </p>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* Scheduled Tab */}
-        <TabsContent value="scheduled">
+        {/* Calendar Tab */}
+        <TabsContent value="calendar" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Scheduled Posts</CardTitle>
-              <CardDescription>Manage your upcoming scheduled posts</CardDescription>
+              <CardTitle>Content Calendar</CardTitle>
+              <CardDescription>Visual overview of your scheduled content</CardDescription>
             </CardHeader>
             <CardContent>
-              {recentPosts?.filter(p => p.status === 'scheduled').length === 0 ? (
-                <div className="text-center py-8">
-                  <Clock className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                  <p className="text-muted-foreground">No scheduled posts</p>
-                </div>
-              ) : (
-                <ScrollArea className="h-[400px]">
-                  <div className="space-y-4">
-                    {recentPosts
-                      ?.filter(p => p.status === 'scheduled')
-                      .map((post) => (
-                        <Card key={post.id}>
-                          <CardContent className="p-4">
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-2">
-                                  {PLATFORMS[post.platform]?.icon}
-                                  <Badge variant="outline">
-                                    {PLATFORMS[post.platform]?.name}
-                                  </Badge>
-                                  <Badge variant="secondary">
-                                    <Clock className="w-3 h-3 mr-1" />
-                                    {post.scheduledFor && format(new Date(post.scheduledFor), 'PPp')}
-                                  </Badge>
-                                </div>
-                                <p className="text-sm line-clamp-2">{post.content}</p>
-                              </div>
-                              <Button variant="ghost" size="sm">
-                                <ChevronRight className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
+              <div className="grid grid-cols-7 gap-2">
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                  <div key={day} className="text-center font-medium py-2">
+                    {day}
                   </div>
-                </ScrollArea>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Published Tab */}
-        <TabsContent value="published">
-          <Card>
-            <CardHeader>
-              <CardTitle>Published Posts</CardTitle>
-              <CardDescription>View your recently published posts and their performance</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {recentPosts?.filter(p => p.status === 'published').length === 0 ? (
-                <div className="text-center py-8">
-                  <CheckCircle className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                  <p className="text-muted-foreground">No published posts yet</p>
-                </div>
-              ) : (
-                <ScrollArea className="h-[400px]">
-                  <div className="space-y-4">
-                    {recentPosts
-                      ?.filter(p => p.status === 'published')
-                      .map((post) => (
-                        <Card key={post.id}>
-                          <CardContent className="p-4">
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-2">
-                                  {PLATFORMS[post.platform]?.icon}
-                                  <Badge variant="outline">
-                                    {PLATFORMS[post.platform]?.name}
-                                  </Badge>
-                                  <span className="text-xs text-muted-foreground">
-                                    {post.publishedAt && format(new Date(post.publishedAt), 'PPp')}
-                                  </span>
-                                </div>
-                                <p className="text-sm mb-3">{post.content}</p>
-                                {post.metrics && (
-                                  <div className="flex gap-4 text-sm">
-                                    <span className="flex items-center gap-1">
-                                      <Heart className="w-3 h-3" />
-                                      {post.metrics.likes}
-                                    </span>
-                                    <span className="flex items-center gap-1">
-                                      <MessageCircle className="w-3 h-3" />
-                                      {post.metrics.comments}
-                                    </span>
-                                    <span className="flex items-center gap-1">
-                                      <Share2 className="w-3 h-3" />
-                                      {post.metrics.shares}
-                                    </span>
-                                    <span className="flex items-center gap-1">
-                                      <Eye className="w-3 h-3" />
-                                      {post.metrics.views}
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
+                ))}
+                {Array.from({ length: 35 }, (_, i) => {
+                  const date = addDays(startOfWeek(new Date()), i);
+                  const dateStr = format(date, 'yyyy-MM-dd');
+                  const dayPosts = calendarPosts[dateStr] || [];
+                  
+                  return (
+                    <div
+                      key={i}
+                      className={cn(
+                        "min-h-[100px] border rounded p-2",
+                        dayPosts.length > 0 && "bg-blue-50"
+                      )}
+                    >
+                      <div className="text-sm font-medium mb-1">
+                        {format(date, 'd')}
+                      </div>
+                      {dayPosts.slice(0, 2).map((post: SocialPost) => (
+                        <div
+                          key={post.id}
+                          className="text-xs p-1 bg-white rounded mb-1 truncate"
+                        >
+                          <div className="flex gap-1">
+                            {post.platform.map(p => (
+                              <span key={p} className={PLATFORMS[p]?.color}>
+                                {PLATFORMS[p]?.icon}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
                       ))}
-                  </div>
-                </ScrollArea>
-              )}
+                      {dayPosts.length > 2 && (
+                        <div className="text-xs text-muted-foreground">
+                          +{dayPosts.length - 2} more
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
 
         {/* Analytics Tab */}
-        <TabsContent value="analytics">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <TabsContent value="analytics" className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Platform Distribution */}
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Reach</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
+              <CardHeader>
+                <CardTitle>Platform Performance</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">45,231</div>
-                <p className="text-xs text-muted-foreground">
-                  +20.1% from last month
-                </p>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={[
+                        { name: 'Facebook', value: 35, color: '#1877F2' },
+                        { name: 'Instagram', value: 25, color: '#E4405F' },
+                        { name: 'Twitter', value: 20, color: '#1DA1F2' },
+                        { name: 'LinkedIn', value: 15, color: '#0A66C2' },
+                        { name: 'Others', value: 5, color: '#9CA3AF' },
+                      ]}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={100}
+                    >
+                      {[0, 1, 2, 3, 4].map((index) => (
+                        <Cell key={index} fill={['#1877F2', '#E4405F', '#1DA1F2', '#0A66C2', '#9CA3AF'][index]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
               </CardContent>
             </Card>
+
+            {/* Engagement Metrics */}
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Engagement Rate</CardTitle>
-                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <CardHeader>
+                <CardTitle>Engagement Breakdown</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">4.7%</div>
-                <p className="text-xs text-muted-foreground">
-                  +1.2% from last month
-                </p>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Heart className="w-4 h-4 text-red-500" />
+                      <span className="text-sm">Likes</span>
+                    </div>
+                    <span className="font-medium">12.4K</span>
+                  </div>
+                  <Progress value={75} className="h-2" />
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <MessageCircle className="w-4 h-4 text-blue-500" />
+                      <span className="text-sm">Comments</span>
+                    </div>
+                    <span className="font-medium">3.2K</span>
+                  </div>
+                  <Progress value={45} className="h-2" />
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Share2 className="w-4 h-4 text-green-500" />
+                      <span className="text-sm">Shares</span>
+                    </div>
+                    <span className="font-medium">1.8K</span>
+                  </div>
+                  <Progress value={30} className="h-2" />
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Eye className="w-4 h-4 text-purple-500" />
+                      <span className="text-sm">Views</span>
+                    </div>
+                    <span className="font-medium">45.6K</span>
+                  </div>
+                  <Progress value={90} className="h-2" />
+                </div>
               </CardContent>
             </Card>
+
+            {/* Top Posts */}
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Posts</CardTitle>
-                <Send className="h-4 w-4 text-muted-foreground" />
+              <CardHeader>
+                <CardTitle>Top Performing Posts</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">127</div>
-                <p className="text-xs text-muted-foreground">
-                  +15 this month
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Followers</CardTitle>
-                <Heart className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">8,492</div>
-                <p className="text-xs text-muted-foreground">
-                  +573 new this month
-                </p>
+                <ScrollArea className="h-[350px]">
+                  <div className="space-y-3">
+                    {posts
+                      .filter((p: SocialPost) => p.metrics)
+                      .sort((a: SocialPost, b: SocialPost) => 
+                        (b.metrics?.engagementRate || 0) - (a.metrics?.engagementRate || 0)
+                      )
+                      .slice(0, 5)
+                      .map((post: SocialPost, index: number) => (
+                        <div key={post.id} className="flex items-start gap-3">
+                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-medium">
+                            {index + 1}
+                          </div>
+                          <div className="flex-1 space-y-1">
+                            <p className="text-sm line-clamp-2">{post.content}</p>
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                              <Badge variant="outline" className="text-xs">
+                                {post.metrics?.engagementRate.toFixed(1)}% engagement
+                              </Badge>
+                              <span>{post.metrics?.views} views</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </ScrollArea>
               </CardContent>
             </Card>
           </div>
 
-          <Card className="mt-4">
+          {/* Detailed Analytics */}
+          <Card>
             <CardHeader>
-              <CardTitle>Platform Performance</CardTitle>
+              <CardTitle>Growth Over Time</CardTitle>
+              <CardDescription>Track your audience growth across platforms</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={400}>
+                <AreaChart
+                  data={[
+                    { month: 'Jan', followers: 4500, engagement: 4.2 },
+                    { month: 'Feb', followers: 5200, engagement: 4.5 },
+                    { month: 'Mar', followers: 5800, engagement: 4.1 },
+                    { month: 'Apr', followers: 6500, engagement: 4.8 },
+                    { month: 'May', followers: 7300, engagement: 5.2 },
+                    { month: 'Jun', followers: 8100, engagement: 5.5 },
+                  ]}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis yAxisId="left" />
+                  <YAxis yAxisId="right" orientation="right" />
+                  <Tooltip />
+                  <Legend />
+                  <Area
+                    yAxisId="left"
+                    type="monotone"
+                    dataKey="followers"
+                    stroke="#8884d8"
+                    fill="#8884d8"
+                    fillOpacity={0.6}
+                    name="Followers"
+                  />
+                  <Area
+                    yAxisId="right"
+                    type="monotone"
+                    dataKey="engagement"
+                    stroke="#82ca9d"
+                    fill="#82ca9d"
+                    fillOpacity={0.6}
+                    name="Engagement Rate (%)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Inbox Tab */}
+        <TabsContent value="inbox" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Unified Inbox</CardTitle>
+              <CardDescription>Manage all your social media messages in one place</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                {/* Message List */}
+                <div className="lg:col-span-1 border-r">
+                  <ScrollArea className="h-[600px]">
+                    <div className="space-y-2 pr-4">
+                      {messages.map((message: Message) => (
+                        <div
+                          key={message.id}
+                          className={cn(
+                            "p-3 rounded cursor-pointer hover:bg-gray-50",
+                            selectedMessage?.id === message.id && "bg-blue-50",
+                            !message.isRead && "bg-blue-50/50"
+                          )}
+                          onClick={() => setSelectedMessage(message)}
+                        >
+                          <div className="flex items-start gap-3">
+                            <Avatar className="w-10 h-10">
+                              <AvatarImage src={message.senderImage} />
+                              <AvatarFallback>
+                                {message.senderName[0]}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-start justify-between">
+                                <div>
+                                  <p className="font-medium text-sm">
+                                    {message.senderName}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {PLATFORMS[message.platform]?.name}
+                                  </p>
+                                </div>
+                                <span className="text-xs text-muted-foreground">
+                                  {format(new Date(message.timestamp), 'p')}
+                                </span>
+                              </div>
+                              <p className="text-sm line-clamp-2 mt-1">
+                                {message.content}
+                              </p>
+                              <div className="flex items-center gap-2 mt-2">
+                                {!message.isRead && (
+                                  <Badge variant="secondary" className="text-xs">
+                                    New
+                                  </Badge>
+                                )}
+                                {message.priority === 'high' && (
+                                  <Badge variant="destructive" className="text-xs">
+                                    High Priority
+                                  </Badge>
+                                )}
+                                {message.sentiment && (
+                                  <Badge
+                                    variant="outline"
+                                    className={cn(
+                                      "text-xs",
+                                      message.sentiment === 'positive' && "text-green-600",
+                                      message.sentiment === 'negative' && "text-red-600"
+                                    )}
+                                  >
+                                    {message.sentiment}
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </div>
+
+                {/* Message View & Reply */}
+                <div className="lg:col-span-2">
+                  {selectedMessage ? (
+                    <div className="flex flex-col h-[600px]">
+                      {/* Message Header */}
+                      <div className="p-4 border-b">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <Avatar>
+                              <AvatarImage src={selectedMessage.senderImage} />
+                              <AvatarFallback>
+                                {selectedMessage.senderName[0]}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="font-medium">
+                                {selectedMessage.senderName}
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                via {PLATFORMS[selectedMessage.platform]?.name}
+                              </p>
+                            </div>
+                          </div>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon">
+                                <MoreVertical className="w-4 h-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem>
+                                <Star className="w-4 h-4 mr-2" />
+                                Mark as Important
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                <AlertTriangle className="w-4 h-4 mr-2" />
+                                Flag for Review
+                              </DropdownMenuItem>
+                              <DropdownMenuItem className="text-red-600">
+                                <X className="w-4 h-4 mr-2" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </div>
+
+                      {/* Message Content */}
+                      <div className="flex-1 p-4 overflow-y-auto">
+                        <div className="space-y-4">
+                          <div className="bg-gray-50 rounded-lg p-4">
+                            <p className="text-sm">{selectedMessage.content}</p>
+                            <p className="text-xs text-muted-foreground mt-2">
+                              {format(new Date(selectedMessage.timestamp), 'PPp')}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Reply Box */}
+                      <div className="p-4 border-t">
+                        <div className="space-y-3">
+                          <Textarea
+                            placeholder="Type your reply..."
+                            value={replyContent}
+                            onChange={(e) => setReplyContent(e.target.value)}
+                            className="min-h-[100px]"
+                          />
+                          <div className="flex items-center justify-between">
+                            <div className="flex gap-2">
+                              <Button variant="outline" size="sm">
+                                <Sparkles className="w-4 h-4 mr-2" />
+                                Use Template
+                              </Button>
+                              <Button variant="outline" size="sm">
+                                <Bot className="w-4 h-4 mr-2" />
+                                AI Suggest
+                              </Button>
+                            </div>
+                            <Button
+                              onClick={() => {
+                                sendReply.mutate({
+                                  messageId: selectedMessage.id,
+                                  response: replyContent,
+                                });
+                              }}
+                              disabled={!replyContent}
+                            >
+                              <Send className="w-4 h-4 mr-2" />
+                              Send Reply
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="h-[600px] flex items-center justify-center text-muted-foreground">
+                      Select a message to view
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Listening Tab */}
+        <TabsContent value="listening" className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Brand Mentions */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Brand Mentions</CardTitle>
+                <CardDescription>Track mentions of your brand across social media</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-[400px]">
+                  <div className="space-y-3">
+                    {mentions.map((mention: Mention) => (
+                      <div key={mention.id} className="p-3 border rounded-lg">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className={cn("p-1 rounded", PLATFORMS[mention.platform]?.bgColor)}>
+                              {PLATFORMS[mention.platform]?.icon}
+                            </div>
+                            <div>
+                              <p className="font-medium text-sm">
+                                {mention.authorName}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                @{mention.authorHandle}
+                              </p>
+                            </div>
+                          </div>
+                          <Badge
+                            variant="outline"
+                            className={cn(
+                              "text-xs",
+                              mention.sentiment === 'positive' && "text-green-600 border-green-200",
+                              mention.sentiment === 'negative' && "text-red-600 border-red-200"
+                            )}
+                          >
+                            {mention.sentiment}
+                          </Badge>
+                        </div>
+                        <p className="text-sm mt-2">{mention.content}</p>
+                        <div className="flex items-center justify-between mt-3">
+                          <span className="text-xs text-muted-foreground">
+                            {format(new Date(mention.timestamp), 'PPp')}
+                          </span>
+                          <Button size="sm" variant="outline">
+                            <MessageCircle className="w-3 h-3 mr-1" />
+                            Reply
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+
+            {/* Trending Topics */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Trending Topics</CardTitle>
+                <CardDescription>Popular hashtags and topics in your industry</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {['#LocalBusiness', '#SmallBusinessLove', '#ShopLocal', '#CommunityFirst', '#FloridaBusiness'].map((tag, index) => (
+                    <div key={tag} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm font-medium">
+                          {index + 1}
+                        </div>
+                        <div>
+                          <p className="font-medium">{tag}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {Math.floor(Math.random() * 10000)} posts
+                          </p>
+                        </div>
+                      </div>
+                      <TrendingUp className="w-4 h-4 text-green-600" />
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        {/* Automation Tab */}
+        <TabsContent value="automation" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Automation Rules</CardTitle>
+              <CardDescription>Set up automated posting and responses</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {Object.entries(PLATFORMS).map(([platform, config]) => (
-                  <div key={platform} className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className={`${config.bgColor} p-2 rounded-lg ${config.color}`}>
-                        {config.icon}
+                {/* Create New Automation */}
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Create Automation
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                      <DialogTitle>Create Automation Rule</DialogTitle>
+                      <DialogDescription>
+                        Set up automated actions for your social media
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div>
+                        <Label>Automation Type</Label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="rss">RSS Feed Auto-post</SelectItem>
+                            <SelectItem value="product">Product Sync</SelectItem>
+                            <SelectItem value="review">Review to Social</SelectItem>
+                            <SelectItem value="event">Event Promotion</SelectItem>
+                            <SelectItem value="welcome">Welcome Message</SelectItem>
+                            <SelectItem value="birthday">Birthday Posts</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div>
-                        <p className="font-medium">{config.name}</p>
-                        <p className="text-sm text-muted-foreground">2,341 followers</p>
+                        <Label>Trigger</Label>
+                        <Input placeholder="e.g., New RSS item, 5-star review" />
+                      </div>
+                      <div>
+                        <Label>Action</Label>
+                        <Textarea placeholder="Describe what should happen..." />
+                      </div>
+                      <div>
+                        <Label>Platforms</Label>
+                        <div className="flex gap-2">
+                          {Object.entries(PLATFORMS).map(([key, platform]) => (
+                            <Button
+                              key={key}
+                              variant="outline"
+                              size="sm"
+                            >
+                              {platform.icon}
+                            </Button>
+                          ))}
+                        </div>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-medium">5.2% engagement</p>
-                      <p className="text-sm text-green-600">+0.8%</p>
+                    <DialogFooter>
+                      <Button variant="outline">Cancel</Button>
+                      <Button>Create Rule</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+
+                {/* Existing Automations */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {automations.map((automation: Automation) => (
+                    <div
+                      key={automation.id}
+                      className="p-4 border rounded-lg"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h4 className="font-medium">{automation.name}</h4>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            {automation.trigger} → {automation.action}
+                          </p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Badge variant="outline">
+                              {automation.type}
+                            </Badge>
+                            <span className="text-xs text-muted-foreground">
+                              {automation.runsCount} runs
+                            </span>
+                          </div>
+                        </div>
+                        <Switch
+                          checked={automation.isActive}
+                          onCheckedChange={(checked) => {
+                            // Toggle automation
+                          }}
+                        />
+                      </div>
+                      <div className="flex gap-2 mt-3">
+                        {automation.platforms.map((platform) => (
+                          <div
+                            key={platform}
+                            className={cn("p-1 rounded", PLATFORMS[platform]?.bgColor)}
+                          >
+                            {PLATFORMS[platform]?.icon}
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Floating Composer */}
+      <AnimatePresence>
+        {showComposer && (
+          <motion.div
+            initial={{ opacity: 0, y: 100 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 100 }}
+            className="fixed bottom-4 right-4 w-96 bg-white rounded-lg shadow-2xl border p-4"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-medium">Quick Post</h3>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setShowComposer(false)}
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+            <Textarea
+              placeholder="What's on your mind?"
+              className="min-h-[100px] mb-3"
+            />
+            <div className="flex justify-between">
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline">
+                  <ImageIcon className="w-4 h-4" />
+                </Button>
+                <Button size="sm" variant="outline">
+                  <Hash className="w-4 h-4" />
+                </Button>
+              </div>
+              <Button size="sm">
+                <Send className="w-4 h-4 mr-2" />
+                Post
+              </Button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -31,6 +31,18 @@ import {
   blogSubscriptions,
   blogAnalytics,
   blogRevisions,
+  // Social Media tables
+  socialMediaAccounts,
+  socialMediaPosts,
+  socialMediaAnalytics,
+  socialMediaMessages,
+  socialResponseTemplates,
+  socialMediaCampaigns,
+  socialContentCategories,
+  socialMediaListeners,
+  socialMediaMentions,
+  socialMediaAutomation,
+  socialMediaTeam,
   type User,
   type UpsertUser,
   type Business,
@@ -103,6 +115,34 @@ import {
   type InsertBlogSubscription,
   type BlogAnalytics,
   type InsertBlogAnalytics,
+  // Social Media types
+  type SocialMediaAccount,
+  type InsertSocialMediaAccount,
+  type UpdateSocialMediaAccount,
+  type SocialMediaPost,
+  type InsertSocialMediaPost,
+  type UpdateSocialMediaPost,
+  type SocialMediaAnalytics,
+  type InsertSocialMediaAnalytics,
+  type SocialMediaMessage,
+  type InsertSocialMediaMessage,
+  type UpdateSocialMediaMessage,
+  type SocialMediaCampaign,
+  type InsertSocialMediaCampaign,
+  type UpdateSocialMediaCampaign,
+  type SocialContentCategory,
+  type InsertSocialContentCategory,
+  type SocialResponseTemplate,
+  type InsertSocialResponseTemplate,
+  type SocialMediaListener,
+  type InsertSocialMediaListener,
+  type SocialMediaMention,
+  type InsertSocialMediaMention,
+  type SocialMediaAutomation,
+  type InsertSocialMediaAutomation,
+  type SocialMediaTeam,
+  type InsertSocialMediaTeam,
+  type UpdateSocialMediaTeam,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, sql, and, or, like, inArray } from "drizzle-orm";
@@ -350,6 +390,80 @@ export interface IStorage {
   // AI Moderation operations
   logModeration(moderation: InsertAIModerationLog): Promise<void>;
   getModerationHistory(businessId: string): Promise<AIModerationLog[]>;
+
+  // Social Media Hub Operations
+  // Account Management
+  createSocialMediaAccount(data: InsertSocialMediaAccount): Promise<SocialMediaAccount>;
+  updateSocialMediaAccount(id: string, data: UpdateSocialMediaAccount): Promise<SocialMediaAccount | null>;
+  getSocialMediaAccounts(businessId: string): Promise<SocialMediaAccount[]>;
+  getSocialMediaAccountById(id: string): Promise<SocialMediaAccount | null>;
+  deleteSocialMediaAccount(id: string): Promise<void>;
+
+  // Post Management
+  createSocialMediaPost(data: InsertSocialMediaPost): Promise<SocialMediaPost>;
+  updateSocialMediaPost(id: string, data: UpdateSocialMediaPost): Promise<SocialMediaPost | null>;
+  getSocialMediaPosts(businessId: string, filters?: {
+    status?: string;
+    platform?: string;
+    campaignId?: string;
+    startDate?: Date;
+    endDate?: Date;
+  }): Promise<SocialMediaPost[]>;
+  getSocialMediaPostById(id: string): Promise<SocialMediaPost | null>;
+  deleteSocialMediaPost(id: string): Promise<void>;
+
+  // Analytics
+  createSocialMediaAnalytics(data: InsertSocialMediaAnalytics): Promise<SocialMediaAnalytics>;
+  getSocialMediaAnalytics(businessId: string, filters?: {
+    platform?: string;
+    dateRange?: { start: Date; end: Date };
+    metricType?: string;
+  }): Promise<SocialMediaAnalytics[]>;
+
+  // Messages & Inbox
+  createSocialMediaMessage(data: InsertSocialMediaMessage): Promise<SocialMediaMessage>;
+  updateSocialMediaMessage(id: string, data: UpdateSocialMediaMessage): Promise<SocialMediaMessage | null>;
+  getSocialMediaMessages(businessId: string, filters?: {
+    platform?: string;
+    status?: string;
+    priority?: string;
+    assignedTo?: string;
+  }): Promise<SocialMediaMessage[]>;
+  getSocialMediaMessageById(id: string): Promise<SocialMediaMessage | null>;
+
+  // Campaigns
+  createSocialMediaCampaign(data: InsertSocialMediaCampaign): Promise<SocialMediaCampaign>;
+  updateSocialMediaCampaign(id: string, data: UpdateSocialMediaCampaign): Promise<SocialMediaCampaign | null>;
+  getSocialMediaCampaigns(businessId: string): Promise<SocialMediaCampaign[]>;
+  getSocialMediaCampaignById(id: string): Promise<SocialMediaCampaign | null>;
+  deleteSocialMediaCampaign(id: string): Promise<void>;
+
+  // Response Templates
+  createSocialResponseTemplate(data: InsertSocialResponseTemplate): Promise<SocialResponseTemplate>;
+  getSocialResponseTemplates(businessId: string): Promise<SocialResponseTemplate[]>;
+  deleteSocialResponseTemplate(id: string): Promise<void>;
+
+  // Social Listening
+  createSocialMediaListener(data: InsertSocialMediaListener): Promise<SocialMediaListener>;
+  getSocialMediaListeners(businessId: string): Promise<SocialMediaListener[]>;
+  createSocialMediaMention(data: InsertSocialMediaMention): Promise<SocialMediaMention>;
+  getSocialMediaMentions(businessId: string): Promise<SocialMediaMention[]>;
+
+  // Automation
+  createSocialMediaAutomation(data: InsertSocialMediaAutomation): Promise<SocialMediaAutomation>;
+  getSocialMediaAutomations(businessId: string): Promise<SocialMediaAutomation[]>;
+  updateSocialMediaAutomation(id: string, data: Partial<InsertSocialMediaAutomation>): Promise<SocialMediaAutomation | null>;
+
+  // Team Management  
+  createSocialMediaTeamMember(data: InsertSocialMediaTeam): Promise<SocialMediaTeam>;
+  updateSocialMediaTeamMember(id: string, data: UpdateSocialMediaTeam): Promise<SocialMediaTeam | null>;
+  getSocialMediaTeamMembers(businessId: string): Promise<SocialMediaTeam[]>;
+  removeSocialMediaTeamMember(id: string): Promise<void>;
+
+  // Content Categories
+  createSocialContentCategory(data: InsertSocialContentCategory): Promise<SocialContentCategory>;
+  getSocialContentCategories(businessId: string): Promise<SocialContentCategory[]>;
+  deleteSocialContentCategory(id: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {

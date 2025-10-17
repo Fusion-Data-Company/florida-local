@@ -3591,6 +3591,387 @@ export const sessionEvents = pgTable("session_events", {
   index("idx_session_events_created").on(table.createdAt),
 ]);
 
+// ====================================================================
+// SOCIAL MEDIA HUB SCHEMAS
+// ====================================================================
+
+// Social Media Accounts - Store connected social accounts
+export const socialMediaAccounts = pgTable("social_media_accounts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  
+  // Platform Details
+  platform: varchar("platform", { length: 30 }).notNull(), // facebook, instagram, twitter, linkedin, tiktok, pinterest, youtube
+  accountType: varchar("account_type", { length: 30 }).default("business"), // business, personal, page, channel
+  accountId: varchar("account_id", { length: 255 }).notNull(), // Platform-specific ID
+  accountName: varchar("account_name", { length: 255 }),
+  accountHandle: varchar("account_handle", { length: 255 }),
+  profileUrl: varchar("profile_url"),
+  profileImageUrl: varchar("profile_image_url"),
+  
+  // OAuth & Authentication
+  accessToken: text("access_token"),
+  refreshToken: text("refresh_token"),
+  tokenExpiry: timestamp("token_expiry"),
+  tokenScopes: jsonb("token_scopes"), // Array of granted permissions
+  
+  // Account Status
+  isActive: boolean("is_active").default(true),
+  isVerified: boolean("is_verified").default(false),
+  lastSyncAt: timestamp("last_sync_at"),
+  lastErrorAt: timestamp("last_error_at"),
+  lastError: text("last_error"),
+  
+  // Platform-specific metadata
+  platformMetadata: jsonb("platform_metadata"), // Store platform-specific data
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_social_accounts_business").on(table.businessId),
+  uniqueIndex("idx_unique_social_account").on(table.businessId, table.platform, table.accountId)
+]);
+
+// Social Media Posts - Unified content across platforms
+export const socialMediaPosts = pgTable("social_media_posts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  authorId: varchar("author_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  
+  // Content Details
+  content: text("content").notNull(),
+  contentType: varchar("content_type", { length: 30 }).default("text"), // text, image, video, carousel, story, reel
+  mediaUrls: jsonb("media_urls"), // Array of media URLs
+  thumbnailUrl: varchar("thumbnail_url"),
+  hashtags: jsonb("hashtags"), // Array of hashtags
+  mentions: jsonb("mentions"), // Array of @mentions
+  links: jsonb("links"), // Array of links in the post
+  
+  // Publishing Details
+  status: varchar("status", { length: 30 }).notNull().default("draft"), // draft, scheduled, published, failed, archived
+  scheduledAt: timestamp("scheduled_at"),
+  publishedAt: timestamp("published_at"),
+  
+  // Platform Distribution
+  platforms: jsonb("platforms").notNull(), // Array of platforms to publish to
+  platformPosts: jsonb("platform_posts"), // Platform-specific post IDs and statuses
+  
+  // Campaign & Organization  
+  campaignId: uuid("campaign_id"),
+  categoryId: uuid("category_id"),
+  isPromoted: boolean("is_promoted").default(false),
+  promotionBudget: decimal("promotion_budget", { precision: 10, scale: 2 }),
+  
+  // Team Collaboration
+  needsApproval: boolean("needs_approval").default(false),
+  approvedBy: varchar("approved_by").references(() => users.id),
+  approvedAt: timestamp("approved_at"),
+  approvalNotes: text("approval_notes"),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_social_posts_business").on(table.businessId),
+  index("idx_social_posts_scheduled").on(table.scheduledAt),
+  index("idx_social_posts_status").on(table.status)
+]);
+
+// Social Media Campaigns - Group posts into campaigns
+export const socialMediaCampaigns = pgTable("social_media_campaigns", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  createdBy: varchar("created_by").notNull().references(() => users.id),
+  
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  objectives: jsonb("objectives"), // Array of campaign objectives
+  
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date"),
+  
+  budget: decimal("budget", { precision: 10, scale: 2 }),
+  spentBudget: decimal("spent_budget", { precision: 10, scale: 2 }).default("0"),
+  
+  targetAudience: jsonb("target_audience"), // Demographics and interests
+  targetPlatforms: jsonb("target_platforms"), // Array of platforms
+  
+  status: varchar("status", { length: 30 }).default("draft"), // draft, active, paused, completed
+  
+  // Performance Tracking
+  postCount: integer("post_count").default(0),
+  totalImpressions: integer("total_impressions").default(0),
+  totalEngagements: integer("total_engagements").default(0),
+  totalConversions: integer("total_conversions").default(0),
+  totalRevenue: decimal("total_revenue", { precision: 10, scale: 2 }).default("0"),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_social_campaigns_business").on(table.businessId),
+  index("idx_social_campaigns_status").on(table.status)
+]);
+
+// Social Content Categories - Organize content
+export const socialContentCategories = pgTable("social_content_categories", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  
+  name: varchar("name", { length: 100 }).notNull(),
+  color: varchar("color", { length: 7 }), // Hex color for calendar display
+  icon: varchar("icon", { length: 50 }),
+  description: text("description"),
+  
+  postCount: integer("post_count").default(0),
+  isActive: boolean("is_active").default(true),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_content_categories_business").on(table.businessId)
+]);
+
+// Social Media Analytics - Track performance metrics
+export const socialMediaAnalytics = pgTable("social_media_analytics", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  postId: uuid("post_id").references(() => socialMediaPosts.id, { onDelete: 'cascade' }),
+  accountId: uuid("account_id").references(() => socialMediaAccounts.id, { onDelete: 'cascade' }),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  
+  // Platform & Period
+  platform: varchar("platform", { length: 30 }).notNull(),
+  metricDate: date("metric_date").notNull(),
+  metricType: varchar("metric_type", { length: 30 }).default("post"), // post, account, campaign, story
+  
+  // Engagement Metrics
+  impressions: integer("impressions").default(0),
+  reach: integer("reach").default(0),
+  engagements: integer("engagements").default(0),
+  likes: integer("likes").default(0),
+  comments: integer("comments").default(0),
+  shares: integer("shares").default(0),
+  saves: integer("saves").default(0),
+  clicks: integer("clicks").default(0),
+  videoViews: integer("video_views").default(0),
+  videoCompletions: integer("video_completions").default(0),
+  
+  // Audience Metrics
+  followerCount: integer("follower_count"),
+  followerGrowth: integer("follower_growth"),
+  audienceDemographics: jsonb("audience_demographics"),
+  
+  // Performance Metrics
+  engagementRate: decimal("engagement_rate", { precision: 5, scale: 2 }),
+  clickThroughRate: decimal("click_through_rate", { precision: 5, scale: 2 }),
+  conversionRate: decimal("conversion_rate", { precision: 5, scale: 2 }),
+  costPerEngagement: decimal("cost_per_engagement", { precision: 10, scale: 2 }),
+  
+  // Revenue Attribution
+  conversions: integer("conversions").default(0),
+  revenue: decimal("revenue", { precision: 10, scale: 2 }),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("idx_social_analytics_business").on(table.businessId),
+  index("idx_social_analytics_date").on(table.metricDate),
+  index("idx_social_analytics_platform").on(table.platform)
+]);
+
+// Social Media Messages - Unified inbox
+export const socialMediaMessages = pgTable("social_media_messages", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  accountId: uuid("account_id").notNull().references(() => socialMediaAccounts.id, { onDelete: 'cascade' }),
+  
+  // Message Details
+  platform: varchar("platform", { length: 30 }).notNull(),
+  platformMessageId: varchar("platform_message_id", { length: 255 }),
+  messageType: varchar("message_type", { length: 30 }).default("direct"), // direct, comment, mention, review
+  
+  // Sender/Recipient
+  senderName: varchar("sender_name", { length: 255 }),
+  senderId: varchar("sender_id", { length: 255 }),
+  senderProfileUrl: varchar("sender_profile_url"),
+  isFromBusiness: boolean("is_from_business").default(false),
+  
+  // Content
+  content: text("content"),
+  mediaUrls: jsonb("media_urls"),
+  parentMessageId: uuid("parent_message_id").references(() => socialMediaMessages.id),
+  threadId: varchar("thread_id", { length: 255 }),
+  
+  // Status & Management
+  status: varchar("status", { length: 30 }).default("unread"), // unread, read, replied, archived, flagged
+  priority: varchar("priority", { length: 20 }).default("normal"), // low, normal, high, urgent
+  sentiment: varchar("sentiment", { length: 20 }), // positive, neutral, negative, critical
+  
+  // Assignment & Response
+  assignedTo: varchar("assigned_to").references(() => users.id),
+  repliedAt: timestamp("replied_at"),
+  responseTime: integer("response_time"), // in seconds
+  
+  // Automation
+  autoResponseSent: boolean("auto_response_sent").default(false),
+  autoResponseTemplate: uuid("auto_response_template"),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_social_messages_business").on(table.businessId),
+  index("idx_social_messages_status").on(table.status),
+  index("idx_social_messages_platform").on(table.platform)
+]);
+
+// Social Response Templates - Pre-written responses
+export const socialResponseTemplates = pgTable("social_response_templates", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  
+  name: varchar("name", { length: 255 }).notNull(),
+  category: varchar("category", { length: 100 }), // greeting, faq, complaint, thank_you
+  content: text("content").notNull(),
+  platforms: jsonb("platforms"), // Array of applicable platforms
+  triggers: jsonb("triggers"), // Keywords or conditions that trigger this template
+  
+  useCount: integer("use_count").default(0),
+  isActive: boolean("is_active").default(true),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_response_templates_business").on(table.businessId)
+]);
+
+// Social Media Listeners - Monitor keywords and mentions
+export const socialMediaListeners = pgTable("social_media_listeners", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  
+  name: varchar("name", { length: 255 }).notNull(),
+  type: varchar("type", { length: 30 }).notNull(), // keyword, hashtag, mention, competitor
+  
+  // Monitoring Configuration
+  keywords: jsonb("keywords"), // Array of keywords to track
+  hashtags: jsonb("hashtags"), // Array of hashtags to monitor
+  accounts: jsonb("accounts"), // Array of accounts to track (competitors, influencers)
+  platforms: jsonb("platforms"), // Array of platforms to monitor
+  
+  // Alert Configuration
+  alertEnabled: boolean("alert_enabled").default(false),
+  alertThreshold: integer("alert_threshold"), // Number of mentions to trigger alert
+  alertEmails: jsonb("alert_emails"), // Array of emails to notify
+  
+  isActive: boolean("is_active").default(true),
+  lastCheckedAt: timestamp("last_checked_at"),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_social_listeners_business").on(table.businessId)
+]);
+
+// Social Media Mentions - Store tracked mentions
+export const socialMediaMentions = pgTable("social_media_mentions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  listenerId: uuid("listener_id").references(() => socialMediaListeners.id, { onDelete: 'cascade' }),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  
+  platform: varchar("platform", { length: 30 }).notNull(),
+  platformPostId: varchar("platform_post_id", { length: 255 }),
+  
+  authorName: varchar("author_name", { length: 255 }),
+  authorHandle: varchar("author_handle", { length: 255 }),
+  authorProfileUrl: varchar("author_profile_url"),
+  
+  content: text("content"),
+  postUrl: varchar("post_url"),
+  
+  sentiment: varchar("sentiment", { length: 20 }), // positive, neutral, negative
+  reach: integer("reach"),
+  engagement: integer("engagement"),
+  
+  isInfluencer: boolean("is_influencer").default(false),
+  influencerScore: integer("influencer_score"),
+  
+  responded: boolean("responded").default(false),
+  respondedAt: timestamp("responded_at"),
+  
+  mentionedAt: timestamp("mentioned_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("idx_social_mentions_business").on(table.businessId),
+  index("idx_social_mentions_mentioned_at").on(table.mentionedAt)
+]);
+
+// Social Media Automation Rules
+export const socialMediaAutomation = pgTable("social_media_automation", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  
+  name: varchar("name", { length: 255 }).notNull(),
+  type: varchar("type", { length: 50 }).notNull(), // rss_feed, product_sync, review_share, welcome_message, anniversary
+  
+  // Trigger Configuration
+  triggerType: varchar("trigger_type", { length: 50 }), // time, event, condition
+  triggerConfig: jsonb("trigger_config"), // Specific configuration for the trigger
+  
+  // Action Configuration
+  actionType: varchar("action_type", { length: 50 }), // post, message, email
+  actionConfig: jsonb("action_config"), // Specific configuration for the action
+  
+  platforms: jsonb("platforms"), // Target platforms
+  
+  isActive: boolean("is_active").default(true),
+  lastTriggeredAt: timestamp("last_triggered_at"),
+  triggerCount: integer("trigger_count").default(0),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_social_automation_business").on(table.businessId)
+]);
+
+// Social Media Team Members - Collaboration
+export const socialMediaTeam = pgTable("social_media_team", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: 'cascade' }),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  
+  role: varchar("role", { length: 50 }).notNull(), // admin, editor, moderator, viewer
+  permissions: jsonb("permissions"), // Granular permissions
+  
+  // Access Control
+  canPublish: boolean("can_publish").default(false),
+  canSchedule: boolean("can_schedule").default(true),
+  canRespond: boolean("can_respond").default(true),
+  canViewAnalytics: boolean("can_view_analytics").default(true),
+  canManageTeam: boolean("can_manage_team").default(false),
+  
+  assignedPlatforms: jsonb("assigned_platforms"), // Platforms this member can manage
+  
+  isActive: boolean("is_active").default(true),
+  invitedBy: varchar("invited_by").references(() => users.id),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_social_team_business").on(table.businessId),
+  uniqueIndex("idx_unique_social_team_member").on(table.businessId, table.userId)
+]);
+
+// Social Media Insert Schemas
+export const insertSocialMediaAccountSchema = createInsertSchema(socialMediaAccounts);
+export const insertSocialMediaPostSchema = createInsertSchema(socialMediaPosts);
+export const insertSocialMediaCampaignSchema = createInsertSchema(socialMediaCampaigns);
+export const insertSocialContentCategorySchema = createInsertSchema(socialContentCategories);
+export const insertSocialMediaAnalyticsSchema = createInsertSchema(socialMediaAnalytics);
+export const insertSocialMediaMessageSchema = createInsertSchema(socialMediaMessages);
+export const insertSocialResponseTemplateSchema = createInsertSchema(socialResponseTemplates);
+export const insertSocialMediaListenerSchema = createInsertSchema(socialMediaListeners);
+export const insertSocialMediaMentionSchema = createInsertSchema(socialMediaMentions);
+export const insertSocialMediaAutomationSchema = createInsertSchema(socialMediaAutomation);
+export const insertSocialMediaTeamSchema = createInsertSchema(socialMediaTeam);
+
 // Insert schemas
 export const insertAdminRoleSchema = createInsertSchema(adminRoles);
 export const insertUserRoleSchema = createInsertSchema(userRoles);
@@ -3675,3 +4056,42 @@ export type DeviceFingerprint = typeof deviceFingerprints.$inferSelect;
 export type InsertDeviceFingerprint = z.infer<typeof insertDeviceFingerprintSchema>;
 export type SessionEvent = typeof sessionEvents.$inferSelect;
 export type InsertSessionEvent = z.infer<typeof insertSessionEventSchema>;
+
+// Social Media Hub Types
+export type SocialMediaAccount = typeof socialMediaAccounts.$inferSelect;
+export type InsertSocialMediaAccount = z.infer<typeof insertSocialMediaAccountSchema>;
+export type UpdateSocialMediaAccount = Partial<InsertSocialMediaAccount>;
+
+export type SocialMediaPost = typeof socialMediaPosts.$inferSelect;
+export type InsertSocialMediaPost = z.infer<typeof insertSocialMediaPostSchema>;
+export type UpdateSocialMediaPost = Partial<InsertSocialMediaPost>;
+
+export type SocialMediaCampaign = typeof socialMediaCampaigns.$inferSelect;
+export type InsertSocialMediaCampaign = z.infer<typeof insertSocialMediaCampaignSchema>;
+export type UpdateSocialMediaCampaign = Partial<InsertSocialMediaCampaign>;
+
+export type SocialContentCategory = typeof socialContentCategories.$inferSelect;
+export type InsertSocialContentCategory = z.infer<typeof insertSocialContentCategorySchema>;
+
+export type SocialMediaAnalytics = typeof socialMediaAnalytics.$inferSelect;
+export type InsertSocialMediaAnalytics = z.infer<typeof insertSocialMediaAnalyticsSchema>;
+
+export type SocialMediaMessage = typeof socialMediaMessages.$inferSelect;
+export type InsertSocialMediaMessage = z.infer<typeof insertSocialMediaMessageSchema>;
+export type UpdateSocialMediaMessage = Partial<InsertSocialMediaMessage>;
+
+export type SocialResponseTemplate = typeof socialResponseTemplates.$inferSelect;
+export type InsertSocialResponseTemplate = z.infer<typeof insertSocialResponseTemplateSchema>;
+
+export type SocialMediaListener = typeof socialMediaListeners.$inferSelect;
+export type InsertSocialMediaListener = z.infer<typeof insertSocialMediaListenerSchema>;
+
+export type SocialMediaMention = typeof socialMediaMentions.$inferSelect;
+export type InsertSocialMediaMention = z.infer<typeof insertSocialMediaMentionSchema>;
+
+export type SocialMediaAutomation = typeof socialMediaAutomation.$inferSelect;
+export type InsertSocialMediaAutomation = z.infer<typeof insertSocialMediaAutomationSchema>;
+
+export type SocialMediaTeam = typeof socialMediaTeam.$inferSelect;
+export type InsertSocialMediaTeam = z.infer<typeof insertSocialMediaTeamSchema>;
+export type UpdateSocialMediaTeam = Partial<InsertSocialMediaTeam>;
