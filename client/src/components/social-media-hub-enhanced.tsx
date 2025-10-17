@@ -1753,3 +1753,5 @@ export function SocialMediaHubEnhanced({ businessId }: SocialMediaHubEnhancedPro
     </div>
   );
 }
+
+export default SocialMediaHubEnhanced;

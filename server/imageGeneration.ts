@@ -13,7 +13,7 @@ import OpenAI from "openai";
 import { logger } from "./monitoring";
 import { cache } from "./redis";
 import { storage } from "./storage";
-import { ObjectStorageService, S3Service } from "./objectStorage";
+import { ObjectStorageService } from "./objectStorage";
 import sharp from "sharp";
 import crypto from "crypto";
 import path from "path";
