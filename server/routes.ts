@@ -13,6 +13,93 @@ import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { ObjectPermission } from "./objectAcl";
 import Stripe from "stripe";
 
+// API Request Validation Schemas
+const gmbSyncRequestSchema = z.object({
+  forceUpdate: z.boolean().default(false),
+  syncPhotos: z.boolean().default(true),
+  syncReviews: z.boolean().default(true),
+  syncBusinessInfo: z.boolean().default(true),
+  conflictResolution: z.enum(['merge', 'gmb_wins', 'local_wins']).default('merge'),
+});
+
+const stripePayoutRequestSchema = z.object({
+  amount: z.number().int().min(100, "Amount must be at least $1.00 (100 cents)"),
+  description: z.string().max(500).optional(),
+});
+
+const stripePayoutSettingsSchema = z.object({
+  interval: z.enum(['daily', 'weekly', 'monthly', 'manual']),
+  delayDays: z.number().int().min(0).optional(),
+});
+
+const productImageUploadSchema = z.object({
+  filename: z.string().min(1).max(255).regex(/\.(jpg|jpeg|png|webp)$/i, "Invalid file type"),
+});
+
+const productImageUrlSchema = z.object({
+  imageUrl: z.string().url().max(2048),
+});
+
+const messageFileUploadSchema = z.object({
+  receiverId: z.string().uuid(),
+  file: z.object({
+    name: z.string().max(255),
+    type: z.string(),
+    size: z.number().max(10 * 1024 * 1024),
+    url: z.string().url(),
+  }),
+});
+
+const shareBusinessMessageSchema = z.object({
+  receiverId: z.string().uuid(),
+  businessId: z.string().uuid(),
+});
+
+const cartQuantityUpdateSchema = z.object({
+  quantity: z.number().int().min(0).max(999),
+});
+
+const createPaymentIntentSchema = z.object({
+  shippingAddress: z.string().max(500),
+  billingAddress: z.string().max(500),
+  customerEmail: z.string().email().max(255),
+  customerPhone: z.string().max(20).optional(),
+  notes: z.string().max(1000).optional(),
+  currency: z.string().length(3).default('usd'),
+});
+
+const completeOrderSchema = z.object({
+  paymentIntentId: z.string().min(1).max(255),
+});
+
+const aiGenerateContentSchema = z.object({
+  businessId: z.string().uuid(),
+  platform: z.enum(['facebook', 'instagram', 'twitter', 'linkedin', 'general']),
+  idea: z.string().min(1).max(500),
+  tone: z.enum(['professional', 'casual', 'friendly', 'formal', 'humorous']).default('professional'),
+});
+
+const adminPromoteUserSchema = z.object({
+  userId: z.string().min(1).max(255),
+});
+
+const gmbVerifyRequestSchema = z.object({
+  gmbLocationName: z.string().min(1).max(500),
+});
+
+const spotlightVoteSchema = z.object({
+  businessId: z.string().uuid(),
+});
+
+const objectUploadRequestSchema = z.object({
+  fileType: z.string().regex(/^image\/(jpeg|jpg|png|gif|webp)$/i, "Only image files are allowed").optional(),
+  fileSize: z.number().max(5 * 1024 * 1024, "File size must be under 5MB").optional(),
+});
+
+const businessImageUpdateSchema = z.object({
+  imageURL: z.string().url().max(2048),
+});
+
 // GMB Integration Services
 import { gmbService } from "./gmbService";
 import { businessVerificationService } from "./businessVerificationService";
@@ -380,11 +467,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const { id: businessId } = req.params;
-      const { gmbLocationName } = req.body;
       
-      if (!gmbLocationName) {
-        return res.status(400).json({ message: "GMB location name is required" });
+      const validationResult = gmbVerifyRequestSchema.safeParse(req.body);
+      if (!validationResult.success) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: validationResult.error.errors 
+        });
       }
+      const { gmbLocationName } = validationResult.data;
 
       // Verify business ownership
       const business = await storage.getBusinessById(businessId);
@@ -451,13 +542,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const { id: businessId } = req.params;
-      const { 
-        forceUpdate = false, 
-        syncPhotos = true, 
-        syncReviews = true, 
-        syncBusinessInfo = true,
-        conflictResolution = 'merge'
-      } = req.body;
+      
+      const validationResult = gmbSyncRequestSchema.safeParse(req.body);
+      if (!validationResult.success) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: validationResult.error.errors 
+        });
+      }
+      const { forceUpdate, syncPhotos, syncReviews, syncBusinessInfo, conflictResolution } = validationResult.data;
       
       // Verify business ownership
       const business = await storage.getBusinessById(businessId);
@@ -663,8 +756,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get Stripe Connect account status for a business
   app.get('/api/businesses/:id/stripe/status', isAuthenticated, async (req: any, res) => {
     try {
-      }
-
       const userId = req.user.claims.sub;
       const { id: businessId } = req.params;
 
@@ -707,8 +798,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get account balance for a business
   app.get('/api/businesses/:id/stripe/balance', isAuthenticated, async (req: any, res) => {
     try {
-      }
-
       const userId = req.user.claims.sub;
       const { id: businessId } = req.params;
 
@@ -745,9 +834,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // List payouts for a business
   app.get('/api/businesses/:id/stripe/payouts', isAuthenticated, async (req: any, res) => {
     try {
-      }
 
-      const userId = req.user.claims.sub;
       const { id: businessId } = req.params;
       const limit = parseInt(req.query.limit as string) || 10;
 
@@ -781,9 +868,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // List balance transactions for a business
   app.get('/api/businesses/:id/stripe/transactions', isAuthenticated, async (req: any, res) => {
     try {
-      }
 
-      const userId = req.user.claims.sub;
       const { id: businessId } = req.params;
       const limit = parseInt(req.query.limit as string) || 10;
       const startingAfter = req.query.startingAfter as string | undefined;
@@ -821,16 +906,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create a manual payout for a business
   app.post('/api/businesses/:id/stripe/payouts', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
     try {
-      }
-
       const userId = req.user.claims.sub;
       const { id: businessId } = req.params;
-      const { amount, description } = req.body;
-
-      // Validate amount
-      if (!amount || typeof amount !== 'number' || amount < 100) {
-        return res.status(400).json({ message: "Amount must be at least $1.00 (100 cents)" });
+      
+      const validationResult = stripePayoutRequestSchema.safeParse(req.body);
+      if (!validationResult.success) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: validationResult.error.errors 
+        });
       }
+      const { amount, description } = validationResult.data;
 
       // Verify business ownership
       const business = await storage.getBusinessById(businessId);
@@ -883,24 +969,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Update payout settings for a business
   app.post('/api/businesses/:id/stripe/payout-settings', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
     try {
-      }
-
       const userId = req.user.claims.sub;
       const { id: businessId } = req.params;
-      const { interval, delayDays } = req.body;
-
-      // Validate interval
-      const validIntervals = ['daily', 'weekly', 'monthly', 'manual'];
-      if (!interval || !validIntervals.includes(interval)) {
+      
+      const validationResult = stripePayoutSettingsSchema.safeParse(req.body);
+      if (!validationResult.success) {
         return res.status(400).json({ 
-          message: "Invalid interval. Must be one of: daily, weekly, monthly, manual" 
+          message: "Validation error", 
+          errors: validationResult.error.errors 
         });
       }
-
-      // Validate delayDays if provided
-      if (delayDays !== undefined && (typeof delayDays !== 'number' || delayDays < 0)) {
-        return res.status(400).json({ message: "Delay days must be a non-negative number" });
-      }
+      const { interval, delayDays } = validationResult.data;
 
       // Verify business ownership
       const business = await storage.getBusinessById(businessId);
@@ -939,9 +1018,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Stripe Connect webhook endpoint
   app.post('/api/stripe/connect/webhook', async (req, res) => {
     try {
-      }
 
-      const sig = req.headers['stripe-signature'] as string;
       const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
       if (!webhookSecret) {
@@ -1090,11 +1167,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/spotlight/vote', votingRateLimit, isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const { businessId } = req.body;
       
-      if (!businessId) {
-        return res.status(400).json({ message: "Business ID is required" });
+      const validationResult = spotlightVoteSchema.safeParse(req.body);
+      if (!validationResult.success) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: validationResult.error.errors 
+        });
       }
+      const { businessId } = validationResult.data;
 
       const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM format
       
@@ -1502,26 +1583,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/objects/upload", isAuthenticated, async (req: any, res) => {
     const objectStorageService = new ObjectStorageService();
     try {
-      // Add request validation for security
-      const { fileType, fileSize } = req.body;
-      
-      // Validate MIME type (server-side allowlist)
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-      if (fileType && !allowedTypes.includes(fileType.toLowerCase())) {
+      const validationResult = objectUploadRequestSchema.safeParse(req.body);
+      if (!validationResult.success) {
         return res.status(400).json({ 
-          error: "Invalid file type", 
-          message: "Only JPEG, PNG, GIF, and WebP images are allowed" 
+          message: "Validation error", 
+          errors: validationResult.error.errors 
         });
       }
-      
-      // Validate file size (5MB max)
-      const maxSizeBytes = 5 * 1024 * 1024; // 5MB
-      if (fileSize && fileSize > maxSizeBytes) {
-        return res.status(400).json({ 
-          error: "File too large", 
-          message: "Maximum file size is 5MB" 
-        });
-      }
+      const { fileType, fileSize } = validationResult.data;
       
       const uploadURL = await objectStorageService.getObjectEntityUploadURL();
       res.json({ uploadURL });
@@ -1533,16 +1602,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Update business images endpoint - set ACL policies after upload
   app.put("/api/business-images", isAuthenticated, async (req: any, res) => {
-    if (!req.body.imageURL) {
-      return res.status(400).json({ error: "imageURL is required" });
+    const validationResult = businessImageUpdateSchema.safeParse(req.body);
+    if (!validationResult.success) {
+      return res.status(400).json({ 
+        message: "Validation error", 
+        errors: validationResult.error.errors 
+      });
     }
-
+    const { imageURL } = validationResult.data;
     const userId = req.user?.claims?.sub;
 
     try {
       const objectStorageService = new ObjectStorageService();
       const objectPath = await objectStorageService.trySetObjectEntityAclPolicy(
-        req.body.imageURL,
+        imageURL,
         {
           owner: userId,
           // Business images should be public so they can be displayed to all users
@@ -1711,11 +1784,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const { productId } = req.params;
-      const { filename } = req.body;
-
-      if (!filename) {
-        return res.status(400).json({ message: "Filename is required" });
+      
+      const validationResult = productImageUploadSchema.safeParse(req.body);
+      if (!validationResult.success) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: validationResult.error.errors 
+        });
       }
+      const { filename } = validationResult.data;
 
       // Get product and verify ownership through business
       const product = await storage.getProductById(productId);
@@ -1758,11 +1835,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const { productId } = req.params;
-      const { imageUrl } = req.body;
-
-      if (!imageUrl) {
-        return res.status(400).json({ message: "Image URL is required" });
+      
+      const validationResult = productImageUrlSchema.safeParse(req.body);
+      if (!validationResult.success) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: validationResult.error.errors 
+        });
       }
+      const { imageUrl } = validationResult.data;
 
       // Get product and verify ownership through business
       const product = await storage.getProductById(productId);
@@ -1936,22 +2017,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/messages/upload', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
     try {
       const senderId = req.user.claims.sub;
-      const { receiverId, file } = req.body;
       
-      if (!file || !receiverId) {
-        return res.status(400).json({ message: "File and receiver ID are required" });
+      const validationResult = messageFileUploadSchema.safeParse(req.body);
+      if (!validationResult.success) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: validationResult.error.errors 
+        });
       }
-
-      // Validate file type and size
+      const { receiverId, file } = validationResult.data;
+      
+      // Validate file type
       const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'text/plain', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-      const maxSize = 10 * 1024 * 1024; // 10MB
-
+      
       if (!allowedTypes.includes(file.type)) {
         return res.status(400).json({ message: "File type not allowed" });
-      }
-
-      if (file.size > maxSize) {
-        return res.status(400).json({ message: "File size too large (max 10MB)" });
       }
 
       // Generate conversation ID
@@ -1994,11 +2074,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/messages/share-business', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
     try {
       const senderId = req.user.claims.sub;
-      const { receiverId, businessId } = req.body;
       
-      if (!receiverId || !businessId) {
-        return res.status(400).json({ message: "Receiver ID and business ID are required" });
+      const validationResult = shareBusinessMessageSchema.safeParse(req.body);
+      if (!validationResult.success) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: validationResult.error.errors 
+        });
       }
+      const { receiverId, businessId } = validationResult.data;
 
       // Verify business exists
       const business = await storage.getBusinessById(businessId);
@@ -2206,13 +2290,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const { productId } = req.params;
-      const { quantity } = req.body;
       
-      // Validate quantity input
-      const quantityNum = parseInt(quantity);
-      if (isNaN(quantityNum) || quantityNum < 0) {
-        return res.status(400).json({ message: "Invalid quantity" });
+      const validationResult = cartQuantityUpdateSchema.safeParse(req.body);
+      if (!validationResult.success) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: validationResult.error.errors 
+        });
       }
+      const { quantity: quantityNum } = validationResult.data;
       
       if (quantityNum === 0) {
         // Remove item if quantity is 0
@@ -2284,7 +2370,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/create-payment-intent", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const { shippingAddress, billingAddress, customerEmail, customerPhone, notes, currency = "usd" } = req.body;
+      
+      const validationResult = createPaymentIntentSchema.safeParse(req.body);
+      if (!validationResult.success) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: validationResult.error.errors 
+        });
+      }
+      const { shippingAddress, billingAddress, customerEmail, customerPhone, notes, currency } = validationResult.data;
       
       // Get cart items and validate
       const cartItems = await storage.getCartItems(userId);
@@ -2483,7 +2577,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const { id: orderId } = req.params;
-      const { paymentIntentId } = req.body;
+      
+      const validationResult = completeOrderSchema.safeParse(req.body);
+      if (!validationResult.success) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: validationResult.error.errors 
+        });
+      }
+      const { paymentIntentId } = validationResult.data;
 
       // Verify the order belongs to the user
       const order = await storage.getOrderById(orderId);
@@ -2887,12 +2989,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/ai/generate-content', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const { businessId, platform, idea, tone } = req.body;
-
-      // Validate inputs
-      if (!businessId || !platform || !idea) {
-        return res.status(400).json({ message: "Missing required fields: businessId, platform, idea" });
+      
+      const validationResult = aiGenerateContentSchema.safeParse(req.body);
+      if (!validationResult.success) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: validationResult.error.errors 
+        });
       }
+      const { businessId, platform, idea, tone } = validationResult.data;
 
       // Verify business ownership
       const business = await storage.getBusinessById(businessId);
@@ -2972,9 +3077,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Stripe webhook endpoint
   app.post('/api/stripe/webhook', async (req, res) => {
     try {
-      }
 
-      const sig = req.headers['stripe-signature'] as string;
       const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
       if (!webhookSecret) {
