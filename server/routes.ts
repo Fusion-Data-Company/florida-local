@@ -12,7 +12,7 @@ import path from "path";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { ObjectPermission } from "./objectAcl";
 import Stripe from "stripe";
-// import { ApiResponse, asyncHandler, standardErrorMiddleware } from "./errorHandler";
+import { ApiResponse, asyncHandler, standardErrorMiddleware } from "./apiResponse";
 
 // API Request Validation Schemas
 const gmbSyncRequestSchema = z.object({
@@ -220,7 +220,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         isRolling: session.cookie.rolling ?? true
 });
     } catch (error) {
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internalError(res, "Failed to retrieve session info");
     }
 });
 
@@ -233,7 +233,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!userId) {
         console.error("❌ /api/auth/user - No user ID in claims");
         console.error("Claims:", req.user?.claims);
-        return res.status(401).json({ message: "Invalid session: No user ID found" });
+        return ApiResponse.unauthorized(res, "Invalid session: No user ID found");
       }
       
       console.log(`🔐 /api/auth/user - Fetching user: ${email} (ID: ${userId})`);
@@ -242,7 +242,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (!user) {
         console.error(`❌ /api/auth/user - User not found in database: ${userId}`);
-        return res.status(404).json({ message: "Not found" });
+        return ApiResponse.notFound(res, "User not found");
       }
       
       console.log(`✅ /api/auth/user - Successfully returned user: ${user.email}`);
@@ -250,7 +250,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("❌ /api/auth/user - Error fetching user:", error);
       console.error("Error stack:", (error as Error).stack);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internalError(res, "Failed to fetch user data");
     }
 });
 
@@ -270,7 +270,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (error.name === 'ZodError') {
         return ApiResponse.zodValidation(res, error, req);
       }
-      return res.status(400).json({ message: "Validation error" });
+      return ApiResponse.badRequest(res, "Validation error");
     }
 });
 
@@ -284,7 +284,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(businesses);
     } catch (error) {
       console.error("Error searching businesses:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internalError(res, "Failed to search businesses");
     }
 });
 
@@ -307,7 +307,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(spotlights);
     } catch (error) {
       console.error("Error fetching spotlights:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internalError(res, "Failed to fetch spotlights");
     }
 });
 
@@ -318,7 +318,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(businesses);
     } catch (error) {
       console.error("Error fetching user businesses:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internalError(res, "Failed to fetch user businesses");
     }
 });
 
@@ -327,12 +327,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { id } = req.params;
       const business = await storage.getBusinessById(id);
       if (!business) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business not found");
       }
       res.json(business);
     } catch (error) {
       console.error("Error fetching business:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internalError(res, "Failed to fetch business");
     }
 });
 
@@ -348,7 +348,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       if (existingBusiness.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized to edit this business" });
+        return ApiResponse.forbidden(res, "Not authorized to edit this business");
       }
       
       const businessData = updateBusinessSchema.parse(req.body);
@@ -356,7 +356,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(business);
     } catch (error: any) {
       console.error("Error updating business:", error);
-      return res.status(400).json({ message: "Validation error" });
+      if (error.name === 'ZodError') {
+        return ApiResponse.zodValidation(res, error);
+      }
+      return ApiResponse.badRequest(res, "Validation error");
     }
 });
 
@@ -369,7 +372,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: "Successfully followed business" });
     } catch (error) {
       console.error("Error following business:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internalError(res, "Failed to follow business");
     }
 });
 
@@ -382,7 +385,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: "Successfully unfollowed business" });
     } catch (error) {
       console.error("Error unfollowing business:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internalError(res, "Failed to unfollow business");
     }
 });
 
@@ -401,7 +404,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       if (business.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized to connect GMB for this business" });
+        return ApiResponse.forbidden(res, "Not authorized to connect GMB for this business");
       }
 
       // Generate OAuth URL with business ID as state parameter
@@ -414,7 +417,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error: any) {
       console.error("Error initiating GMB connection:", error);
-      res.status(500).json({ message: error.message || "Failed to initiate GMB connection" });
+      return ApiResponse.internalError(res, error.message || "Failed to initiate GMB connection");
     }
 });
 
@@ -424,20 +427,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { code, state: businessId, error } = req.query;
       
       if (error) {
-        return res.status(400).json({ message: "OAuth authorization failed", 
-          error: error as string
-        });
+        return ApiResponse.badRequest(res, "OAuth authorization failed", { error: error as string });
       }
       
       if (!code || !businessId) {
-        return res.status(400).json({ message: "Missing authorization code or business ID" 
-        });
+        return ApiResponse.badRequest(res, "Missing authorization code or business ID");
       }
 
       // Get business to find owner
       const business = await storage.getBusinessById(businessId as string);
       if (!business) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business not found");
       }
 
       // Exchange code for tokens
@@ -451,7 +451,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.redirect(`/business/${businessId}?gmb=connected`);
     } catch (error: any) {
       console.error("Error in GMB OAuth callback:", error);
-      res.status(500).json({ message: error.message || "Failed to complete GMB connection" });
+      return ApiResponse.internalError(res, error.message || "Failed to complete GMB connection");
     }
 });
 
@@ -461,7 +461,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { businessId } = req.query;
       
       if (!businessId) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.badRequest(res, "Business ID is required");
       }
 
       const userId = req.user.claims.sub;
@@ -469,11 +469,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verify business ownership
       const business = await storage.getBusinessById(businessId as string);
       if (!business) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business not found");
       }
       
       if (business.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized to search GMB for this business" });
+        return ApiResponse.forbidden(res, "Not authorized to search GMB for this business");
       }
 
       // Search for GMB matches
@@ -494,20 +494,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const validationResult = gmbVerifyRequestSchema.safeParse(req.body);
       if (!validationResult.success) {
-        return res.status(400).json({ message: "Validation error",
-          errors: validationResult.error.errors 
-});
+        return ApiResponse.zodValidation(res, validationResult.error);
       }
       const { gmbLocationName } = validationResult.data;
 
       // Verify business ownership
       const business = await storage.getBusinessById(businessId);
       if (!business) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business not found");
       }
       
       if (business.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized to verify this business" });
+        return ApiResponse.forbidden(res, "Not authorized to verify this business");
       }
 
       // Initiate verification process
@@ -519,7 +517,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(result);
     } catch (error: any) {
       console.error("Error initiating business verification:", error);
-      res.status(500).json({ message: error.message || "Failed to initiate verification" });
+      return ApiResponse.internalError(res, error.message || "Failed to initiate verification");
     }
 });
 
@@ -532,7 +530,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verify business ownership (allow read access for any authenticated user)
       const business = await storage.getBusinessById(businessId);
       if (!business) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business not found");
       }
       
       // For detailed status, require ownership
