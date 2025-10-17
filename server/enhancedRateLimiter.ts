@@ -127,7 +127,7 @@ export class EnhancedRateLimiter {
         
         // Get rate limit configuration
         const endpoint = req.path;
-        const customLimit = RATE_LIMIT_CONFIG.customLimits[endpoint];
+        const customLimit = (RATE_LIMIT_CONFIG.customLimits as Record<string, { points: number; duration: number }>)[endpoint];
         const points = options.points || customLimit?.points || RATE_LIMIT_CONFIG.defaultPoints;
         const duration = options.duration || customLimit?.duration || RATE_LIMIT_CONFIG.defaultDuration;
         
@@ -199,7 +199,7 @@ export class EnhancedRateLimiter {
         .where(
           and(
             eq(rateLimitViolations.ipAddress, ipAddress),
-            gte(rateLimitViolations.violationTime, oneHourAgo)
+            gte(rateLimitViolations.createdAt, oneHourAgo)
           )
         )
         .then(r => Number(r[0]?.count || 0));
@@ -246,10 +246,11 @@ export class EnhancedRateLimiter {
           RATE_LIMIT_CONFIG.autoBlockDuration
         );
         
-        return res.status(403).json({
+        res.status(403).json({
           error: 'Access denied',
           message: 'Your IP has been blocked due to excessive rate limit violations',
         });
+        return;
       }
       
       // Return rate limit error
@@ -286,10 +287,13 @@ export class EnhancedRateLimiter {
       const userId = undefined; // TODO: Get from session if available
       
       await db.insert(rateLimitViolations).values({
+        identifier: ipAddress,
         ipAddress,
         userId,
         endpoint,
         violationType,
+        requestCount: 1,
+        timeWindow: 60, // Default 60 seconds window
       });
       
       // Log security event
@@ -324,7 +328,7 @@ export class EnhancedRateLimiter {
         .where(
           and(
             eq(rateLimitViolations.ipAddress, ipAddress),
-            gte(rateLimitViolations.violationTime, oneHourAgo)
+            gte(rateLimitViolations.createdAt, oneHourAgo)
           )
         )
         .then(r => Number(r[0]?.count || 0));
@@ -427,7 +431,7 @@ export class EnhancedRateLimiter {
         db
           .select({ count: sql<number>`count(*)` })
           .from(rateLimitViolations)
-          .where(gte(rateLimitViolations.violationTime, oneDayAgo))
+          .where(gte(rateLimitViolations.createdAt, oneDayAgo))
           .then(r => Number(r[0]?.count || 0)),
         db
           .select({
@@ -435,7 +439,7 @@ export class EnhancedRateLimiter {
             count: sql<number>`count(*)`,
           })
           .from(rateLimitViolations)
-          .where(gte(rateLimitViolations.violationTime, oneDayAgo))
+          .where(gte(rateLimitViolations.createdAt, oneDayAgo))
           .groupBy(rateLimitViolations.endpoint)
           .orderBy(sql`count(*) DESC`)
           .limit(10),
@@ -445,7 +449,7 @@ export class EnhancedRateLimiter {
             count: sql<number>`count(*)`,
           })
           .from(rateLimitViolations)
-          .where(gte(rateLimitViolations.violationTime, oneDayAgo))
+          .where(gte(rateLimitViolations.createdAt, oneDayAgo))
           .groupBy(rateLimitViolations.ipAddress)
           .orderBy(sql`count(*) DESC`)
           .limit(10),

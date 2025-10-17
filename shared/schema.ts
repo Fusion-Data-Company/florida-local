@@ -481,7 +481,7 @@ export const blogPostTags = pgTable("blog_post_tags", {
 ]);
 
 // Blog Comments (nested/threaded)
-export const blogComments = pgTable("blog_comments", {
+export const blogComments: ReturnType<typeof pgTable<'blog_comments', any>> = pgTable("blog_comments", {
   id: uuid("id").primaryKey().defaultRandom(),
   postId: uuid("post_id").notNull().references(() => blogPosts.id, { onDelete: 'cascade' }),
   authorId: varchar("author_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
@@ -3362,12 +3362,101 @@ export const rateLimitRecords = pgTable("rate_limit_records", {
   index("idx_rate_limit_window").on(table.windowEnd),
 ]);
 
+// Rate limit violations tracking (for enhanced rate limiter)
+export const rateLimitViolations = pgTable("rate_limit_violations", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  identifier: varchar("identifier", { length: 255 }).notNull(), // IP address or user ID
+  ipAddress: varchar("ip_address", { length: 45 }),
+  userId: varchar("user_id").references(() => users.id, { onDelete: 'set null' }),
+  endpoint: varchar("endpoint", { length: 255 }).notNull(),
+  violationType: varchar("violation_type", { length: 50 }).notNull(), // rate_limit_exceeded, suspicious_pattern
+  requestCount: integer("request_count").notNull(),
+  timeWindow: integer("time_window").notNull(), // seconds
+  penalty: varchar("penalty", { length: 50 }), // throttled, blocked, warned
+  penaltyDuration: integer("penalty_duration"), // seconds
+  metadata: jsonb("metadata"), // Request details, user agent, etc.
+  resolved: boolean("resolved").default(false),
+  resolvedAt: timestamp("resolved_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_rate_violation_identifier").on(table.identifier),
+  index("idx_rate_violation_ip").on(table.ipAddress),
+  index("idx_rate_violation_user").on(table.userId),
+  index("idx_rate_violation_created").on(table.createdAt),
+]);
+
+// User sessions (for advanced session management)
+export const userSessions = pgTable("user_sessions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  token: varchar("token", { length: 255 }).notNull().unique(),
+  ipAddress: varchar("ip_address", { length: 45 }).notNull(),
+  userAgent: text("user_agent"),
+  deviceId: varchar("device_id", { length: 255 }),
+  location: jsonb("location").$type<{ country?: string; region?: string; city?: string; timezone?: string }>(), // Geo location data
+  lastActivity: timestamp("last_activity").defaultNow().notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex("idx_unique_session_token").on(table.token),
+  index("idx_user_sessions_user").on(table.userId),
+  index("idx_user_sessions_expires").on(table.expiresAt),
+  index("idx_user_sessions_active").on(table.isActive),
+]);
+
+// Device fingerprints (for device tracking)
+export const deviceFingerprints = pgTable("device_fingerprints", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  fingerprint: varchar("fingerprint", { length: 255 }).notNull(),
+  deviceName: varchar("device_name", { length: 255 }),
+  deviceType: varchar("device_type", { length: 50 }), // desktop, mobile, tablet
+  os: varchar("os", { length: 100 }),
+  browser: varchar("browser", { length: 100 }),
+  browserVersion: varchar("browser_version", { length: 50 }),
+  screenResolution: varchar("screen_resolution", { length: 50 }),
+  trusted: boolean("trusted").default(false),
+  lastSeen: timestamp("last_seen").defaultNow().notNull(),
+  ipAddress: varchar("ip_address", { length: 45 }),
+  location: jsonb("location").$type<{ country?: string; region?: string; city?: string }>(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex("idx_unique_device_fingerprint").on(table.userId, table.fingerprint),
+  index("idx_device_fingerprints_user").on(table.userId),
+  index("idx_device_fingerprints_trusted").on(table.trusted),
+]);
+
+// Session events (for session security monitoring)
+export const sessionEvents = pgTable("session_events", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  sessionId: uuid("session_id").notNull().references(() => userSessions.id, { onDelete: 'cascade' }),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  eventType: varchar("event_type", { length: 50 }).notNull(), // login, logout, activity, location_change, device_change, hijack_detected
+  ipAddress: varchar("ip_address", { length: 45 }),
+  userAgent: text("user_agent"),
+  location: jsonb("location").$type<{ country?: string; region?: string; city?: string }>(),
+  metadata: jsonb("metadata"), // Additional event data
+  severity: varchar("severity", { length: 20 }).default("info"), // info, warning, critical
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_session_events_session").on(table.sessionId),
+  index("idx_session_events_user").on(table.userId),
+  index("idx_session_events_type").on(table.eventType),
+  index("idx_session_events_severity").on(table.severity),
+  index("idx_session_events_created").on(table.createdAt),
+]);
+
 // Insert schemas
 export const insertAdminRoleSchema = createInsertSchema(adminRoles);
 export const insertUserRoleSchema = createInsertSchema(userRoles);
 export const insertAdminAuditLogSchema = createInsertSchema(adminAuditLogs);
 export const insertErrorLogSchema = createInsertSchema(errorLogs);
 export const insertPremiumAdSlotSchema = createInsertSchema(premiumAdSlots);
+export const insertRateLimitViolationSchema = createInsertSchema(rateLimitViolations);
+export const insertUserSessionSchema = createInsertSchema(userSessions);
+export const insertDeviceFingerprintSchema = createInsertSchema(deviceFingerprints);
+export const insertSessionEventSchema = createInsertSchema(sessionEvents);
 
 // Chat system insert schemas
 export const insertChatConversationSchema = createInsertSchema(chatConversations);
@@ -3406,3 +3495,13 @@ export type ChatQuickAction = typeof chatQuickActions.$inferSelect;
 export type InsertChatQuickAction = z.infer<typeof insertChatQuickActionSchema>;
 export type ChatProactiveTrigger = typeof chatProactiveTriggers.$inferSelect;
 export type InsertChatProactiveTrigger = z.infer<typeof insertChatProactiveTriggerSchema>;
+
+// Security and session management types
+export type RateLimitViolation = typeof rateLimitViolations.$inferSelect;
+export type InsertRateLimitViolation = z.infer<typeof insertRateLimitViolationSchema>;
+export type UserSession = typeof userSessions.$inferSelect;
+export type InsertUserSession = z.infer<typeof insertUserSessionSchema>;
+export type DeviceFingerprint = typeof deviceFingerprints.$inferSelect;
+export type InsertDeviceFingerprint = z.infer<typeof insertDeviceFingerprintSchema>;
+export type SessionEvent = typeof sessionEvents.$inferSelect;
+export type InsertSessionEvent = z.infer<typeof insertSessionEventSchema>;

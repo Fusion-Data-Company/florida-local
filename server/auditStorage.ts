@@ -203,7 +203,10 @@ export class AuditStorage {
   async createRole(data: InsertAdminRole): Promise<AdminRole> {
     const [role] = await db
       .insert(adminRoles)
-      .values(data)
+      .values({
+        ...data,
+        permissions: data.permissions as string[], // Explicit type cast for jsonb field
+      })
       .returning();
 
     return role;
@@ -236,9 +239,17 @@ export class AuditStorage {
    * Update a role
    */
   async updateRole(id: string, data: Partial<InsertAdminRole>): Promise<AdminRole> {
+    const updateData: Partial<InsertAdminRole> & { updatedAt: Date } = { 
+      ...data, 
+      updatedAt: new Date() 
+    };
+    if (data.permissions) {
+      updateData.permissions = data.permissions as string[]; // Explicit type cast for jsonb field
+    }
+    
     const [role] = await db
       .update(adminRoles)
-      .set({ ...data, updatedAt: new Date() })
+      .set(updateData)
       .where(eq(adminRoles.id, id))
       .returning();
 
