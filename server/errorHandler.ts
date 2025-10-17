@@ -661,3 +661,261 @@ export const healthChecker = new HealthChecker();
 
 // Health checks are registered in the main application
 // See server/index.ts for implementations
+
+/**
+ * Standardized API Response Helpers
+ * For consistent error and success responses across all routes
+ */
+
+export interface ApiErrorResponse {
+  success: false;
+  error: {
+    code: string;
+    message: string;
+    details?: any;
+    timestamp: string;
+    path?: string;
+    method?: string;
+    requestId?: string;
+  };
+}
+
+export interface ApiSuccessResponse<T = any> {
+  success: true;
+  data: T;
+  meta?: {
+    timestamp: string;
+    requestId?: string;
+    pagination?: {
+      page: number;
+      pageSize: number;
+      total: number;
+      totalPages: number;
+    };
+  };
+}
+
+/**
+ * Helper class for standardized API responses
+ */
+export class ApiResponse {
+  /**
+   * Send a standardized error response
+   */
+  static error(
+    res: Response,
+    statusCode: number,
+    category: ErrorCategory,
+    message: string,
+    details?: any,
+    req?: Request
+  ): Response {
+    const requestId = (req?.headers['x-request-id'] as string) || `req-${Date.now()}`;
+    
+    const errorResponse: ApiErrorResponse = {
+      success: false,
+      error: {
+        code: category,
+        message,
+        details,
+        timestamp: new Date().toISOString(),
+        path: req?.path,
+        method: req?.method,
+        requestId,
+      },
+    };
+    
+    // Log the error
+    const appError = new OperationalError(
+      message,
+      statusCode,
+      category,
+      this.getSeverityFromStatus(statusCode),
+      details
+    );
+    appError.userId = (req as any)?.user?.claims?.sub;
+    appError.requestId = requestId;
+    errorLogger.log(appError);
+    
+    return res.status(statusCode).json(errorResponse);
+  }
+
+  /**
+   * Validation error response (400)
+   */
+  static validation(res: Response, message: string, details?: any, req?: Request): Response {
+    return this.error(res, 400, ErrorCategory.VALIDATION, message, details, req);
+  }
+
+  /**
+   * Zod validation error response (400)
+   */
+  static zodValidation(res: Response, errors: any[], req?: Request): Response {
+    return this.error(
+      res, 
+      400, 
+      ErrorCategory.VALIDATION, 
+      "Validation error",
+      { errors },
+      req
+    );
+  }
+
+  /**
+   * Unauthorized error response (401)
+   */
+  static unauthorized(res: Response, message = "Unauthorized", req?: Request): Response {
+    return this.error(res, 401, ErrorCategory.AUTHENTICATION, message, undefined, req);
+  }
+
+  /**
+   * Forbidden error response (403)
+   */
+  static forbidden(res: Response, message = "Forbidden", req?: Request): Response {
+    return this.error(res, 403, ErrorCategory.AUTHORIZATION, message, undefined, req);
+  }
+
+  /**
+   * Not found error response (404)
+   */
+  static notFound(res: Response, resource: string, req?: Request): Response {
+    return this.error(res, 404, ErrorCategory.NOT_FOUND, `${resource} not found`, undefined, req);
+  }
+
+  /**
+   * Conflict error response (409)
+   */
+  static conflict(res: Response, message: string, details?: any, req?: Request): Response {
+    return this.error(res, 409, ErrorCategory.DATABASE, message, details, req);
+  }
+
+  /**
+   * Rate limited error response (429)
+   */
+  static rateLimited(res: Response, message = "Too many requests", req?: Request): Response {
+    return this.error(res, 429, ErrorCategory.RATE_LIMIT, message, undefined, req);
+  }
+
+  /**
+   * Internal server error response (500)
+   */
+  static internal(res: Response, error: any, req?: Request): Response {
+    // Don't expose internal error details to client in production
+    const message = process.env.NODE_ENV === 'production' 
+      ? "An internal server error occurred"
+      : error.message || "Internal server error";
+
+    const details = process.env.NODE_ENV === 'production' 
+      ? undefined 
+      : { stack: error.stack };
+
+    return this.error(res, 500, ErrorCategory.INTERNAL, message, details, req);
+  }
+
+  /**
+   * Database error response (500)
+   */
+  static database(res: Response, error: any, req?: Request): Response {
+    // Handle specific database errors
+    if (error.code === '23505' || error.constraint?.includes('unique')) {
+      return this.conflict(res, "Resource already exists", { constraint: error.constraint }, req);
+    }
+
+    const message = process.env.NODE_ENV === 'production'
+      ? "Database operation failed"
+      : error.message || "Database error";
+
+    return this.error(res, 500, ErrorCategory.DATABASE, message, undefined, req);
+  }
+
+  /**
+   * Service unavailable error response (503)
+   */
+  static serviceUnavailable(res: Response, service: string, req?: Request): Response {
+    return this.error(
+      res, 
+      503, 
+      ErrorCategory.EXTERNAL_API, 
+      `${service} is currently unavailable`, 
+      undefined, 
+      req
+    );
+  }
+
+  /**
+   * Success response
+   */
+  static success<T>(res: Response, data: T, meta?: any, statusCode = 200, req?: Request): Response {
+    const response: ApiSuccessResponse<T> = {
+      success: true,
+      data,
+      meta: {
+        timestamp: new Date().toISOString(),
+        requestId: (req?.headers['x-request-id'] as string) || undefined,
+        ...meta,
+      },
+    };
+
+    return res.status(statusCode).json(response);
+  }
+
+  /**
+   * Created response (201)
+   */
+  static created<T>(res: Response, data: T, req?: Request): Response {
+    return this.success(res, data, undefined, 201, req);
+  }
+
+  /**
+   * No content response (204)
+   */
+  static noContent(res: Response): Response {
+    return res.status(204).end();
+  }
+
+  /**
+   * Get severity based on status code
+   */
+  private static getSeverityFromStatus(statusCode: number): ErrorSeverity {
+    if (statusCode >= 500) return ErrorSeverity.HIGH;
+    if (statusCode >= 400 && statusCode < 500) return ErrorSeverity.MEDIUM;
+    return ErrorSeverity.LOW;
+  }
+}
+
+/**
+ * Enhanced error handling middleware with standardized responses
+ */
+export function standardErrorMiddleware(
+  err: Error | AppError,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  // If response was already sent, delegate to default Express error handler
+  if (res.headersSent) {
+    return next(err);
+  }
+
+  // Handle Zod validation errors
+  if (err.name === 'ZodError') {
+    const zodError = err as any;
+    return ApiResponse.zodValidation(res, zodError.errors, req);
+  }
+
+  // Handle known operational errors
+  if ('isOperational' in err && err.isOperational) {
+    const appError = err as AppError;
+    return ApiResponse.error(
+      res,
+      appError.statusCode,
+      appError.category,
+      appError.message,
+      appError.context,
+      req
+    );
+  }
+
+  // Default to internal server error
+  return ApiResponse.internal(res, err, req);
+}
