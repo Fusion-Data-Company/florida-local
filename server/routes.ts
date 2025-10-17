@@ -105,6 +105,10 @@ const businessImageUpdateSchema = z.object({
 import { gmbService } from "./gmbService";
 import { businessVerificationService } from "./businessVerificationService";
 import { dataSyncService } from "./dataSyncService";
+import { gmbReviewService } from "./gmbReviewService";
+import { gmbPostService } from "./gmbPostService";
+import { gmbInsightsService } from "./gmbInsightsService";
+import { gmbSyncService } from "./gmbSyncService";
 
 // Stripe Connect Services
 import * as stripeConnect from "./stripeConnect";
@@ -708,6 +712,530 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 });
 
+  // =================== GMB REVIEW MANAGEMENT ROUTES ===================
+  
+  // Fetch and sync GMB reviews
+  app.post('/api/businesses/:id/gmb/reviews/fetch', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized to fetch reviews for this business" });
+      }
+      
+      // Fetch reviews from GMB
+      const result = await gmbReviewService.fetchReviews(businessId);
+      res.json(result);
+    } catch (error: any) {
+      console.error("Error fetching GMB reviews:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch reviews" });
+    }
+  });
+  
+  // Reply to a review
+  app.post('/api/businesses/:id/gmb/reviews/:reviewId/reply', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId, reviewId } = req.params;
+      const { replyText } = req.body;
+      
+      if (!replyText || replyText.length < 10) {
+        return res.status(400).json({ message: "Reply text must be at least 10 characters" });
+      }
+      
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized to reply to reviews for this business" });
+      }
+      
+      await gmbReviewService.replyToReview(businessId, reviewId, replyText);
+      res.json({ message: "Reply posted successfully" });
+    } catch (error: any) {
+      console.error("Error replying to review:", error);
+      res.status(500).json({ message: error.message || "Failed to post reply" });
+    }
+  });
+  
+  // Get review insights and analytics
+  app.get('/api/businesses/:id/gmb/reviews/insights', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized to view review insights" });
+      }
+      
+      const insights = await gmbReviewService.generateInsights(businessId);
+      res.json(insights);
+    } catch (error: any) {
+      console.error("Error generating review insights:", error);
+      res.status(500).json({ message: error.message || "Failed to generate insights" });
+    }
+  });
+  
+  // Monitor review sentiment
+  app.get('/api/businesses/:id/gmb/reviews/monitor', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized to monitor reviews" });
+      }
+      
+      const alerts = await gmbReviewService.monitorSentiment(businessId);
+      res.json(alerts);
+    } catch (error: any) {
+      console.error("Error monitoring reviews:", error);
+      res.status(500).json({ message: error.message || "Failed to monitor reviews" });
+    }
+  });
+  
+  // =================== GMB POSTS MANAGEMENT ROUTES ===================
+  
+  // Create a GMB post
+  app.post('/api/businesses/:id/gmb/posts', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      const postData = req.body;
+      
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized to create posts for this business" });
+      }
+      
+      const post = await gmbPostService.createPost(businessId, postData);
+      res.json(post);
+    } catch (error: any) {
+      console.error("Error creating GMB post:", error);
+      res.status(500).json({ message: error.message || "Failed to create post" });
+    }
+  });
+  
+  // Get all posts for a business
+  app.get('/api/businesses/:id/gmb/posts', isAuthenticated, async (req: any, res) => {
+    try {
+      const { id: businessId } = req.params;
+      
+      // Verify business exists
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      const posts = await gmbPostService.getBusinessPosts(businessId);
+      res.json(posts);
+    } catch (error: any) {
+      console.error("Error fetching GMB posts:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch posts" });
+    }
+  });
+  
+  // Update a post
+  app.patch('/api/businesses/:id/gmb/posts/:postId', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId, postId } = req.params;
+      const updates = req.body;
+      
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized to update posts" });
+      }
+      
+      const post = await gmbPostService.updatePost(postId, updates);
+      res.json(post);
+    } catch (error: any) {
+      console.error("Error updating GMB post:", error);
+      res.status(500).json({ message: error.message || "Failed to update post" });
+    }
+  });
+  
+  // Delete a post
+  app.delete('/api/businesses/:id/gmb/posts/:postId', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId, postId } = req.params;
+      
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized to delete posts" });
+      }
+      
+      await gmbPostService.deletePost(postId);
+      res.json({ message: "Post deleted successfully" });
+    } catch (error: any) {
+      console.error("Error deleting GMB post:", error);
+      res.status(500).json({ message: error.message || "Failed to delete post" });
+    }
+  });
+  
+  // Get post metrics
+  app.get('/api/businesses/:id/gmb/posts/:postId/metrics', isAuthenticated, async (req: any, res) => {
+    try {
+      const { id: businessId, postId } = req.params;
+      
+      const metrics = await gmbPostService.getPostMetrics(postId);
+      res.json(metrics);
+    } catch (error: any) {
+      console.error("Error fetching post metrics:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch metrics" });
+    }
+  });
+  
+  // Generate AI post content
+  app.post('/api/businesses/:id/gmb/posts/generate', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      const { type, topic, tone, includeEmoji } = req.body;
+      
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
+      
+      const content = await gmbPostService.generatePostContent(businessId, {
+        type, topic, tone, includeEmoji
+      });
+      res.json(content);
+    } catch (error: any) {
+      console.error("Error generating post content:", error);
+      res.status(500).json({ message: error.message || "Failed to generate content" });
+    }
+  });
+  
+  // =================== GMB INSIGHTS ROUTES ===================
+  
+  // Fetch location insights
+  app.get('/api/businesses/:id/gmb/insights', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      const { startDate, endDate, includeCompetitors } = req.query;
+      
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized to view insights" });
+      }
+      
+      const dateRange = {
+        start: startDate ? new Date(startDate as string) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+        end: endDate ? new Date(endDate as string) : new Date()
+      };
+      
+      const insights = await gmbInsightsService.fetchLocationInsights(businessId, {
+        dateRange,
+        includeCompetitors: includeCompetitors === 'true'
+      });
+      res.json(insights);
+    } catch (error: any) {
+      console.error("Error fetching insights:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch insights" });
+    }
+  });
+  
+  // Generate performance report
+  app.post('/api/businesses/:id/gmb/insights/report', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      const { reportType, format } = req.body;
+      
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
+      
+      const report = await gmbInsightsService.generateReport(businessId, {
+        reportType,
+        format
+      });
+      res.json(report);
+    } catch (error: any) {
+      console.error("Error generating report:", error);
+      res.status(500).json({ message: error.message || "Failed to generate report" });
+    }
+  });
+  
+  // Track performance trends
+  app.get('/api/businesses/:id/gmb/insights/trends', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      const { metricType, periods } = req.query;
+      
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
+      
+      const trends = await gmbInsightsService.trackPerformanceTrend(
+        businessId,
+        metricType as any,
+        parseInt(periods as string) || 12
+      );
+      res.json(trends);
+    } catch (error: any) {
+      console.error("Error tracking trends:", error);
+      res.status(500).json({ message: error.message || "Failed to track trends" });
+    }
+  });
+  
+  // Get actionable insights
+  app.get('/api/businesses/:id/gmb/insights/recommendations', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
+      
+      const recommendations = await gmbInsightsService.getActionableInsights(businessId);
+      res.json(recommendations);
+    } catch (error: any) {
+      console.error("Error getting recommendations:", error);
+      res.status(500).json({ message: error.message || "Failed to get recommendations" });
+    }
+  });
+  
+  // =================== GMB ENHANCED SYNC ROUTES ===================
+  
+  // Configure sync settings
+  app.post('/api/businesses/:id/gmb/sync/configure', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      const config = req.body;
+      
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
+      
+      await gmbSyncService.configureSyncSettings({
+        businessId,
+        ...config
+      });
+      res.json({ message: "Sync configuration updated successfully" });
+    } catch (error: any) {
+      console.error("Error configuring sync:", error);
+      res.status(500).json({ message: error.message || "Failed to configure sync" });
+    }
+  });
+  
+  // Start sync session
+  app.post('/api/businesses/:id/gmb/sync/start', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      const { type, dataTypes, force } = req.body;
+      
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
+      
+      const session = await gmbSyncService.startSync(businessId, {
+        type,
+        dataTypes,
+        force
+      });
+      res.json(session);
+    } catch (error: any) {
+      console.error("Error starting sync:", error);
+      res.status(500).json({ message: error.message || "Failed to start sync" });
+    }
+  });
+  
+  // Get sync session status
+  app.get('/api/businesses/:id/gmb/sync/session/:sessionId', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId, sessionId } = req.params;
+      
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
+      
+      const status = gmbSyncService.getSyncStatus(sessionId);
+      if (!status) {
+        return res.status(404).json({ message: "Sync session not found" });
+      }
+      
+      res.json(status);
+    } catch (error: any) {
+      console.error("Error getting sync status:", error);
+      res.status(500).json({ message: error.message || "Failed to get sync status" });
+    }
+  });
+  
+  // Cancel sync session
+  app.post('/api/businesses/:id/gmb/sync/cancel/:sessionId', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId, sessionId } = req.params;
+      
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
+      
+      gmbSyncService.cancelSync(sessionId);
+      res.json({ message: "Sync cancelled successfully" });
+    } catch (error: any) {
+      console.error("Error cancelling sync:", error);
+      res.status(500).json({ message: error.message || "Failed to cancel sync" });
+    }
+  });
+  
+  // Get sync history
+  app.get('/api/businesses/:id/gmb/sync/history', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      const { limit, offset } = req.query;
+      
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
+      
+      const history = await gmbSyncService.getSyncHistory(businessId, {
+        limit: parseInt(limit as string) || 50,
+        offset: parseInt(offset as string) || 0
+      });
+      res.json(history);
+    } catch (error: any) {
+      console.error("Error getting sync history:", error);
+      res.status(500).json({ message: error.message || "Failed to get sync history" });
+    }
+  });
+  
+  // Generate sync report
+  app.get('/api/businesses/:id/gmb/sync/report', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: businessId } = req.params;
+      const { startDate, endDate } = req.query;
+      
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      
+      if (business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
+      
+      const dateRange = {
+        start: startDate ? new Date(startDate as string) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+        end: endDate ? new Date(endDate as string) : new Date()
+      };
+      
+      const report = await gmbSyncService.generateSyncReport(businessId, dateRange);
+      res.json(report);
+    } catch (error: any) {
+      console.error("Error generating sync report:", error);
+      res.status(500).json({ message: error.message || "Failed to generate report" });
+    }
+  });
+  
   // GMB Health Check endpoint for monitoring
   app.get('/api/gmb/health', async (req, res) => {
     try {
