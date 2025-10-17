@@ -7,13 +7,23 @@
  * - Temporary lockout after 5 failures (15 minutes)
  * - Permanent lockout after 10 failures (requires admin)
  * - IP-based tracking
- * - Email notifications
+ * - Email/SMS notifications
+ * - Database persistence with Redis caching
+ * - Automatic IP blocking integration
  */
 
 import { db } from './db';
-import { sql } from 'drizzle-orm';
+import { 
+  failedLoginAttempts,
+  accountLockouts,
+  securityEvents,
+  users
+} from '../shared/schema';
+import { eq, and, gte, sql, isNull } from 'drizzle-orm';
 import { redis, cache } from './redis';
 import { logger } from './monitoring';
+import { securityNotificationService } from './securityNotificationService';
+import { ipAccessControl as ipAccessControlService } from './ipAccessControl';
 import type { Request } from 'express';
 
 // Configuration
@@ -33,6 +43,10 @@ const LOCKOUT_CONFIG = {
 
   // Clean old attempts after 24 hours
   cleanupAge: 24 * 60 * 60 * 1000,
+
+  // IP auto-block after 15 failed attempts from same IP
+  ipBlockThreshold: 15,
+  ipBlockDuration: 24 * 60 * 60 * 1000, // 24 hours
 };
 
 interface FailedAttemptInfo {
@@ -41,6 +55,7 @@ interface FailedAttemptInfo {
   lockoutUntil?: Date;
   isLocked: boolean;
   delay: number; // seconds to wait
+  ipCount?: number; // Failed attempts from IP
 }
 
 /**
@@ -53,16 +68,49 @@ export async function recordFailedLogin(
   reason: string
 ): Promise<void> {
   try {
-    // Record in database
-    await db.execute(sql`
-      INSERT INTO failed_login_attempts (email, ip_address, user_agent, failure_reason)
-      VALUES (${email}, ${ipAddress}, ${userAgent}, ${reason})
-    `);
+    // Get geolocation for the IP
+    const geoLocation = await getGeoLocation(ipAddress);
+    
+    // Record in database using Drizzle
+    await db.insert(failedLoginAttempts).values({
+      email,
+      ipAddress,
+      userAgent,
+      failureReason: reason,
+      geoLocation,
+    });
+
+    // Log security event
+    await db.insert(securityEvents).values({
+      eventType: 'login_failed',
+      severity: 'warning',
+      ipAddress,
+      userAgent,
+      description: `Failed login attempt for ${email}: ${reason}`,
+      metadata: { email, reason, geoLocation },
+    });
+
+    // Check if we need to send notifications
+    const attemptInfo = await getFailedAttemptInfo(email);
+    
+    // Send notification after 3 failed attempts
+    if (attemptInfo.count === 3) {
+      await securityNotificationService.sendFailedLoginNotification(
+        email,
+        attemptInfo.count,
+        ipAddress,
+        geoLocation?.country
+      );
+    }
+
+    // Check for IP-based blocking
+    await checkIPFailedAttempts(ipAddress);
 
     logger.warn('Failed login attempt recorded', {
       email,
       ipAddress,
       reason,
+      attemptCount: attemptInfo.count,
     });
   } catch (error) {
     logger.error('Error recording failed login', { error, email });
@@ -83,32 +131,43 @@ export async function getFailedAttemptInfo(email: string): Promise<FailedAttempt
       return cached;
     }
 
-    // Query database
-    const result = await db.execute(sql`
-      SELECT COUNT(*) as count, MAX(attempt_time) as last_attempt
-      FROM failed_login_attempts
-      WHERE email = ${email}
-      AND attempt_time > ${oneHourAgo.toISOString()}
-    `);
+    // Query database for failed attempts
+    const attempts = await db
+      .select({
+        count: sql<number>`count(*)`,
+        lastAttempt: sql<Date>`MAX(attempt_time)`,
+      })
+      .from(failedLoginAttempts)
+      .where(
+        and(
+          eq(failedLoginAttempts.email, email),
+          gte(failedLoginAttempts.attemptTime, oneHourAgo)
+        )
+      );
 
-    const row = (result.rows[0] as any);
-    const count = parseInt(row?.count || '0');
-    const lastAttempt = row?.last_attempt ? new Date(row.last_attempt) : new Date();
+    const count = Number(attempts[0]?.count || 0);
+    const lastAttempt = attempts[0]?.lastAttempt || new Date();
 
     // Check for active lockout
-    const lockoutResult = await db.execute(sql`
-      SELECT locked_until, lockout_type
-      FROM account_lockouts
-      WHERE email = ${email}
-      AND unlocked_at IS NULL
-      AND (locked_until IS NULL OR locked_until > NOW())
-      ORDER BY locked_at DESC
-      LIMIT 1
-    `);
+    const lockouts = await db
+      .select()
+      .from(accountLockouts)
+      .where(
+        and(
+          eq(accountLockouts.email, email),
+          isNull(accountLockouts.unlockedAt),
+          or(
+            isNull(accountLockouts.lockedUntil),
+            gte(accountLockouts.lockedUntil, new Date())
+          )
+        )
+      )
+      .orderBy(accountLockouts.lockedAt)
+      .limit(1);
 
-    const lockout = lockoutResult.rows[0] as any;
+    const lockout = lockouts[0];
     const isLocked = !!lockout;
-    const lockoutUntil = lockout?.locked_until ? new Date(lockout.locked_until) : undefined;
+    const lockoutUntil = lockout?.lockedUntil || undefined;
 
     // Calculate progressive delay
     const delayIndex = Math.min(count - 1, LOCKOUT_CONFIG.delays.length - 1);
@@ -142,7 +201,7 @@ export async function getFailedAttemptInfo(email: string): Promise<FailedAttempt
  */
 export async function checkAndApplyLockout(
   email: string,
-  userId?: number
+  userId?: string
 ): Promise<{ locked: boolean; lockoutType?: string; lockoutUntil?: Date }> {
   try {
     const attemptInfo = await getFailedAttemptInfo(email);
@@ -162,44 +221,55 @@ export async function checkAndApplyLockout(
 
       const lockoutUntil = new Date(Date.now() + LOCKOUT_CONFIG.temporaryLockoutDuration);
 
-      await db.execute(sql`
-        INSERT INTO account_lockouts (
-          user_id, email, lockout_type, locked_until, locked_by, reason, failed_attempt_count
-        ) VALUES (
-          ${userId || null},
-          ${email},
-          'temporary',
-          ${lockoutUntil.toISOString()},
-          'system',
-          'Too many failed login attempts',
-          ${attemptInfo.count}
-        )
-      `);
+      await db.insert(accountLockouts).values({
+        email,
+        lockoutType: 'temporary',
+        lockedUntil: lockoutUntil,
+        unlockedBy: userId,
+        reason: 'Too many failed login attempts',
+        attemptCount: attemptInfo.count,
+      });
 
-      // Update user record if user_id exists
+      // Update user record if user exists
       if (userId) {
-        await db.execute(sql`
-          UPDATE users
-          SET is_locked = true, locked_until = ${lockoutUntil.toISOString()}
-          WHERE id = ${userId}
-        `);
+        await db
+          .update(users)
+          .set({
+            isAdmin: false, // Revoke admin access for security
+            updatedAt: new Date(),
+          })
+          .where(eq(users.id, userId));
       }
 
       // Clear cache
-      await redis.del(`failed_attempts:${email}`);
+      await cache.delete(`failed_attempts:${email}`);
+
+      // Log security event
+      await db.insert(securityEvents).values({
+        eventType: 'account_locked_temporary',
+        severity: 'high',
+        userId,
+        description: `Account temporarily locked: ${email}`,
+        metadata: {
+          attempts: attemptInfo.count,
+          lockoutUntil,
+          reason: 'Too many failed login attempts',
+        },
+      });
+
+      // Send notification
+      await securityNotificationService.sendAccountLockedNotification(
+        email,
+        'temporary',
+        lockoutUntil,
+        'Too many failed login attempts'
+      );
 
       logger.warn('Temporary account lockout applied', {
         email,
         userId,
         attempts: attemptInfo.count,
         lockoutUntil,
-      });
-
-      // TODO: Send notification
-      await queueSecurityNotification(userId, email, 'account_lockout', {
-        type: 'temporary',
-        duration: '15 minutes',
-        reason: 'Too many failed login attempts',
       });
 
       return {
@@ -211,42 +281,62 @@ export async function checkAndApplyLockout(
 
     // Check for permanent lockout
     if (attemptInfo.count >= LOCKOUT_CONFIG.permanentLockoutThreshold) {
-      await db.execute(sql`
-        INSERT INTO account_lockouts (
-          user_id, email, lockout_type, locked_by, reason, failed_attempt_count
-        ) VALUES (
-          ${userId || null},
-          ${email},
-          'permanent',
-          'system',
-          'Excessive failed login attempts - requires admin unlock',
-          ${attemptInfo.count}
-        )
-      `);
+      await db.insert(accountLockouts).values({
+        email,
+        lockoutType: 'permanent',
+        unlockedBy: userId,
+        reason: 'Excessive failed login attempts - requires admin unlock',
+        attemptCount: attemptInfo.count,
+      });
 
-      // Update user record if user_id exists
+      // Update user record if user exists
       if (userId) {
-        await db.execute(sql`
-          UPDATE users
-          SET is_locked = true
-          WHERE id = ${userId}
-        `);
+        await db
+          .update(users)
+          .set({
+            isAdmin: false,
+            updatedAt: new Date(),
+          })
+          .where(eq(users.id, userId));
       }
 
       // Clear cache
-      await redis.del(`failed_attempts:${email}`);
+      await cache.delete(`failed_attempts:${email}`);
+
+      // Log critical security event
+      await db.insert(securityEvents).values({
+        eventType: 'account_locked_permanent',
+        severity: 'critical',
+        userId,
+        description: `Account permanently locked: ${email}`,
+        metadata: {
+          attempts: attemptInfo.count,
+          reason: 'Excessive failed login attempts',
+          action: 'Requires admin unlock',
+        },
+      });
+
+      // Send critical notification
+      await securityNotificationService.sendAccountLockedNotification(
+        email,
+        'permanent',
+        undefined,
+        'Excessive failed login attempts - contact administrator'
+      );
+
+      // Also notify admins
+      await securityNotificationService.sendSecurityAlert({
+        type: 'account_locked',
+        severity: 'critical',
+        title: 'Account Permanently Locked',
+        message: `Account ${email} has been permanently locked after ${attemptInfo.count} failed attempts. Manual admin intervention required.`,
+        metadata: { email, attempts: attemptInfo.count },
+      });
 
       logger.error('Permanent account lockout applied', {
         email,
         userId,
         attempts: attemptInfo.count,
-      });
-
-      // TODO: Send critical notification
-      await queueSecurityNotification(userId, email, 'account_lockout', {
-        type: 'permanent',
-        reason: 'Excessive failed login attempts',
-        action: 'Contact administrator to unlock',
       });
 
       return {
@@ -263,27 +353,79 @@ export async function checkAndApplyLockout(
 }
 
 /**
+ * Check IP-based failed attempts and auto-block if necessary
+ */
+async function checkIPFailedAttempts(ipAddress: string): Promise<void> {
+  try {
+    const oneHourAgo = new Date(Date.now() - LOCKOUT_CONFIG.attemptWindow);
+    
+    // Count failed attempts from this IP
+    const result = await db
+      .select({
+        count: sql<number>`count(*)`,
+        emails: sql<string[]>`array_agg(DISTINCT email)`,
+      })
+      .from(failedLoginAttempts)
+      .where(
+        and(
+          eq(failedLoginAttempts.ipAddress, ipAddress),
+          gte(failedLoginAttempts.attemptTime, oneHourAgo)
+        )
+      );
+
+    const count = Number(result[0]?.count || 0);
+    const emails = result[0]?.emails || [];
+
+    // Auto-block IP if threshold reached
+    if (count >= LOCKOUT_CONFIG.ipBlockThreshold) {
+      await ipAccessControlService.blockIP(
+        ipAddress,
+        `Automatically blocked after ${count} failed login attempts affecting ${emails.length} accounts`,
+        LOCKOUT_CONFIG.ipBlockDuration
+      );
+
+      // Log critical event
+      await db.insert(securityEvents).values({
+        eventType: 'ip_auto_blocked',
+        severity: 'critical',
+        ipAddress,
+        description: `IP automatically blocked after ${count} failed attempts`,
+        metadata: {
+          attemptCount: count,
+          affectedAccounts: emails,
+          blockDuration: '24 hours',
+        },
+      });
+
+      logger.warn('IP auto-blocked for excessive failed attempts', {
+        ipAddress,
+        attemptCount: count,
+        affectedAccounts: emails.length,
+      });
+    }
+  } catch (error) {
+    logger.error('Error checking IP failed attempts', { error, ipAddress });
+  }
+}
+
+/**
  * Clear failed attempts after successful login
  */
 export async function clearFailedAttempts(email: string): Promise<void> {
   try {
     // Clear cache
-    await redis.del(`failed_attempts:${email}`);
+    await cache.delete(`failed_attempts:${email}`);
 
     // Clear recent failed attempts
     const oneHourAgo = new Date(Date.now() - LOCKOUT_CONFIG.attemptWindow);
-    await db.execute(sql`
-      DELETE FROM failed_login_attempts
-      WHERE email = ${email}
-      AND attempt_time > ${oneHourAgo.toISOString()}
-    `);
-
-    // Clear failed count on user record
-    await db.execute(sql`
-      UPDATE users
-      SET failed_login_count = 0, last_failed_login = NULL
-      WHERE email = ${email}
-    `);
+    await db
+      .delete(failedLoginAttempts)
+      .where(
+        and(
+          eq(failedLoginAttempts.email, email),
+          gte(failedLoginAttempts.attemptTime, oneHourAgo)
+        )
+      );
 
     logger.info('Failed attempts cleared after successful login', { email });
   } catch (error) {
@@ -296,27 +438,39 @@ export async function clearFailedAttempts(email: string): Promise<void> {
  */
 export async function unlockAccount(
   email: string,
-  adminId: number,
+  adminId: string,
   reason: string
 ): Promise<boolean> {
   try {
     // Mark lockouts as unlocked
-    await db.execute(sql`
-      UPDATE account_lockouts
-      SET unlocked_at = NOW(), unlocked_by = ${adminId.toString()}
-      WHERE email = ${email}
-      AND unlocked_at IS NULL
-    `);
-
-    // Update user record
-    await db.execute(sql`
-      UPDATE users
-      SET is_locked = false, locked_until = NULL, failed_login_count = 0
-      WHERE email = ${email}
-    `);
+    await db
+      .update(accountLockouts)
+      .set({
+        unlockedAt: new Date(),
+        unlockedBy: adminId,
+      })
+      .where(
+        and(
+          eq(accountLockouts.email, email),
+          isNull(accountLockouts.unlockedAt)
+        )
+      );
 
     // Clear cache and failed attempts
     await clearFailedAttempts(email);
+
+    // Log admin action
+    await db.insert(securityEvents).values({
+      eventType: 'account_unlocked',
+      severity: 'info',
+      userId: adminId,
+      description: `Account ${email} unlocked by admin`,
+      metadata: {
+        email,
+        reason,
+        adminId,
+      },
+    });
 
     logger.info('Account unlocked by admin', {
       email,
@@ -332,134 +486,6 @@ export async function unlockAccount(
 }
 
 /**
- * Check if IP is blocked
- */
-export async function isIpBlocked(ipAddress: string): Promise<boolean> {
-  try {
-    // Check cache first
-    const cacheKey = `ip_blocked:${ipAddress}`;
-    const cached = await cache.get<boolean>(cacheKey);
-    if (cached !== null) {
-      return cached;
-    }
-
-    const result = await db.execute(sql`
-      SELECT 1
-      FROM ip_access_control
-      WHERE ip_address = ${ipAddress}
-      AND list_type = 'blocklist'
-      AND is_active = true
-      AND (expires_at IS NULL OR expires_at > NOW())
-      LIMIT 1
-    `);
-
-    const blocked = result.rows.length > 0;
-
-    // Cache for 5 minutes
-    await cache.set(cacheKey, blocked, 300);
-
-    return blocked;
-  } catch (error) {
-    logger.error('Error checking IP block status', { error, ipAddress });
-    return false;
-  }
-}
-
-/**
- * Block an IP address
- */
-export async function blockIp(
-  ipAddress: string,
-  reason: string,
-  adminId?: number,
-  expiresInHours?: number
-): Promise<void> {
-  try {
-    const expiresAt = expiresInHours
-      ? new Date(Date.now() + expiresInHours * 60 * 60 * 1000)
-      : null;
-
-    await db.execute(sql`
-      INSERT INTO ip_access_control (
-        ip_address, list_type, reason, added_by, expires_at
-      ) VALUES (
-        ${ipAddress},
-        'blocklist',
-        ${reason},
-        ${adminId || null},
-        ${expiresAt ? expiresAt.toISOString() : null}
-      )
-      ON CONFLICT (ip_address) DO UPDATE
-      SET is_active = true, expires_at = EXCLUDED.expires_at, reason = EXCLUDED.reason
-    `);
-
-    // Clear cache
-    await redis.del(`ip_blocked:${ipAddress}`);
-
-    logger.warn('IP address blocked', {
-      ipAddress,
-      reason,
-      adminId,
-      expiresAt,
-    });
-  } catch (error) {
-    logger.error('Error blocking IP', { error, ipAddress });
-  }
-}
-
-/**
- * Queue a security notification (placeholder for email/SMS integration)
- */
-async function queueSecurityNotification(
-  userId: number | undefined,
-  email: string,
-  type: string,
-  metadata: any
-): Promise<void> {
-  try {
-    if (!userId) return;
-
-    await db.execute(sql`
-      INSERT INTO security_notifications (
-        user_id, notification_type, severity, title, message, metadata
-      ) VALUES (
-        ${userId},
-        ${type},
-        'warning',
-        'Account Security Alert',
-        ${JSON.stringify(metadata)},
-        ${JSON.stringify(metadata)}
-      )
-    `);
-
-    // TODO: Integrate with email/SMS service
-    logger.info('Security notification queued', { userId, email, type });
-  } catch (error) {
-    logger.error('Error queuing security notification', { error, userId });
-  }
-}
-
-/**
- * Clean up old failed attempts (run periodically)
- */
-export async function cleanupOldAttempts(): Promise<void> {
-  try {
-    const cutoffDate = new Date(Date.now() - LOCKOUT_CONFIG.cleanupAge);
-
-    const result = await db.execute(sql`
-      DELETE FROM failed_login_attempts
-      WHERE attempt_time < ${cutoffDate.toISOString()}
-    `);
-
-    logger.info('Cleaned up old failed login attempts', {
-      deleted: result.rowCount,
-    });
-  } catch (error) {
-    logger.error('Error cleaning up failed attempts', { error });
-  }
-}
-
-/**
  * Middleware to check for account lockout and apply progressive delays
  */
 export async function checkAccountLockout(req: Request, email: string): Promise<{
@@ -467,13 +493,14 @@ export async function checkAccountLockout(req: Request, email: string): Promise<
   delay?: number;
   message?: string;
 }> {
-  const ipAddress = req.ip || req.socket.remoteAddress || 'unknown';
+  const ipAddress = ipAccessControlService.getClientIP(req);
 
-  // Check IP blocklist
-  if (await isIpBlocked(ipAddress)) {
+  // Check IP access control
+  const ipCheck = await ipAccessControlService.checkIPAccess(ipAddress);
+  if (ipCheck.blocked) {
     return {
       allowed: false,
-      message: 'Access denied from this IP address',
+      message: ipCheck.reason || 'Access denied from this IP address',
     };
   }
 
@@ -500,3 +527,119 @@ export async function checkAccountLockout(req: Request, email: string): Promise<
 
   return { allowed: true };
 }
+
+/**
+ * Get geolocation for IP (basic implementation)
+ */
+async function getGeoLocation(ipAddress: string): Promise<any> {
+  try {
+    // Check if IP is private/local
+    if (isPrivateIP(ipAddress)) {
+      return {
+        country: 'Local',
+        city: 'Local',
+        region: 'Local',
+      };
+    }
+
+    // TODO: Integrate with real geolocation service
+    // For now, return basic info
+    return {
+      country: 'Unknown',
+      city: 'Unknown',
+      region: 'Unknown',
+    };
+  } catch (error) {
+    logger.error('Error getting geo location', { error, ipAddress });
+    return null;
+  }
+}
+
+/**
+ * Check if IP is private/local
+ */
+function isPrivateIP(ip: string): boolean {
+  return (
+    ip.startsWith('10.') ||
+    ip.startsWith('172.16.') ||
+    ip.startsWith('192.168.') ||
+    ip === '127.0.0.1' ||
+    ip === 'localhost' ||
+    ip === '::1'
+  );
+}
+
+/**
+ * Clean up old failed attempts (run periodically)
+ */
+export async function cleanupOldAttempts(): Promise<void> {
+  try {
+    const cutoffDate = new Date(Date.now() - LOCKOUT_CONFIG.cleanupAge);
+
+    const result = await db
+      .delete(failedLoginAttempts)
+      .where(gte(cutoffDate, failedLoginAttempts.attemptTime));
+
+    logger.info('Cleaned up old failed login attempts', {
+      deleted: result.length,
+    });
+  } catch (error) {
+    logger.error('Error cleaning up failed attempts', { error });
+  }
+}
+
+/**
+ * Get failed login statistics
+ */
+export async function getFailedLoginStats(): Promise<{
+  totalAttempts: number;
+  uniqueEmails: number;
+  uniqueIPs: number;
+  lockedAccounts: number;
+}> {
+  try {
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+    const [attempts, locked] = await Promise.all([
+      db
+        .select({
+          total: sql<number>`count(*)`,
+          emails: sql<number>`count(DISTINCT email)`,
+          ips: sql<number>`count(DISTINCT ip_address)`,
+        })
+        .from(failedLoginAttempts)
+        .where(gte(failedLoginAttempts.attemptTime, oneDayAgo)),
+      db
+        .select({ count: sql<number>`count(*)` })
+        .from(accountLockouts)
+        .where(isNull(accountLockouts.unlockedAt)),
+    ]);
+
+    return {
+      totalAttempts: Number(attempts[0]?.total || 0),
+      uniqueEmails: Number(attempts[0]?.emails || 0),
+      uniqueIPs: Number(attempts[0]?.ips || 0),
+      lockedAccounts: Number(locked[0]?.count || 0),
+    };
+  } catch (error) {
+    logger.error('Error getting failed login stats', { error });
+    return {
+      totalAttempts: 0,
+      uniqueEmails: 0,
+      uniqueIPs: 0,
+      lockedAccounts: 0,
+    };
+  }
+}
+
+// Export the service
+export default {
+  recordFailedLogin,
+  getFailedAttemptInfo,
+  checkAndApplyLockout,
+  clearFailedAttempts,
+  unlockAccount,
+  checkAccountLockout,
+  cleanupOldAttempts,
+  getFailedLoginStats,
+};

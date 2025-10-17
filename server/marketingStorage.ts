@@ -534,16 +534,123 @@ export class MarketingStorage {
     const rules = criteria.rules || [];
     const logic = criteria.logic || 'AND';
 
-    // TODO: Implement complex rule evaluation
-    // For now, return empty array as placeholder
-    // This would need to:
-    // 1. Parse each rule (field, operator, value)
-    // 2. Build SQL queries for each rule
-    // 3. Combine with AND/OR logic
-    // 4. Execute query to get matching user IDs
+    if (rules.length === 0) {
+      return [];
+    }
 
-    console.log(`Calculating segment ${segmentId} with ${rules.length} rules and ${logic} logic`);
-    return [];
+    try {
+      // Build WHERE conditions for each rule
+      const conditions: any[] = [];
+      
+      for (const rule of rules) {
+        const { field, operator, value } = rule;
+        
+        // Map field names to database columns
+        const fieldMap: Record<string, any> = {
+          'email': users.email,
+          'firstName': users.firstName,
+          'lastName': users.lastName,
+          'phoneNumber': users.phoneNumber,
+          'createdAt': users.createdAt,
+          'lastActive': users.lastActive,
+          'emailVerified': users.emailVerified,
+          'role': users.role,
+          'totalSpent': sql`(SELECT COALESCE(SUM(amount), 0) FROM orders WHERE user_id = ${users.id})`,
+          'orderCount': sql`(SELECT COUNT(*) FROM orders WHERE user_id = ${users.id})`,
+          'lastOrderDate': sql`(SELECT MAX(created_at) FROM orders WHERE user_id = ${users.id})`,
+        };
+        
+        const column = fieldMap[field];
+        if (!column) {
+          console.warn(`Unknown field in segment rule: ${field}`);
+          continue;
+        }
+        
+        // Build condition based on operator
+        let condition;
+        switch (operator) {
+          case 'equals':
+          case '=':
+            condition = eq(column, value);
+            break;
+          case 'not_equals':
+          case '!=':
+            condition = sql`${column} != ${value}`;
+            break;
+          case 'contains':
+            condition = sql`${column} LIKE ${'%' + value + '%'}`;
+            break;
+          case 'not_contains':
+            condition = sql`${column} NOT LIKE ${'%' + value + '%'}`;
+            break;
+          case 'starts_with':
+            condition = sql`${column} LIKE ${value + '%'}`;
+            break;
+          case 'ends_with':
+            condition = sql`${column} LIKE ${'%' + value}`;
+            break;
+          case 'greater_than':
+          case '>':
+            condition = gt(column, value);
+            break;
+          case 'less_than':
+          case '<':
+            condition = lt(column, value);
+            break;
+          case 'greater_or_equal':
+          case '>=':
+            condition = gte(column, value);
+            break;
+          case 'less_or_equal':
+          case '<=':
+            condition = lte(column, value);
+            break;
+          case 'is_empty':
+            condition = or(eq(column, ''), sql`${column} IS NULL`);
+            break;
+          case 'is_not_empty':
+            condition = and(sql`${column} != ''`, sql`${column} IS NOT NULL`);
+            break;
+          case 'in':
+            const values = Array.isArray(value) ? value : [value];
+            condition = inArray(column, values);
+            break;
+          case 'not_in':
+            const notValues = Array.isArray(value) ? value : [value];
+            condition = sql`${column} NOT IN (${sql.join(notValues.map(v => sql`${v}`), sql`, `)})`;
+            break;
+          default:
+            console.warn(`Unknown operator in segment rule: ${operator}`);
+            continue;
+        }
+        
+        if (condition) {
+          conditions.push(condition);
+        }
+      }
+      
+      if (conditions.length === 0) {
+        return [];
+      }
+      
+      // Combine conditions with AND/OR logic
+      const whereClause = logic === 'OR' ? or(...conditions) : and(...conditions);
+      
+      // Execute query to get matching user IDs
+      const matchingUsers = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(whereClause)
+        .limit(10000); // Limit to prevent memory issues
+      
+      const userIds = matchingUsers.map(u => u.id);
+      
+      console.log(`Calculated segment ${segmentId}: ${userIds.length} members found`);
+      return userIds;
+    } catch (error) {
+      console.error(`Error calculating segment members for ${segmentId}:`, error);
+      return [];
+    }
   }
 
   /**
@@ -968,6 +1075,168 @@ export class MarketingStorage {
       .orderBy(desc(customerSegments.createdAt))
       .limit(limit)
       .offset(offset);
+  }
+  
+  // ========================================
+  // SMS OPT-OUT TRACKING
+  // ========================================
+  
+  /**
+   * Check if phone number is opted out of SMS
+   */
+  async isSMSOptedOut(phoneNumber: string): Promise<boolean> {
+    try {
+      // Check if there's a user with this phone number who has opted out
+      const [user] = await db
+        .select()
+        .from(users)
+        .where(and(
+          eq(users.phoneNumber, phoneNumber),
+          eq(users.smsOptOut, true)
+        ))
+        .limit(1);
+      
+      return !!user;
+    } catch (error) {
+      console.error('Error checking SMS opt-out status:', error);
+      // Default to not opted out if there's an error
+      return false;
+    }
+  }
+  
+  /**
+   * Mark phone number as opted out of SMS
+   */
+  async markSMSOptedOut(phoneNumber: string): Promise<void> {
+    try {
+      // Update all users with this phone number
+      await db
+        .update(users)
+        .set({
+          smsOptOut: true,
+          smsOptOutDate: new Date(),
+          updatedAt: new Date(),
+        })
+        .where(eq(users.phoneNumber, phoneNumber));
+      
+      console.log(`📱 Marked ${phoneNumber} as opted out of SMS`);
+      
+      // Also update any campaign recipients with this phone
+      await db
+        .update(campaignRecipients)
+        .set({
+          status: 'unsubscribed',
+          unsubscribedAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .where(and(
+          eq(campaignRecipients.phone, phoneNumber),
+          sql`${campaignRecipients.status} != 'unsubscribed'`
+        ));
+    } catch (error) {
+      console.error('Error marking SMS opt-out:', error);
+    }
+  }
+  
+  /**
+   * Mark phone number as opted in to SMS (resubscribe)
+   */
+  async markSMSOptedIn(phoneNumber: string): Promise<void> {
+    try {
+      // Update all users with this phone number
+      await db
+        .update(users)
+        .set({
+          smsOptOut: false,
+          smsOptOutDate: null,
+          updatedAt: new Date(),
+        })
+        .where(eq(users.phoneNumber, phoneNumber));
+      
+      console.log(`📱 Marked ${phoneNumber} as opted in to SMS`);
+    } catch (error) {
+      console.error('Error marking SMS opt-in:', error);
+    }
+  }
+  
+  /**
+   * Get all opted-out phone numbers
+   */
+  async getOptedOutPhoneNumbers(): Promise<string[]> {
+    try {
+      const optedOut = await db
+        .select({ phoneNumber: users.phoneNumber })
+        .from(users)
+        .where(and(
+          sql`${users.phoneNumber} IS NOT NULL`,
+          eq(users.smsOptOut, true)
+        ));
+      
+      return optedOut.map(u => u.phoneNumber).filter(Boolean) as string[];
+    } catch (error) {
+      console.error('Error getting opted-out phone numbers:', error);
+      return [];
+    }
+  }
+  
+  /**
+   * Send email with tracking (integrates with email service)
+   */
+  async sendEmail(campaign: MarketingCampaign, recipient: CampaignRecipient): Promise<boolean> {
+    try {
+      const { emailService } = await import('./emailService');
+      
+      // Prepare email options
+      const emailOptions = {
+        to: {
+          email: recipient.email,
+          firstName: recipient.firstName || undefined,
+          lastName: recipient.lastName || undefined,
+        },
+        from: {
+          email: campaign.fromEmail || 'noreply@example.com',
+          name: campaign.fromName || 'Marketing Team',
+        },
+        subject: campaign.subject || 'Marketing Message',
+        html: campaign.content || '',
+        text: campaign.textContent || undefined,
+        replyTo: campaign.replyTo || undefined,
+        trackOpens: true,
+        trackClicks: true,
+        campaignId: campaign.id,
+        recipientId: recipient.id,
+        testMode: campaign.status === 'draft',
+      };
+      
+      // Send the email
+      const result = await emailService.sendEmail(emailOptions);
+      
+      if (result.success) {
+        // Update recipient status
+        await this.updateCampaignRecipient(recipient.id, {
+          status: 'sent',
+          sentAt: new Date(),
+          messageId: result.messageId,
+        });
+        
+        // Update campaign metrics
+        await this.updateCampaignMetrics(campaign.id, { sentCount: 1 });
+        
+        return true;
+      } else {
+        // Update recipient with error
+        await this.updateCampaignRecipient(recipient.id, {
+          status: 'failed',
+          failedAt: new Date(),
+          failureReason: result.error,
+        });
+        
+        return false;
+      }
+    } catch (error) {
+      console.error('Error sending email:', error);
+      return false;
+    }
   }
 }
 

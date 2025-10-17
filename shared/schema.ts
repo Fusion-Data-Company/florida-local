@@ -3196,6 +3196,172 @@ export const chatProactiveTriggers = pgTable("chat_proactive_triggers", {
   index("chat_proactive_priority_idx").on(table.priority),
 ]);
 
+// ====================================================================
+// SECURITY TABLES - Fortune 500 Grade Security Infrastructure
+// ====================================================================
+
+// Failed login attempts tracking
+export const failedLoginAttempts = pgTable("failed_login_attempts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: varchar("email", { length: 255 }).notNull(),
+  ipAddress: varchar("ip_address", { length: 45 }).notNull(), // IPv6 support
+  userAgent: text("user_agent"),
+  failureReason: varchar("failure_reason", { length: 100 }), // wrong_password, account_not_found, etc.
+  attemptTime: timestamp("attempt_time").defaultNow().notNull(),
+  geoLocation: jsonb("geo_location"), // { country, city, region, lat, lon }
+}, (table) => [
+  index("idx_failed_login_email").on(table.email),
+  index("idx_failed_login_ip").on(table.ipAddress),
+  index("idx_failed_login_time").on(table.attemptTime),
+]);
+
+// Account lockouts
+export const accountLockouts = pgTable("account_lockouts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: varchar("email", { length: 255 }).notNull(),
+  lockoutType: varchar("lockout_type", { length: 20 }).notNull(), // temporary, permanent
+  lockedAt: timestamp("locked_at").defaultNow().notNull(),
+  lockedUntil: timestamp("locked_until"), // null for permanent lockouts
+  unlockedAt: timestamp("unlocked_at"), // when admin manually unlocked
+  unlockedBy: varchar("unlocked_by").references(() => users.id),
+  reason: text("reason"),
+  attemptCount: integer("attempt_count").notNull().default(0),
+}, (table) => [
+  index("idx_lockout_email").on(table.email),
+  index("idx_lockout_active").on(table.lockedUntil, table.unlockedAt),
+]);
+
+// IP access control (blocklist/allowlist)
+export const ipAccessControl = pgTable("ip_access_control", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  ipAddress: varchar("ip_address", { length: 45 }).notNull(), // Single IP or CIDR notation
+  ipRange: varchar("ip_range", { length: 100 }), // For IP ranges
+  accessType: varchar("access_type", { length: 10 }).notNull(), // block, allow
+  reason: text("reason"),
+  expiresAt: timestamp("expires_at"), // null for permanent
+  isActive: boolean("is_active").default(true),
+  createdBy: varchar("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex("idx_unique_ip_access").on(table.ipAddress, table.accessType),
+  index("idx_ip_access_active").on(table.isActive, table.expiresAt),
+]);
+
+// Geographic restrictions
+export const geoRestrictions = pgTable("geo_restrictions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  countryCode: varchar("country_code", { length: 2 }).notNull(), // ISO 3166-1 alpha-2
+  regionCode: varchar("region_code", { length: 10 }), // State/province code
+  restrictionType: varchar("restriction_type", { length: 10 }).notNull(), // block, allow
+  reason: text("reason"),
+  isActive: boolean("is_active").default(true),
+  createdBy: varchar("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex("idx_unique_geo_restriction").on(table.countryCode, table.regionCode, table.restrictionType),
+  index("idx_geo_restriction_active").on(table.isActive),
+]);
+
+// Security events (comprehensive audit log)
+export const securityEvents = pgTable("security_events", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  eventType: varchar("event_type", { length: 100 }).notNull(), // login_failed, session_hijack, ip_blocked, etc.
+  severity: varchar("severity", { length: 20 }).notNull(), // info, warning, high, critical
+  userId: varchar("user_id").references(() => users.id),
+  ipAddress: varchar("ip_address", { length: 45 }),
+  userAgent: text("user_agent"),
+  description: text("description").notNull(),
+  metadata: jsonb("metadata"), // Additional event-specific data
+  resolved: boolean("resolved").default(false),
+  resolvedAt: timestamp("resolved_at"),
+  resolvedBy: varchar("resolved_by").references(() => users.id),
+  notificationSent: boolean("notification_sent").default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_security_event_type").on(table.eventType),
+  index("idx_security_event_severity").on(table.severity),
+  index("idx_security_event_user").on(table.userId),
+  index("idx_security_event_created").on(table.createdAt),
+]);
+
+// Active sessions tracking (for session management)
+export const activeSessions = pgTable("active_sessions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  sessionId: varchar("session_id", { length: 255 }).notNull().unique(),
+  ipAddress: varchar("ip_address", { length: 45 }),
+  userAgent: text("user_agent"),
+  deviceType: varchar("device_type", { length: 50 }), // desktop, mobile, tablet
+  browser: varchar("browser", { length: 100 }),
+  os: varchar("os", { length: 100 }),
+  isCurrent: boolean("is_current").default(false),
+  lastActivity: timestamp("last_activity").defaultNow().notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_active_session_user").on(table.userId),
+  index("idx_active_session_id").on(table.sessionId),
+  index("idx_active_session_expires").on(table.expiresAt),
+]);
+
+// Security notification queue
+export const securityNotifications = pgTable("security_notifications", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  recipientEmail: varchar("recipient_email", { length: 255 }).notNull(),
+  recipientPhone: varchar("recipient_phone", { length: 20 }),
+  notificationType: varchar("notification_type", { length: 50 }).notNull(), // email, sms, both
+  subject: varchar("subject", { length: 255 }).notNull(),
+  message: text("message").notNull(),
+  priority: varchar("priority", { length: 20 }).notNull().default("normal"), // low, normal, high, critical
+  metadata: jsonb("metadata"), // Event details, user info, etc.
+  status: varchar("status", { length: 20 }).notNull().default("pending"), // pending, processing, sent, failed
+  attempts: integer("attempts").default(0),
+  sentAt: timestamp("sent_at"),
+  failureReason: text("failure_reason"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_notification_status").on(table.status),
+  index("idx_notification_priority").on(table.priority),
+  index("idx_notification_created").on(table.createdAt),
+]);
+
+// Authentication audit logs (separate from general audit)
+export const authAuditLogs = pgTable("auth_audit_logs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: varchar("user_id").references(() => users.id),
+  eventType: varchar("event_type", { length: 50 }).notNull(), // login_success, login_failed, logout, session_expired, password_changed
+  eventStatus: varchar("event_status", { length: 20 }).notNull(), // success, failure, pending
+  ipAddress: varchar("ip_address", { length: 45 }),
+  userAgent: text("user_agent"),
+  sessionId: varchar("session_id", { length: 255 }),
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_auth_audit_user").on(table.userId),
+  index("idx_auth_audit_type").on(table.eventType),
+  index("idx_auth_audit_created").on(table.createdAt),
+]);
+
+// Rate limiting records (for persistent rate limiting)
+export const rateLimitRecords = pgTable("rate_limit_records", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  identifier: varchar("identifier", { length: 255 }).notNull(), // IP, userId, or composite key
+  limitType: varchar("limit_type", { length: 50 }).notNull(), // api, login, registration, etc.
+  attempts: integer("attempts").notNull().default(1),
+  windowStart: timestamp("window_start").notNull(),
+  windowEnd: timestamp("window_end").notNull(),
+  blocked: boolean("blocked").default(false),
+  blockedUntil: timestamp("blocked_until"),
+  metadata: jsonb("metadata"), // Additional context
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex("idx_unique_rate_limit").on(table.identifier, table.limitType, table.windowStart),
+  index("idx_rate_limit_identifier").on(table.identifier),
+  index("idx_rate_limit_window").on(table.windowEnd),
+]);
+
 // Insert schemas
 export const insertAdminRoleSchema = createInsertSchema(adminRoles);
 export const insertUserRoleSchema = createInsertSchema(userRoles);

@@ -168,12 +168,23 @@ export class SMSService {
     message: string,
     metadata?: Record<string, string>
   ): Promise<SMSResult> {
+    // Check if number is opted out before sending
+    if (await this.isOptedOut(to)) {
+      return {
+        success: false,
+        error: 'Phone number has opted out of SMS messages',
+        recipientPhone: to,
+      };
+    }
+    
     // If no credentials, log to console (development mode)
     if (!this.accountSid || !this.authToken || !this.fromPhone) {
       console.log('📱 [TWILIO MOCK] SMS:', {
         to,
         from: from || this.fromPhone,
         message: message.substring(0, 50) + '...',
+        segments: this.countSegments(message),
+        estimatedCost: `$${(this.costPerSMS * this.countSegments(message)).toFixed(4)}`,
       });
       return {
         success: true,
@@ -183,24 +194,63 @@ export class SMSService {
       };
     }
 
-    // TODO: Implement actual Twilio integration
-    // This requires installing twilio package
-    // Example:
-    // const twilio = require('twilio');
-    // const client = twilio(this.accountSid, this.authToken);
-    // const response = await client.messages.create({
-    //   body: message,
-    //   from: from || this.fromPhone,
-    //   to: to,
-    // });
-    // return {
-    //   success: true,
-    //   messageId: response.sid,
-    //   recipientPhone: to,
-    //   status: response.status,
-    // };
+    try {
+      const twilio = await import('twilio');
+      const client = twilio.default(this.accountSid, this.authToken);
+      
+      // Format phone number to E.164 if needed
+      const formattedTo = this.formatPhoneNumber(to);
+      const formattedFrom = from || this.fromPhone;
+      
+      // Send the message
+      const response = await client.messages.create({
+        body: message,
+        from: formattedFrom,
+        to: formattedTo,
+        statusCallback: metadata?.statusCallbackUrl, // Optional webhook for delivery status
+      });
 
-    throw new Error('Twilio integration not yet implemented. Install twilio package.');
+      console.log(`📱 SMS sent successfully: ${response.sid} to ${formattedTo}`);
+      
+      // Track message for analytics
+      if (metadata?.campaignId && metadata?.recipientId) {
+        await this.trackSMSSent(metadata.campaignId, metadata.recipientId, response.sid);
+      }
+
+      return {
+        success: true,
+        messageId: response.sid,
+        recipientPhone: to,
+        status: response.status,
+      };
+    } catch (error: any) {
+      console.error('Twilio send error:', error);
+      
+      // Handle specific Twilio errors
+      if (error.code === 21211) {
+        return {
+          success: false,
+          error: 'Invalid phone number format',
+          recipientPhone: to,
+        };
+      } else if (error.code === 21610) {
+        // Number is unsubscribed
+        await this.markOptedOut(to);
+        return {
+          success: false,
+          error: 'Phone number has been blacklisted',
+          recipientPhone: to,
+        };
+      } else if (error.code === 21408) {
+        return {
+          success: false,
+          error: 'Permission to send SMS not enabled for region',
+          recipientPhone: to,
+        };
+      }
+      
+      throw new Error(`Twilio error: ${error.message}`);
+    }
   }
 
   /**
@@ -305,21 +355,111 @@ export class SMSService {
   /**
    * Check if number is opted out
    *
-   * TODO: Implement opt-out tracking in database
+   * Queries database for opt-out status
    */
   async isOptedOut(phone: string): Promise<boolean> {
-    // TODO: Query database for opt-out status
-    return false;
+    try {
+      const { MarketingStorage } = await import('./marketingStorage');
+      const storage = new MarketingStorage();
+      const formattedPhone = this.formatPhoneNumber(phone);
+      return await storage.isSMSOptedOut(formattedPhone);
+    } catch (error) {
+      console.error('Error checking opt-out status:', error);
+      return false;
+    }
   }
 
   /**
    * Mark number as opted out
    *
-   * TODO: Implement opt-out tracking in database
+   * Updates database to mark phone as opted out
    */
   async markOptedOut(phone: string): Promise<void> {
-    // TODO: Update database to mark phone as opted out
-    console.log(`📱 Phone number opted out: ${phone}`);
+    try {
+      const { MarketingStorage } = await import('./marketingStorage');
+      const storage = new MarketingStorage();
+      const formattedPhone = this.formatPhoneNumber(phone);
+      
+      await storage.markSMSOptedOut(formattedPhone);
+      console.log(`📱 Phone number opted out: ${formattedPhone}`);
+    } catch (error) {
+      console.error('Error marking opt-out:', error);
+    }
+  }
+  
+  /**
+   * Track SMS sent for analytics
+   */
+  private async trackSMSSent(campaignId: string, recipientId: string, messageId: string): Promise<void> {
+    try {
+      const { MarketingStorage } = await import('./marketingStorage');
+      const storage = new MarketingStorage();
+      
+      // Update recipient status to sent
+      await storage.updateCampaignRecipient(recipientId, {
+        status: 'sent',
+        sentAt: new Date(),
+        messageId,
+      });
+      
+      // Update campaign metrics
+      await storage.updateCampaignMetrics(campaignId, { sentCount: 1 });
+    } catch (error) {
+      console.error('Error tracking SMS sent:', error);
+    }
+  }
+  
+  /**
+   * Handle incoming SMS webhooks (for STOP messages)
+   */
+  async handleIncomingSMS(from: string, body: string): Promise<void> {
+    const message = body.trim().toUpperCase();
+    
+    // Check for opt-out keywords
+    const optOutKeywords = ['STOP', 'UNSUBSCRIBE', 'CANCEL', 'END', 'QUIT'];
+    if (optOutKeywords.includes(message)) {
+      await this.markOptedOut(from);
+      
+      // Send confirmation if configured
+      if (this.accountSid && this.authToken && this.fromPhone) {
+        await this.sendSMS({
+          to: { phone: from },
+          from: this.fromPhone,
+          message: 'You have been unsubscribed from SMS messages. Reply START to resubscribe.',
+        });
+      }
+    }
+    
+    // Check for opt-in keywords
+    const optInKeywords = ['START', 'YES', 'SUBSCRIBE'];
+    if (optInKeywords.includes(message)) {
+      await this.markOptedIn(from);
+      
+      // Send confirmation if configured
+      if (this.accountSid && this.authToken && this.fromPhone) {
+        await this.sendSMS({
+          to: { phone: from },
+          from: this.fromPhone,
+          message: 'Welcome! You have been subscribed to SMS messages. Reply STOP to unsubscribe.',
+        });
+      }
+    }
+  }
+  
+  /**
+   * Mark number as opted in (resubscribe)
+   */
+  async markOptedIn(phone: string): Promise<void> {
+    try {
+      const { MarketingStorage } = await import('./marketingStorage');
+      const storage = new MarketingStorage();
+      const formattedPhone = this.formatPhoneNumber(phone);
+      
+      await storage.markSMSOptedIn(formattedPhone);
+      console.log(`📱 Phone number opted in: ${formattedPhone}`);
+    } catch (error) {
+      console.error('Error marking opt-in:', error);
+    }
   }
 }
 
