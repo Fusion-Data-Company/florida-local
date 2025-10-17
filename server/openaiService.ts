@@ -85,27 +85,39 @@ export interface ContentTemplate {
 }
 
 class OpenAIService {
-  private client: OpenAI;
+  private client: OpenAI | null = null;
   private retryAttempts = 3;
   private retryDelay = 1000;
   private cacheExpiry = 3600; // 1 hour
+  private isConfigured = false;
 
   constructor() {
     if (!process.env.OPENAI_API_KEY) {
-      throw new Error("OpenAI API key not configured");
+      logger.warn("⚠️ OpenAI API key not configured - AI features will be disabled");
+      this.isConfigured = false;
+      return;
     }
 
     this.client = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
+    this.isConfigured = true;
 
     logger.info("✅ OpenAI Service initialized");
+  }
+
+  private checkConfiguration(): void {
+    if (!this.isConfigured || !this.client) {
+      throw new Error("OpenAI API key not configured. Please add OPENAI_API_KEY to your environment variables.");
+    }
   }
 
   /**
    * Generate content with advanced features
    */
   async generateContent(options: ContentGenerationOptions): Promise<GeneratedContent> {
+    this.checkConfiguration();
+    
     const startTime = Date.now();
     const cacheKey = this.getCacheKey(options);
 
@@ -284,7 +296,7 @@ class OpenAIService {
           return await this.streamGeneration(prompt, model);
         }
 
-        const response = await this.client.chat.completions.create({
+        const response = await this.client!.chat.completions.create({
           model,
           messages: [
             {
@@ -321,7 +333,7 @@ class OpenAIService {
    * Stream content generation for long-form content
    */
   private async streamGeneration(prompt: string, model: string): Promise<any> {
-    const stream = await this.client.chat.completions.create({
+    const stream = await this.client!.chat.completions.create({
       model,
       messages: [
         {
@@ -819,8 +831,10 @@ class OpenAIService {
    * Moderate content for safety and compliance
    */
   async moderateContent(content: string): Promise<any> {
+    this.checkConfiguration();
+    
     try {
-      const response = await this.client.moderations.create({
+      const response = await this.client!.moderations.create({
         input: content,
       });
 

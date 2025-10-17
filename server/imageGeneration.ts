@@ -85,19 +85,23 @@ export interface ImageTemplate {
 }
 
 class ImageGenerationService {
-  private client: OpenAI;
+  private client: OpenAI | null = null;
   private storageService: ObjectStorageService | S3Service | null = null;
   private localStoragePath = path.join(process.cwd(), 'attached_assets', 'generated_images');
   private cacheExpiry = 86400; // 24 hours
+  private isConfigured = false;
 
   constructor() {
     if (!process.env.OPENAI_API_KEY) {
-      throw new Error("OpenAI API key not configured");
+      logger.warn("⚠️ OpenAI API key not configured - Image generation features will be disabled");
+      this.isConfigured = false;
+      return;
     }
 
     this.client = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
+    this.isConfigured = true;
 
     // Initialize storage service if available
     this.initializeStorage();
@@ -106,6 +110,12 @@ class ImageGenerationService {
     this.ensureLocalStorage();
 
     logger.info("✅ Image Generation Service initialized");
+  }
+
+  private checkConfiguration(): void {
+    if (!this.isConfigured || !this.client) {
+      throw new Error("OpenAI API key not configured. Please add OPENAI_API_KEY to your environment variables.");
+    }
   }
 
   /**
@@ -140,6 +150,8 @@ class ImageGenerationService {
    * Generate image with DALL-E 3
    */
   async generateImage(options: ImageGenerationOptions): Promise<GeneratedImage> {
+    this.checkConfiguration();
+    
     const startTime = Date.now();
     const cacheKey = this.getCacheKey(options);
 
@@ -164,7 +176,7 @@ class ImageGenerationService {
         : finalPrompt;
 
       // Generate image
-      const response = await this.client.images.generate({
+      const response = await this.client!.images.generate({
         model: DALL_E_MODEL,
         prompt: promptWithNegative,
         n: 1, // DALL-E 3 only supports n=1
