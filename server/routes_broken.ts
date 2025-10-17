@@ -12,7 +12,7 @@ import path from "path";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { ObjectPermission } from "./objectAcl";
 import Stripe from "stripe";
-// import { ApiResponse, asyncHandler, standardErrorMiddleware } from "./errorHandler";
+import { ApiResponse, asyncHandler, standardErrorMiddleware } from "./errorHandler";
 
 // API Request Validation Schemas
 const gmbSyncRequestSchema = z.object({
@@ -170,9 +170,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         status: 'error',
         timestamp: new Date().toISOString(),
         message: error instanceof Error ? error.message : 'Unknown error'
-});
+      });
     }
-});
+  });
 
   // Auth routes
   
@@ -187,11 +187,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         expires: expires ? expires.toISOString() : null,
         maxAge: session.cookie.maxAge,
         isRolling: session.cookie.rolling ?? true
-});
+      });
     } catch (error) {
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, error, req);
     }
-});
+  });
 
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
@@ -202,7 +202,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!userId) {
         console.error("❌ /api/auth/user - No user ID in claims");
         console.error("Claims:", req.user?.claims);
-        return res.status(401).json({ message: "Invalid session: No user ID found" });
+        return ApiResponse.unauthorized(res, "Invalid session: No user ID found", req);
       }
       
       console.log(`🔐 /api/auth/user - Fetching user: ${email} (ID: ${userId})`);
@@ -211,7 +211,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (!user) {
         console.error(`❌ /api/auth/user - User not found in database: ${userId}`);
-        return res.status(404).json({ message: "Not found" });
+        return ApiResponse.notFound(res, "User", req);
       }
       
       console.log(`✅ /api/auth/user - Successfully returned user: ${user.email}`);
@@ -219,9 +219,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("❌ /api/auth/user - Error fetching user:", error);
       console.error("Error stack:", (error as Error).stack);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, error, req);
     }
-});
+  });
 
   // Business routes (SECURITY: Rate limited)
   app.post('/api/businesses', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
@@ -230,7 +230,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const businessData = insertBusinessSchema.parse({
         ...req.body,
         ownerId: userId,
-});
+      });
       
       const business = await storage.createBusiness(businessData);
       res.json(business);
@@ -239,9 +239,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (error.name === 'ZodError') {
         return ApiResponse.zodValidation(res, error, req);
       }
-      return res.status(400).json({ message: "Validation error" });
+      return ApiResponse.validation(res, error.message || "Failed to create business", req);
     }
-});
+  });
 
   app.get('/api/businesses/search', publicEndpointRateLimit, async (req, res) => {
     try {
@@ -253,9 +253,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(businesses);
     } catch (error) {
       console.error("Error searching businesses:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, error);
     }
-});
+  });
 
   app.get('/api/businesses/spotlight', async (req, res) => {
     try {
@@ -271,14 +271,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           weekly: trending.slice(0, 5),
           monthly: trending.slice(0, 1),
           fallback: true,
-});
+        });
       }
       res.json(spotlights);
     } catch (error) {
       console.error("Error fetching spotlights:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, error);
     }
-});
+  });
 
   app.get('/api/businesses/my', isAuthenticated, async (req: any, res) => {
     try {
@@ -287,23 +287,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(businesses);
     } catch (error) {
       console.error("Error fetching user businesses:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, error);
     }
-});
+  });
 
   app.get('/api/businesses/:id', async (req, res) => {
     try {
       const { id } = req.params;
       const business = await storage.getBusinessById(id);
       if (!business) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business");
       }
       res.json(business);
     } catch (error) {
       console.error("Error fetching business:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, error);
     }
-});
+  });
 
   app.put('/api/businesses/:id', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
     try {
@@ -313,11 +313,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if the business exists and if the user is the owner
       const existingBusiness = await storage.getBusinessById(id);
       if (!existingBusiness) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business");
       }
       
       if (existingBusiness.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized to edit this business" });
+        return ApiResponse.forbidden(res, "Not authorized to edit this business");
       }
       
       const businessData = updateBusinessSchema.parse(req.body);
@@ -325,9 +325,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(business);
     } catch (error: any) {
       console.error("Error updating business:", error);
-      return res.status(400).json({ message: "Validation error" });
+      return ApiResponse.validation(res, error.message || "Failed to update business");
     }
-});
+  });
 
   app.post('/api/businesses/:id/follow', isAuthenticated, async (req: any, res) => {
     try {
@@ -335,12 +335,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { id: businessId } = req.params;
       
       await storage.followBusiness(userId, businessId);
-      res.json({ message: "Successfully followed business" });
+      res.json({ message: "Successfully followed business");
     } catch (error) {
       console.error("Error following business:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to follow business""), req);
     }
-});
+  });
 
   app.delete('/api/businesses/:id/follow', isAuthenticated, async (req: any, res) => {
     try {
@@ -348,12 +348,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { id: businessId } = req.params;
       
       await storage.unfollowBusiness(userId, businessId);
-      res.json({ message: "Successfully unfollowed business" });
+      res.json({ message: "Successfully unfollowed business");
     } catch (error) {
       console.error("Error unfollowing business:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to unfollow business");
     }
-});
+  });
 
   // =================== GOOGLE MY BUSINESS INTEGRATION ROUTES ===================
 
@@ -366,11 +366,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verify business ownership
       const business = await storage.getBusinessById(businessId);
       if (!business) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business");
       }
       
       if (business.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized to connect GMB for this business" });
+        return ApiResponse.forbidden(res, "Not authorized to connect GMB for this business");
       }
 
       // Generate OAuth URL with business ID as state parameter
@@ -383,9 +383,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error: any) {
       console.error("Error initiating GMB connection:", error);
-      res.status(500).json({ message: error.message || "Failed to initiate GMB connection" });
+      res.status(500).json({ message: error.message || "Failed to initiate GMB connection");
     }
-});
+  });
 
   // Handle GMB OAuth callback
   app.get('/api/gmb/oauth/callback', async (req, res) => {
@@ -393,20 +393,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { code, state: businessId, error } = req.query;
       
       if (error) {
-        return res.status(400).json({ message: "OAuth authorization failed", 
-          error: error as string
+        return ApiResponse.validation(res, "
+          message: "OAuth authorization failed", 
+          error: error as string 
         });
       }
       
       if (!code || !businessId) {
-        return res.status(400).json({ message: "Missing authorization code or business ID" 
+        return ApiResponse.validation(res, "
+          message: "Missing authorization code or business ID" 
         });
       }
 
       // Get business to find owner
       const business = await storage.getBusinessById(businessId as string);
       if (!business) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business");
       }
 
       // Exchange code for tokens
@@ -420,9 +422,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.redirect(`/business/${businessId}?gmb=connected`);
     } catch (error: any) {
       console.error("Error in GMB OAuth callback:", error);
-      res.status(500).json({ message: error.message || "Failed to complete GMB connection" });
+      res.status(500).json({ message: error.message || "Failed to complete GMB connection");
     }
-});
+  });
 
   // Search for GMB listings for business verification
   app.get('/api/gmb/search', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
@@ -430,7 +432,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { businessId } = req.query;
       
       if (!businessId) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: "Business ID is required");
       }
 
       const userId = req.user.claims.sub;
@@ -438,11 +440,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verify business ownership
       const business = await storage.getBusinessById(businessId as string);
       if (!business) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business");
       }
       
       if (business.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized to search GMB for this business" });
+        return ApiResponse.forbidden(res, "Not authorized to search GMB for this business");
       }
 
       // Search for GMB matches
@@ -451,9 +453,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(searchResults);
     } catch (error: any) {
       console.error("Error searching GMB listings:", error);
-      res.status(500).json({ message: error.message || "Failed to search GMB listings" });
+      res.status(500).json({ message: error.message || "Failed to search GMB listings");
     }
-});
+  });
 
   // Initiate business verification with selected GMB listing
   app.post('/api/businesses/:id/gmb/verify', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
@@ -463,20 +465,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const validationResult = gmbVerifyRequestSchema.safeParse(req.body);
       if (!validationResult.success) {
-        return res.status(400).json({ message: "Validation error",
+        return ApiResponse.validation(res, "
+          message: "Validation error", 
           errors: validationResult.error.errors 
-});
+        });
       }
       const { gmbLocationName } = validationResult.data;
 
       // Verify business ownership
       const business = await storage.getBusinessById(businessId);
       if (!business) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business");
       }
       
       if (business.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized to verify this business" });
+        return ApiResponse.forbidden(res, "Not authorized to verify this business");
       }
 
       // Initiate verification process
@@ -488,9 +491,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(result);
     } catch (error: any) {
       console.error("Error initiating business verification:", error);
-      res.status(500).json({ message: error.message || "Failed to initiate verification" });
+      res.status(500).json({ message: error.message || "Failed to initiate verification");
     }
-});
+  });
 
   // Get GMB verification and connection status
   app.get('/api/businesses/:id/gmb/status', isAuthenticated, async (req: any, res) => {
@@ -501,7 +504,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verify business ownership (allow read access for any authenticated user)
       const business = await storage.getBusinessById(businessId);
       if (!business) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business");
       }
       
       // For detailed status, require ownership
@@ -515,19 +518,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.json({
           ...status,
           syncDetails: syncStatus
-});
+        });
       } else {
         // Public status for non-owners
         res.json({
           isVerified: business.gmbVerified || false,
           isConnected: business.gmbConnected || false
-});
+        });
       }
     } catch (error: any) {
       console.error("Error fetching GMB status:", error);
-      res.status(500).json({ message: error.message || "Failed to fetch GMB status" });
+      res.status(500).json({ message: error.message || "Failed to fetch GMB status");
     }
-});
+  });
 
   // Manual data synchronization trigger
   app.post('/api/businesses/:id/gmb/sync', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
@@ -537,26 +540,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const validationResult = gmbSyncRequestSchema.safeParse(req.body);
       if (!validationResult.success) {
-        return res.status(400).json({ message: "Validation error",
+        return ApiResponse.validation(res, "
+          message: "Validation error", 
           errors: validationResult.error.errors 
-});
+        });
       }
       const { forceUpdate, syncPhotos, syncReviews, syncBusinessInfo, conflictResolution } = validationResult.data;
       
       // Verify business ownership
       const business = await storage.getBusinessById(businessId);
       if (!business) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business");
       }
       
       if (business.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized to sync this business" });
+        return ApiResponse.forbidden(res, "Not authorized to sync this business");
       }
 
       // Check if business is connected to GMB
       if (!business.gmbConnected) {
-        return res.status(400).json({ message: "Business is not connected to Google My Business" 
-});
+        return ApiResponse.validation(res, "
+          message: "Business is not connected to Google My Business" 
+        });
       }
 
       // Perform data synchronization
@@ -566,14 +571,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         syncReviews,
         syncBusinessInfo,
         conflictResolution
-});
+      });
       
       res.json(syncResult);
     } catch (error: any) {
       console.error("Error syncing business data:", error);
-      res.status(500).json({ message: error.message || "Failed to sync business data" });
+      res.status(500).json({ message: error.message || "Failed to sync business data");
     }
-});
+  });
 
   // Get data synchronization status and history
   app.get('/api/businesses/:id/gmb/sync/status', isAuthenticated, async (req: any, res) => {
@@ -584,11 +589,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verify business ownership
       const business = await storage.getBusinessById(businessId);
       if (!business) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business");
       }
       
       if (business.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized to view sync status for this business" });
+        return ApiResponse.forbidden(res, "Not authorized to view sync status for this business");
       }
 
       // Get sync status and recent history
@@ -597,9 +602,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(syncStatus);
     } catch (error: any) {
       console.error("Error fetching sync status:", error);
-      res.status(500).json({ message: error.message || "Failed to fetch sync status" });
+      res.status(500).json({ message: error.message || "Failed to fetch sync status");
     }
-});
+  });
 
   // Get GMB reviews for a business
   app.get('/api/businesses/:id/gmb/reviews', isAuthenticated, async (req: any, res) => {
@@ -610,7 +615,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verify business ownership (or allow public read if specified)
       const business = await storage.getBusinessById(businessId);
       if (!business) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business");
       }
       
       // Allow owners and public access to reviews
@@ -639,9 +644,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(filteredReviews);
     } catch (error: any) {
       console.error("Error fetching GMB reviews:", error);
-      res.status(500).json({ message: error.message || "Failed to fetch GMB reviews" });
+      res.status(500).json({ message: error.message || "Failed to fetch GMB reviews");
     }
-});
+  });
 
   // Disconnect GMB integration
   app.delete('/api/businesses/:id/gmb/disconnect', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
@@ -652,11 +657,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verify business ownership
       const business = await storage.getBusinessById(businessId);
       if (!business) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business");
       }
       
       if (business.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized to disconnect GMB for this business" });
+        return ApiResponse.forbidden(res, "Not authorized to disconnect GMB for this business");
       }
 
       // Disconnect GMB integration
@@ -664,13 +669,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json({ 
         success: true,
-        message: "Successfully disconnected from Google My Business"
+        message: "Successfully disconnected from Google My Business" 
       });
     } catch (error: any) {
       console.error("Error disconnecting GMB:", error);
-      res.status(500).json({ message: error.message || "Failed to disconnect GMB" });
+      res.status(500).json({ message: error.message || "Failed to disconnect GMB");
     }
-});
+  });
 
   // GMB Webhook endpoint for real-time updates (if Google supports it)
   app.post('/api/gmb/webhook', async (req, res) => {
@@ -688,12 +693,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // 3. Trigger appropriate sync operations
       // 4. Update business data based on webhook content
       
-      res.status(200).json({ success: true });
+      res.status(200).json({ success: true);
     } catch (error: any) {
       console.error("Error processing GMB webhook:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to process webhook");
     }
-});
+  });
 
   // Admin endpoint to get GMB integration statistics
   app.get('/api/admin/gmb/stats', isAdmin, adminRateLimit, async (req: any, res) => {
@@ -704,9 +709,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(stats);
     } catch (error: any) {
       console.error("Error fetching GMB stats:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch GMB statistics");
     }
-});
+  });
 
   // GMB Health Check endpoint for monitoring
   app.get('/api/gmb/health', async (req, res) => {
@@ -733,10 +738,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error in GMB health check:", error);
       res.status(503).json({ 
         status: 'unhealthy',
-  error: error.message,        timestamp: new Date().toISOString()
-});
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
     }
-});
+  });
 
   // =================== END GMB INTEGRATION ROUTES ===================
 
@@ -751,21 +757,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verify business ownership
       const business = await storage.getBusinessById(businessId);
       if (!business) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business");
       }
 
       if (business.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized to view Stripe status for this business" });
+        return ApiResponse.forbidden(res, "Not authorized to view Stripe status for this business");
       }
 
       if (!business.stripeAccountId) {
-        return res.status(404).json({ message: "Stripe Connect account not found" });
+        return ApiResponse.notFound(res, "Stripe Connect account");
       }
 
       // Get account details
       const account = await stripeConnect.getConnectAccount(business.stripeAccountId);
       if (!account) {
-        return res.status(404).json({ message: "Stripe account not found" });
+        return ApiResponse.notFound(res, "Stripe account");
       }
 
       const onboardingComplete = stripeConnect.isAccountOnboarded(account);
@@ -777,12 +783,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         onboardingComplete,
         requirements: account.requirements,
         payoutSchedule: account.settings?.payouts?.schedule,
-});
+      });
     } catch (error: any) {
       console.error("Error fetching Stripe status:", error);
-      res.status(500).json({ message: error.message || "Failed to fetch Stripe status" });
+      res.status(500).json({ message: error.message || "Failed to fetch Stripe status");
     }
-});
+  });
 
   // Get account balance for a business
   app.get('/api/businesses/:id/stripe/balance', isAuthenticated, async (req: any, res) => {
@@ -793,32 +799,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verify business ownership
       const business = await storage.getBusinessById(businessId);
       if (!business) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business");
       }
 
       if (business.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized to view balance for this business" });
+        return ApiResponse.forbidden(res, "Not authorized to view balance for this business");
       }
 
       if (!business.stripeAccountId) {
-        return res.status(404).json({ message: "Stripe Connect account not found" });
+        return ApiResponse.notFound(res, "Stripe Connect account");
       }
 
       // Get balance
       const balance = await stripeConnect.getAccountBalance(business.stripeAccountId);
       if (!balance) {
-        return res.status(404).json({ message: "Balance data not found" });
+        return ApiResponse.notFound(res, "Balance data");
       }
 
       res.json({
         available: balance.available,
         pending: balance.pending,
-});
+      });
     } catch (error: any) {
       console.error("Error fetching Stripe balance:", error);
-      res.status(500).json({ message: error.message || "Failed to fetch Stripe balance" });
+      res.status(500).json({ message: error.message || "Failed to fetch Stripe balance");
     }
-});
+  });
 
   // List payouts for a business
   app.get('/api/businesses/:id/stripe/payouts', isAuthenticated, async (req: any, res) => {
@@ -830,29 +836,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verify business ownership
       const business = await storage.getBusinessById(businessId);
       if (!business) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business");
       }
 
       if (business.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized to view payouts for this business" });
+        return ApiResponse.forbidden(res, "Not authorized to view payouts for this business");
       }
 
       if (!business.stripeAccountId) {
-        return res.status(404).json({ message: "Stripe Connect account not found" });
+        return ApiResponse.notFound(res, "Stripe Connect account");
       }
 
       // List payouts
       const result = await stripeConnect.listPayouts(business.stripeAccountId, limit);
       if (!result) {
-        return res.status(404).json({ message: "Payout data not found" });
+        return ApiResponse.notFound(res, "Payout data");
       }
 
       res.json(result);
     } catch (error: any) {
       console.error("Error fetching Stripe payouts:", error);
-      res.status(500).json({ message: error.message || "Failed to fetch Stripe payouts" });
+      res.status(500).json({ message: error.message || "Failed to fetch Stripe payouts");
     }
-});
+  });
 
   // List balance transactions for a business
   app.get('/api/businesses/:id/stripe/transactions', isAuthenticated, async (req: any, res) => {
@@ -865,32 +871,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verify business ownership
       const business = await storage.getBusinessById(businessId);
       if (!business) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business");
       }
 
       if (business.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized to view transactions for this business" });
+        return ApiResponse.forbidden(res, "Not authorized to view transactions for this business");
       }
 
       if (!business.stripeAccountId) {
-        return res.status(404).json({ message: "Stripe Connect account not found" });
+        return ApiResponse.notFound(res, "Stripe Connect account");
       }
 
       // List transactions
       const result = await stripeConnect.listBalanceTransactions(business.stripeAccountId, {
         limit,
         startingAfter,
-});
+      });
       if (!result) {
-        return res.status(404).json({ message: "Transaction data not found" });
+        return ApiResponse.notFound(res, "Transaction data");
       }
 
       res.json(result);
     } catch (error: any) {
       console.error("Error fetching Stripe transactions:", error);
-      res.status(500).json({ message: error.message || "Failed to fetch Stripe transactions" });
+      res.status(500).json({ message: error.message || "Failed to fetch Stripe transactions");
     }
-});
+  });
 
   // Create a manual payout for a business
   app.post('/api/businesses/:id/stripe/payouts', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
@@ -900,38 +906,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const validationResult = stripePayoutRequestSchema.safeParse(req.body);
       if (!validationResult.success) {
-        return res.status(400).json({ message: "Validation error",
+        return ApiResponse.validation(res, "
+          message: "Validation error", 
           errors: validationResult.error.errors 
-});
+        });
       }
       const { amount, description } = validationResult.data;
 
       // Verify business ownership
       const business = await storage.getBusinessById(businessId);
       if (!business) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business");
       }
 
       if (business.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized to create payouts for this business" });
+        return ApiResponse.forbidden(res, "Not authorized to create payouts for this business");
       }
 
       if (!business.stripeAccountId) {
-        return res.status(404).json({ message: "Stripe Connect account not found" });
+        return ApiResponse.notFound(res, "Stripe Connect account");
       }
 
       // Check available balance
       const balance = await stripeConnect.getAccountBalance(business.stripeAccountId);
       if (!balance) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: "Failed to retrieve account balance");
       }
 
       const availableBalance = balance.available.find(b => b.currency === 'usd');
       if (!availableBalance || availableBalance.amount < amount) {
-        return res.status(400).json({ message: "Insufficient balance for payout",
+        return ApiResponse.validation(res, "
+          message: "Insufficient balance for payout",
           available: availableBalance?.amount || 0,
           requested: amount,
-});
+        });
       }
 
       // Create payout
@@ -943,15 +951,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       );
 
       if (!payout) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: "Failed to create payout");
       }
 
       res.json(payout);
     } catch (error: any) {
       console.error("Error creating Stripe payout:", error);
-      res.status(500).json({ message: error.message || "Failed to create Stripe payout" });
+      res.status(500).json({ message: error.message || "Failed to create Stripe payout");
     }
-});
+  });
 
   // Update payout settings for a business
   app.post('/api/businesses/:id/stripe/payout-settings', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
@@ -961,24 +969,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const validationResult = stripePayoutSettingsSchema.safeParse(req.body);
       if (!validationResult.success) {
-        return res.status(400).json({ message: "Validation error",
+        return ApiResponse.validation(res, "
+          message: "Validation error", 
           errors: validationResult.error.errors 
-});
+        });
       }
       const { interval, delayDays } = validationResult.data;
 
       // Verify business ownership
       const business = await storage.getBusinessById(businessId);
       if (!business) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business");
       }
 
       if (business.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized to update payout settings for this business" });
+        return ApiResponse.forbidden(res, "Not authorized to update payout settings for this business");
       }
 
       if (!business.stripeAccountId) {
-        return res.status(404).json({ message: "Stripe Connect account not found" });
+        return ApiResponse.notFound(res, "Stripe Connect account");
       }
 
       // Update payout settings
@@ -988,18 +997,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       );
 
       if (!updatedAccount) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: "Failed to update payout settings");
       }
 
       res.json({
         accountId: updatedAccount.id,
         payoutSchedule: updatedAccount.settings?.payouts?.schedule,
-});
+      });
     } catch (error: any) {
       console.error("Error updating Stripe payout settings:", error);
-      res.status(500).json({ message: error.message || "Failed to update Stripe payout settings" });
+      res.status(500).json({ message: error.message || "Failed to update Stripe payout settings");
     }
-});
+  });
 
   // Stripe Connect webhook endpoint
   app.post('/api/stripe/connect/webhook', async (req, res) => {
@@ -1009,7 +1018,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       if (!webhookSecret) {
         console.error("STRIPE_WEBHOOK_SECRET not configured");
-        return res.status(500).json({ message: "Webhook secret not configured" });
+        return res.status(500).json({ message: "Webhook secret not configured");
       }
 
       let event: Stripe.Event;
@@ -1018,18 +1027,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
       } catch (err: any) {
         console.error("Webhook signature verification failed:", err.message);
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: `Webhook Error: ${err.message}`);
       }
 
       // Handle the event
       await stripeConnect.handleConnectWebhook(event, storage);
 
-      res.json({ received: true });
+      res.json({ received: true);
     } catch (error: any) {
       console.error("Error processing Stripe webhook:", error);
-      res.status(500).json({ message: error.message || "Failed to process webhook" });
+      res.status(500).json({ message: error.message || "Failed to process webhook");
     }
-});
+  });
 
   // =================== END STRIPE CONNECT ROUTES ===================
 
@@ -1039,12 +1048,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { id: businessId } = req.params;
       
       const isFollowing = await storage.isFollowingBusiness(userId, businessId);
-      res.json({ isFollowing });
+      res.json({ isFollowing);
     } catch (error) {
       console.error("Error checking follow status:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to check follow status");
     }
-});
+  });
 
   // Delete business endpoint
   app.delete('/api/businesses/:id', strictRateLimit, isAuthenticated, async (req: any, res) => {
@@ -1055,20 +1064,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if the business exists and if the user is the owner
       const existingBusiness = await storage.getBusinessById(id);
       if (!existingBusiness) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business");
       }
       
       if (existingBusiness.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized to delete this business" });
+        return ApiResponse.forbidden(res, "Not authorized to delete this business");
       }
       
       await storage.deleteBusiness(id);
-      res.json({ message: "Business deleted successfully" });
+      res.json({ message: "Business deleted successfully");
     } catch (error: any) {
       console.error("Error deleting business:", error);
-      return res.status(400).json({ message: "Validation error" });
+      return ApiResponse.validation(res, error.message || "Failed to delete business");
     }
-});
+  });
 
   // Enhanced Spotlight Management Routes
   
@@ -1080,19 +1089,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // SECURITY: Check if manual rotation is allowed
       const rotationCheck = await storage.canPerformManualRotation();
       if (!rotationCheck.canRotate) {
-        return res.status(429).json({ message: "Rate limited" });
+        return ApiResponse.rateLimited(res, "
+          message: "Manual rotation not allowed at this time",
+          reason: rotationCheck.reason,
+          error: "ROTATION_COOLDOWN"
+        });
       }
 
       await storage.rotateSpotlights();
-      res.json({ message: "Spotlight rotation triggered successfully",
+      res.json({ 
+        message: "Spotlight rotation triggered successfully",
         triggeredBy: req.adminUser.email,
         timestamp: new Date().toISOString()
-});
+      });
     } catch (error) {
       console.error("Error in admin spotlight rotation:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to rotate spotlights");
     }
-});
+  });
 
   // Get spotlight history for a business
   app.get('/api/businesses/:id/spotlight-history', async (req, res) => {
@@ -1102,9 +1116,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(history);
     } catch (error) {
       console.error("Error fetching spotlight history:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch spotlight history");
     }
-});
+  });
 
   // Get engagement metrics for a business
   app.get('/api/businesses/:id/engagement-metrics', async (req, res) => {
@@ -1114,9 +1128,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(metrics);
     } catch (error) {
       console.error("Error fetching engagement metrics:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch engagement metrics");
     }
-});
+  });
 
   // Calculate and update engagement metrics for a business
   app.post('/api/businesses/:id/calculate-metrics', isAuthenticated, async (req: any, res) => {
@@ -1126,21 +1140,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(metrics);
     } catch (error) {
       console.error("Error calculating metrics:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to calculate engagement metrics");
     }
-});
+  });
 
   // Get business score for spotlight eligibility
   app.get('/api/businesses/:id/score', async (req, res) => {
     try {
       const { id } = req.params;
       const score = await storage.getBusinessScore(id);
-      res.json({ score });
+      res.json({ score);
     } catch (error) {
       console.error("Error fetching business score:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch business score");
     }
-});
+  });
 
   // Monthly spotlight voting endpoints
   
@@ -1151,9 +1165,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const validationResult = spotlightVoteSchema.safeParse(req.body);
       if (!validationResult.success) {
-        return res.status(400).json({ message: "Validation error",
+        return ApiResponse.validation(res, "
+          message: "Validation error", 
           errors: validationResult.error.errors 
-});
+        });
       }
       const { businessId } = validationResult.data;
 
@@ -1163,41 +1178,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const hasVoted = await storage.hasUserVoted(userId, currentMonth);
       if (hasVoted) {
         const existingVote = await storage.getUserVoteForMonth(userId, currentMonth);
-        return res.status(400).json({ message: "You have already voted this month", 
+        return ApiResponse.validation(res, "
+          message: "You have already voted this month", 
           votedBusinessId: existingVote?.businessId 
-});
+        });
       }
 
       // Verify business exists and is eligible
       const business = await storage.getBusinessById(businessId);
       if (!business) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business");
       }
 
       const eligibleBusinesses = await storage.getEligibleBusinesses('monthly');
       const isEligible = eligibleBusinesses.some(b => b.id === businessId);
       if (!isEligible) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: "Business is not eligible for spotlight voting");
       }
 
       const vote = await storage.createSpotlightVote({
         businessId,
         userId,
         month: currentMonth,
-});
+      });
 
-      res.json({ message: "Vote recorded successfully", vote });
+      res.json({ message: "Vote recorded successfully", vote);
     } catch (error: any) {
       console.error("Error recording vote:", error);
       
       // Handle unique constraint violation
       if (error.code === '23505' || error.constraint?.includes('unique_user_month_vote')) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: "You have already voted this month");
       }
       
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to record vote");
     }
-});
+  });
 
   // Get monthly vote counts
   app.get('/api/spotlight/votes/:month', async (req, res) => {
@@ -1206,16 +1222,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Validate month format (YYYY-MM)
       if (!/^\d{4}-\d{2}$/.test(month)) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: "Invalid month format. Use YYYY-MM");
       }
 
       const voteCounts = await storage.getMonthlyVoteCounts(month);
       res.json(voteCounts);
     } catch (error) {
       console.error("Error fetching vote counts:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch vote counts");
     }
-});
+  });
 
   // Get user's current vote status for a specific month (for UI state management)
   app.get('/api/spotlight/user-vote/:month', isAuthenticated, async (req: any, res) => {
@@ -1225,7 +1241,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Validate month format (YYYY-MM)
       if (!/^\d{4}-\d{2}$/.test(month)) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: "Invalid month format. Use YYYY-MM");
       }
       
       const userVote = await storage.getUserVoteForMonth(userId, month);
@@ -1233,12 +1249,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         hasVoted: !!userVote,
         votedBusinessId: userVote?.businessId || null,
         voteDate: userVote?.createdAt || null
-});
+      });
     } catch (error) {
       console.error("Error checking user vote status:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to check vote status");
     }
-});
+  });
 
   // DEPRECATED: Legacy endpoint - keeping for backwards compatibility  
   app.get('/api/spotlight/votes/:month/:businessId/check', isAuthenticated, async (req: any, res) => {
@@ -1250,12 +1266,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ 
         hasVoted: !!userVote,
         votedBusinessId: userVote?.businessId 
-});
+      });
     } catch (error) {
       console.error("Error checking vote status:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to check vote status");
     }
-});
+  });
 
   // Get eligible businesses for spotlight voting
   app.get('/api/spotlight/eligible/:type', async (req, res) => {
@@ -1263,16 +1279,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { type } = req.params;
 
       if (!['daily', 'weekly', 'monthly'].includes(type)) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: "Invalid spotlight type. Use daily, weekly, or monthly");
       }
 
       const eligibleBusinesses = await storage.getEligibleBusinesses(type as 'daily' | 'weekly' | 'monthly');
       res.json(eligibleBusinesses);
     } catch (error) {
       console.error("Error fetching eligible businesses:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch eligible businesses");
     }
-});
+  });
 
   // Voting Interface Endpoints
   app.get('/api/spotlight/voting/eligible', async (req, res) => {
@@ -1285,9 +1301,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(businesses);
     } catch (error) {
       console.error("Error fetching eligible voting businesses:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch eligible businesses");
     }
-});
+  });
 
   app.get('/api/spotlight/voting/stats', async (req, res) => {
     try {
@@ -1296,9 +1312,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(stats);
     } catch (error) {
       console.error("Error fetching voting stats:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch voting stats");
     }
-});
+  });
 
   app.get('/api/spotlight/voting/my-votes', isAuthenticated, async (req: any, res) => {
     try {
@@ -1308,9 +1324,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(votes);
     } catch (error) {
       console.error("Error fetching user votes:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch user votes");
     }
-});
+  });
 
   // Trending Businesses Endpoint
   app.get('/api/businesses/trending', async (req, res) => {
@@ -1320,9 +1336,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(trending);
     } catch (error) {
       console.error("Error fetching trending businesses:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch trending businesses");
     }
-});
+  });
 
   // Community Leaderboard Endpoints
   app.get('/api/leaderboard/businesses', async (req, res) => {
@@ -1332,9 +1348,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(leaderboard);
     } catch (error) {
       console.error("Error fetching business leaderboard:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch business leaderboard");
     }
-});
+  });
 
   app.get('/api/leaderboard/voters', async (req, res) => {
     try {
@@ -1343,9 +1359,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(leaderboard);
     } catch (error) {
       console.error("Error fetching voters leaderboard:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch voters leaderboard");
     }
-});
+  });
 
   app.get('/api/leaderboard/reviewers', async (req, res) => {
     try {
@@ -1354,9 +1370,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(leaderboard);
     } catch (error) {
       console.error("Error fetching reviewers leaderboard:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch reviewers leaderboard");
     }
-});
+  });
 
   app.get('/api/leaderboard/buyers', async (req, res) => {
     try {
@@ -1365,9 +1381,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(leaderboard);
     } catch (error) {
       console.error("Error fetching buyers leaderboard:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch buyers leaderboard");
     }
-});
+  });
 
   // Admin endpoints for manual spotlight management
   
@@ -1376,45 +1392,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log(`Admin daily spotlight selection by: ${req.adminUser.email}`);
       const selectedBusinesses = await storage.selectDailySpotlights();
-      res.json({ message: "Daily spotlights selected successfully", 
+      res.json({ 
+        message: "Daily spotlights selected successfully", 
         businesses: selectedBusinesses,
         selectedBy: req.adminUser.email
-});
+      });
     } catch (error) {
       console.error("Error in admin daily spotlight selection:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to select daily spotlights");
     }
-});
+  });
 
   // SECURITY: Admin-only weekly spotlight selection
   app.post('/api/admin/spotlight/weekly', isAuthenticated, isAdmin, adminRateLimit, async (req: any, res) => {
     try {
       console.log(`Admin weekly spotlight selection by: ${req.adminUser.email}`);
       const selectedBusinesses = await storage.selectWeeklySpotlights();
-      res.json({ message: "Weekly spotlights selected successfully", 
+      res.json({ 
+        message: "Weekly spotlights selected successfully", 
         businesses: selectedBusinesses,
         selectedBy: req.adminUser.email
-});
+      });
     } catch (error) {
       console.error("Error in admin weekly spotlight selection:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to select weekly spotlights");
     }
-});
+  });
 
   // SECURITY: Admin-only monthly spotlight selection
   app.post('/api/admin/spotlight/monthly', isAuthenticated, isAdmin, adminRateLimit, async (req: any, res) => {
     try {
       console.log(`Admin monthly spotlight selection by: ${req.adminUser.email}`);
       const selectedBusinesses = await storage.selectMonthlySpotlight();
-      res.json({ message: "Monthly spotlight selected successfully", 
+      res.json({ 
+        message: "Monthly spotlight selected successfully", 
         businesses: selectedBusinesses,
         selectedBy: req.adminUser.email
-});
+      });
     } catch (error) {
       console.error("Error in admin monthly spotlight selection:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to select monthly spotlight");
     }
-});
+  });
 
   // SECURITY: Admin-only spotlight history access
   app.get('/api/admin/spotlight/history/:type/:days', isAuthenticated, isAdmin, async (req: any, res) => {
@@ -1422,12 +1441,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { type, days } = req.params;
       
       if (!['daily', 'weekly', 'monthly'].includes(type)) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: "Invalid spotlight type");
       }
 
       const daysNum = parseInt(days);
       if (isNaN(daysNum) || daysNum < 1 || daysNum > 90) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: "Days must be between 1 and 90");
       }
 
       const history = await storage.getRecentSpotlightHistory(
@@ -1439,27 +1458,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
         requestedBy: req.adminUser.email,
         type,
         days: daysNum
-});
+      });
     } catch (error) {
       console.error("Error fetching admin spotlight history:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch spotlight history");
     }
-});
+  });
 
   // SECURITY: Admin-only spotlight archiving
   app.post('/api/admin/spotlight/archive', isAuthenticated, isAdmin, adminRateLimit, async (req: any, res) => {
     try {
       console.log(`Admin spotlight archiving by: ${req.adminUser.email}`);
       await storage.archiveExpiredSpotlights();
-      res.json({ message: "Expired spotlights archived successfully",
+      res.json({ 
+        message: "Expired spotlights archived successfully",
         archivedBy: req.adminUser.email,
         timestamp: new Date().toISOString()
-});
+      });
     } catch (error) {
       console.error("Error in admin spotlight archiving:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to archive expired spotlights");
     }
-});
+  });
 
   // Object Storage routes - for serving public assets
   app.get("/public-objects/:filePath(*)", async (req, res) => {
@@ -1468,14 +1488,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const file = await objectStorageService.searchPublicObject(filePath);
       if (!file) {
-        return res.status(404).json({ message: "File not found" });
+        return ApiResponse.notFound(res, "File");
       }
       objectStorageService.downloadObject(file, res);
     } catch (error) {
       console.error("Error searching for public object:", error);
-      return res.status(500).json({ error: "Internal server error" });
+      return res.status(500).json({ error: "Internal server error");
     }
-});
+  });
 
   // Object Storage routes - for serving private objects (with ACL)
   app.get("/objects/:objectPath(*)", isAuthenticated, async (req: any, res) => {
@@ -1489,7 +1509,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         objectFile,
         userId: userId,
         requestedPermission: ObjectPermission.READ,
-});
+      });
       if (!canAccess) {
         return res.sendStatus(401);
       }
@@ -1501,7 +1521,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       return res.sendStatus(500);
     }
-});
+  });
   
   // Serve stock images for demo
   app.use('/stock-images', express.static(path.join(process.cwd(), 'client/src/assets/stock_images')));
@@ -1515,7 +1535,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // Sanitize object ID to prevent path traversal
       if (!objectId || !/^[a-zA-Z0-9\-_]+$/.test(objectId)) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "error: "Invalid object ID");
       }
       
       const objectPath = `/objects/uploads/${objectId}`;
@@ -1526,17 +1546,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         objectFile,
         userId: undefined, // No user ID for public access
         requestedPermission: ObjectPermission.READ,
-});
+      });
       
       if (!canAccess) {
-        return res.status(403).json({ error: "Access denied - image not public" });
+        return res.status(403).json({ error: "Access denied - image not public");
       }
       
       // Set cache headers for better performance
       res.set({
         'Cache-Control': 'public, max-age=86400', // 24 hours
         'ETag': `"${objectId}"`,
-});
+      });
       
       // Check ETag for conditional requests
       const clientETag = req.headers['if-none-match'];
@@ -1548,11 +1568,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error serving public image:", error);
       if (error instanceof ObjectNotFoundError) {
-        return res.status(404).json({ message: "Image not found" });
+        return ApiResponse.notFound(res, "Image");
       }
-      return res.status(500).json({ error: "Failed to serve image" });
+      return res.status(500).json({ error: "Failed to serve image");
     }
-});
+  });
 
   // Upload endpoint - get presigned URL for object upload with validation
   app.post("/api/objects/upload", isAuthenticated, async (req: any, res) => {
@@ -1560,27 +1580,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const validationResult = objectUploadRequestSchema.safeParse(req.body);
       if (!validationResult.success) {
-        return res.status(400).json({ message: "Validation error",
+        return ApiResponse.validation(res, "
+          message: "Validation error", 
           errors: validationResult.error.errors 
-});
+        });
       }
       const { fileType, fileSize } = validationResult.data;
       
       const uploadURL = await objectStorageService.getObjectEntityUploadURL();
-      res.json({ uploadURL });
+      res.json({ uploadURL);
     } catch (error) {
       console.error("Error getting upload URL:", error);
-      res.status(500).json({ error: "Failed to get upload URL" });
+      res.status(500).json({ error: "Failed to get upload URL");
     }
-});
+  });
 
   // Update business images endpoint - set ACL policies after upload
   app.put("/api/business-images", isAuthenticated, async (req: any, res) => {
     const validationResult = businessImageUpdateSchema.safeParse(req.body);
     if (!validationResult.success) {
-      return res.status(400).json({ message: "Validation error",
+      return res.status(400).json({ 
+        message: "Validation error", 
         errors: validationResult.error.errors 
-});
+      });
     }
     const { imageURL } = validationResult.data;
     const userId = req.user?.claims?.sub;
@@ -1603,12 +1625,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(200).json({
         objectPath: objectPath,
         publicURL: publicURL,
-});
+      });
     } catch (error) {
       console.error("Error setting business image:", error);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: "Internal server error");
     }
-});
+  });
 
   // Product routes (SECURITY: Rate limited)
   app.post('/api/products', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
@@ -1618,9 +1640,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(product);
     } catch (error: any) {
       console.error("Error creating product:", error);
-      return res.status(400).json({ message: "Validation error" });
+      return ApiResponse.validation(res, error.message || "Failed to create product");
     }
-});
+  });
 
   app.get('/api/products/search', publicEndpointRateLimit, async (req, res) => {
     try {
@@ -1652,14 +1674,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         page,
         pageSize,
         includeTotal: true,
-});
+      });
 
-      res.json({ items, total, page, pageSize });
+      res.json({ items, total, page, pageSize);
     } catch (error) {
       console.error("Error searching products:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to search products");
     }
-});
+  });
 
   app.get('/api/products/featured', async (req, res) => {
     try {
@@ -1689,9 +1711,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.json(out);
     } catch (error) {
       console.error("Error fetching featured products:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch featured products");
     }
-});
+  });
 
   function normalizeImageSignature(url: string): string {
     try {
@@ -1719,9 +1741,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(products);
     } catch (error) {
       console.error("Error fetching business products:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch products");
     }
-});
+  });
 
   app.put('/api/products/:id', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
     try {
@@ -1731,26 +1753,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get product and verify ownership through business
       const product = await storage.getProductById(productId);
       if (!product) {
-        return res.status(404).json({ message: "Product not found" });
+        return ApiResponse.notFound(res, "Product");
       }
       
       const business = await storage.getBusinessById(product.businessId);
       if (!business || business.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized to edit this product" });
+        return ApiResponse.forbidden(res, "Not authorized to edit this product");
       }
       
       const productData = insertProductSchema.parse({
         ...req.body,
         businessId: product.businessId, // Preserve original business
-});
+      });
       
       const updatedProduct = await storage.updateProduct(productId, productData);
       res.json(updatedProduct);
     } catch (error: any) {
       console.error("Error updating product:", error);
-      return res.status(400).json({ message: "Validation error" });
+      return ApiResponse.validation(res, error.message || "Failed to update product");
     }
-});
+  });
 
   // Product Image Upload Routes
   app.post('/api/products/:productId/images/upload-url', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
@@ -1760,28 +1782,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const validationResult = productImageUploadSchema.safeParse(req.body);
       if (!validationResult.success) {
-        return res.status(400).json({ message: "Validation error",
+        return ApiResponse.validation(res, "
+          message: "Validation error", 
           errors: validationResult.error.errors 
-});
+        });
       }
       const { filename } = validationResult.data;
 
       // Get product and verify ownership through business
       const product = await storage.getProductById(productId);
       if (!product) {
-        return res.status(404).json({ message: "Product not found" });
+        return ApiResponse.notFound(res, "Product");
       }
 
       const business = await storage.getBusinessById(product.businessId);
       if (!business || business.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized to upload images for this product" });
+        return ApiResponse.forbidden(res, "Not authorized to upload images for this product");
       }
 
       // Validate file extension
       const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
       const fileExtension = filename.toLowerCase().substring(filename.lastIndexOf('.'));
       if (!allowedExtensions.includes(fileExtension)) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: "Invalid file type. Allowed: JPEG, PNG, WebP");
       }
 
       // Generate presigned URL
@@ -1796,12 +1819,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         method: "PUT",
         url: uploadUrl,
         publicPath,
-});
+      });
     } catch (error: any) {
       console.error("Error generating upload URL:", error);
-      res.status(500).json({ message: error.message || "Failed to generate upload URL" });
+      res.status(500).json({ message: error.message || "Failed to generate upload URL");
     }
-});
+  });
 
   app.post('/api/products/:productId/images', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
     try {
@@ -1810,27 +1833,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const validationResult = productImageUrlSchema.safeParse(req.body);
       if (!validationResult.success) {
-        return res.status(400).json({ message: "Validation error",
+        return ApiResponse.validation(res, "
+          message: "Validation error", 
           errors: validationResult.error.errors 
-});
+        });
       }
       const { imageUrl } = validationResult.data;
 
       // Get product and verify ownership through business
       const product = await storage.getProductById(productId);
       if (!product) {
-        return res.status(404).json({ message: "Product not found" });
+        return ApiResponse.notFound(res, "Product");
       }
 
       const business = await storage.getBusinessById(product.businessId);
       if (!business || business.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized to modify this product" });
+        return ApiResponse.forbidden(res, "Not authorized to modify this product");
       }
 
       // Check if we already have 5 images
       const currentImages = (product.images as string[]) || [];
       if (currentImages.length >= 5) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: "Maximum of 5 images allowed per product");
       }
 
       // Add new image URL to the array
@@ -1840,9 +1864,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(updatedProduct);
     } catch (error: any) {
       console.error("Error saving product image:", error);
-      res.status(500).json({ message: error.message || "Failed to save product image" });
+      res.status(500).json({ message: error.message || "Failed to save product image");
     }
-});
+  });
 
   app.delete('/api/products/:productId/images', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
     try {
@@ -1851,18 +1875,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { imageUrl } = req.body;
 
       if (!imageUrl) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: "Image URL is required");
       }
 
       // Get product and verify ownership through business
       const product = await storage.getProductById(productId);
       if (!product) {
-        return res.status(404).json({ message: "Product not found" });
+        return ApiResponse.notFound(res, "Product");
       }
 
       const business = await storage.getBusinessById(product.businessId);
       if (!business || business.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized to modify this product" });
+        return ApiResponse.forbidden(res, "Not authorized to modify this product");
       }
 
       // Remove image URL from the array
@@ -1873,9 +1897,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(updatedProduct);
     } catch (error: any) {
       console.error("Error deleting product image:", error);
-      res.status(500).json({ message: error.message || "Failed to delete product image" });
+      res.status(500).json({ message: error.message || "Failed to delete product image");
     }
-});
+  });
 
   // Post routes (SECURITY: Rate limited)
   app.post('/api/posts', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
@@ -1885,9 +1909,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(post);
     } catch (error: any) {
       console.error("Error creating post:", error);
-      return res.status(400).json({ message: "Validation error" });
+      return ApiResponse.validation(res, error.message || "Failed to create post");
     }
-});
+  });
 
   app.get('/api/posts', async (req, res) => {
     try {
@@ -1896,9 +1920,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(posts);
     } catch (error) {
       console.error("Error fetching posts:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch posts");
     }
-});
+  });
 
   app.get('/api/businesses/:id/posts', async (req, res) => {
     try {
@@ -1907,9 +1931,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(posts);
     } catch (error) {
       console.error("Error fetching business posts:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch posts");
     }
-});
+  });
 
   app.post('/api/posts/:id/like', isAuthenticated, async (req: any, res) => {
     try {
@@ -1917,12 +1941,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { id: postId } = req.params;
       
       await storage.likePost(userId, postId);
-      res.json({ message: "Successfully liked post" });
+      res.json({ message: "Successfully liked post");
     } catch (error) {
       console.error("Error liking post:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to like post");
     }
-});
+  });
 
   app.delete('/api/posts/:id/like', isAuthenticated, async (req: any, res) => {
     try {
@@ -1930,12 +1954,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { id: postId } = req.params;
       
       await storage.unlikePost(userId, postId);
-      res.json({ message: "Successfully unliked post" });
+      res.json({ message: "Successfully unliked post");
     } catch (error) {
       console.error("Error unliking post:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to unlike post");
     }
-});
+  });
 
   app.get('/api/posts/:id/liked', isAuthenticated, async (req: any, res) => {
     try {
@@ -1943,12 +1967,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { id: postId } = req.params;
       
       const isLiked = await storage.isPostLiked(userId, postId);
-      res.json({ isLiked });
+      res.json({ isLiked);
     } catch (error) {
       console.error("Error checking like status:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to check like status");
     }
-});
+  });
 
   // Enhanced Message routes with file sharing and business networking
   app.post('/api/messages', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
@@ -1964,7 +1988,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         conversationId,
         isDelivered: true,
         deliveredAt: new Date(),
-});
+      });
       
       const message = await storage.createMessage(messageData);
       
@@ -1975,14 +1999,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         senderId: message.senderId,
         content: message.content,
         timestamp: message.createdAt?.toISOString() || new Date().toISOString(),
-});
+      });
       
       res.json(message);
     } catch (error: any) {
       console.error("Error creating message:", error);
-      return res.status(400).json({ message: "Validation error" });
+      return ApiResponse.validation(res, error.message || "Failed to send message");
     }
-});
+  });
 
   // File upload for messages
   app.post('/api/messages/upload', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
@@ -1991,9 +2015,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const validationResult = messageFileUploadSchema.safeParse(req.body);
       if (!validationResult.success) {
-        return res.status(400).json({ message: "Validation error",
+        return ApiResponse.validation(res, "
+          message: "Validation error", 
           errors: validationResult.error.errors 
-});
+        });
       }
       const { receiverId, file } = validationResult.data;
       
@@ -2001,7 +2026,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'text/plain', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
       
       if (!allowedTypes.includes(file.type)) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: "File type not allowed");
       }
 
       // Generate conversation ID
@@ -2020,7 +2045,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         fileSize: file.size,
         isDelivered: true,
         deliveredAt: new Date(),
-});
+      });
 
       const message = await storage.createMessage(messageData);
 
@@ -2031,14 +2056,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         senderId: message.senderId,
         content: message.content,
         timestamp: message.createdAt?.toISOString() || new Date().toISOString(),
-});
+      });
 
       res.json(message);
     } catch (error: any) {
       console.error("Error uploading file message:", error);
-      res.status(500).json({ message: error.message || "Failed to upload file" });
+      res.status(500).json({ message: error.message || "Failed to upload file");
     }
-});
+  });
 
   // Share business in message
   app.post('/api/messages/share-business', generalAPIRateLimit, isAuthenticated, async (req: any, res) => {
@@ -2047,16 +2072,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const validationResult = shareBusinessMessageSchema.safeParse(req.body);
       if (!validationResult.success) {
-        return res.status(400).json({ message: "Validation error",
+        return ApiResponse.validation(res, "
+          message: "Validation error", 
           errors: validationResult.error.errors 
-});
+        });
       }
       const { receiverId, businessId } = validationResult.data;
 
       // Verify business exists
       const business = await storage.getBusinessById(businessId);
       if (!business) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business");
       }
 
       // Generate conversation ID
@@ -2076,7 +2102,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         isDelivered: true,
         deliveredAt: new Date(),
-});
+      });
 
       const message = await storage.createMessage(messageData);
 
@@ -2087,14 +2113,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         senderId: message.senderId,
         content: message.content,
         timestamp: message.createdAt?.toISOString() || new Date().toISOString(),
-});
+      });
 
       res.json(message);
     } catch (error: any) {
       console.error("Error sharing business:", error);
-      res.status(500).json({ message: error.message || "Failed to share business" });
+      res.status(500).json({ message: error.message || "Failed to share business");
     }
-});
+  });
 
   app.get('/api/messages/conversations', isAuthenticated, async (req: any, res) => {
     try {
@@ -2103,9 +2129,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(conversations);
     } catch (error) {
       console.error("Error fetching conversations:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch conversations");
     }
-});
+  });
 
   app.get('/api/messages/conversation/:conversationId', isAuthenticated, async (req: any, res) => {
     try {
@@ -2117,16 +2143,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verify user has access to this conversation
       const hasAccess = await storage.userHasAccessToConversation(currentUserId, conversationId);
       if (!hasAccess) {
-        return res.status(403).json({ message: "Access denied to this conversation" });
+        return ApiResponse.forbidden(res, "Access denied to this conversation");
       }
       
       const messages = await storage.getConversationMessages(conversationId, offset, limit);
       res.json(messages);
     } catch (error) {
       console.error("Error fetching conversation messages:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch messages");
     }
-});
+  });
 
   app.get('/api/messages/:userId', isAuthenticated, async (req: any, res) => {
     try {
@@ -2137,9 +2163,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(messages);
     } catch (error) {
       console.error("Error fetching messages:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch messages");
     }
-});
+  });
 
   // Mark message as read
   app.put('/api/messages/:messageId/read', isAuthenticated, async (req: any, res) => {
@@ -2150,32 +2176,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verify message exists and user is the receiver
       const message = await storage.getMessageById(messageId);
       if (!message) {
-        return res.status(404).json({ message: "Message not found" });
+        return ApiResponse.notFound(res, "Message");
       }
       
       if (message.receiverId !== userId) {
-        return res.status(403).json({ message: "Access denied" });
+        return ApiResponse.forbidden(res, "Access denied");
       }
       
       await storage.markMessageAsRead(messageId, new Date());
-      res.json({ message: "Message marked as read" });
+      res.json({ message: "Message marked as read");
     } catch (error) {
       console.error("Error marking message as read:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to mark message as read");
     }
-});
+  });
 
   // Get unread message count
   app.get('/api/messages/unread-count', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const count = await storage.getUnreadMessageCount(userId);
-      res.json({ unreadCount: count });
+      res.json({ unreadCount: count);
     } catch (error) {
       console.error("Error fetching unread message count:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch unread count");
     }
-});
+  });
 
   // Search messages
   app.get('/api/messages/search', isAuthenticated, async (req: any, res) => {
@@ -2184,16 +2210,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const query = req.query.q as string;
       
       if (!query || query.trim().length < 2) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: "Search query must be at least 2 characters");
       }
       
       const messages = await storage.searchMessages(userId, query.trim());
       res.json(messages);
     } catch (error) {
       console.error("Error searching messages:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to search messages");
     }
-});
+  });
 
   // Cart routes
   app.get('/api/cart', isAuthenticated, async (req: any, res) => {
@@ -2203,9 +2229,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(cartItems);
     } catch (error) {
       console.error("Error fetching cart:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch cart");
     }
-});
+  });
 
   app.post('/api/cart', isAuthenticated, async (req: any, res) => {
     try {
@@ -2213,26 +2239,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const cartData = insertCartItemSchema.parse({
         ...req.body,
         userId,
-});
+      });
       
       // Validate product exists and is available
       const product = await storage.getProductById(cartData.productId);
       if (!product) {
-        return res.status(404).json({ message: "Product not found" });
+        return ApiResponse.notFound(res, "Product");
       }
       
       if (!product.isActive) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: "Product is no longer available");
       }
       
       // Validate quantity and inventory
       if (!cartData.quantity || cartData.quantity <= 0) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: "Quantity must be at least 1");
       }
       
       if (cartData.quantity > (product.inventory || 0)) {
-        return res.status(400).json({          message: `Only ${product.inventory} units available for "${product.name}"` 
-});
+        return ApiResponse.validation(res, "
+          message: `Only ${product.inventory} units available for "${product.name}"` 
+        });
       }
       
       // Check if item already exists in cart and validate total quantity
@@ -2241,17 +2268,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const totalQuantity = existingItem ? (existingItem.quantity || 0) + (cartData.quantity || 0) : (cartData.quantity || 0);
       
       if (totalQuantity > (product.inventory || 0)) {
-        return res.status(400).json({          message: `Cannot add ${cartData.quantity} more. Only ${(product.inventory || 0) - (existingItem?.quantity || 0)} more units available.` 
-});
+        return ApiResponse.validation(res, "
+          message: `Cannot add ${cartData.quantity} more. Only ${(product.inventory || 0) - (existingItem?.quantity || 0)} more units available.` 
+        });
       }
       
       const cartItem = await storage.addToCart(userId, cartData.productId, cartData.quantity || 0);
       res.json(cartItem);
     } catch (error: any) {
       console.error("Error adding to cart:", error);
-      return res.status(400).json({ message: "Validation error" });
+      return ApiResponse.validation(res, error.message || "Failed to add to cart");
     }
-});
+  });
 
   app.put('/api/cart/:productId', isAuthenticated, async (req: any, res) => {
     try {
@@ -2260,41 +2288,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const validationResult = cartQuantityUpdateSchema.safeParse(req.body);
       if (!validationResult.success) {
-        return res.status(400).json({ message: "Validation error",
+        return ApiResponse.validation(res, "
+          message: "Validation error", 
           errors: validationResult.error.errors 
-});
+        });
       }
       const { quantity: quantityNum } = validationResult.data;
       
       if (quantityNum === 0) {
         // Remove item if quantity is 0
         await storage.removeFromCart(userId, productId);
-        return res.json({ message: "Item removed from cart" });
+        return res.json({ message: "Item removed from cart");
       }
       
       // Validate product exists and is available
       const product = await storage.getProductById(productId);
       if (!product) {
-        return res.status(404).json({ message: "Product not found" });
+        return ApiResponse.notFound(res, "Product");
       }
       
       if (!product.isActive) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: "Product is no longer available");
       }
       
       // Validate inventory
       if (quantityNum > (product.inventory || 0)) {
-        return res.status(400).json({          message: `Only ${product.inventory} units available for "${product.name}"` 
-});
+        return ApiResponse.validation(res, "
+          message: `Only ${product.inventory} units available for "${product.name}"` 
+        });
       }
       
       await storage.updateCartItemQuantity(userId, productId, quantityNum);
-      res.json({ message: "Cart updated successfully" });
+      res.json({ message: "Cart updated successfully");
     } catch (error) {
       console.error("Error updating cart:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to update cart");
     }
-});
+  });
 
   app.delete('/api/cart/:productId', isAuthenticated, async (req: any, res) => {
     try {
@@ -2302,34 +2332,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { productId } = req.params;
       
       await storage.removeFromCart(userId, productId);
-      res.json({ message: "Item removed from cart" });
+      res.json({ message: "Item removed from cart");
     } catch (error) {
       console.error("Error removing from cart:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to remove from cart");
     }
-});
+  });
 
   app.delete('/api/cart', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       await storage.clearCart(userId);
-      res.json({ message: "Cart cleared successfully" });
+      res.json({ message: "Cart cleared successfully");
     } catch (error) {
       console.error("Error clearing cart:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to clear cart");
     }
-});
+  });
 
   app.get('/api/cart/total', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const total = await storage.getCartTotal(userId);
-      res.json({ total });
+      res.json({ total);
     } catch (error) {
       console.error("Error fetching cart total:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch cart total");
     }
-});
+  });
 
   // Checkout and Payment routes - from Stripe blueprint
   app.post("/api/create-payment-intent", isAuthenticated, async (req: any, res) => {
@@ -2338,27 +2368,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const validationResult = createPaymentIntentSchema.safeParse(req.body);
       if (!validationResult.success) {
-        return res.status(400).json({ message: "Validation error",
+        return ApiResponse.validation(res, "
+          message: "Validation error", 
           errors: validationResult.error.errors 
-});
+        });
       }
       const { shippingAddress, billingAddress, customerEmail, customerPhone, notes, currency } = validationResult.data;
       
       // Get cart items and validate
       const cartItems = await storage.getCartItems(userId);
       if (cartItems.length === 0) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: "Cart is empty");
       }
 
       // Validate inventory for all items
       for (const item of cartItems) {
         if (!item.product.isActive) {
-          return res.status(400).json({            message: `Product "${item.product.name}" is no longer available` 
-});
+          return ApiResponse.validation(res, "
+            message: `Product "${item.product.name}" is no longer available` 
+          });
         }
         if (item.quantity > (item.product.inventory || 0)) {
-          return res.status(400).json({            message: `Only ${item.product.inventory || 0} of "${item.product.name}" available` 
-});
+          return ApiResponse.validation(res, "
+            message: `Only ${item.product.inventory || 0} of "${item.product.name}" available` 
+          });
         }
       }
 
@@ -2385,7 +2418,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         customerPhone,
         notes,
         status: "pending_payment",
-});
+      });
 
       // Create order items
       const orderItemsData = cartItems.map(item => ({
@@ -2400,7 +2433,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // STRIPE INTEGRATION PLACEHOLDER
       // Create Stripe PaymentIntent with server-calculated amount
-      //   return res.status(503).json({ message: "Payments not configured. Provide STRIPE_SECRET_KEY or use manual /api/checkout." });
+      //   return res.status(503).json({ message: "Payments not configured. Provide STRIPE_SECRET_KEY or use manual /api/checkout.");
       // }
       // const paymentIntent = await stripe.paymentIntents.create({
       //   amount: Math.round(total * 100), // Convert to cents
@@ -2419,7 +2452,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       //   amount: total.toFixed(2),
       //   currency,
       //   status: "pending",
-      // });
+      //);
 
       // res.json({ 
       //   clientSecret: paymentIntent.client_secret,
@@ -2435,14 +2468,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       //);
 
       // Temporary response until Stripe is integrated
-      return res.status(503).json({ message: "Stripe payment integration not yet configured. Use /api/checkout for manual orders.",
+      return res.status(503).json({ 
+        message: "Stripe payment integration not yet configured. Use /api/checkout for manual orders.",
         orderId: order.id 
-});
+      });
     } catch (error: any) {
       console.error("Error creating payment intent:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Error creating payment intent: " + error.message);
     }
-});
+  });
 
   app.post('/api/checkout', isAuthenticated, async (req: any, res) => {
     try {
@@ -2450,12 +2484,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const orderData = insertOrderSchema.parse({
         ...req.body,
         userId,
-});
+      });
 
       // Get cart items
       const cartItems = await storage.getCartItems(userId);
       if (cartItems.length === 0) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: "Cart is empty");
       }
 
       // Calculate totals
@@ -2475,7 +2509,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         shippingAmount: shippingAmount.toFixed(2),
         total: total.toFixed(2),
         status: "pending",
-});
+      });
 
       // Create order items
       const orderItemsData = cartItems.map(item => ({
@@ -2493,12 +2527,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         order,
         total,
         cartItems: cartItems.length,
-});
+      });
     } catch (error: any) {
       console.error("Error creating checkout:", error);
-      return res.status(400).json({ message: "Validation error" });
+      return ApiResponse.validation(res, error.message || "Failed to create checkout");
     }
-});
+  });
 
   // Order routes
   app.get('/api/orders', isAuthenticated, async (req: any, res) => {
@@ -2508,9 +2542,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(orders);
     } catch (error) {
       console.error("Error fetching orders:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch orders");
     }
-});
+  });
 
   app.get('/api/orders/:id', isAuthenticated, async (req: any, res) => {
     try {
@@ -2519,20 +2553,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const order = await storage.getOrderById(orderId);
       if (!order) {
-        return res.status(404).json({ message: "Order not found" });
+        return ApiResponse.notFound(res, "Order");
       }
 
       // Check if user owns this order
       if (order.userId !== userId) {
-        return res.status(403).json({ message: "Not authorized to view this order" });
+        return ApiResponse.forbidden(res, "Not authorized to view this order");
       }
 
       res.json(order);
     } catch (error) {
       console.error("Error fetching order:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch order");
     }
-});
+  });
 
   app.post('/api/orders/:id/complete', isAuthenticated, async (req: any, res) => {
     try {
@@ -2541,21 +2575,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const validationResult = completeOrderSchema.safeParse(req.body);
       if (!validationResult.success) {
-        return res.status(400).json({ message: "Validation error",
+        return ApiResponse.validation(res, "
+          message: "Validation error", 
           errors: validationResult.error.errors 
-});
+        });
       }
       const { paymentIntentId } = validationResult.data;
 
       // Verify the order belongs to the user
       const order = await storage.getOrderById(orderId);
       if (!order || order.userId !== userId) {
-        return res.status(404).json({ message: "Order not found" });
+        return ApiResponse.notFound(res, "Order");
       }
 
       // STRIPE INTEGRATION PLACEHOLDER
       // Verify payment with Stripe
-      //   return res.status(503).json({ message: "Payments not configured" });
+      //   return res.status(503).json({ message: "Payments not configured");
       // }
       // const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
       // if (paymentIntent.status === "succeeded") {
@@ -2584,18 +2619,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       //   // Clear user's cart
       //   await storage.clearCart(userId);
 
-      //   res.json({ message: "Order completed successfully", order });
+      //   res.json({ message: "Order completed successfully", order);
       // } else {
-      //   res.status(400).json({ message: "Payment not successful" });
+      //   res.status(400).json({ message: "Payment not successful");
       // }
 
       // Temporary response until Stripe is integrated
-      return res.status(503).json({ message: "Stripe payment verification not yet configured"     });
+      return res.status(503).json({ 
+        message: "Stripe payment verification not yet configured" 
+      });
     } catch (error: any) {
       console.error("Error completing order:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to complete order");
     }
-});
+  });
 
   // Health endpoints
   app.get('/health', async (req, res) => {
@@ -2607,8 +2644,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       uptime: process.uptime(),
       version: '1.0.0',
       redis: redisHealthy ? 'connected' : 'disconnected'
-});
-});
+    });
+  });
 
   app.get('/api/health', async (req, res) => {
     try {
@@ -2651,35 +2688,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         uptime: process.uptime(),
         timestamp: new Date().toISOString()
-});
+      });
     } catch (error: any) {
       console.error("Health check error:", error);
       res.status(503).json({
         status: 'unhealthy',
-  error: error.message,        timestamp: new Date().toISOString()
-});
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
     }
-});
+  });
 
   // Admin promotion endpoint (development only)
   app.post('/api/admin/promote', isAuthenticated, async (req: any, res) => {
     try {
       if (process.env.NODE_ENV === 'production') {
-        return res.status(403).json({ message: "Admin promotion disabled in production" });
+        return ApiResponse.forbidden(res, "Admin promotion disabled in production");
       }
 
       const userId = req.user.claims.sub;
       await storage.updateUserAdminStatus(userId, true);
       
-      res.json({ message: "User promoted to admin successfully",
+      res.json({ 
+        message: "User promoted to admin successfully",
         userId,
         timestamp: new Date().toISOString()
-});
+      });
     } catch (error) {
       console.error("Error promoting user to admin:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to promote user to admin");
     }
-});
+  });
 
   // Placeholder notifications endpoint (polling)
   app.get('/api/notifications', isAuthenticated, async (req: any, res) => {
@@ -2690,9 +2729,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(notifications);
     } catch (error) {
       console.error("Error fetching notifications:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return ApiResponse.internal(res, new Error("Failed to fetch notifications");
     }
-});
+  });
 
   // Stripe Connect onboarding endpoints
   app.post('/api/businesses/:id/stripe/connect', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
@@ -2703,7 +2742,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verify business ownership
       const business = await storage.getBusinessById(businessId);
       if (!business || business.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized" });
+        return ApiResponse.forbidden(res, "Not authorized");
       }
 
       // Import Stripe Connect functions
@@ -2711,7 +2750,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Check if already has Stripe account
       if (business.stripeAccountId) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: "Stripe account already exists");
       }
 
       // Create Connect account
@@ -2721,10 +2760,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         email: req.user.claims.email,
         businessName: business.name,
         businessType: business.category || "Other",
-});
+      });
 
       if (!account) {
-        return res.status(500).json({ message: "Failed to create Stripe account" });
+        return res.status(500).json({ message: "Failed to create Stripe account");
       }
 
       // Update business with Stripe account ID
@@ -2732,7 +2771,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         name: business.name,
         stripeAccountId: account.id,
         stripeOnboardingStatus: "pending",
-});
+      });
 
       // Create account link for onboarding
       const baseUrl = `${req.protocol}://${req.hostname}`;
@@ -2745,12 +2784,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({
         accountId: account.id,
         onboardingUrl: accountLink?.url,
-});
+      });
     } catch (error: any) {
       console.error("Error creating Stripe Connect account:", error);
-      res.status(500).json({ message: error.message || "Failed to create Stripe account" });
+      res.status(500).json({ message: error.message || "Failed to create Stripe account");
     }
-});
+  });
 
   // Stripe Connect refresh link
   app.get('/api/businesses/:id/stripe/refresh', isAuthenticated, async (req: any, res) => {
@@ -2761,11 +2800,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verify business ownership
       const business = await storage.getBusinessById(businessId);
       if (!business || business.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized" });
+        return ApiResponse.forbidden(res, "Not authorized");
       }
 
       if (!business.stripeAccountId) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: "No Stripe account found");
       }
 
       const { createAccountLink } = await import("./stripeConnect");
@@ -2778,15 +2817,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       );
 
       if (!accountLink) {
-        return res.status(500).json({ message: "Failed to create account link" });
+        return res.status(500).json({ message: "Failed to create account link");
       }
 
       res.redirect(accountLink.url);
     } catch (error: any) {
       console.error("Error refreshing Stripe link:", error);
-      res.status(500).json({ message: error.message || "Failed to refresh Stripe link" });
+      res.status(500).json({ message: error.message || "Failed to refresh Stripe link");
     }
-});
+  });
 
   // Get Stripe Connect account status
   app.get('/api/businesses/:id/stripe/status', isAuthenticated, async (req: any, res) => {
@@ -2797,18 +2836,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verify business ownership
       const business = await storage.getBusinessById(businessId);
       if (!business || business.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized" });
+        return ApiResponse.forbidden(res, "Not authorized");
       }
 
       if (!business.stripeAccountId) {
-        return res.json({ connected: false });
+        return res.json({ connected: false);
       }
 
       const { getConnectAccount, isAccountOnboarded } = await import("./stripeConnect");
       
       const account = await getConnectAccount(business.stripeAccountId);
       if (!account) {
-        return res.json({ connected: false });
+        return res.json({ connected: false);
       }
 
       const onboarded = isAccountOnboarded(account);
@@ -2818,7 +2857,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.updateBusiness(businessId, {
           name: business.name,
           stripeOnboardingStatus: "active",
-});
+        });
       }
 
       res.json({
@@ -2828,12 +2867,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         chargesEnabled: account.charges_enabled,
         payoutsEnabled: account.payouts_enabled,
         requirements: account.requirements,
-});
+      });
     } catch (error: any) {
       console.error("Error getting Stripe status:", error);
-      res.status(500).json({ message: error.message || "Failed to get Stripe status" });
+      res.status(500).json({ message: error.message || "Failed to get Stripe status");
     }
-});
+  });
 
   // AI and Recommendations endpoints
   app.get('/api/recommendations', isAuthenticated, async (req: any, res) => {
@@ -2845,12 +2884,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { getRecommendations } = await import("./aiService");
       const recommendations = await getRecommendations(userId, type, limit);
 
-      res.json({ recommendations });
+      res.json({ recommendations);
     } catch (error: any) {
       console.error("Error getting recommendations:", error);
-      res.status(500).json({ message: error.message || "Failed to get recommendations" });
+      res.status(500).json({ message: error.message || "Failed to get recommendations");
     }
-});
+  });
 
   app.get('/api/search', async (req, res) => {
     try {
@@ -2860,18 +2899,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const limit = parseInt(req.query.limit as string) || 20;
 
       if (!query) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: "Search query required");
       }
 
       const { semanticSearch } = await import("./aiService");
       const results = await semanticSearch(query, { type, category }, limit);
 
-      res.json({ results });
+      res.json({ results);
     } catch (error: any) {
       console.error("Error performing search:", error);
-      res.status(500).json({ message: error.message || "Search failed" });
+      res.status(500).json({ message: error.message || "Search failed");
     }
-});
+  });
 
   // AI Business Intelligence Dashboard Endpoints
   app.get('/api/ai/business-metrics/:businessId', isAuthenticated, async (req: any, res) => {
@@ -2882,7 +2921,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verify user owns this business
       const business = await storage.getBusinessById(businessId);
       if (!business || business.ownerId !== userId) {
-        return res.status(403).json({ message: "Access denied" });
+        return ApiResponse.forbidden(res, "Access denied");
       }
 
       // Generate AI-powered metrics
@@ -2891,9 +2930,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(metrics);
     } catch (error: any) {
       console.error("Error getting AI business metrics:", error);
-      res.status(500).json({ message: error.message || "Failed to get business metrics" });
+      res.status(500).json({ message: error.message || "Failed to get business metrics");
     }
-});
+  });
 
   app.get('/api/ai/business-insights/:businessId', isAuthenticated, async (req: any, res) => {
     try {
@@ -2903,7 +2942,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verify user owns this business
       const business = await storage.getBusinessById(businessId);
       if (!business || business.ownerId !== userId) {
-        return res.status(403).json({ message: "Access denied" });
+        return ApiResponse.forbidden(res, "Access denied");
       }
 
       // Generate AI insights
@@ -2916,9 +2955,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(dashboardInsights);
     } catch (error: any) {
       console.error("Error getting AI business insights:", error);
-      res.status(500).json({ message: error.message || "Failed to get business insights" });
+      res.status(500).json({ message: error.message || "Failed to get business insights");
     }
-});
+  });
 
   app.get('/api/businesses/:id/insights', isAuthenticated, async (req: any, res) => {
     try {
@@ -2928,7 +2967,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verify business ownership
       const business = await storage.getBusinessById(businessId);
       if (!business || business.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized" });
+        return ApiResponse.forbidden(res, "Not authorized");
       }
 
       const { generateBusinessInsights } = await import("./aiService");
@@ -2937,9 +2976,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(insights);
     } catch (error: any) {
       console.error("Error generating insights:", error);
-      res.status(500).json({ message: error.message || "Failed to generate insights" });
+      res.status(500).json({ message: error.message || "Failed to generate insights");
     }
-});
+  });
 
   // AI CONTENT GENERATOR - THE KILLER FEATURE
   app.post('/api/ai/generate-content', businessActionRateLimit, isAuthenticated, async (req: any, res) => {
@@ -2948,16 +2987,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const validationResult = aiGenerateContentSchema.safeParse(req.body);
       if (!validationResult.success) {
-        return res.status(400).json({ message: "Validation error",
+        return ApiResponse.validation(res, "
+          message: "Validation error", 
           errors: validationResult.error.errors 
-});
+        });
       }
       const { businessId, platform, idea, tone } = validationResult.data;
 
       // Verify business ownership
       const business = await storage.getBusinessById(businessId);
       if (!business || business.ownerId !== userId) {
-        return res.status(403).json({ message: "Not authorized to generate content for this business" });
+        return ApiResponse.forbidden(res, "Not authorized to generate content for this business");
       }
 
       // Generate platform-specific content with business data injected
@@ -2967,14 +3007,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         platform,
         idea,
         tone: tone || 'professional',
-});
+      });
 
       res.json(generatedContent);
     } catch (error: any) {
       console.error("Error generating AI content:", error);
-      res.status(500).json({ message: error.message || "Failed to generate content" });
+      res.status(500).json({ message: error.message || "Failed to generate content");
     }
-});
+  });
 
   // Tax endpoints
   app.post('/api/tax/calculate', isAuthenticated, async (req: any, res) => {
@@ -2986,9 +3026,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(taxData);
     } catch (error: any) {
       console.error("Error calculating tax:", error);
-      res.status(500).json({ message: error.message || "Failed to calculate tax" });
+      res.status(500).json({ message: error.message || "Failed to calculate tax");
     }
-});
+  });
 
   app.get('/api/tax/categories', async (req, res) => {
     try {
@@ -2996,12 +3036,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const categories = await getTaxCategories();
       
-      res.json({ categories });
+      res.json({ categories);
     } catch (error: any) {
       console.error("Error getting tax categories:", error);
-      res.status(500).json({ message: error.message || "Failed to get tax categories" });
+      res.status(500).json({ message: error.message || "Failed to get tax categories");
     }
-});
+  });
 
   // Invoice endpoint
   app.post('/api/orders/:id/invoice', isAuthenticated, async (req: any, res) => {
@@ -3012,7 +3052,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verify order belongs to user
       const order = await storage.getOrderById(orderId);
       if (!order || order.userId !== userId) {
-        return res.status(403).json({ message: "Not authorized" });
+        return ApiResponse.forbidden(res, "Not authorized");
       }
 
       const { generateOrderInvoice } = await import("./invoiceService");
@@ -3024,9 +3064,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.send(buffer);
     } catch (error: any) {
       console.error("Error generating invoice:", error);
-      res.status(500).json({ message: error.message || "Failed to generate invoice" });
+      res.status(500).json({ message: error.message || "Failed to generate invoice");
     }
-});
+  });
 
   // STRIPE INTEGRATION PLACEHOLDER
   // Stripe webhook endpoint
@@ -3037,7 +3077,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       if (!webhookSecret) {
         console.error("Stripe webhook secret not configured");
-        return res.status(500).json({ message: "Webhook secret not configured" });
+        return res.status(500).json({ message: "Webhook secret not configured");
       }
 
       let event: Stripe.Event;
@@ -3046,7 +3086,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
       } catch (err: any) {
         console.error("Webhook signature verification failed:", err.message);
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: `Webhook Error: ${err.message}`);
       }
 
       const { handleConnectWebhook } = await import("./stripeConnect");
@@ -3056,12 +3096,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await handleConnectWebhook(event, storage);
       }
 
-      res.json({ received: true });
+      res.json({ received: true);
     } catch (error: any) {
       console.error("Stripe webhook error:", error);
-      res.status(500).json({ message: error.message || "Webhook processing failed" });
+      res.status(500).json({ message: error.message || "Webhook processing failed");
     }
-});
+  });
 
   // ========================================
   // ADMIN ROUTES - Platform Management
@@ -3098,12 +3138,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         totalRevenue,
         pendingApprovals,
         activeUsers,
-});
+      });
     } catch (error: any) {
       console.error("Error getting admin stats:", error);
-      res.status(500).json({ message: error.message || "Failed to get admin stats" });
+      res.status(500).json({ message: error.message || "Failed to get admin stats");
     }
-});
+  });
 
   // Get all users (admin only)
   app.get('/api/admin/users', adminRateLimit, isAuthenticated, isAdmin, async (req: any, res) => {
@@ -3112,9 +3152,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(users);
     } catch (error: any) {
       console.error("Error getting all users:", error);
-      res.status(500).json({ message: error.message || "Failed to get users" });
+      res.status(500).json({ message: error.message || "Failed to get users");
     }
-});
+  });
 
   // Get all businesses (admin only)
   app.get('/api/admin/businesses', adminRateLimit, isAuthenticated, isAdmin, async (req: any, res) => {
@@ -3123,9 +3163,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(businesses);
     } catch (error: any) {
       console.error("Error getting all businesses:", error);
-      res.status(500).json({ message: error.message || "Failed to get businesses" });
+      res.status(500).json({ message: error.message || "Failed to get businesses");
     }
-});
+  });
 
   // Get all orders (admin only)
   app.get('/api/admin/orders', adminRateLimit, isAuthenticated, isAdmin, async (req: any, res) => {
@@ -3134,9 +3174,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(orders);
     } catch (error: any) {
       console.error("Error getting all orders:", error);
-      res.status(500).json({ message: error.message || "Failed to get orders" });
+      res.status(500).json({ message: error.message || "Failed to get orders");
     }
-});
+  });
 
   // Admin user actions
   app.post('/api/admin/users/:userId/:action', adminRateLimit, isAuthenticated, isAdmin, async (req: any, res) => {
@@ -3146,25 +3186,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Prevent self-modification
       if (userId === adminId && (action === 'ban' || action === 'promote')) {
-        return res.status(400).json({ message: "Validation error" });
+        return ApiResponse.validation(res, "message: "Cannot perform this action on yourself");
       }
 
       const user = await storage.getUser(userId);
       if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        return res.status(404).json({ message: "User not found");
       }
 
       switch (action) {
         case 'promote':
           // Toggle admin status
-          await storage.updateUser(userId, { isAdmin: !user.isAdmin });
-          res.json({ message: `User ${user.isAdmin ? 'demoted from' : 'promoted to'} admin` });
+          await storage.updateUser(userId, { isAdmin: !user.isAdmin);
+          res.json({ message: `User ${user.isAdmin ? 'demoted from' : 'promoted to'} admin`);
           break;
 
         case 'ban':
           // In a real system, you'd have a 'banned' field
           // For now, we'll just return success
-          res.json({ message: "User ban functionality to be implemented" });
+          res.json({ message: "User ban functionality to be implemented");
           break;
 
         case 'view':
@@ -3172,13 +3212,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           break;
 
         default:
-          res.status(400).json({ message: "Invalid action" });
+          res.status(400).json({ message: "Invalid action");
       }
     } catch (error: any) {
       console.error("Error performing user action:", error);
-      res.status(500).json({ message: error.message || "Failed to perform action" });
+      res.status(500).json({ message: error.message || "Failed to perform action");
     }
-});
+  });
 
   // Admin business actions
   app.post('/api/admin/businesses/:businessId/:action', adminRateLimit, isAuthenticated, isAdmin, async (req: any, res) => {
@@ -3187,24 +3227,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const business = await storage.getBusinessById(businessId);
       if (!business) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business");
       }
 
       switch (action) {
         case 'verify':
           // Toggle verification status
-          await storage.updateBusiness(businessId, { name: business.name, isVerified: !business.isVerified });
-          res.json({ message: `Business ${business.isVerified ? 'unverified' : 'verified'}` });
+          await storage.updateBusiness(businessId, { name: business.name, isVerified: !business.isVerified);
+          res.json({ message: `Business ${business.isVerified ? 'unverified' : 'verified'}`);
           break;
 
         case 'activate':
-          await storage.updateBusiness(businessId, { name: business.name, isActive: true });
-          res.json({ message: "Business activated" });
+          await storage.updateBusiness(businessId, { name: business.name, isActive: true);
+          res.json({ message: "Business activated");
           break;
 
         case 'deactivate':
-          await storage.updateBusiness(businessId, { name: business.name, isActive: false });
-          res.json({ message: "Business deactivated" });
+          await storage.updateBusiness(businessId, { name: business.name, isActive: false);
+          res.json({ message: "Business deactivated");
           break;
 
         case 'view':
@@ -3213,17 +3253,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         case 'delete':
           // In production, you'd likely soft-delete or archive
-          res.json({ message: "Business deletion to be implemented" });
+          res.json({ message: "Business deletion to be implemented");
           break;
 
         default:
-          res.status(400).json({ message: "Invalid action" });
+          res.status(400).json({ message: "Invalid action");
       }
     } catch (error: any) {
       console.error("Error performing business action:", error);
-      res.status(500).json({ message: error.message || "Failed to perform action" });
+      res.status(500).json({ message: error.message || "Failed to perform action");
     }
-});
+  });
 
   // Get detailed user information for admin (with all related data)
   app.get('/api/admin/users/:userId/details', adminRateLimit, isAuthenticated, isAdmin, async (req: any, res) => {
@@ -3232,7 +3272,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const user = await storage.getUser(userId);
       if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        return res.status(404).json({ message: "User not found");
       }
 
       // Get user's businesses
@@ -3270,12 +3310,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           loyaltyPoints: loyaltyAccount?.currentPoints || 0,
           referralCount: referrals.length,
         }
-});
+      });
     } catch (error: any) {
       console.error("Error getting user details:", error);
-      res.status(500).json({ message: error.message || "Failed to get user details" });
+      res.status(500).json({ message: error.message || "Failed to get user details");
     }
-});
+  });
 
   // Get detailed business information for admin (with all related data)
   app.get('/api/admin/businesses/:businessId/details', adminRateLimit, isAuthenticated, isAdmin, async (req: any, res) => {
@@ -3284,7 +3324,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const business = await storage.getBusinessById(businessId);
       if (!business) {
-        return res.status(404).json({ message: "Business not found" });
+        return ApiResponse.notFound(res, "Business");
       }
 
       // Get business owner
@@ -3354,12 +3394,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           reviewCount: business.reviewCount || 0,
           followerCount: business.followerCount || 0,
         }
-});
+      });
     } catch (error: any) {
       console.error("Error getting business details:", error);
-      res.status(500).json({ message: error.message || "Failed to get business details" });
+      res.status(500).json({ message: error.message || "Failed to get business details");
     }
-});
+  });
 
   // Get content moderation data (blog posts, posts, products)
   app.get('/api/admin/content', adminRateLimit, isAuthenticated, isAdmin, async (req: any, res) => {
@@ -3371,7 +3411,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         status: status as string || 'all',
         limit: Number(limit),
         offset: Number(offset),
-});
+      });
 
       // Get business posts
       const allPosts = await storage.getAllPosts();
@@ -3392,12 +3432,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           items: allProducts.slice(Number(offset), Number(offset) + Number(limit)),
           total: allProducts.length,
         }
-});
+      });
     } catch (error: any) {
       console.error("Error getting content:", error);
-      res.status(500).json({ message: error.message || "Failed to get content" });
+      res.status(500).json({ message: error.message || "Failed to get content");
     }
-});
+  });
 
   // Get marketing overview for admin
   app.get('/api/admin/marketing', adminRateLimit, isAuthenticated, isAdmin, async (req: any, res) => {
@@ -3406,10 +3446,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const marketingStorage = new MarketingStorage();
 
       // Get all campaigns across all businesses
-      const campaigns = await marketingStorage.getAllCampaigns({ limit: 100 });
+      const campaigns = await marketingStorage.getAllCampaigns({ limit: 100);
 
       // Get all segments
-      const segments = await marketingStorage.getAllSegments({ limit: 100 });
+      const segments = await marketingStorage.getAllSegments({ limit: 100);
 
       // Calculate stats
       const campaignStats = {
@@ -3433,12 +3473,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           items: segments.slice(0, 20),
           stats: segmentStats,
         }
-});
+      });
     } catch (error: any) {
       console.error("Error getting marketing data:", error);
-      res.status(500).json({ message: error.message || "Failed to get marketing data" });
+      res.status(500).json({ message: error.message || "Failed to get marketing data");
     }
-});
+  });
 
   // Get loyalty overview for admin
   app.get('/api/admin/loyalty', adminRateLimit, isAuthenticated, isAdmin, async (req: any, res) => {
@@ -3447,16 +3487,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const loyaltyStorage = new LoyaltyStorage();
 
       // Get all loyalty accounts
-      const accounts = await loyaltyStorage.getAllAccounts({ limit: 1000 });
+      const accounts = await loyaltyStorage.getAllAccounts({ limit: 1000);
 
       // Get all tiers
       const tiers = await loyaltyStorage.getAllTiers();
 
       // Get all rewards
-      const rewards = await loyaltyStorage.getAllRewards({ limit: 100 });
+      const rewards = await loyaltyStorage.getAllRewards({ limit: 100);
 
       // Get recent redemptions
-      const redemptions = await loyaltyStorage.getRecentRedemptions({ limit: 50 });
+      const redemptions = await loyaltyStorage.getRecentRedemptions({ limit: 50);
 
       // Calculate distribution by tier
       const tierDistribution = tiers.map(tier => ({
@@ -3491,12 +3531,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           totalPointsAvailable,
           activeMembers: accounts.length,
         }
-});
+      });
     } catch (error: any) {
       console.error("Error getting loyalty data:", error);
-      res.status(500).json({ message: error.message || "Failed to get loyalty data" });
+      res.status(500).json({ message: error.message || "Failed to get loyalty data");
     }
-});
+  });
 
   // Get system health and monitoring data
   app.get('/api/admin/system', adminRateLimit, isAuthenticated, isAdmin, async (req: any, res) => {
@@ -3530,7 +3570,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         metrics: platformMetrics,
         uptime: process.uptime(),
         memory: process.memoryUsage(),
-});
+      });
     } catch (error: any) {
       console.error("Error getting system data:", error);
       res.status(500).json({
@@ -3540,9 +3580,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           database: 'unhealthy',
           timestamp: new Date().toISOString(),
         }
-});
+      });
     }
-});
+  });
 
   // Register blog routes (Phase 4)
   const { registerBlogRoutes } = await import("./blogRoutes");
@@ -3588,11 +3628,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/admin/token-status', isAuthenticated, isAdmin, async (_req, res) => {
     try {
       const status = await getTokenRefreshStatus();
-      res.json({ tokens: status });
+      res.json({ tokens: status);
     } catch (error) {
-      res.status(500).json({ error: 'Failed to get token status' });
+      res.status(500).json({ error: 'Failed to get token status');
     }
-});
+  });
 
   const httpServer = createServer(app);
 
