@@ -42,8 +42,35 @@ export interface ConnectAccountData {
   userId: string;
   email: string;
   businessName: string;
-  businessType: string;
+  businessType: 'individual' | 'company';
   country?: string;
+  // Additional KYC fields
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  address?: {
+    line1: string;
+    line2?: string;
+    city: string;
+    state: string;
+    postal_code: string;
+    country: string;
+  };
+  taxId?: string;
+  ssnLast4?: string;
+  dateOfBirth?: {
+    day: number;
+    month: number;
+    year: number;
+  };
+  website?: string;
+  mcc?: string; // Merchant Category Code
+  productDescription?: string;
+  tosAcceptance?: {
+    date: number;
+    ip: string;
+    user_agent?: string;
+  };
 }
 
 export interface PayoutSettings {
@@ -58,25 +85,58 @@ export interface PayoutSettings {
 export async function createConnectAccount(data: ConnectAccountData): Promise<Stripe.Account> {
   try {
     const stripeClient = getStripeClient();
-    const account = await stripeClient.accounts.create({
+    
+    const accountParams: Stripe.AccountCreateParams = {
       type: 'express', // Express accounts have simplified onboarding
       country: data.country || 'US',
       email: data.email,
       capabilities: {
         card_payments: { requested: true },
         transfers: { requested: true },
+        us_bank_account_ach_payments: { requested: true }, // ACH support
       },
-      business_type: 'company',
+      business_type: data.businessType,
       business_profile: {
         name: data.businessName,
-        product_description: 'Marketplace vendor services',
-        mcc: '5734', // Computer software stores
+        product_description: data.productDescription || 'Marketplace vendor services',
+        mcc: data.mcc || '5734', // Computer software stores
+        url: data.website,
       },
       metadata: {
         businessId: data.businessId,
         userId: data.userId,
       },
-    });
+    };
+
+    // Add individual information if applicable
+    if (data.businessType === 'individual' && (data.firstName || data.lastName)) {
+      accountParams.individual = {
+        first_name: data.firstName,
+        last_name: data.lastName,
+        email: data.email,
+        phone: data.phone,
+        address: data.address,
+        ssn_last_4: data.ssnLast4,
+        dob: data.dateOfBirth,
+      } as any;
+    }
+
+    // Add company information if applicable
+    if (data.businessType === 'company') {
+      accountParams.company = {
+        name: data.businessName,
+        phone: data.phone,
+        tax_id: data.taxId,
+        address: data.address,
+      } as any;
+    }
+
+    // Add TOS acceptance
+    if (data.tosAcceptance) {
+      accountParams.tos_acceptance = data.tosAcceptance;
+    }
+
+    const account = await stripeClient.accounts.create(accountParams);
 
     logger.info('Stripe Connect account created', {
       accountId: account.id,
@@ -364,6 +424,447 @@ export async function listBalanceTransactions(
     logger.error('Failed to list balance transactions', { error, accountId });
     throw new Error(
       `Failed to retrieve transactions: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Create a login link for Express Dashboard
+ */
+export async function createLoginLink(
+  accountId: string
+): Promise<Stripe.LoginLink> {
+  try {
+    const stripeClient = getStripeClient();
+    const loginLink = await stripeClient.accounts.createLoginLink(accountId);
+
+    logger.info('Dashboard login link created', {
+      accountId,
+      url: loginLink.url,
+    });
+
+    return loginLink;
+  } catch (error) {
+    logger.error('Failed to create login link', { error, accountId });
+    throw new Error(
+      `Failed to create dashboard link: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Get account verification status and requirements
+ */
+export async function getVerificationStatus(accountId: string): Promise<{
+  isVerified: boolean;
+  currentlyDue: string[];
+  eventuallyDue: string[];
+  pastDue: string[];
+  pendingVerification: string[];
+  disabledReason?: string;
+  currentDeadline?: Date;
+}> {
+  try {
+    const account = await getConnectAccount(accountId);
+    
+    return {
+      isVerified: !account.requirements?.currently_due?.length,
+      currentlyDue: account.requirements?.currently_due || [],
+      eventuallyDue: account.requirements?.eventually_due || [],
+      pastDue: account.requirements?.past_due || [],
+      pendingVerification: account.requirements?.pending_verification || [],
+      disabledReason: account.requirements?.disabled_reason,
+      currentDeadline: account.requirements?.current_deadline 
+        ? new Date(account.requirements.current_deadline * 1000)
+        : undefined,
+    };
+  } catch (error) {
+    logger.error('Failed to get verification status', { error, accountId });
+    throw new Error(
+      `Failed to get verification status: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Update account verification information
+ */
+export async function updateVerificationInfo(
+  accountId: string,
+  updates: {
+    individual?: Partial<Stripe.AccountUpdateParams.Individual>;
+    company?: Partial<Stripe.AccountUpdateParams.Company>;
+    documents?: {
+      businessLogo?: string;
+      businessIcon?: string;
+      proofOfRegistration?: string;
+    };
+  }
+): Promise<Stripe.Account> {
+  try {
+    const stripeClient = getStripeClient();
+    
+    const updateParams: Stripe.AccountUpdateParams = {};
+    
+    if (updates.individual) {
+      updateParams.individual = updates.individual;
+    }
+    
+    if (updates.company) {
+      updateParams.company = updates.company;
+    }
+    
+    if (updates.documents) {
+      updateParams.documents = updates.documents as any;
+    }
+    
+    const account = await stripeClient.accounts.update(accountId, updateParams);
+    
+    // Invalidate cache
+    const cacheKey = `stripe:account:${accountId}`;
+    if (cache) {
+      await cache.delete(cacheKey);
+    }
+    
+    logger.info('Account verification info updated', { accountId });
+    
+    return account;
+  } catch (error) {
+    logger.error('Failed to update verification info', { error, accountId });
+    throw new Error(
+      `Failed to update verification: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Add a bank account for payouts
+ */
+export async function addBankAccount(
+  accountId: string,
+  bankAccountDetails: {
+    accountNumber: string;
+    routingNumber: string;
+    accountHolderName: string;
+    accountHolderType: 'individual' | 'company';
+    currency?: string;
+    country?: string;
+  }
+): Promise<Stripe.BankAccount> {
+  try {
+    const stripeClient = getStripeClient();
+    
+    const bankAccount = await stripeClient.accounts.createExternalAccount(accountId, {
+      external_account: {
+        object: 'bank_account',
+        account_number: bankAccountDetails.accountNumber,
+        routing_number: bankAccountDetails.routingNumber,
+        account_holder_name: bankAccountDetails.accountHolderName,
+        account_holder_type: bankAccountDetails.accountHolderType,
+        currency: bankAccountDetails.currency || 'usd',
+        country: bankAccountDetails.country || 'US',
+      } as any,
+    }) as Stripe.BankAccount;
+    
+    logger.info('Bank account added', {
+      accountId,
+      last4: bankAccount.last4,
+    });
+    
+    return bankAccount;
+  } catch (error) {
+    logger.error('Failed to add bank account', { error, accountId });
+    throw new Error(
+      `Failed to add bank account: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Verify a bank account with micro-deposits
+ */
+export async function verifyBankAccount(
+  accountId: string,
+  bankAccountId: string,
+  amounts: [number, number]
+): Promise<Stripe.BankAccount> {
+  try {
+    const stripeClient = getStripeClient();
+    
+    const bankAccount = await stripeClient.accounts.verifyExternalAccount(
+      accountId,
+      bankAccountId,
+      {
+        amounts: amounts as any,
+      }
+    ) as Stripe.BankAccount;
+    
+    logger.info('Bank account verified', {
+      accountId,
+      bankAccountId,
+      verified: bankAccount.status === 'verified',
+    });
+    
+    return bankAccount;
+  } catch (error) {
+    logger.error('Failed to verify bank account', { error, accountId, bankAccountId });
+    throw new Error(
+      `Failed to verify bank account: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * List external accounts (bank accounts and cards)
+ */
+export async function listExternalAccounts(
+  accountId: string,
+  options: { limit?: number; object?: 'bank_account' | 'card' } = {}
+): Promise<Stripe.ApiList<Stripe.BankAccount | Stripe.Card>> {
+  try {
+    const stripeClient = getStripeClient();
+    
+    const externalAccounts = await stripeClient.accounts.listExternalAccounts(
+      accountId,
+      {
+        limit: options.limit || 10,
+        object: options.object,
+      }
+    );
+    
+    return externalAccounts;
+  } catch (error) {
+    logger.error('Failed to list external accounts', { error, accountId });
+    throw new Error(
+      `Failed to list bank accounts: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Delete an external account
+ */
+export async function deleteExternalAccount(
+  accountId: string,
+  externalAccountId: string
+): Promise<Stripe.DeletedBankAccount | Stripe.DeletedCard> {
+  try {
+    const stripeClient = getStripeClient();
+    
+    const deleted = await stripeClient.accounts.deleteExternalAccount(
+      accountId,
+      externalAccountId
+    );
+    
+    logger.info('External account deleted', {
+      accountId,
+      externalAccountId,
+    });
+    
+    return deleted;
+  } catch (error) {
+    logger.error('Failed to delete external account', { error, accountId, externalAccountId });
+    throw new Error(
+      `Failed to delete bank account: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Create an instant payout (for eligible accounts)
+ */
+export async function createInstantPayout(
+  accountId: string,
+  amount: number,
+  currency: string = 'usd',
+  destinationId?: string
+): Promise<Stripe.Payout> {
+  try {
+    const stripeClient = getStripeClient();
+    
+    const payoutParams: Stripe.PayoutCreateParams = {
+      amount: Math.round(amount * 100), // Convert to cents
+      currency,
+      method: 'instant',
+      description: 'Instant marketplace payout',
+    };
+    
+    if (destinationId) {
+      payoutParams.destination = destinationId;
+    }
+    
+    const payout = await stripeClient.payouts.create(
+      payoutParams,
+      { stripeAccount: accountId }
+    );
+    
+    logger.info('Instant payout created', {
+      accountId,
+      payoutId: payout.id,
+      amount,
+      currency,
+    });
+    
+    trackEvent(
+      accountId,
+      'stripe_instant_payout_created',
+      {
+        payoutId: payout.id,
+        amount,
+        currency,
+      }
+    );
+    
+    return payout;
+  } catch (error) {
+    logger.error('Failed to create instant payout', { error, accountId, amount });
+    throw new Error(
+      `Failed to create instant payout: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Get account capabilities (what payment methods are enabled)
+ */
+export async function getAccountCapabilities(accountId: string): Promise<{
+  cardPayments: boolean;
+  transfers: boolean;
+  achPayments: boolean;
+  taxReporting: boolean;
+  instantPayouts: boolean;
+  capabilities: Record<string, string>;
+}> {
+  try {
+    const account = await getConnectAccount(accountId);
+    
+    return {
+      cardPayments: account.capabilities?.card_payments === 'active',
+      transfers: account.capabilities?.transfers === 'active',
+      achPayments: account.capabilities?.us_bank_account_ach_payments === 'active',
+      taxReporting: account.capabilities?.tax_reporting_us_1099_k === 'active',
+      instantPayouts: account.capabilities?.instant_payouts === 'active',
+      capabilities: account.capabilities as Record<string, string> || {},
+    };
+  } catch (error) {
+    logger.error('Failed to get account capabilities', { error, accountId });
+    throw new Error(
+      `Failed to get capabilities: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Enable international payouts by updating supported currencies
+ */
+export async function enableInternationalPayouts(
+  accountId: string,
+  currencies: string[]
+): Promise<Stripe.Account> {
+  try {
+    const stripeClient = getStripeClient();
+    
+    // Request capabilities for international payouts
+    const capabilities: Record<string, { requested: boolean }> = {};
+    
+    // Common international payout capabilities
+    if (currencies.includes('eur')) {
+      capabilities.sepa_debit_payments = { requested: true };
+    }
+    if (currencies.includes('gbp')) {
+      capabilities.bacs_debit_payments = { requested: true };
+    }
+    if (currencies.includes('cad')) {
+      capabilities.acss_debit_payments = { requested: true };
+    }
+    
+    const account = await stripeClient.accounts.update(accountId, {
+      capabilities: capabilities as any,
+      settings: {
+        payouts: {
+          debit_negative_balances: true,
+        },
+      },
+    });
+    
+    logger.info('International payouts enabled', {
+      accountId,
+      currencies,
+    });
+    
+    return account;
+  } catch (error) {
+    logger.error('Failed to enable international payouts', { error, accountId, currencies });
+    throw new Error(
+      `Failed to enable international payouts: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Get payout schedule and limits
+ */
+export async function getPayoutInfo(accountId: string): Promise<{
+  schedule: {
+    interval: string;
+    delayDays: number;
+    weeklyAnchor?: string;
+    monthlyAnchor?: number;
+  };
+  instantPayouts: {
+    available: boolean;
+    minimumAmount: number;
+    maximumAmount: number;
+    percentageFee: number;
+    fixedFee: number;
+  };
+}> {
+  try {
+    const account = await getConnectAccount(accountId);
+    const stripeClient = getStripeClient();
+    
+    // Get instant payout limits if available
+    let instantPayoutInfo = {
+      available: false,
+      minimumAmount: 0,
+      maximumAmount: 0,
+      percentageFee: 1.0,
+      fixedFee: 0.25,
+    };
+    
+    if (account.capabilities?.instant_payouts === 'active') {
+      try {
+        const balance = await stripeClient.balance.retrieve({
+          stripeAccount: accountId,
+        });
+        
+        if (balance.instant_available?.[0]) {
+          instantPayoutInfo = {
+            available: true,
+            minimumAmount: 100, // $1.00 minimum
+            maximumAmount: 1000000, // $10,000 maximum
+            percentageFee: 1.0,
+            fixedFee: 0.25,
+          };
+        }
+      } catch (err) {
+        logger.debug('Could not retrieve instant payout info', { accountId, error: err });
+      }
+    }
+    
+    return {
+      schedule: {
+        interval: account.settings?.payouts?.schedule?.interval || 'daily',
+        delayDays: account.settings?.payouts?.schedule?.delay_days || 2,
+        weeklyAnchor: account.settings?.payouts?.schedule?.weekly_anchor,
+        monthlyAnchor: account.settings?.payouts?.schedule?.monthly_anchor,
+      },
+      instantPayouts: instantPayoutInfo,
+    };
+  } catch (error) {
+    logger.error('Failed to get payout info', { error, accountId });
+    throw new Error(
+      `Failed to get payout information: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

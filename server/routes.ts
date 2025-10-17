@@ -3556,11 +3556,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 });
 
-  // STRIPE INTEGRATION PLACEHOLDER
-  // Stripe webhook endpoint
-  app.post('/api/stripe/webhook', async (req, res) => {
+  // ========================================
+  // STRIPE PAYMENT PROCESSING
+  // ========================================
+  
+  // Stripe webhook endpoint - Main webhook handler
+  app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
     try {
-
+      const sig = req.headers['stripe-signature'] as string;
       const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
       if (!webhookSecret) {
@@ -3568,28 +3571,739 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(500).json({ message: "Webhook secret not configured" });
       }
 
-      let event: Stripe.Event;
+      // Import webhook handlers
+      const { constructWebhookEvent } = await import("./stripeConnect");
+      const { handleWebhookEvent } = await import("./stripeWebhooks");
 
+      let event: Stripe.Event;
       try {
-        event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+        event = constructWebhookEvent(req.body, sig);
       } catch (err: any) {
         console.error("Webhook signature verification failed:", err.message);
         return res.status(400).json({ message: "Validation error" });
       }
 
-      const { handleConnectWebhook } = await import("./stripeConnect");
-
-      // Handle the event
-      if (event.type.startsWith('account.')) {
-        await handleConnectWebhook(event, storage);
+      // Process webhook event
+      const result = await handleWebhookEvent(event, storage);
+      
+      if (result.success) {
+        res.json({ received: true });
+      } else {
+        res.status(result.retryable ? 503 : 400).json({ 
+          message: result.error,
+          retryable: result.retryable 
+        });
       }
-
-      res.json({ received: true });
     } catch (error: any) {
       console.error("Stripe webhook error:", error);
       res.status(500).json({ message: error.message || "Webhook processing failed" });
     }
-});
+  });
+
+  // Create payment intent for marketplace transaction
+  app.post('/api/payments/create-intent', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { 
+        amount, 
+        sellerId, 
+        orderId,
+        savePaymentMethod,
+        currency = 'usd',
+        description 
+      } = req.body;
+
+      const stripePayments = await import("./stripePayments");
+      const stripeCompliance = await import("./stripeCompliance");
+      
+      // Perform security checks
+      const securityCheck = await stripeCompliance.performSecurityCheck({
+        amount,
+        currency,
+        customerId: userId,
+        email: req.user.claims.email,
+        ipAddress: req.ip,
+        userAgent: req.get('user-agent'),
+      });
+
+      if (securityCheck.riskLevel === 'blocked') {
+        return res.status(403).json({ 
+          message: "Transaction blocked due to security concerns",
+          reasons: securityCheck.reasons 
+        });
+      }
+
+      // Create or retrieve Stripe customer
+      const customer = await stripePayments.createOrRetrieveCustomer(
+        userId,
+        req.user.claims.email,
+        req.user.claims.name
+      );
+
+      // Create payment intent with split payment
+      const paymentIntent = await stripePayments.createPaymentIntent({
+        amount,
+        currency,
+        sellerId,
+        customerId: customer.id,
+        description,
+        metadata: {
+          userId,
+          orderId: orderId || '',
+          sellerId: sellerId || '',
+        },
+        savePaymentMethod,
+        use3DSecure: securityCheck.requiresAdditionalVerification,
+      });
+
+      res.json({
+        clientSecret: paymentIntent.client_secret,
+        paymentIntentId: paymentIntent.id,
+        requiresAction: paymentIntent.status === 'requires_action',
+      });
+    } catch (error: any) {
+      console.error("Error creating payment intent:", error);
+      res.status(500).json({ message: error.message || "Failed to create payment" });
+    }
+  });
+
+  // Confirm payment intent
+  app.post('/api/payments/:id/confirm', isAuthenticated, async (req: any, res) => {
+    try {
+      const { id: paymentIntentId } = req.params;
+      const { paymentMethodId, returnUrl } = req.body;
+
+      const stripePayments = await import("./stripePayments");
+      
+      const paymentIntent = await stripePayments.confirmPaymentIntent(
+        paymentIntentId,
+        paymentMethodId,
+        returnUrl
+      );
+
+      res.json({
+        status: paymentIntent.status,
+        requiresAction: paymentIntent.status === 'requires_action',
+        nextActionUrl: paymentIntent.next_action?.redirect_to_url?.url,
+      });
+    } catch (error: any) {
+      console.error("Error confirming payment:", error);
+      res.status(500).json({ message: error.message || "Failed to confirm payment" });
+    }
+  });
+
+  // Cancel payment intent
+  app.post('/api/payments/:id/cancel', isAuthenticated, async (req: any, res) => {
+    try {
+      const { id: paymentIntentId } = req.params;
+      const { reason } = req.body;
+
+      const stripePayments = await import("./stripePayments");
+      
+      const paymentIntent = await stripePayments.cancelPaymentIntent(
+        paymentIntentId,
+        reason
+      );
+
+      res.json({ status: paymentIntent.status });
+    } catch (error: any) {
+      console.error("Error canceling payment:", error);
+      res.status(500).json({ message: error.message || "Failed to cancel payment" });
+    }
+  });
+
+  // Process refund
+  app.post('/api/payments/:id/refund', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id: paymentIntentId } = req.params;
+      const { amount, reason } = req.body;
+
+      // Verify user has permission to refund
+      const payment = await storage.getPaymentByIntentId(paymentIntentId);
+      if (!payment) {
+        return res.status(404).json({ message: "Payment not found" });
+      }
+
+      const order = await storage.getOrderById(payment.orderId);
+      if (!order || (order.userId !== userId && !req.user.claims.isAdmin)) {
+        return res.status(403).json({ message: "Not authorized to refund this payment" });
+      }
+
+      const stripePayments = await import("./stripePayments");
+      
+      const refund = await stripePayments.processRefund({
+        paymentIntentId,
+        amount,
+        reason,
+        refundApplicationFee: true,
+        reverseTransfer: true,
+      });
+
+      // Update order status
+      await storage.updateOrderStatus(
+        payment.orderId,
+        amount ? 'partially_refunded' : 'refunded'
+      );
+
+      res.json({
+        refundId: refund.id,
+        amount: refund.amount / 100,
+        status: refund.status,
+      });
+    } catch (error: any) {
+      console.error("Error processing refund:", error);
+      res.status(500).json({ message: error.message || "Failed to process refund" });
+    }
+  });
+
+  // Save payment method
+  app.post('/api/payment-methods/save', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { paymentMethodId, setAsDefault } = req.body;
+
+      const stripePayments = await import("./stripePayments");
+      
+      const customer = await stripePayments.createOrRetrieveCustomer(
+        userId,
+        req.user.claims.email,
+        req.user.claims.name
+      );
+
+      const paymentMethod = await stripePayments.savePaymentMethod(
+        customer.id,
+        paymentMethodId,
+        setAsDefault
+      );
+
+      res.json({
+        id: paymentMethod.id,
+        type: paymentMethod.type,
+        last4: paymentMethod.card?.last4,
+        brand: paymentMethod.card?.brand,
+      });
+    } catch (error: any) {
+      console.error("Error saving payment method:", error);
+      res.status(500).json({ message: error.message || "Failed to save payment method" });
+    }
+  });
+
+  // List saved payment methods
+  app.get('/api/payment-methods', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { type = 'card' } = req.query;
+
+      const stripePayments = await import("./stripePayments");
+      
+      const customer = await stripePayments.createOrRetrieveCustomer(
+        userId,
+        req.user.claims.email,
+        req.user.claims.name
+      );
+
+      const paymentMethods = await stripePayments.listPaymentMethods(
+        customer.id,
+        type as 'card' | 'us_bank_account'
+      );
+
+      res.json(paymentMethods.map(pm => ({
+        id: pm.id,
+        type: pm.type,
+        last4: pm.card?.last4 || pm.us_bank_account?.last4,
+        brand: pm.card?.brand,
+        bankName: pm.us_bank_account?.bank_name,
+      })));
+    } catch (error: any) {
+      console.error("Error listing payment methods:", error);
+      res.status(500).json({ message: error.message || "Failed to list payment methods" });
+    }
+  });
+
+  // Delete payment method
+  app.delete('/api/payment-methods/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const { id: paymentMethodId } = req.params;
+
+      const stripePayments = await import("./stripePayments");
+      
+      await stripePayments.deletePaymentMethod(paymentMethodId);
+
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error deleting payment method:", error);
+      res.status(500).json({ message: error.message || "Failed to delete payment method" });
+    }
+  });
+
+  // Create subscription
+  app.post('/api/subscriptions/create', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { priceId, paymentMethodId, trialDays, coupon } = req.body;
+
+      const stripePayments = await import("./stripePayments");
+      
+      const customer = await stripePayments.createOrRetrieveCustomer(
+        userId,
+        req.user.claims.email,
+        req.user.claims.name
+      );
+
+      const subscription = await stripePayments.createSubscription(
+        customer.id,
+        priceId,
+        {
+          trialDays,
+          coupon,
+          paymentMethodId,
+          metadata: { userId },
+        }
+      );
+
+      res.json({
+        subscriptionId: subscription.id,
+        status: subscription.status,
+        currentPeriodEnd: subscription.current_period_end,
+        trialEnd: subscription.trial_end,
+      });
+    } catch (error: any) {
+      console.error("Error creating subscription:", error);
+      res.status(500).json({ message: error.message || "Failed to create subscription" });
+    }
+  });
+
+  // Cancel subscription
+  app.post('/api/subscriptions/:id/cancel', isAuthenticated, async (req: any, res) => {
+    try {
+      const { id: subscriptionId } = req.params;
+      const { immediately = false } = req.body;
+
+      const stripePayments = await import("./stripePayments");
+      
+      const subscription = await stripePayments.cancelSubscription(
+        subscriptionId,
+        immediately
+      );
+
+      res.json({
+        subscriptionId: subscription.id,
+        status: subscription.status,
+        cancelAt: subscription.cancel_at,
+        canceledAt: subscription.canceled_at,
+      });
+    } catch (error: any) {
+      console.error("Error canceling subscription:", error);
+      res.status(500).json({ message: error.message || "Failed to cancel subscription" });
+    }
+  });
+
+  // ========================================
+  // STRIPE CONNECT ROUTES - Seller Management
+  // ========================================
+
+  // Create Connect account for seller
+  app.post('/api/connect/accounts/create', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const businessData = req.body;
+
+      // Verify business ownership
+      const business = await storage.getBusinessById(businessData.businessId);
+      if (!business || business.ownerId !== userId) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
+
+      const stripeConnect = await import("./stripeConnect");
+      
+      const account = await stripeConnect.createConnectAccount({
+        businessId: businessData.businessId,
+        userId,
+        email: req.user.claims.email,
+        businessName: business.name,
+        businessType: businessData.businessType || 'company',
+        country: businessData.country || 'US',
+        firstName: businessData.firstName,
+        lastName: businessData.lastName,
+        phone: businessData.phone,
+        address: businessData.address,
+        taxId: businessData.taxId,
+        website: business.website,
+        productDescription: business.description,
+      });
+
+      // Update business with Stripe account ID
+      await storage.updateBusinessStripeInfo(businessData.businessId, {
+        stripeAccountId: account.id,
+        stripeOnboardingStatus: 'pending',
+      });
+
+      res.json({
+        accountId: account.id,
+        chargesEnabled: account.charges_enabled,
+        payoutsEnabled: account.payouts_enabled,
+      });
+    } catch (error: any) {
+      console.error("Error creating Connect account:", error);
+      res.status(500).json({ message: error.message || "Failed to create seller account" });
+    }
+  });
+
+  // Get Connect account onboarding link
+  app.post('/api/connect/accounts/:id/onboarding', isAuthenticated, async (req: any, res) => {
+    try {
+      const { id: accountId } = req.params;
+      const { refreshUrl, returnUrl } = req.body;
+
+      const stripeConnect = await import("./stripeConnect");
+      
+      const accountLink = await stripeConnect.createAccountLink(
+        accountId,
+        refreshUrl || `${process.env.APP_URL}/seller/onboarding/refresh`,
+        returnUrl || `${process.env.APP_URL}/seller/onboarding/complete`
+      );
+
+      res.json({ url: accountLink.url });
+    } catch (error: any) {
+      console.error("Error creating onboarding link:", error);
+      res.status(500).json({ message: error.message || "Failed to create onboarding link" });
+    }
+  });
+
+  // Get Connect account dashboard link
+  app.post('/api/connect/accounts/:id/dashboard', isAuthenticated, async (req: any, res) => {
+    try {
+      const { id: accountId } = req.params;
+
+      const stripeConnect = await import("./stripeConnect");
+      
+      const loginLink = await stripeConnect.createLoginLink(accountId);
+
+      res.json({ url: loginLink.url });
+    } catch (error: any) {
+      console.error("Error creating dashboard link:", error);
+      res.status(500).json({ message: error.message || "Failed to create dashboard link" });
+    }
+  });
+
+  // Get Connect account details
+  app.get('/api/connect/accounts/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const { id: accountId } = req.params;
+
+      const stripeConnect = await import("./stripeConnect");
+      
+      const account = await stripeConnect.getConnectAccount(accountId);
+      const verificationStatus = await stripeConnect.getVerificationStatus(accountId);
+      const capabilities = await stripeConnect.getAccountCapabilities(accountId);
+
+      res.json({
+        id: account.id,
+        email: account.email,
+        chargesEnabled: account.charges_enabled,
+        payoutsEnabled: account.payouts_enabled,
+        verificationStatus,
+        capabilities,
+      });
+    } catch (error: any) {
+      console.error("Error getting Connect account:", error);
+      res.status(500).json({ message: error.message || "Failed to get account details" });
+    }
+  });
+
+  // Update Connect account verification
+  app.patch('/api/connect/accounts/:id/verification', isAuthenticated, async (req: any, res) => {
+    try {
+      const { id: accountId } = req.params;
+      const updates = req.body;
+
+      const stripeConnect = await import("./stripeConnect");
+      
+      const account = await stripeConnect.updateVerificationInfo(accountId, updates);
+
+      res.json({
+        id: account.id,
+        requirementsCount: account.requirements?.currently_due?.length || 0,
+      });
+    } catch (error: any) {
+      console.error("Error updating verification:", error);
+      res.status(500).json({ message: error.message || "Failed to update verification" });
+    }
+  });
+
+  // Get Connect account balance
+  app.get('/api/connect/accounts/:id/balance', isAuthenticated, async (req: any, res) => {
+    try {
+      const { id: accountId } = req.params;
+
+      const stripeConnect = await import("./stripeConnect");
+      
+      const balance = await stripeConnect.getAccountBalance(accountId);
+
+      res.json({
+        available: balance.available.map(b => ({
+          amount: b.amount / 100,
+          currency: b.currency,
+        })),
+        pending: balance.pending.map(b => ({
+          amount: b.amount / 100,
+          currency: b.currency,
+        })),
+      });
+    } catch (error: any) {
+      console.error("Error getting balance:", error);
+      res.status(500).json({ message: error.message || "Failed to get balance" });
+    }
+  });
+
+  // Create payout for Connect account
+  app.post('/api/connect/accounts/:id/payouts', isAuthenticated, async (req: any, res) => {
+    try {
+      const { id: accountId } = req.params;
+      const { amount, currency = 'usd', instant = false } = req.body;
+
+      const stripeConnect = await import("./stripeConnect");
+      
+      const payout = instant 
+        ? await stripeConnect.createInstantPayout(accountId, amount, currency)
+        : await stripeConnect.createPayout(accountId, amount, currency);
+
+      res.json({
+        payoutId: payout.id,
+        amount: payout.amount / 100,
+        currency: payout.currency,
+        arrivalDate: payout.arrival_date,
+        method: payout.method,
+      });
+    } catch (error: any) {
+      console.error("Error creating payout:", error);
+      res.status(500).json({ message: error.message || "Failed to create payout" });
+    }
+  });
+
+  // List payouts for Connect account
+  app.get('/api/connect/accounts/:id/payouts', isAuthenticated, async (req: any, res) => {
+    try {
+      const { id: accountId } = req.params;
+      const { limit = 10 } = req.query;
+
+      const stripeConnect = await import("./stripeConnect");
+      
+      const payouts = await stripeConnect.listPayouts(accountId, parseInt(limit as string));
+
+      res.json({
+        payouts: payouts.data.map(p => ({
+          id: p.id,
+          amount: p.amount / 100,
+          currency: p.currency,
+          arrivalDate: p.arrival_date,
+          status: p.status,
+          method: p.method,
+        })),
+        hasMore: payouts.hasMore,
+      });
+    } catch (error: any) {
+      console.error("Error listing payouts:", error);
+      res.status(500).json({ message: error.message || "Failed to list payouts" });
+    }
+  });
+
+  // Update payout settings
+  app.patch('/api/connect/accounts/:id/payout-settings', isAuthenticated, async (req: any, res) => {
+    try {
+      const { id: accountId } = req.params;
+      const settings = req.body;
+
+      const stripeConnect = await import("./stripeConnect");
+      
+      const account = await stripeConnect.updatePayoutSettings(accountId, settings);
+
+      res.json({
+        interval: account.settings?.payouts?.schedule?.interval,
+        delayDays: account.settings?.payouts?.schedule?.delay_days,
+      });
+    } catch (error: any) {
+      console.error("Error updating payout settings:", error);
+      res.status(500).json({ message: error.message || "Failed to update payout settings" });
+    }
+  });
+
+  // Add bank account to Connect account
+  app.post('/api/connect/accounts/:id/bank-accounts', isAuthenticated, async (req: any, res) => {
+    try {
+      const { id: accountId } = req.params;
+      const bankAccountData = req.body;
+
+      const stripeConnect = await import("./stripeConnect");
+      
+      const bankAccount = await stripeConnect.addBankAccount(accountId, bankAccountData);
+
+      res.json({
+        id: bankAccount.id,
+        last4: bankAccount.last4,
+        bankName: bankAccount.bank_name,
+        status: bankAccount.status,
+      });
+    } catch (error: any) {
+      console.error("Error adding bank account:", error);
+      res.status(500).json({ message: error.message || "Failed to add bank account" });
+    }
+  });
+
+  // List transactions for Connect account
+  app.get('/api/connect/accounts/:id/transactions', isAuthenticated, async (req: any, res) => {
+    try {
+      const { id: accountId } = req.params;
+      const { limit = 10, startingAfter } = req.query;
+
+      const stripeConnect = await import("./stripeConnect");
+      
+      const transactions = await stripeConnect.listBalanceTransactions(accountId, {
+        limit: parseInt(limit as string),
+        startingAfter: startingAfter as string,
+      });
+
+      res.json({
+        transactions: transactions.data.map(t => ({
+          id: t.id,
+          amount: t.amount / 100,
+          fee: t.fee / 100,
+          net: t.net / 100,
+          currency: t.currency,
+          type: t.type,
+          created: t.created,
+        })),
+        hasMore: transactions.hasMore,
+      });
+    } catch (error: any) {
+      console.error("Error listing transactions:", error);
+      res.status(500).json({ message: error.message || "Failed to list transactions" });
+    }
+  });
+
+  // ========================================
+  // FINANCIAL REPORTS & ANALYTICS
+  // ========================================
+
+  // Generate financial report
+  app.get('/api/reports/financial', isAuthenticated, async (req: any, res) => {
+    try {
+      const { startDate, endDate, accountId } = req.query;
+
+      if (!startDate || !endDate) {
+        return res.status(400).json({ message: "Start and end dates required" });
+      }
+
+      const stripePayments = await import("./stripePayments");
+      
+      const report = await stripePayments.generateFinancialReport(
+        new Date(startDate as string),
+        new Date(endDate as string),
+        {
+          accountId: accountId as string,
+          includeTransfers: true,
+          includePayouts: true,
+          includeCharges: true,
+          includeRefunds: true,
+        }
+      );
+
+      res.json(report);
+    } catch (error: any) {
+      console.error("Error generating financial report:", error);
+      res.status(500).json({ message: error.message || "Failed to generate report" });
+    }
+  });
+
+  // Generate compliance report
+  app.get('/api/reports/compliance', isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const { startDate, endDate } = req.query;
+
+      if (!startDate || !endDate) {
+        return res.status(400).json({ message: "Start and end dates required" });
+      }
+
+      const stripeCompliance = await import("./stripeCompliance");
+      
+      const report = await stripeCompliance.generateComplianceReport(
+        new Date(startDate as string),
+        new Date(endDate as string)
+      );
+
+      res.json(report);
+    } catch (error: any) {
+      console.error("Error generating compliance report:", error);
+      res.status(500).json({ message: error.message || "Failed to generate report" });
+    }
+  });
+
+  // Generate tax report
+  app.get('/api/reports/tax/:accountId', isAuthenticated, async (req: any, res) => {
+    try {
+      const { accountId } = req.params;
+      const { year } = req.query;
+
+      if (!year) {
+        return res.status(400).json({ message: "Year required" });
+      }
+
+      const stripeCompliance = await import("./stripeCompliance");
+      
+      const report = await stripeCompliance.generateTaxReport(
+        accountId,
+        parseInt(year as string)
+      );
+
+      res.json(report);
+    } catch (error: any) {
+      console.error("Error generating tax report:", error);
+      res.status(500).json({ message: error.message || "Failed to generate report" });
+    }
+  });
+
+  // Calculate fees for amount
+  app.post('/api/payments/calculate-fees', async (req, res) => {
+    try {
+      const { amount, taxRate, couponDiscount } = req.body;
+
+      const stripePayments = await import("./stripePayments");
+      
+      const fees = stripePayments.calculateFees(amount, {
+        taxRate,
+        couponDiscount,
+      });
+
+      res.json(fees);
+    } catch (error: any) {
+      console.error("Error calculating fees:", error);
+      res.status(500).json({ message: error.message || "Failed to calculate fees" });
+    }
+  });
+
+  // Create coupon
+  app.post('/api/coupons/create', isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const couponData = req.body;
+
+      const stripePayments = await import("./stripePayments");
+      
+      const coupon = await stripePayments.createCoupon(couponData);
+
+      res.json({
+        id: coupon.id,
+        name: coupon.name,
+        percentOff: coupon.percent_off,
+        amountOff: coupon.amount_off ? coupon.amount_off / 100 : null,
+        duration: coupon.duration,
+        maxRedemptions: coupon.max_redemptions,
+      });
+    } catch (error: any) {
+      console.error("Error creating coupon:", error);
+      res.status(500).json({ message: error.message || "Failed to create coupon" });
+    }
+  });
 
   // ========================================
   // ADMIN ROUTES - Platform Management
