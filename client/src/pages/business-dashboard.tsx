@@ -181,7 +181,7 @@ export default function BusinessDashboard() {
           <TabsContent value="overview" className="space-y-6">
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="border-2 hover:shadow-lg transition-shadow bg-white/80 backdrop-blur-md">
+              <Card className="border-2 hover:shadow-lg transition-shadow bg-white/20 backdrop-blur-md">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Total Followers</CardTitle>
                   <Users className="h-5 w-5 text-blue-600" />
@@ -192,7 +192,7 @@ export default function BusinessDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="border-2 hover:shadow-lg transition-shadow bg-white/80 backdrop-blur-md">
+              <Card className="border-2 hover:shadow-lg transition-shadow bg-white/20 backdrop-blur-md">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Products</CardTitle>
                   <Package className="h-5 w-5 text-green-600" />
@@ -205,7 +205,7 @@ export default function BusinessDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="border-2 hover:shadow-lg transition-shadow bg-white/80 backdrop-blur-md">
+              <Card className="border-2 hover:shadow-lg transition-shadow bg-white/20 backdrop-blur-md">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Rating</CardTitle>
                   <TrendingUp className="h-5 w-5 text-yellow-600" />
@@ -218,7 +218,7 @@ export default function BusinessDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="border-2 hover:shadow-lg transition-shadow bg-white/80 backdrop-blur-md">
+              <Card className="border-2 hover:shadow-lg transition-shadow bg-white/20 backdrop-blur-md">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Engagement</CardTitle>
                   <Heart className="h-5 w-5 text-red-600" />
@@ -271,7 +271,7 @@ export default function BusinessDashboard() {
                   </Button>
 
                   <Button
-                    className="w-full h-auto py-6 flex-col gap-2 bg-white/90 hover:bg-white dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-900 dark:text-white shadow-lg hover:shadow-xl transition-all border-2 border-purple-200 dark:border-purple-800"
+                    className="w-full h-auto py-6 flex-col gap-2 bg-white/20 hover:bg-white/30 dark:bg-gray-800/30 dark:hover:bg-gray-700/40 text-gray-900 dark:text-white shadow-lg hover:shadow-xl transition-all border-2 border-purple-200 dark:border-purple-800"
                     variant="outline"
                     size="lg"
                     onClick={() => window.location.href = '/integrations/gmb'}
@@ -284,7 +284,7 @@ export default function BusinessDashboard() {
                   </Button>
 
                   <Button
-                    className="w-full h-auto py-6 flex-col gap-2 bg-white/90 hover:bg-white dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-900 dark:text-white shadow-lg hover:shadow-xl transition-all border-2 border-purple-200 dark:border-purple-800"
+                    className="w-full h-auto py-6 flex-col gap-2 bg-white/20 hover:bg-white/30 dark:bg-gray-800/30 dark:hover:bg-gray-700/40 text-gray-900 dark:text-white shadow-lg hover:shadow-xl transition-all border-2 border-purple-200 dark:border-purple-800"
                     variant="outline"
                     size="lg"
                     onClick={() => window.open(`/ai/insights/${business.id}`, '_blank')}
@@ -297,7 +297,7 @@ export default function BusinessDashboard() {
                   </Button>
 
                   <Button
-                    className="w-full h-auto py-6 flex-col gap-2 bg-white/90 hover:bg-white dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-900 dark:text-white shadow-lg hover:shadow-xl transition-all border-2 border-purple-200 dark:border-purple-800"
+                    className="w-full h-auto py-6 flex-col gap-2 bg-white/20 hover:bg-white/30 dark:bg-gray-800/30 dark:hover:bg-gray-700/40 text-gray-900 dark:text-white shadow-lg hover:shadow-xl transition-all border-2 border-purple-200 dark:border-purple-800"
                     variant="outline"
                     size="lg"
                     onClick={() => window.open(`/ai/campaigns/${business.id}`, '_blank')}

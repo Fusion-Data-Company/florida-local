@@ -555,10 +555,30 @@ export default function WebGLBackground() {
   }, [globalIntensity])
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 w-full h-full -z-10"
-      style={{ background: "#000510" }}
-    />
+    <div 
+      className="webgl-background-container"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        zIndex: -100, // Very low z-index to ensure it's behind everything
+        pointerEvents: 'none' // Prevent blocking interactions
+      }}
+    >
+      <canvas
+        ref={canvasRef}
+        className="webgl-canvas"
+        style={{ 
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          background: "#000510" 
+        }}
+      />
+    </div>
   )
 }

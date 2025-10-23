@@ -4,7 +4,7 @@ import MarketplaceSection from "@/components/marketplace-section";
 import SocialFeed from "@/components/social-feed";
 import { Button } from "@/components/ui/button";
 import { StardustButton } from "@/components/ui/stardust-button";
-import VideoBackground from "@/components/video-background";
+// import VideoBackground from "@/components/video-background"; // Commented out to allow WebGL background
 import {
   AnimatedGradientHero,
   ParticleField,
@@ -18,10 +18,10 @@ export default function Landing() {
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Video Background - Behind all content */}
-      <VideoBackground 
+      {/* <VideoBackground 
         randomize={true}  // Randomly select from the 4 available videos
         overlayOpacity={0.3}  // Slight overlay for better text readability
-      />
+      /> */}
       
       {/* CONTENT WRAPPER - Proper Z-Index */}
       <div className="relative z-10">

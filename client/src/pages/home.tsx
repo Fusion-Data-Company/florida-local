@@ -28,7 +28,7 @@ import { AnimatedHikeCard, type Stat } from "@/components/ui/card-25";
 import { Clock, MapPin, Heart, Sparkles } from "lucide-react";
 import { HolographicCard } from "@/components/ui/holographic-card";
 import { ParallaxProvider, Parallax } from 'react-scroll-parallax';
-import YouTubeBackground from '@/components/youtube-background';
+// import YouTubeBackground from '@/components/youtube-background'; // Commented out to allow WebGL background
 
 // Import Florida Local business images
 import elegantRestaurant1 from "@/assets/stock_images/elegant_restaurant_f_aa323e17.jpg";
@@ -83,7 +83,7 @@ export default function Home() {
       <GlassFilter />
 
       {/* VIDEO BACKGROUND - Night Cityscape */}
-      <YouTubeBackground youtubeUrl="https://youtu.be/Z8ioWqthS-o" overlayOpacity={0} />
+      {/* <YouTubeBackground youtubeUrl="https://youtu.be/Z8ioWqthS-o" overlayOpacity={0} /> */}
 
       {/* ULTRA PREMIUM EFFECTS */}
       {/* <AuroraAmbient intensity="medium" /> */}
