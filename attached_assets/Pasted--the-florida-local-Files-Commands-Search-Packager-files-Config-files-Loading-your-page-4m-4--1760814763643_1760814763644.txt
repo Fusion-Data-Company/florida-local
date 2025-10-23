@@ -1,0 +1,281 @@
+
+
+
+the-florida-local
+Files
+Commands
+Search
+Packager files
+Config files
+Loading your page…
+
+4m
+ • 
+4 minutes ago
+Databases
+Development Database
+35.38MB / 10GB
+Production Database
+35.27MB / 100GB
+Billing Period
+Renews monthly, Oct 28
+Hours of Compute Used
+0.59 hours
+Enable "Accessible Terminal" in Workspace Settings to use a screen reader with the shell.
+Remote Updates
+origin/main•upstream
+last fetched 23 hours ago
+25 commits to push
+Commit
+There are no changes to commit.
+SESSION_SECRET
+••••••••
+DATABASE_URL
+••••••••
+PGDATABASE
+••••••••
+PGHOST
+••••••••
+PGPORT
+••••••••
+PGUSER
+••••••••
+PGPASSWORD
+••••••••
+OPENAI_API_KEY
+••••••••
+Use Replit with another editor
+SSH allows you to connect to an App from another machine or IDE.
+Connect to VS Code
+One-click SSH setup will launch VS Code and configure keys for you.
+Connect to Cursor
+One-click SSH setup will launch Cursor and configure keys for you.
+Connect manually
+Use the command below to connect via CLI or another IDE.
+Shell command
+ssh -i ~/.ssh/replit -p 22 20a14286-c145-4047-883f-0c729903b2ee@20a14286-c145-4047-883f-0c729903b2ee-00-158iyo3yjo3p0.picard.replit.dev
+Production
+Status
+Robert published about 3 hours ago
+Visibility
+Public
+Domain
+https://the-florida-local.replit.app
+Type
+Autoscale
+(4 vCPU / 8 GiB RAM / 3 Max)
+See all usage
+Database
+Production database connected
+a55d425b
+RY
+
+Robert-Yeager
+Robert
+published about 20 hours ago
+f9923315
+RY
+
+Robert-Yeager
+Robert
+published about 23 hours ago
+The Florida Local - Business Community Platform
+Overview
+The Florida Local is a comprehensive platform connecting Florida-based entrepreneurs and local businesses. It serves as a digital community hub for showcasing business profiles, selling products, engaging via social feeds, and gaining visibility through a spotlight system. The platform aims to foster local commerce, community building, and business growth through digital presence and networking opportunities.
+
+User Preferences
+Preferred communication style: Simple, everyday language.
+
+CRITICAL: Stripe Integration
+
+NEVER ask for Stripe API keys or testing secrets
+Stripe integration is placeholdered/removed - do NOT implement it
+All Stripe routes and functionality are commented out with placeholders
+Testing should NEVER be blocked by missing Stripe configuration
+DO NOT use run_test tool - Replit's test infrastructure requires Stripe secrets even when Stripe is removed
+Verify functionality through manual testing and architect review only
+Authentication System Status: ✅ FORTUNE 500 PRODUCTION READY
+
+Architect Certified (October 17, 2025): Complete deployment infrastructure rebuild reviewed and approved
+Enterprise Error Handling:
+Sanitized client responses (5xx → "Internal Server Error", 4xx → specific messages)
+Full error logging server-side (stack, context, user ID)
+No server crashes on errors (graceful handling with next(err) delegation)
+Connection leak prevention (proper headersSent handling)
+Security: httpOnly cookies, CSRF protection, zero sensitive data exposure to clients
+Resilience:
+3-retry database upsert with 1s delay
+Session store fallback chain (Redis → PostgreSQL → Memory)
+OIDC timeout protection (10s)
+4 registered strategies (dev, prod, localhost, 127.0.0.1)
+Monitoring: /api/auth/health, /api/auth/session-info, /api/deployment-status
+Testing: All deployment tests passing (server startup, endpoints, auth flow, frontend)
+System Architecture
+Frontend: Built with React 18, TypeScript, Vite, Wouter for routing, and TanStack Query for state management. UI uses shadcn/ui components (Radix UI) and Tailwind CSS for responsive design.
+
+Backend: Express.js with TypeScript, providing RESTful APIs. It utilizes Replit's OpenID Connect authentication, PostgreSQL with Drizzle ORM for data, and Redis for sessions, rate limiting, and job queues.
+
+Key Features & Implementations:
+
+UI/UX: Elite Luxury UI transformation with premium marble textures, advanced CSS effects, performance-optimized animations, full accessibility (WCAG AA compliance, prefers-reduced-motion support), glass morphism, floating animations, and luxury typography.
+AI Tools Page (Cyberpunk Theme): Ultra-elite cyberpunk metallic futuristic experience with 3D animated hero section (Three.js with 15 optimized metallic boxes), comprehensive dark metallic gradients (slate-900/95 to slate-800/90), cyan/purple energy borders, three-layer overlay system (cyber-metallic-shine, holographic gradients, scan lines), 3D lift animations, and consistent styling across all 8 tabs (Overview, AI Agents, Visual Search, Voice Search, Image Studio, Content Generator, Visual Commerce, Voice Commerce). Performance-optimized with ≤15 geometries and full accessibility support.
+E-commerce: Cart, checkout (manual only - Stripe removed), vendor portal for product management, and an orders system.
+Social: User-generated content (posts, updates), likes, comments, following, and real-time messaging via WebSockets.
+Spotlight System: A three-tier rotation system using weighted algorithms and community voting to feature businesses.
+Security: API key management, webhook signatures, hardened CSP, strict CORS, and session-based WebSocket authentication.
+Monitoring: Sentry for error tracking, PostHog for analytics, and Winston for logging. Metrics collection hardened with defensive Redis checks and graceful queue availability handling (server/metrics.ts).
+Background Jobs: Email queues and image processing workers.
+Database: PostgreSQL with Drizzle ORM for type-safe operations, including comprehensive profiles, user management, product catalog, messaging, and spotlight data.
+Deployment Configuration (✅ Fortune 500 Production-Ready - October 17, 2025):
+
+Complete Infrastructure Rebuild: Production deployment system rebuilt from scratch with enterprise-grade reliability
+Build System:
+Script: scripts/build-production.sh - Explicit, verified build process
+Command: npm run build triggers Vite (client) + esbuild (server)
+Output: dist/index.js (server bundle) + dist/public/ (client + assets)
+Verification: Checks dist/index.js, dist/public/index.html exist before completing
+Testing:
+Script: scripts/test-deployment.sh - Comprehensive deployment testing
+Tests: Server startup, health endpoints, auth routes, frontend serving
+Required: All tests must pass before publishing
+Production Server (server/index.ts):
+Extensive startup logging (every step logged with Winston)
+Build file verification on startup
+Enterprise error handler: sanitizes 5xx errors, logs full details, prevents crashes
+Deployment status endpoint: /api/deployment-status (shows strategies, routes, uptime)
+Timeout protection on OIDC config (10s) and session init (10s)
+Authentication (server/replitAuth.ts):
+Module-level strategy tracking for debugging
+Intelligent fallback (prefers .replit.app over .replit.dev)
+Detailed error logging with environment variable checks
+Works with ANY deployment URL (fully dynamic)
+Production Routing Fix (October 17, 2025): server/vite.ts catch-all route now properly skips /api/*, /auth/*, and /metrics routes before serving index.html. This prevents authentication endpoints from returning 404 errors in production deployment.
+Dynamic URL Support: Authentication system is fully dynamic and works with ANY Replit deployment URL. No hardcoded domain dependencies - the system automatically detects and registers auth strategies based on REPLIT_DOMAINS environment variable. You can safely change your deployment URL (e.g., from florida-local-elite.replit.app to the-florida-local.replit.app) without breaking authentication.
+Documentation: DEPLOYMENT-GUIDE.md - Complete production deployment guide
+Authentication Flow:
+Users authenticate via Replit OAuth and are redirected to / (Discover page) after successful login
+Deployment URLs are automatically detected through dynamic hostname detection via headers (x-forwarded-host, host)
+Sign In Button Styling: Enhanced with teal gradient backgrounds, white text with shadows, strong borders, and box shadows for maximum visibility across all backgrounds
+Session Management: 7-day TTL with rolling refresh, PostgreSQL-backed (fallback: Redis → PostgreSQL → Memory)
+Error Handling: User-friendly toast notifications with detailed production logging (no sensitive data exposure)
+Monitoring Endpoints: /api/auth/health (system status), /api/auth/session-info (session expiry tracking)
+Security: httpOnly cookies, sameSite: 'lax', secure in production, CSRF protection enabled
+Resilience: 3-retry database upsert with 1s delay, automatic token refresh, multi-domain strategy support with intelligent fallback (prefers .replit.app domains)
+External Dependencies
+Core Frameworks:
+
+Vite (frontend build)
+Express.js (backend API)
+React 18 (frontend)
+TanStack Query (client-side state management)
+Database & ORM:
+
+PostgreSQL (Neon serverless)
+Drizzle ORM
+connect-pg-simple (PostgreSQL session storage)
+Authentication:
+
+Replit Authentication (OpenID Connect)
+Passport.js
+express-session
+UI & Styling:
+
+shadcn/ui (Radix UI based)
+Tailwind CSS
+Lucide React (icons)
+React Hook Form with Zod (form validation)
+External API Integrations:
+
+Google My Business API (OAuth, business sync, review management)
+SendGrid (transactional emails)
+TaxJar (1099 generation, sales tax reporting)
+Stripe Connect (REMOVED - placeholders only, DO NOT implement)
+Object Storage (dynamic product images)
+Monitoring & Analytics:
+
+Sentry
+PostHog
+Environment Variables
+Required Environment Variables (Must be set for production)
+REPLIT_DOMAINS
+
+Description: Comma-separated list of authorized Replit deployment domains
+Set automatically by Replit in production deployments
+Required in production to enable authentication
+Optional in development (defaults to localhost/127.0.0.1 for local testing)
+Example: your-app-name.replit.app,your-repl-id-00-hash.picard.replit.dev
+DATABASE_URL
+
+Description: PostgreSQL connection string for the Neon serverless database
+Automatically provided by Replit when you create a database
+Format: postgresql://user:password@host/database?sslmode=require
+Required for all database operations
+Access via: Replit Database panel → "Connection string"
+SESSION_SECRET
+
+Description: Secret key for encrypting session cookies
+Generate with: openssl rand -base64 32 or similar secure random generator
+Must be at least 32 characters for security
+Required for authentication and session management
+Add via: Replit Secrets panel → Add Secret
+REPL_ID
+
+Description: Unique identifier for this Replit instance
+Set automatically by Replit in all environments
+Used for session management and deployment tracking
+Should never need manual configuration
+Optional Environment Variables
+GMB_ENCRYPTION_KEY
+
+Description: Encryption key for Google My Business API tokens
+Generate with: openssl rand -hex 32
+Required only if using GMB integration
+Without it, app runs in demo mode
+SENTRY_DSN
+
+Description: Sentry Data Source Name for error tracking
+Get from: Sentry dashboard → Project settings → Client Keys
+Optional: App works without it but errors won't be tracked
+POSTHOG_KEY
+
+Description: PostHog API key for analytics
+Get from: PostHog dashboard → Project settings → API Keys
+Optional: App works without it but analytics disabled
+REDIS_URL
+
+Description: Redis connection URL for sessions and caching
+Optional: Falls back to PostgreSQL session storage if not available
+Format: redis://default:password@host:port
+Setting Environment Variables in Replit
+For Development:
+
+Open the Replit Secrets panel (🔒 icon in sidebar)
+Click "New Secret"
+Enter key name (e.g., SESSION_SECRET)
+Enter the value
+Click "Add Secret"
+For Production (Deployment):
+
+Same as development - secrets are automatically available in both environments
+Replit automatically provides: REPLIT_DOMAINS, DATABASE_URL, REPL_ID
+You only need to add: SESSION_SECRET (and any optional integrations)
+Verify Configuration:
+
+Development: Server logs show environment variable status on startup
+Production: Check /api/deployment-status endpoint after deployment
+Quick Setup Checklist
+✅ Minimum Required for Working App:
+
+Create PostgreSQL database in Replit (DATABASE_URL auto-provided)
+Add SESSION_SECRET to Replit Secrets
+REPLIT_DOMAINS and REPL_ID are auto-provided by Replit
+✅ For Production Deployment:
+
+Same as above - no additional configuration needed
+Authentication works automatically with Replit-provided REPLIT_DOMAINS
+Server will log any missing optional variables on startup
+✅ Optional Integrations:
+
+Add GMB_ENCRYPTION_KEY if using Google My Business
+Add SENTRY_DSN if using error tracking
+Add POSTHOG_KEY if using analytics

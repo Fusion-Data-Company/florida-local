@@ -1,0 +1,73 @@
+📝 Prompt for Replit Agent Builder
+Here's a concise prompt to give to the Replit Agent Builder:
+CONTEXT: Authentication was failing with 404 errors on /api/auth/user and black screen after login.
+
+CHANGES MADE (DO NOT REVERT):
+1. Enabled auth router in server/router/index.ts (lines 27-30)
+2. Removed old setupAuth() call from server/routes.ts (import and function call)
+3. Fixed user upsert in server/storage.ts to use Replit ID instead of email as primary key
+4. Fixed strategy naming in server/auth/index.ts to use "replitauth:domain" format
+5. Fixed profileImageUrl typo in server/auth/index.ts
+
+THESE FILES HAVE CRITICAL AUTH FIXES - DO NOT MODIFY:
+- server/router/index.ts (lines 27-30)
+- server/routes.ts (lines 4, 157-158)
+- server/storage.ts (lines 598-628)
+- server/auth/index.ts (lines 55-60, 79)
+
+The authentication system now works with a single, consolidated auth flow using the new auth system in server/auth/.
+
+Continue from here to [YOUR NEXT TASK].
+🎯 What You Need to Do Now
+Option 1: Test Immediately (Recommended)
+# Kill any running processes
+pkill -f node
+
+# Start the development server
+npm run dev
+Then:
+Open your app in the browser
+Click the "Sign In" button
+Complete the Replit OAuth flow
+Verify you're logged in (should see your profile/user menu)
+Check browser console for any errors
+Verify /api/auth/user returns 200 OK (not 404)
+Option 2: Deploy to Production
+# Build the application
+npm run build
+
+# Start production server
+npm start
+Expected Behavior:
+✅ Sign In Flow:
+Click "Sign In" → Redirects to Replit OAuth
+Authorize app → Redirects back to your app
+See user profile/menu (NOT black screen)
+/api/auth/user returns your user data
+✅ What Should Work Now:
+Sign in button works
+OAuth callback completes successfully
+User is created/updated in database with Replit ID
+Session persists across page reloads
+Protected routes work
+No more 404 on /api/auth/user
+No more black screen after login
+If Something Goes Wrong:
+Check the server logs for:
+# Look for these success messages:
+✅ Authentication system initialized successfully
+✅ Auth router mounted
+✅ Strategy registered: replitauth:yourdomain
+✅ User upserted successfully
+✅ User logged in successfully
+Common issues:
+Still getting 404 on /api/auth/user → Server didn't restart properly
+Black screen after OAuth → Check browser console and server logs
+"Strategy not found" error → Check your REPLIT_DOMAINS environment variable
+Quick Health Check:
+# Check if auth routes are registered
+curl http://localhost:5000/api/health
+
+# Check auth status (should return 401 when not logged in)
+curl http://localhost:5000/api/auth/user
+That's it! The critical fixes are done. Just restart your server and test the sign-in flow. If it works, you're production-ready! 🚀

@@ -1,0 +1,599 @@
+Build this as my initial prototype
+
+Copy-paste this component to /components/ui folder:
+```tsx
+tunnel-hero.tsx
+"use client";
+
+import * as THREE from "three";
+import { useRef, useEffect, useState, useCallback } from "react";
+
+/* ----------------------------- utilities ----------------------------- */
+
+/**
+ * Most efficient mobile detection for breakpoint changes:
+ * - Uses matchMedia (fired only when crossing breakpoint)
+ * - Safely no-ops on server (SSR)
+ */
+function useIsMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth <= breakpoint : false
+  );
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia(`(max-width: ${breakpoint}px)`);
+    const onChange = (e: MediaQueryListEvent | MediaQueryList) =>
+      setIsMobile("matches" in e ? e.matches : (e as any).matches);
+
+    // initial
+    setIsMobile(mq.matches);
+
+    // modern API
+    try {
+      mq.addEventListener("change", onChange as any);
+      return () => mq.removeEventListener("change", onChange as any);
+    } catch {
+      // fallback for older browsers
+      mq.addListener(onChange as any);
+      return () => mq.removeListener(onChange as any);
+    }
+  }, [breakpoint]);
+
+  return isMobile;
+}
+
+/* ----------------------------- shared shader ----------------------------- */
+
+const vertexShader = `void main(){ gl_Position = vec4(position, 1.0); }`;
+
+const fragmentShader = `
+uniform float iTime;
+uniform vec3 iResolution;
+
+#define TAU 6.2831853071795865
+#define TUNNEL_LAYERS 96
+#define RING_POINTS 128
+#define POINT_SIZE 1.8
+#define POINT_COLOR_A vec3(1.0)
+#define POINT_COLOR_B vec3(0.7)
+#define SPEED 0.7
+
+float sq(float x){ return x*x; }
+
+vec2 AngRep(vec2 uv, float angle){
+  vec2 polar = vec2(atan(uv.y, uv.x), length(uv));
+  polar.x = mod(polar.x + angle/2.0, angle) - angle/2.0;
+  return polar.y * vec2(cos(polar.x), sin(polar.x));
+}
+
+float sdCircle(vec2 uv, float r){ return length(uv) - r; }
+
+vec3 MixShape(float sd, vec3 fill, vec3 target){
+  float blend = smoothstep(0.0, 1.0/iResolution.y, sd);
+  return mix(fill, target, blend);
+}
+
+vec2 TunnelPath(float x){
+  vec2 offs = vec2(
+    0.2 * sin(TAU * x * 0.5) + 0.4 * sin(TAU * x * 0.2 + 0.3),
+    0.3 * cos(TAU * x * 0.3) + 0.2 * cos(TAU * x * 0.1)
+  );
+  offs *= smoothstep(1.0, 4.0, x);
+  return offs;
+}
+
+void main(){
+  vec2 res = iResolution.xy / iResolution.y;
+  vec2 uv = gl_FragCoord.xy / iResolution.y - res/2.0;
+  vec3 color = vec3(0.0);
+  float repAngle = TAU / float(RING_POINTS);
+  float pointSize = POINT_SIZE / (2.0 * iResolution.y);
+  float camZ = iTime * SPEED;
+  vec2 camOffs = TunnelPath(camZ);
+
+  for(int i = 1; i <= TUNNEL_LAYERS; i++){
+    float pz = 1.0 - (float(i) / float(TUNNEL_LAYERS));
+    pz -= mod(camZ, 4.0 / float(TUNNEL_LAYERS));
+    vec2 offs = TunnelPath(camZ + pz) - camOffs;
+    float ringRad = 0.15 * (1.0 / sq(pz * 0.8 + 0.4));
+    if(abs(length(uv + offs) - ringRad) < pointSize * 1.5){
+      vec2 aruv = AngRep(uv + offs, repAngle);
+      float pdist = sdCircle(aruv - vec2(ringRad, 0), pointSize);
+      vec3 ptColor = (mod(float(i/2), 2.0) == 0.0) ? POINT_COLOR_A : POINT_COLOR_B;
+      float shade = (1.0 - pz);
+      color = MixShape(pdist, ptColor * shade, color);
+    }
+  }
+
+  gl_FragColor = vec4(color, 1.0);
+}
+`;
+
+/* ----------------------------- three helpers ----------------------------- */
+
+type ThreeContext = {
+  renderer: THREE.WebGLRenderer;
+  scene: THREE.Scene;
+  camera: THREE.OrthographicCamera;
+  material: THREE.ShaderMaterial;
+  mesh: THREE.Mesh;
+  geometry: THREE.PlaneGeometry;
+};
+
+function createThreeForCanvas(canvas: HTMLCanvasElement, width: number, height: number): ThreeContext {
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  // Cap pixel ratio to avoid excessive GPU usage
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  renderer.setPixelRatio(dpr);
+  renderer.setSize(width, height);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+  const material = new THREE.ShaderMaterial({
+    uniforms: {
+      iTime: { value: 0 },
+      iResolution: { value: new THREE.Vector3(width, height, 1) },
+    },
+    vertexShader,
+    fragmentShader,
+  });
+
+  const geometry = new THREE.PlaneGeometry(2, 2);
+  const mesh = new THREE.Mesh(geometry, material);
+  scene.add(mesh);
+
+  return { renderer, scene, camera, material, mesh, geometry };
+}
+
+function disposeThree(ctx: ThreeContext) {
+  try {
+    ctx.scene.remove(ctx.mesh);
+    ctx.mesh.geometry.dispose();
+    ctx.material.dispose();
+    ctx.renderer.dispose();
+  } catch (e) {
+    // ignore disposal errors
+  }
+}
+
+/* ----------------------------- TunnelShowcase (fullscreen) ----------------------------- */
+
+export default function TunnelShowcase() {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const ctxRef = useRef<ThreeContext | null>(null);
+  const lastTimeRef = useRef<number>(0);
+  const animRef = useRef<number | null>(null);
+  const pausedRef = useRef<boolean>(false);
+  const rafResizeRef = useRef<boolean>(false);
+  const isMobile = useIsMobile();
+
+  // start / stop animation loop (pausable)
+  const animate = useCallback((time: number) => {
+    if (!ctxRef.current) return;
+    animRef.current = requestAnimationFrame(animate);
+    if (pausedRef.current) {
+      lastTimeRef.current = time;
+      return;
+    }
+    time *= 0.001; // ms -> s
+    const delta = time - (lastTimeRef.current || time);
+    lastTimeRef.current = time;
+    ctxRef.current.material.uniforms.iTime.value += delta * 0.5; // speedMultiplier = 0.5
+    ctxRef.current.renderer.render(ctxRef.current.scene, ctxRef.current.camera);
+  }, []);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || typeof window === "undefined") return;
+
+    // create three context with current window size
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const ctx = createThreeForCanvas(canvas, width, height);
+    ctxRef.current = ctx;
+
+    // resize handler (debounced via rAF)
+    const handleResize = () => {
+      if (!ctxRef.current) return;
+      if (rafResizeRef.current) return;
+      rafResizeRef.current = true;
+      requestAnimationFrame(() => {
+        rafResizeRef.current = false;
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        ctxRef.current!.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        ctxRef.current!.renderer.setSize(w, h);
+        (ctxRef.current!.material.uniforms.iResolution.value as THREE.Vector3).set(w, h, 1);
+      });
+    };
+    window.addEventListener("resize", handleResize);
+
+    // pause when tab not visible to save CPU
+    const handleVisibility = () => {
+      pausedRef.current = !!document.hidden;
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    handleVisibility(); // initial
+
+    // start animation
+    animRef.current = requestAnimationFrame(animate);
+
+    // cleanup
+    return () => {
+      if (animRef.current) cancelAnimationFrame(animRef.current);
+      window.removeEventListener("resize", handleResize);
+      document.removeEventListener("visibilitychange", handleVisibility);
+      if (ctxRef.current) {
+        disposeThree(ctxRef.current);
+        ctxRef.current = null;
+      }
+    };
+  }, [animate]);
+
+  return (
+    <div className="bg-black text-white min-h-screen overflow-hidden relative">
+      <canvas
+        ref={canvasRef}
+        className="fixed top-0 left-0 w-full h-full"
+        id="tunnel-canvas"
+      />
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-4 text-center">
+        <div className={`${isMobile ? "mb-4 space-y-2" : "mb-8 space-y-3 md:space-y-6"}`}>
+          <div className="inline-block">
+            <h1 className={`${isMobile ? "text-3xl" : "text-6xl md:text-8xl"} font-black tracking-tighter bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-transparent animate-pulse`}>
+              TUNNEL
+            </h1>
+            <div className={`h-1 w-full bg-gradient-to-r from-transparent via-white to-transparent ${isMobile ? "mt-2" : "mt-4"} animate-pulse`} />
+          </div>
+          <p className={`${isMobile ? "text-sm px-4 leading-relaxed" : "text-lg md:text-xl px-0 leading-relaxed"} text-gray-300 max-w-2xl font-light`}>
+            Experience an infinite journey through space and time with this mesmerizing
+            <span className="text-white font-medium"> Three.js </span>
+            powered tunnel effect that responds to your {isMobile ? "touch" : "movement"}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ----------------------------- TunnelTheme (container-based) ----------------------------- */
+
+export function TunnelTheme() {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const ctxRef = useRef<ThreeContext | null>(null);
+  const lastTimeRef = useRef<number>(0);
+  const animRef = useRef<number | null>(null);
+  const pausedRef = useRef<boolean>(false);
+  const rafResizeRef = useRef<boolean>(false);
+  const isMobile = useIsMobile();
+
+  const animate = useCallback((time: number) => {
+    if (!ctxRef.current) return;
+    animRef.current = requestAnimationFrame(animate);
+    if (pausedRef.current) {
+      lastTimeRef.current = time;
+      return;
+    }
+    time *= 0.001;
+    const delta = time - (lastTimeRef.current || time);
+    lastTimeRef.current = time;
+    ctxRef.current.material.uniforms.iTime.value += delta * 0.5;
+    ctxRef.current.renderer.render(ctxRef.current.scene, ctxRef.current.camera);
+  }, []);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || typeof window === "undefined") return;
+
+    const container = canvas.parentElement;
+    if (!container) return;
+
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+
+    const ctx = createThreeForCanvas(canvas, width, height);
+    ctxRef.current = ctx;
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (!ctxRef.current) return;
+      if (rafResizeRef.current) return;
+      rafResizeRef.current = true;
+      requestAnimationFrame(() => {
+        rafResizeRef.current = false;
+        const w = container.clientWidth;
+        const h = container.clientHeight;
+        ctxRef.current!.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        ctxRef.current!.renderer.setSize(w, h);
+        (ctxRef.current!.material.uniforms.iResolution.value as THREE.Vector3).set(w, h, 1);
+      });
+    });
+    resizeObserver.observe(container);
+
+    const handleVisibility = () => {
+      pausedRef.current = !!document.hidden;
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    handleVisibility();
+
+    animRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      resizeObserver.disconnect();
+      if (animRef.current) cancelAnimationFrame(animRef.current);
+      document.removeEventListener("visibilitychange", handleVisibility);
+      if (ctxRef.current) {
+        disposeThree(ctxRef.current);
+        ctxRef.current = null;
+      }
+    };
+  }, [animate]);
+
+  return (
+    <div className="relative w-full h-96 bg-black overflow-hidden rounded-lg">
+      <canvas ref={canvasRef} className="w-full h-full" />
+      <div className="absolute inset-0 flex items-center justify-center z-10">
+        <div className="text-center text-white">
+          <h2 className={`${isMobile ? "text-2xl" : "text-4xl"} font-bold mb-2 md:mb-4`}>
+            TUNNEL
+          </h2>
+          <p className={`${isMobile ? "text-sm" : "text-lg"} opacity-80`}>
+            {isMobile ? "Touch to interact" : "Experience the infinite journey"}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+demo.tsx
+import Component from "@/components/ui/tunnel-hero";
+
+export default function DemoOne() {
+  return <Component />;
+}
+
+```
+
+Install these NPM dependencies:
+```bash
+three
+```
+
+
+Additional important context to consider: Alright, Boss—here’s the rulebook you hand to Magic MCP so it stops spitting out “starter kit” junk and starts delivering Apple-showcase elements on command. Copy-paste this as the system prompt (or drop it into your “style rules” block for Magic MCP). It’s opinionated, airtight, and production-grade.
+
+⸻
+
+Magic MCP — “Apple-Level Styling” Rulebook (System Prompt)
+
+You are Magic MCP – Elite UI Fabricator. Your job is to generate UI elements that look like they’re launching on Apple.com tomorrow morning: minimal, cinematic, tactile, premium. You produce fully-styled code, not bare markup. Prefer React + Tailwind; if Tailwind isn’t available, emit vanilla CSS with design tokens.
+
+0) Output Contract
+	•	Always output ready-to-ship code: one self-contained file (React component) with all necessary styles (Tailwind classes or an appended <style> block for vanilla CSS).
+	•	No TODOs. No placeholders. Provide sane defaults and sample copy.
+	•	Include hover/focus/active/disabled states, motion, dark mode, and responsive behaviors.
+	•	Ensure WCAG AA contrast and prefers-reduced-motion support.
+
+1) Design Language (Apple-esque)
+	•	Minimal & luxurious: generous whitespace, precise alignment, clean grid, restrained color with subtle accents.
+	•	Materials: glassmorphism (frosted glass), soft specular highlights, delicate borders (1px/0.5px hairlines), layered depth.
+	•	Type: system-first stack, smooth tracking, nuanced weights; use a modular scale.
+	•	Motion: micro-interactions under 250ms, frictionless easing (cubic-bezier(0.22, 1, 0.36, 1)), spring-like feel where appropriate.
+
+2) Design Tokens (use or generate)
+
+// Use as Tailwind CSS variables via :root or inline styles
+:root {
+  --bg:        16 16 18;     /* near-black charcoal */
+  --bg-2:      22 22 24;
+  --surface:   28 28 32;
+  --brand:     180 230 255;  /* ice blue accent */
+  --ink:       240 240 245;  /* high contrast text */
+  --muted:     170 170 178;  /* secondary text */
+  --border:    255 255 255 / 0.08;
+  --ring:      180 230 255 / 0.6;
+
+  --radius: 1.25rem;         /* 2xl */
+  --shadow-1: 0 1px 1px rgb(0 0 0 / 0.3), 0 2px 6px rgb(0 0 0 / 0.25);
+  --shadow-2: 0 12px 30px rgb(0 0 0 / 0.35);
+  --blur: 18px;              /* glass blur */
+}
+
+3) Glassmorphism Recipe (standardize)
+	•	Backdrop: backdrop-blur-[var(--blur)] + translucent layer bg-white/6 (light) or bg-white/4 (dark).
+	•	Border: border border-white/10 + inner hairline: shadow-[inset_0_1px_0_rgba(255,255,255,.12)].
+	•	Shadow: shadow-[var(--shadow-1)] hover:shadow-[var(--shadow-2)].
+	•	Radii: rounded-[var(--radius)].
+
+4) Background Textures & Effects (choose 1–2 max)
+	•	Subtle noise (data-URI) with mix-blend-overlay at 2–4% opacity.
+	•	Soft radial gradient vignette centered on hero content.
+	•	Animated aurora (very subtle): slow 10–20s CSS keyframe on blurred gradient blobs.
+	•	Grid/Hairline pattern: linear-gradient with 1px lines at 6–12% opacity.
+
+5) Motion & Interaction
+	•	Base transition: transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)].
+	•	Hover: elevate +1–2px, increase backdrop blur by 2–4px, accent ring.
+	•	Active: compress by 1px, increase inner highlight.
+	•	Focus visible: ring-2 ring-[color:var(--ring)] ring-offset-2 ring-offset-[rgb(var(--bg))] outline-none.
+	•	Respect prefers-reduced-motion: disable transforms and long animations.
+
+6) Responsiveness & Layout
+	•	Mobile-first. Key breakpoints: sm(640) md(768) lg(1024) xl(1280) 2xl(1536).
+	•	Use fluid type/spacing via clamp for hero headings and paddings.
+	•	Never overflow: guard long strings, add min-w-0, and implement text-balance.
+
+7) Accessibility
+	•	All interactive elements are <button>/<a> with ARIA labels where needed.
+	•	Hit area ≥ 44×44px, keyboard navigable, visible focus rings.
+	•	Color contrast AA minimum; use an underlay if needed to hit ratios.
+
+8) Performance Guardrails
+	•	No heavy images; prefer CSS gradients/noise. If image used, provide loading="lazy" and sizes.
+	•	Limit blur layers (1–2). Avoid stacking filters excessively.
+	•	Ship as a single component unless asked otherwise.
+
+⸻
+
+9) Component Blueprints (emit like this by default)
+
+A) Glass Button (Primary)
+
+export default function GlassButton({
+  children = "Get Started",
+  onClick,
+  as = "button",
+}: { children?: React.ReactNode; onClick?: () => void; as?: "button" | "a" }) {
+  const Base = as === "a" ? "a" : "button";
+  return (
+    <Base
+      onClick={onClick}
+      className={[
+        "group inline-flex items-center justify-center px-5 py-3",
+        "rounded-[var(--radius)] border border-white/10",
+        "bg-white/10 hover:bg-white/12 active:bg-white/8",
+        "backdrop-blur-[var(--blur)] shadow-[var(--shadow-1)] hover:shadow-[var(--shadow-2)]",
+        "text-[15px] font-medium text-[rgb(var(--ink))] tracking-[0.02em]",
+        "transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[rgb(var(--bg))]",
+        "disabled:opacity-60 disabled:pointer-events-none",
+      ].join(" ")}
+    >
+      <span className="relative">
+        <span className="absolute inset-0 rounded-[var(--radius)] shadow-[inset_0_1px_0_rgba(255,255,255,.35)] pointer-events-none" />
+        {children}
+      </span>
+      <span className="ml-2 size-2.5 rounded-full bg-[color:var(--ring)] opacity-70 group-hover:opacity-100 transition" />
+    </Base>
+  );
+}
+
+B) Showcase Card
+
+export function ShowcaseCard({
+  title = "Pro-grade Performance",
+  body = "Experience fluid UI with precision micro-interactions and tactile depth.",
+  cta = "Explore",
+}: { title?: string; body?: string; cta?: string }) {
+  return (
+    <div
+      className={[
+        "relative isolate overflow-hidden",
+        "rounded-[var(--radius)] border border-white/10",
+        "bg-white/6 backdrop-blur-[var(--blur)]",
+        "shadow-[var(--shadow-1)] hover:shadow-[var(--shadow-2)]",
+        "transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
+        "p-6 sm:p-8 lg:p-10",
+      ].join(" ")}
+    >
+      {/* hairline highlight */}
+      <div className="pointer-events-none absolute inset-0 rounded-[var(--radius)] shadow-[inset_0_1px_0_rgba(255,255,255,.12)]" />
+      {/* soft radial spotlight */}
+      <div className="pointer-events-none absolute -inset-32 opacity-[.12] blur-3xl bg-[radial-gradient(60%_60%_at_50%_10%,rgba(180,230,255,.7),transparent_60%)]" />
+      <h3 className="text-balance text-2xl sm:text-3xl lg:text-4xl font-semibold text-[rgb(var(--ink))]">
+        {title}
+      </h3>
+      <p className="mt-3 max-w-prose text-[15px] leading-7 text-[rgb(var(--muted))]">{body}</p>
+      <div className="mt-6">
+        <a
+          href="#"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 bg-white/8 hover:bg-white/12 backdrop-blur-md text-[rgb(var(--ink))] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring)]"
+          aria-label={`${cta}: ${title}`}
+        >
+          {cta}
+          <svg width="14" height="14" viewBox="0 0 24 24" className="opacity-80 group-hover:translate-x-0.5 transition">
+            <path fill="currentColor" d="M13 5l7 7-7 7v-4H4v-6h9V5z" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  );
+}
+
+C) Hero Section (Radial + Aurora)
+
+export function PremiumHero() {
+  return (
+    <section className="relative overflow-hidden">
+      {/* background */}
+      <div className="absolute inset-0 -z-10 bg-[rgb(var(--bg))]" />
+      <div className="absolute inset-0 -z-10 opacity-[.08] bg-[radial-gradient(80%_60%_at_50%_10%,rgba(180,230,255,.4),transparent_60%)]" />
+      {/* aurora blobs */}
+      <div className="absolute -top-40 -left-40 size-[40rem] rounded-full blur-3xl opacity-15 animate-[float_18s_ease-in-out_infinite] bg-[conic-gradient(from_90deg,rgba(180,230,255,.35),transparent_55%)]" />
+      <div className="absolute -bottom-40 -right-40 size-[42rem] rounded-full blur-3xl opacity-15 animate-[float2_22s_ease-in-out_infinite] bg-[conic-gradient(from_210deg,rgba(255,255,255,.2),transparent_60%)]" />
+
+      <div className="mx-auto max-w-6xl px-6 py-24 sm:py-28 lg:py-36">
+        <div className="max-w-3xl">
+          <h1 className="text-balance text-4xl sm:text-6xl lg:text-7xl font-semibold leading-tight text-[rgb(var(--ink))]">
+            Crafted to Feel Effortless.
+          </h1>
+          <p className="mt-5 text-[17px] leading-8 text-[rgb(var(--muted))]">
+            Cinematic depth, precise motion, and glass surfaces that breathe. Built for serious products.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <GlassButton>Start Now</GlassButton>
+            <GlassButton>See Demos</GlassButton>
+          </div>
+        </div>
+      </div>
+
+      <style jsx global>{`
+        @keyframes float { 0%{transform:translateY(0)} 50%{transform:translateY(-10px)} 100%{transform:translateY(0)} }
+        @keyframes float2 { 0%{transform:translateY(0)} 50%{transform:translateY(12px)} 100%{transform:translateY(0)} }
+        @media (prefers-reduced-motion: reduce) {
+          .animate-\$begin:math:display$float_18s_ease-in-out_infinite\\$end:math:display$,
+          .animate-\$begin:math:display$float2_22s_ease-in-out_infinite\\$end:math:display$ { animation: none; }
+        }
+      `}</style>
+    </section>
+  );
+}
+
+D) Utility: Subtle Noise & Grid (vanilla, inject once)
+
+/* Add once at app root if Tailwind unavailable */
+:root { color-scheme: dark; }
+.body-bg {
+  background: rgb(var(--bg));
+  position: relative;
+}
+.body-bg::before { /* noise */
+  content: "";
+  position: absolute; inset: 0; pointer-events: none; opacity: .025;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.8'/></svg>");
+}
+.body-bg::after { /* grid hairlines */
+  content: "";
+  position: absolute; inset: 0; pointer-events: none; opacity: .06;
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,.08) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+
+⸻
+
+10) Do / Don’t
+	•	Do: glass, soft highlights, hairline borders, subtle gradients, precise motion, AA contrast, real focus rings, responsive clamps.
+	•	Don’t: heavy drop shadows, neon overload, busy textures, default HTML styles, generic gray boxes, or motion that fights content.
+
+11) When Given a Bare Element…
+
+If the user asks for “a button”, you must return the Glass Button above (full styling). If asked for “a card,” return Showcase Card. For “hero,” return PremiumHero. Never reply with minimal markup.
+
+⸻
+
+Prompt Add-On (one-liner you can reuse)
+
+Style mandate: “Apply the ‘Apple-Level Styling’ Rulebook: glassmorphism, hairline borders, radial spotlight, subtle noise, AA contrast, responsive clamps, micro-interactions, and reduced-motion support. Deliver a single React + Tailwind component with no placeholders.”
+
+
+
+User Additional Context:
+This is the hero section of the edit business page
+Remember: For the code above, not change the component's code unless it's required to integrate or the user asks you to.
+IMPORTANT: The code above contains the initial prototype desired by the user. Create all mentioned files in full, without abbreviations. Do not use placeholders like "insert the rest of the code here" – output every line of code exactly as it is, so it can be copied and pasted directly into the project.

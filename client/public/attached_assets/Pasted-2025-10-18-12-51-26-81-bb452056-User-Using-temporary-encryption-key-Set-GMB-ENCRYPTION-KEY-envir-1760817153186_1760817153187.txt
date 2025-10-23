@@ -1,0 +1,198 @@
+2025-10-18 12:51:26.81
+bb452056
+User
+⚠️ Using temporary encryption key. Set GMB_ENCRYPTION_KEY environment variable for persistent token encryption.
+2025-10-18 12:51:29.71
+bb452056
+User
+⚠️ Sentry DSN not configured - error tracking disabled
+2025-10-18 12:51:29.91
+bb452056
+User
+⚠️ PostHog key not configured - analytics disabled
+2025-10-18 12:51:30.31
+bb452056
+User
+info: ================================================== {"environment":"production","service":"florida-elite","timestamp":"2025-10-18T19:51:29.917Z"}
+2025-10-18 12:51:30.31
+bb452056
+User
+info: 🚀 STARTING PRODUCTION SERVER {"environment":"production","service":"florida-elite","timestamp":"2025-10-18T19:51:30.318Z"}
+2025-10-18 12:51:30.51
+bb452056
+User
+info: ================================================== {"environment":"production","service":"florida-elite","timestamp":"2025-10-18T19:51:30.318Z"}
+2025-10-18 12:51:30.51
+bb452056
+User
+info: 📍 Working Directory: /home/runner/workspace {"environment":"production","service":"florida-elite","timestamp":"2025-10-18T19:51:30.517Z"}
+2025-10-18 12:51:30.51
+bb452056
+User
+info: 🌍 NODE_ENV: production {"environment":"production","service":"florida-elite","timestamp":"2025-10-18T19:51:30.517Z"}
+2025-10-18 12:51:30.51
+bb452056
+User
+info: 🔗 REPLIT_DOMAINS: the-florida-local.replit.app {"environment":"production","service":"florida-elite","timestamp":"2025-10-18T19:51:30.518Z"}
+2025-10-18 12:51:30.71
+bb452056
+User
+info: 📦 Deployment Target: local {"environment":"production","service":"florida-elite","timestamp":"2025-10-18T19:51:30.717Z"}
+2025-10-18 12:51:30.71
+bb452056
+User
+info:
+2025-10-18 12:51:30.71
+bb452056
+User
+📂 Checking build files: {"environment":"production","service":"florida-elite","timestamp":"2025-10-18T19:51:30.717Z"}
+2025-10-18 12:51:30.91
+bb452056
+User
+info: - dist/index.js: ✅ EXISTS {"environment":"production","service":"florida-elite","timestamp":"2025-10-18T19:51:30.916Z"}
+2025-10-18 12:51:31.01
+bb452056
+User
+info: - dist/public/: ✅ EXISTS {"environment":"production","service":"florida-elite","timestamp":"2025-10-18T19:51:31.016Z"}
+2025-10-18 12:51:31.11
+bb452056
+User
+info: - dist/public/index.html: ✅ EXISTS {"environment":"production","service":"florida-elite","timestamp":"2025-10-18T19:51:31.116Z"}
+2025-10-18 12:51:31.11
+bb452056
+User
+info: ✅ All critical build files found {"environment":"production","service":"florida-elite","timestamp":"2025-10-18T19:51:31.117Z"}
+2025-10-18 12:51:31.11
+bb452056
+User
+info: ==================================================
+2025-10-18 12:51:31.11
+bb452056
+User
+{"environment":"production","service":"florida-elite","timestamp":"2025-10-18T19:51:31.117Z"}
+2025-10-18 12:51:31.91
+bb452056
+User
+info: 🔒 CORS Origins: {"0":"https://the-florida-local.replit.app","environment":"production","service":"florida-elite","timestamp":"2025-10-18T19:51:31.918Z"}
+2025-10-18 12:51:32.11
+bb452056
+User
+info: 📊 Setting up metrics... {"environment":"production","service":"florida-elite","timestamp":"2025-10-18T19:51:32.118Z"}
+2025-10-18 12:51:33.01
+bb452056
+User
+info: ✅ Metrics endpoint available at /metrics {"environment":"production","service":"florida-elite","timestamp":"2025-10-18T19:51:33.017Z"}
+2025-10-18 12:51:33.01
+bb452056
+User
+info: ✅ Metrics ready {"environment":"production","service":"florida-elite","timestamp":"2025-10-18T19:51:33.017Z"}
+2025-10-18 12:51:33.01
+bb452056
+User
+info:
+2025-10-18 12:51:33.01
+bb452056
+User
+🛣️ Registering application routes... {"environment":"production","service":"florida-elite","timestamp":"2025-10-18T19:51:33.018Z"}
+2025-10-18 12:51:34.01
+bb452056
+User
+🔧 Starting registerRoutes function
+2025-10-18 12:51:34.01
+bb452056
+User
+🔧 REPLIT_DOMAINS: the-florida-local.replit.app
+2025-10-18 12:51:34.01
+bb452056
+User
+🔧 SESSION_SECRET exists: true
+2025-10-18 12:51:34.01
+bb452056
+User
+🔧 REPL_ID exists: true
+2025-10-18 12:51:34.01
+bb452056
+User
+🔧 Calling setupAuth...
+2025-10-18 12:51:34.21
+bb452056
+User
+🔐 Starting auth setup...
+2025-10-18 12:51:35.61
+bb452056
+User
+file:///home/runner/workspace/node_modules/@neondatabase/serverless/index.mjs:1384
+2025-10-18 12:51:35.61
+bb452056
+User
+connect",o),this._clients=this._clients.filter(u=>u!==t),s&&(o.message="Connect\
+2025-10-18 12:51:35.61
+bb452056
+User
+^
+2025-10-18 12:51:35.61
+bb452056
+User
+2025-10-18 12:51:35.61
+bb452056
+User
+TypeError: Cannot set property message of # which has only a getter
+2025-10-18 12:51:35.61
+bb452056
+User
+at An._connectionCallback (file:///home/runner/workspace/node_modules/@neondatabase/serverless/index.mjs:1384:72)
+2025-10-18 12:51:35.61
+bb452056
+User
+at An._handleErrorWhileConnecting (file:///home/runner/workspace/node_modules/@neondatabase/serverless/index.mjs:1290:38)
+2025-10-18 12:51:35.61
+bb452056
+User
+at An._handleErrorEvent (file:///home/runner/workspace/node_modules/@neondatabase/serverless/index.mjs:1291:33)
+2025-10-18 12:51:35.61
+bb452056
+User
+at fn.emit (file:///home/runner/workspace/node_modules/@neondatabase/serverless/index.mjs:397:12)
+2025-10-18 12:51:35.61
+bb452056
+User
+at v.reportStreamError (file:///home/runner/workspace/node_modules/@neondatabase/serverless/index.mjs:1201:46)
+2025-10-18 12:51:35.61
+bb452056
+User
+at v.emit (file:///home/runner/workspace/node_modules/@neondatabase/serverless/index.mjs:397:12)
+2025-10-18 12:51:35.61
+bb452056
+User
+at WebSocket. (file:///home/runner/workspace/node_modules/@neondatabase/serverless/index.mjs:986:42)
+2025-10-18 12:51:35.61
+bb452056
+User
+at callListener (/home/runner/workspace/node_modules/ws/lib/event-target.js:290:14)
+2025-10-18 12:51:35.61
+bb452056
+User
+at WebSocket.onError (/home/runner/workspace/node_modules/ws/lib/event-target.js:230:9)
+2025-10-18 12:51:35.61
+bb452056
+User
+at WebSocket.emit (node:events:524:28)
+2025-10-18 12:51:35.61
+bb452056
+User
+2025-10-18 12:51:35.61
+bb452056
+User
+Node.js v20.19.3
+2025-10-18 12:51:39.71
+bb452056
+System
+command finished with error [npm run start]: exit status 1
+2025-10-18 12:52:09.71
+bb452056
+User
+> rest-express@1.0.0 start
+2025-10-18 12:52:09.71
+bb452056
+User
+> NODE_ENV=production node dist/index.js

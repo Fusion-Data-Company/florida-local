@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Background Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1;
+        }
+
+        .content {
+            position: relative;
+            z-index: 10;
+            padding: 4rem 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+
+        .video-info {
+            background: rgba(0,0,0,0.7);
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .video-item {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 0.5rem;
+        }
+
+        .video-item h3 {
+            margin-bottom: 0.5rem;
+            color: #4ade80;
+        }
+
+        .test-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-right: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .test-button:hover {
+            background: #2563eb;
+        }
+
+        #status {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(74, 222, 128, 0.2);
+            border-radius: 0.5rem;
+            border-left: 4px solid #4ade80;
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.2) !important;
+            border-left-color: #ef4444 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <video id="bgVideo" autoplay loop muted playsinline>
+            <source src="/Videos/discover-bg.mov" type="video/quicktime">
+            <source src="/Videos/discover-bg.mov" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <div class="overlay"></div>
+
+    <div class="content">
+        <h1>🎬 Video Background Test</h1>
+
+        <div class="video-info">
+            <h2>Available Videos:</h2>
+            <div class="video-item">
+                <h3>1. discover-bg.mov</h3>
+                <p>Path: /Videos/discover-bg.mov (1.06GB)</p>
+                <p>Used on: Home page</p>
+            </div>
+            <div class="video-item">
+                <h3>2. Jacksonville Buildings City River</h3>
+                <p>Path: /Videos/6272661_Jacksonville Buildings City River_By_Hugo_Will_Artlist_4K.mov</p>
+                <p>Used on: Login Error page</p>
+            </div>
+            <div class="video-item">
+                <h3>3. Trees Fountain Swans Buildings</h3>
+                <p>Path: /Videos/6272634_Trees Fountain Swans Buildings_By_Hugo_Will_Artlist_4K.mov</p>
+                <p>Used on: Florida Local Elite page</p>
+            </div>
+            <div class="video-item">
+                <h3>4. Cityscape Drone</h3>
+                <p>Path: /Videos/6251667_Cityscape Drone Usa Georgia_By_Brad_Kremer_Artlist_4K.mov</p>
+                <p>Used on: Subscription page</p>
+            </div>
+        </div>
+
+        <div>
+            <h2>Test Controls:</h2>
+            <button class="test-button" onclick="testVideo(1)">Load Video 1</button>
+            <button class="test-button" onclick="testVideo(2)">Load Video 2</button>
+            <button class="test-button" onclick="testVideo(3)">Load Video 3</button>
+            <button class="test-button" onclick="testVideo(4)">Load Video 4</button>
+            <button class="test-button" onclick="playVideo()">Play</button>
+            <button class="test-button" onclick="pauseVideo()">Pause</button>
+        </div>
+
+        <div id="status"></div>
+    </div>
+
+    <script>
+        const video = document.getElementById('bgVideo');
+        const status = document.getElementById('status');
+
+        const videos = [
+            '/Videos/discover-bg.mov',
+            '/Videos/6272661_Jacksonville Buildings City River_By_Hugo_Will_Artlist_4K.mov',
+            '/Videos/6272634_Trees Fountain Swans Buildings_By_Hugo_Will_Artlist_4K.mov',
+            '/Videos/6251667_Cityscape Drone Usa Georgia_By_Brad_Kremer_Artlist_4K.mov'
+        ];
+
+        function updateStatus(message, isError = false) {
+            status.innerHTML = message;
+            status.className = isError ? 'error' : '';
+            console.log(message);
+        }
+
+        function testVideo(index) {
+            const videoPath = videos[index - 1];
+            updateStatus(`🔄 Loading video ${index}: ${videoPath}...`);
+
+            // Test if video URL is accessible
+            fetch(videoPath, { method: 'HEAD' })
+                .then(response => {
+                    if (response.ok) {
+                        updateStatus(`✅ Video ${index} is accessible (${response.status} ${response.statusText})<br>Content-Type: ${response.headers.get('content-type')}<br>Now loading in video element...`);
+
+                        video.src = videoPath;
+                        video.load();
+                        video.play().then(() => {
+                            updateStatus(`✅ Video ${index} is playing successfully!`);
+                        }).catch(err => {
+                            updateStatus(`❌ Video ${index} failed to play: ${err.message}`, true);
+                        });
+                    } else {
+                        updateStatus(`❌ Video ${index} returned ${response.status} ${response.statusText}`, true);
+                    }
+                })
+                .catch(err => {
+                    updateStatus(`❌ Failed to fetch video ${index}: ${err.message}`, true);
+                });
+        }
+
+        function playVideo() {
+            video.play()
+                .then(() => updateStatus('✅ Video playing'))
+                .catch(err => updateStatus(`❌ Play failed: ${err.message}`, true));
+        }
+
+        function pauseVideo() {
+            video.pause();
+            updateStatus('⏸️ Video paused');
+        }
+
+        // Event listeners for debugging
+        video.addEventListener('loadstart', () => {
+            console.log('📹 Video load started');
+            updateStatus('📹 Video load started...');
+        });
+
+        video.addEventListener('canplay', () => {
+            console.log('✅ Video can play');
+            updateStatus('✅ Video is ready to play');
+        });
+
+        video.addEventListener('playing', () => {
+            console.log('▶️ Video is playing');
+            updateStatus('▶️ Video is playing');
+        });
+
+        video.addEventListener('error', (e) => {
+            console.error('❌ Video error:', e);
+            updateStatus(`❌ Video error: ${video.error ? video.error.message : 'Unknown error'}`, true);
+        });
+
+        // Auto-test on load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                updateStatus('🔄 Auto-testing video 1 (discover-bg.mov)...');
+                testVideo(1);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
