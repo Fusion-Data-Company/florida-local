@@ -424,22 +424,22 @@ export default function BusinessDashboard() {
           {/* Google My Business Tab */}
           <TabsContent value="gmb" className="space-y-6">
             {/* GMB Sync Status */}
-            <GMBSyncDashboard businessId={Number(business.id)} />
+            <GMBSyncDashboard businessId={business.id} />
 
             {/* Two-column layout for Reviews and Auto-Post */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <GMBLocationInsights businessId={Number(business.id)} />
-              <GMBAutoPost businessId={Number(business.id)} />
+              <GMBLocationInsights businessId={business.id} />
+              <GMBAutoPost businessId={business.id} />
             </div>
 
             {/* Full-width Review Manager */}
-            <GMBReviewManager businessId={Number(business.id)} />
+            <GMBReviewManager businessId={business.id} />
           </TabsContent>
 
           {/* AI Content Generator Tab */}
           <TabsContent value="content" className="space-y-6">
-            <AIContentGenerator businessId={Number(business.id)} />
-            <AIContentHistory businessId={Number(business.id)} userId={user?.id} limit={10} />
+            <AIContentGenerator businessId={business.id} />
+            <AIContentHistory businessId={business.id} userId={user?.id} limit={10} />
           </TabsContent>
 
           {/* Products Tab */}
