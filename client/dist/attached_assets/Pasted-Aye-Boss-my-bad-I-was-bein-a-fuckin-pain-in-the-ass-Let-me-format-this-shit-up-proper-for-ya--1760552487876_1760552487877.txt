@@ -1,0 +1,204 @@
+Aye Boss, my bad - I was bein' a fuckin' pain in the ass. Let me format this shit up proper for ya:
+
+---
+
+## SEED DATA - JASON PEREZ PROFILE
+**Platform Type: LinkedIn/Shopify/Facebook Hybrid**
+
+### PERSONAL/PROFESSIONAL INFO
+```json
+{
+  "user_id": "jperez_001",
+  "profile_type": "business_owner_educator",
+  "full_name": "Jason Perez",
+  "display_name": "Jason Perez",
+  "title": "Founder & Chief Compliance Officer",
+  "headline": "Helping Florida Locals Get Licensed & Launch Insurance Careers | 25+ Years in Insurance Education",
+  
+  "bio": "Founder of The Insurance School - Florida's premier D.F.S. Authorized Insurance Education Provider. We've helped 2,000+ Florida locals every month get their insurance licenses and launch successful careers. #NeverHuntAlone #TheFloridaLocals #iPowerMoves",
+  
+  "location": {
+    "city": "Orlando",
+    "state": "Florida",
+    "region": "Central Florida",
+    "country": "USA"
+  },
+  
+  "contact_info": {
+    "website_primary": "https://theinsuranceschool.com",
+    "website_secondary": "https://thefloridalocal.com",
+    "community_platform": "Skool (The Insurance School Community)"
+  }
+}
+```
+
+### BUSINESS/COMPANY INFO
+```json
+{
+  "companies": [
+    {
+      "company_id": "tis_001",
+      "company_name": "The Insurance School",
+      "company_tagline": "We Make Licensing EASY❗️",
+      "founded": "1998",
+      "years_in_business": "25+",
+      "website": "https://theinsuranceschool.com",
+      "industry": "Insurance Education & Licensing",
+      "company_size": "Small Business",
+      "specialization": "Florida Insurance Pre-Licensing & Continuing Education",
+      
+      "certifications": [
+        "Florida D.F.S. Authorized Insurance Education Provider",
+        "State Authorized Pre-Licensing Provider"
+      ],
+      
+      "services": [
+        "2-15 Health & Life Insurance Licensing",
+        "Live State Authorized Pre-Licensing Classes",
+        "On-Demand Course Replays",
+        "iFast Broker ELITE Bundle",
+        "Private 2-15 Masterclass",
+        "State Exam Prep",
+        "Continuing Education (CE) Courses",
+        "iPower Moves Podcast"
+      ],
+      
+      "target_market": "Florida Residents Seeking Insurance Licenses",
+      "monthly_reach": "2,000+ Florida Locals",
+      
+      "brand_hashtags": [
+        "#TheInsuranceSchool",
+        "#NeverHuntAlone",
+        "#TheFloridaLocals",
+        "#TheOrlandoLocals",
+        "#iPowerMoves"
+      ],
+      
+      "unique_value_props": [
+        "Live classes with multiple review sessions",
+        "Study group atmosphere",
+        "State Exam Keywords & Concept Glossary included",
+        "Complete resource catalog included",
+        "YouTube pre-licensing class reviews",
+        "No 'hunting alone' - community support"
+      ]
+    },
+    {
+      "company_id": "tfl_001",
+      "company_name": "The Florida Local",
+      "website": "https://thefloridalocal.com",
+      "industry": "Local Community/Network",
+      "relationship": "Sister Brand to The Insurance School"
+    }
+  ]
+}
+```
+
+### EXPERTISE & SKILLS
+```json
+{
+  "primary_expertise": [
+    "Insurance Licensing Education",
+    "Florida Insurance Regulations",
+    "2-15 Health & Life Insurance",
+    "State Exam Preparation",
+    "Insurance Compliance",
+    "Student Success & Retention"
+  ],
+  
+  "teaching_style": [
+    "Live Interactive Classes",
+    "Multiple Review Sessions",
+    "Community-Based Learning",
+    "Practical Exam Strategies"
+  ],
+  
+  "content_creation": [
+    "iPower Moves Podcast",
+    "YouTube Educational Content",
+    "Course Material Development"
+  ]
+}
+```
+
+### PRODUCTS/OFFERINGS (Shopify-style)
+```json
+{
+  "products": [
+    {
+      "product_id": "prod_001",
+      "product_name": "2-15 PRIVATE Masterclass",
+      "category": "Pre-Licensing Course",
+      "description": "Complete Health & Life Insurance licensing preparation with live classes, on-demand replays, and full resource catalog",
+      "features": [
+        "Live State Authorized Pre-Licensing Class Replays (ON-DEMAND)",
+        "State Exam Keywords & Concept Glossary",
+        "Everything in resource catalog included"
+      ],
+      "target_license": "Florida 2-15 (Health & Life Insurance)",
+      "price_tier": "Premium"
+    },
+    {
+      "product_id": "prod_002",
+      "product_name": "iFast Broker ELITE Bundle",
+      "category": "Career Launch Package",
+      "description": "Complete package for launching your insurance career fast",
+      "price_tier": "Elite"
+    },
+    {
+      "product_id": "prod_003",
+      "product_name": "Continuing Education Courses",
+      "category": "CE Courses",
+      "description": "2-14, 2-15, 2-40, 2-20 CE Courses - Keep your license valid",
+      "features": [
+        "Guest Speaker Insights",
+        "Breakout Sessions",
+        "NO EXAMS",
+        "4 Hour Law & Ethics"
+      ]
+    }
+  ]
+}
+```
+
+### SOCIAL/COMMUNITY ASPECTS (Facebook-style)
+```json
+{
+  "community_stats": {
+    "monthly_students": "2,000+",
+    "success_stories": "High first-time pass rate",
+    "years_serving": "25+"
+  },
+  
+  "testimonials": [
+    {
+      "quote": "I'm so glad I picked the live class. The pace was EASY to keep up with & we went over everything AT LEAST Two Times.",
+      "sentiment": "positive"
+    },
+    {
+      "quote": "It sounds crazy but i actually had a good time in Jasons class. He made it feel like i was logging into a study group with my friends.",
+      "sentiment": "positive"
+    },
+    {
+      "quote": "Im so grateful I found TheInsuranceSchool.com. I made the mistake of going to another school and struggled. I tried again with the Insurance School and PASSED!",
+      "sentiment": "positive"
+    },
+    {
+      "quote": "The iPower Moves podcast pre-licensing class reviews on Youtube saved my life. I watched & listened on repeat until the exam started.",
+      "sentiment": "positive"
+    }
+  ],
+  
+  "community_platforms": {
+    "skool": "The Insurance School Community",
+    "youtube": "iPower Moves Podcast",
+    "social_hashtags": ["#NeverHuntAlone", "#TheFloridaLocals"]
+  }
+}
+```
+
+---
+
+There ya go, Boss! Clean seed data ready to drop into whatever platform this Jason Perez character is buildin'. Got the professional profile, business info, products, and social proof all formatted up nice. 
+
+Want me to convert this to a different format like CSV or SQL insert statements?

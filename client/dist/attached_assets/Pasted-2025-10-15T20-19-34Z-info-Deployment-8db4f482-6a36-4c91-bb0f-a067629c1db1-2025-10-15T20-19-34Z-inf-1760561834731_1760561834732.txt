@@ -1,0 +1,135 @@
+2025-10-15T20:19:34Z info: Deployment: 8db4f482-6a36-4c91-bb0f-a067629c1db1
+2025-10-15T20:19:34Z info: Build: 28944176-d0a8-4742-8b7a-12226df6d4d0
+2025-10-15T20:20:44Z info: Successfully copied development database data to production database
+2025-10-15T20:20:44Z info: Connecting to builder
+2025-10-15T20:20:44Z info: Builder connected
+2025-10-15T20:20:44Z info: Installing packages
+--> npm install
+
+
+up to date, audited 1364 packages in 6s
+
+211 packages are looking for funding
+
+  run `npm fund` for details
+
+
+9 vulnerabilities (3 low, 6 moderate)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 11.6.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.6.2
+npm notice To update run: npm install -g npm@11.6.2
+npm notice
+
+2025-10-15T20:20:51Z info: Starting Build
+
+> rest-express@1.0.0 build
+> vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+
+
+vite v5.4.20 building for production...
+
+transforming...
+
+warn - The class `ease-[cubic-bezier(0.22,1,0.36,1)]` is ambiguous and matches multiple utilities.
+
+warn - If this is content and not a class, replace it with `ease-&lsqb;cubic-bezier(0.22,1,0.36,1)&rsqb;` to silence this warning.
+
+
+/grid.svg referenced in /grid.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+
+/Backgrounds/dynamic-abstract-patterns-with-overlapping-circles-spirals-creating-sense-motion_36897-73531.avif referenced in /Backgrounds/dynamic-abstract-patterns-with-overlapping-circles-spirals-creating-sense-motion_36897-73531.avif didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+✓ 10873 modules transformed.
+
+rendering chunks...
+
+dist/registerSW.js                                                          0.13 kB
+
+dist/assets/js/chunk-DX-ng3ro.js                                            0.18 kB
+
+dist/assets/js/chunk-DlBLYVYR.js                                           33.00 kB
+dist/assets/js/chunk-CB_FygZn.js                                           36.05 kB
+dist/assets/js/chunk-CsH5eBZF.js                                           36.99 kB
+dist/assets/js/chunk-C_L_2KoB.js                                           40.03 kB
+dist/assets/js/chunk-CDOfWkHr.js                                          104.87 kB
+dist/assets/js/chunk-B925Bl0Q.js                                          126.77 kB
+dist/assets/js/chunk-mXrEHHhv.js                                          168.82 kB
+dist/assets/js/chunk-BNHZepK5.js                                          322.72 kB
+
+✓ built in 1m
+
+
+PWA v1.0.3
+mode      generateSW
+precache  15 entries (4085.19 KiB)
+files generated
+  dist/sw.js
+  dist/workbox-e20531c6.js
+
+
+✨ [vite-plugin-compression]:algorithm=gzip - compressed file successfully: 
+
+dist//home/runner/workspace/client/assets/js/chunk-CB_FygZn.js.gz     35.20kb / gzip: 10.71kb
+
+dist//home/runner/workspace/client/assets/js/chunk-C_L_2KoB.js.gz     39.09kb / gzip: 12.20kb
+
+dist//home/runner/workspace/client/assets/js/chunk-DlBLYVYR.js.gz     32.23kb / gzip: 9.15kb
+
+
+
+
+
+✨ [vite-plugin-compression]:algorithm=brotliCompress - compressed file successfully: 
+
+dist//home/runner/workspace/client/assets/css/index-CoUEwdPE.css.br   407.29kb / brotliCompress: 43.92kb
+
+dist//home/runner/workspace/client/assets/index-DkpRlAnP.js.br        2816.65kb / brotliCompress: 566.70kb
+
+
+
+
+  dist/index.js  745.3kb
+
+⚡ Done in 52ms
+
+2025-10-15T20:22:08Z info: Pushing pid1 binary layer...
+2025-10-15T20:22:09Z info: Pushing Repl layer...
+2025-10-15T20:22:09Z info: Pushing hosting layer...
+2025-10-15T20:22:10Z info: Created hosting layer
+2025-10-15T20:22:11Z info: Created pid1 binary layer
+2025-10-15T20:23:43Z info: Created Repl layer
+2025-10-15T20:23:46Z info: Pushed image manifest
+2025-10-15T20:23:47Z info: Pushed soci index manifest
+2025-10-15T20:23:51Z info: Creating Autoscale service
+npm notice
+    at async ModuleJob.run (node:internal/modules/esm/module_job:258:5)
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.6.2
+    at ModuleJob._instantiate (node:internal/modules/esm/module_job:175:21)
+SyntaxError: The requested module 'connect-redis' does not provide an export named 'default'
+> NODE_ENV=production node dist/index.js
+Node.js v20.19.3
+    at ModuleJob._instantiate (node:internal/modules/esm/module_job:175:21)
+import ConnectRedis from "connect-redis";
+
+SyntaxError: The requested module 'connect-redis' does not provide an export named 'default'
+    at ModuleJob._instantiate (node:internal/modules/esm/module_job:175:21)
+> NODE_ENV=production node dist/index.js
+Node.js v20.19.3
+> NODE_ENV=production node dist/index.js
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+
+file:///home/runner/workspace/dist/index.js:5059
+command finished with error [npm run start]: exit status 1
+crash loop detected
+2025-10-15T20:26:58Z error: The deployment is crash looping. This can happen if the run command fails or exits immediately after starting. Check the logs for more information.

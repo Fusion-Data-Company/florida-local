@@ -1,0 +1,185 @@
+Analysis of The Florida Local Home Page
+
+Introduction
+
+This document summarizes the content and structure of the Home page at thefloridalocal.com as of October 1 2025.  It breaks down every major section from top to bottom, explaining the purpose, layout, text, imagery and calls‑to‑action.  Design elements such as colors, typography, spacing and effects are noted so a developer or designer can reconstruct the page faithfully.  Citations in brackets correspond to screenshots captured during analysis.
+
+1. Site header / navigation
+	•	Purpose & type: Provide a search tool and access to social features while centering the brand identity.
+	•	Layout: A horizontal bar with three zones: left‑aligned search field, central logo, right‑aligned icons.  The search field’s placeholder reads “Search travel, food…”, and a small magnifying‑glass icon sits inside the field.  The logo shows a red location pin followed by the purple wordmark “THE FLORIDA LOCALS”.  On the far right, circular buttons link to Facebook, Instagram, YouTube and Twitter.  A theme‑toggle (showing “Dark” and a moon icon) lets users switch modes, and a user/profile icon links to an account page.
+	•	Visual style: White background with soft gray circles for icons.  The brand color (purple) accents the logo text.
+
+2. Hero section – “Life’s is BETTER when you’re Living Like a LOCAL.”
+	•	Purpose: Introduce the site and set the mood.
+	•	Content: The hero features a looping 4K drone video of a Florida beach.  Overlaying the video are:
+	•	Large white headline “The Florida Local”
+	•	Sub‑tagline “Life’s is BETTER when you’re Living Like a LOCAL.”
+	•	A small note in the top‑left corner: “4K Cinematic Video | Florida, USA – By Drone”.
+	•	Layout: Full‑screen section with central alignment.  A semi‑transparent black overlay ensures the white text remains legible.
+	•	Design features: No CTA; the video adds motion and a parallax feel.  The overlay darkens as the user scrolls.
+
+3. “Foodies, Creators & Collaborators” slider
+	•	Purpose: Highlight local creators and partners using mini‑profiles.
+	•	Content: After the hero, a heading “The Florida Local | Foodies, Creators & Collaborators” introduces a horizontal carousel of five cards.  Each card has a colored tag at the top, a full‑height image and a caption overlay:
+	1.	#4EverTourist – a woman posing by a pool with caption “#4Boho Out In the D.R.”.
+	2.	#ipowermoves – a woman pointing upward; caption “Sarah Insure”.
+	3.	#itsGoodAF – two men paddling a kayak; caption “Explore With Kenzo & Ben”.
+	4.	#effintrendy – stylish woman seated; caption “OASIS Tropic Wear”.
+	5.	#NeverHuntAlone – man enjoying food; caption “HOW TO BE FEATURED”.
+	•	Layout: Cards are rounded rectangles aligned in a single row; navigation arrows appear to scroll horizontally.  The final card functions as a call‑to‑action encouraging visitors to get featured.
+	•	Design: A soft gradient background (lavender/blue) behind the cards.  Tag pills use bold colors (orange, purple, gold) and are uppercase.
+
+4. “Featuring | The Florida Local Lifestyle” – Featured local pages
+	•	Purpose: Spotlight major posts and features.
+	•	Cards: Two large cards rotate via carousel:
+	1.	“The Florida Local” – Tag “FEATURED LOCAL PAGES”, author “By The Locals”, date March 25 2024.  The right side shows an aerial view of a beach with white text: “It’s ALL ABOUT US. Be Featured #ItsGoodAF | #4EverTourist”.
+	2.	“Florida Lake Life With Kelli & Jason @TheOrlandLocals” – Tag “FEATURED”, author and date July 17 2023, with a large photo of a couple kayaking.
+	•	Layout: Each card is two columns: text on the left (~40 %) and image on the right (~60 %).  Small circular arrows overlay the image for navigation.
+	•	Design: Pastel gradient background with soft drop shadows.  The large photos have rounded corners.
+	•	Extra call‑out: Below the carousel is a blue sentence “Follow The Orlando Locals On IG!” linking to Instagram.
+
+5. Featured article – “Florida Lake Life With Kelli & Jason”
+
+This card is part of the previous carousel, already detailed above.  It emphasises local lifestyle and is identified by the “FEATURED” tag.
+
+6. FEATURED | Local Yelp Elite – “Local Foodie Verified”
+	•	Purpose: Promote businesses and posts verified by the site’s food editors.
+	•	Content:
+	•	Left column: Large vertical photo of an Ivanhoe Park Brewing Co. beer and soap with caption at the bottom.  Tag at top shows the author avatar and indicates the article is about a business.
+	•	Right column: Vertical photo collage of a smoothie stand and a market stall.  Above the collage is a red ribbon labelled “Local Foodie Verified”; below is a line with icons and text “ORLANDO | ✅ Top Recommended Dishes.”
+	•	Central call‑out: Bright green button reading “You’ve GOTTA Try This!” draws the eye.
+	•	Tabbed list: Under the call‑out is a tabbed interface with headings Local Restaurants (default), Foodie Reviews and Menus.  The active tab lists short articles such as “Have You Tried Nona’s Urban Pizza Yet?”, “Paella Tuesday at Turulls”, “Cilantrillo New Restaurant Opening in Old Town Kissimmee”, and “DON TURULL CAFE, Bonafide Agricultural Company w/ Coffee Straight from PR”.
+	•	Layout: Three vertical columns: big image left, collage right, central call‑out underneath.  Tabs use a horizontal bar with rounded corners.
+	•	Design: Pastel peach and purple gradient background.  The bright green CTA contrasts strongly; the red “Local Foodie Verified” bar signals exclusivity.  Tabs change color when selected.
+	•	Special effects: Tabbed content changes without a page reload.  Cards have shadows and large rounded corners.
+
+7. “Locals | East Orlando Flavor” – Turull’s Boqueria feature
+	•	Purpose: Provide a deep dive into a single restaurant.
+	•	Content:
+	•	Intro panel: Title “Turull’s Boqueria”, star rating (4.5★ from 52 reviews), price range (“$30 and under”), cuisine (“Spanish”), and tag chips like “Great For Live Music,” “Lively,” “Great For Brunch”.  A description praises the diverse menu and tapas, ending with a “Read more” link.
+	•	Reservation CTA: A card with a corkscrew icon and text “Click Here to Reserve a Table Today!”.
+	•	Image carousel: A heading bar “España Cuisine 🇪🇸 | Check Our Menu” above a slider showing cocktails, paella and appetizers with left and right arrows.
+	•	Location and booking: A Google Map shows Turull’s Kitchen & Bar opposite the Florida Mall; below is a green button “Book a Reservation Today”.
+	•	Layout: Two‑column intro (text vs. reserve card) followed by a three‑image slider and then the map with CTA.
+	•	Design: Light gradient backdrop; reserved card uses white space to stand out.  The final CTA is vibrant green.
+
+8. #ItsGoodAF | Every Day is A Vacation
+	•	Purpose: Mood‑setting break between sections.
+	•	Content: A thin bar with “#ItsGoodAF | You’ve Gotta Try This!” then a full‑width hero image of someone riding a jet ski at sunset.  Over this image is the white title “Every Day is A Vacation” and subtext “– #4EverTourist – | #TheOrlando Locals”.
+	•	Design: Sunset photograph with orange glow; dark overlay behind white text.
+
+9. Central Florida Insurance School promotion
+	•	Purpose: Sponsored advertisement for an insurance‑education partner.
+	•	Content:
+	•	Large blue headline “Looking For a New Career… It’s Always Healthcare Awareness Month”.
+	•	A banner from “Central Florida Insurance School – DPS Authorized Insurance Ed Provider” with navigation items (Home, Fast Agent Pre‑Licensing, Continuing Education, Blog) and a contact phone number.
+	•	Under the headline: a collage with tag “As Seen On…” showing an OnlyFans logo and images of presenters delivering training videos and podcasts.
+	•	A card labelled “The Insurance School | We Make Pre‑Licensing Easy” linking to a blog post.
+	•	Layout: Full‑width panel with navigation banner at the bottom and three thumbnails above.  Blue and white colour scheme connects with the sponsor brand.
+
+10. iPOWERMOVES LIVE PODCAST
+	•	Purpose: Promote a live podcast and insurance‑career app.
+	•	Content:
+	•	Section header “iPOWERMOVES LIVE PODCAST” with subheading “View Our Next Live Class!”.
+	•	Left side: an embedded YouTube player (video unavailable but placeholder visible).  Right side: an illustration of multiple smartphones with the iPowerMoves app and app‑store buttons for Google Play and App Store.
+	•	A black ribbon above the section reads “Enroll Today | Insurance Careers Start Here”, placed over a repeating background of the phrase “HUNT ALONE – Connect | Collaborate”; below the ribbon are icons for Google Podcasts, Apple Podcasts, OnlyFans, YouTube and Spotify, encouraging users to subscribe.
+	•	Design: Dark blue background; orange/gold accent on the enrolment ribbon.  App‑download buttons use brand colours.
+
+11. Entrepreneurs, Creators & Collaborators
+	•	Purpose: Spotlight community members.
+	•	Content: The section is introduced by a green banner labeled “Entrepreneurs, Creators & Collaborators.” A horizontal carousel beneath it shows four cards:
+	1.	“The Insurance School | We Make…” – image of an outdoor classroom setup.
+	2.	“Power Moves | The Mo‑Fo’s Who are…” – aerial view of friends at a pool.
+	3.	“Neil Schwabe, MGA With United…” – man wearing a cap giving a thumbs‑up.
+	4.	“Tactical Brewing Newest Released…” – group of men toasting drinks.
+	•	Layout: Four rounded cards in a row with equal spacing; each card has a tag pill at the top and truncated title at the bottom.
+	•	Design: Green header sets the section apart; pastel blue background behind the cards.
+
+12. iPower Moves & Caribbean Locals slider
+	•	Purpose: Showcase travel stories and emphasise shopping local.
+	•	Content:
+	•	A large feature article under the label “#TheCaribbeanLocals” titled “I ❤️ PR | Jan & Lauras Island Excursions” (author: The Locals; date: June 10 2024).  The picture shows a large “PR” sign with a couple posing.
+	•	Below it, a carousel displays four cards with photos and titles: “Steffieemariee – DR is In,” “Island Hopping In Punta Cana DR,” “Clear Water Beach on a Charge,” and “Carribbean Hotspots, Visit Punta …”.
+	•	Between these subsections sits a green banner reading “Power of We | Shop Local #NeverHuntAlone.”  A blue advertisement for Payless Deals Appliances sits to the right or below this banner in some viewports.
+	•	Layout: Featured story on top then horizontal slider; the promotional banner anchors the section.
+
+13. Dental spotlight – Sian Dental Studio
+	•	Purpose: Advertise a local dental practice.
+	•	Content:
+	•	Headline “ORLANDO | Your SMILE Is Contagious” above a large photo of a male and female dentist discussing treatment.
+	•	Sub‑heading “Dr. Mario | THE ORLANDO LOCAL DENTIST.”  Under this text is a Google Map pinpointing Sian Dental Studio, 508 N Mills Ave B, Orlando FL.
+	•	Series of before‑and‑after patient photos showcasing smile makeovers.  A line of small dots indicates the images are part of a slider.
+	•	A blue CTA button reads “Sian Dental 🦷 Schedule a Virtual Visit Here.”
+	•	Layout: Two‑column layout (photos and map) with a carousel at the top; CTA is centered below the images.
+	•	Design: Pastel gradient backgrounds and dark blue accent colours; patient photos have rounded corners.
+
+14. The Florida Local – Featured collaborators & Foodie experts
+	•	Purpose: Highlight user‑generated content and encourage submissions.
+	•	Content:
+	•	Green banner “The Florida Local – Featured Collaborators.”  Beneath it, a purple banner “#itsGoodAF | The Local Foodie Experts.”
+	•	A four‑card carousel shows video clips/photos of people eating or cooking.  One card features a yellow background with a heart icon and an italic “Read More” button.
+	•	A heart‑themed bar invites visitors to “Send Us Your Foodie Reels | Featured iFastSocial Subscriptions.”
+	•	Under the bar, three cards list posts: “5 of The Best Spots For Healthy Foodies in Orlando,” “Happy Birthday! @LexyMonty,” and “Felez Lunes a Todos From Hiram!”.
+	•	Design: Bright green and purple backgrounds differentiate this section; heart icons echo the iFastSocial branding.
+	•	CTAs: The bar encourages reel submissions; the yellow card leads to more information about iFastSocial subscriptions.
+
+15. iPOWERMOVES – Independent Power Moves
+	•	Purpose: Share civic or community news.
+	•	Content: Large card under tag “#SpaceCoastLocals” titled “The City Council of Palm Bay Joins the Space Coast Locals”; author The Locals; date January 8 2024.  The image depicts a city council ceremony.  Navigation arrows allow readers to explore additional community stories.
+	•	Design: Pastel peach background; two‑column layout similar to the lifestyle feature.
+
+16. Cilantrillo Restaurant menu & foodie posts
+	•	Purpose: Present restaurant menu and additional food posts.
+	•	Content:
+	•	Left column: two cards with images and titles:
+	•	“Fly Guy Pizza Guy W/ @EatsWithAlicia” – picture of a woman eating cheesy pizza.
+	•	“Tibby’s New Orleans Kitchen with Baloo Eats” – photo of a smiling man enjoying a drink.
+	•	Right column: a large banner for El Cilantrillo Restaurant with tabs labelled Cilantrillo Entrees, Cilantrillo Appetizers and Cilantrillo News.  Selecting a tab displays a list of items such as “MAIN ENTREES 🇵🇷,” “EL PARRADÓN 🇵🇷,” “STUFFED MOFONGOS 🇵🇷,” “AFRENTAOS 🇵🇷,” and an article titled “Los pasteles llevan Ketchup? Ayúdanos a resolver este problema”.
+	•	Design: Soft white container with pastel gradient; lists are simple links with small food thumbnails.
+
+17. #EffinTrendy – Music, Fashion & Lifestyle
+	•	Purpose: Curate fashion and lifestyle posts.
+	•	Content:
+	•	Purple banner heading “#EffinTrendy | Music, Fashion & Lifestyle.”
+	•	Top row of cards: an image of “Kelli, the Boho Hooligan #4Boho | IG:…”; an event poster “THE INVASION OF ORLANDO (Indoor VIP Showcar Contest)” with an arrow overlay; a fashion photo of a man in a printed shirt; and a yellow card with heart icon and “Read More” button.
+	•	A heart‑themed bar inviting users to “Connect & Collaborate | Featured iFastSocial Subscriptions.”
+	•	Second row: three cards with titles “Caleb Johnson [ Photo Operation ],” “@oasistropicwear,” and “Sarah Insure | What if You Did?”.
+	•	Third row: small thumbnail carousel of models in stylish outfits.
+	•	Design: Pastel violet/pink backgrounds; the yellow card stands out; cards have large rounded corners.
+
+18. Featured Entrepreneurs – iFastSocial endorsement
+	•	Purpose: Advertise partnership with iFastSocial and local small businesses.
+	•	Content: Tag “#iPowerMoves”; headline “iFastSocial – Be Featured in Our Endorsement…”; author The Locals; date August 6 2023.  The right side shows the iFastSocial logo on a yellow background.
+	•	Design: Two‑column card with pastel yellow background and black/pink accents.
+
+19. #iPowerMoves – Entrepreneur spotlight & creators’ grid
+	•	Purpose: Combine entrepreneurship articles with creator content.
+	•	Content:
+	•	Banner: “#iPowerMoves | Entrepreneur Spotlight – The Florida Local –”.
+	•	Sub‑section “The Florida Local Creators & Collaborators” contains a grid of four posts with images and metadata.  Examples include:
+	•	“Step into the AM | Orlando Aston Martin Unveils The New DB12” (tag #TheOrlandoLocals; date September 8 2024).
+	•	“Carribbean Hotspots, Visit Punta Cana D.R. – for Your Next Trip!” (tag #EffinTrendy; date June 11 2024).
+	•	Cuisine posts: “MAIN ENTREE’s,” “EL PARRADÓN,” “STUFFED MOFONGOS,” and “AFRENTAOS” (tagged as Cilantrillo Entrees with date June 11 2024).
+	•	Right column: a list of links to additional posts, including the new Aston Martin article, the iFastSocial endorsement, “iPower Moves | Creating Content For the Insurance…,” and “Florida Lake Life With Kelli & Jason @TheOrlandLocals,” among others.
+	•	Design: Pastel backgrounds with minimal separators.  Cards are pill‑shaped with drop shadows; each includes a bookmark icon.
+
+20. Categories & tag clusters
+	•	Purpose: Provide quick navigation to major categories.
+	•	Content: A row of pill‑shaped cards; each displays a hashtag, an image and the number of posts.  Examples: #ItsGoodAf (30 posts), #KidPowerMoves (1 Post), #NeverHuntAlone (1 Post), #SideHustles… (3 Posts), #EffinTrendy (13 Posts), #iFastSocial (14 Posts), #incrediblein… (18 Posts), #iPowerMoves (6 Posts).
+	•	Design: Cards use pastel backgrounds and small circular contributor avatars.  The row scrolls horizontally on smaller screens.
+
+21. Dark purple article list & footer
+	•	Purpose: Offer additional navigation and site information.
+	•	Content:
+	•	Article list: Dark purple panel with pill‑shaped links to posts like “Step into the AM | Orlando Aston Martin Unveils The New DB12,” “Carribbean Hotspots, Visit Punta Cana D.R. – for Your Next Trip!,” “MAIN ENTREE’s,” “EL PARRADÓN,” “STUFFED MOFONGOS,” and “AFRENTAOS.” Each item shows an icon, a 0 View/0 Comment count and appears clickable.
+	•	Footer: Three columns.  Categories section lists links like “Term Of Use,” “Release Notes,” “Upgrade Guide,” “Travel.”  Pages section includes “Installation,” “IntelliSense,” “Browser Support,” “Upgrade Guide.”  Social section has “About Us Descriptions…” plus icons for Facebook, Instagram, YouTube and Twitter.  At the bottom, a copyright note reads “Copyright © 2023 The Locals. Created By iFastSocial.com.”.
+	•	Design: A silhouette of mountains in purple tones forms the background.  Text and links are white or light gray, ensuring legibility on the dark panel.
+
+Design and style summary
+	•	Color palette: Dominant purple (#4b3ec2) for branding; pastel blues, lavenders and peaches for section backgrounds; bright greens for calls‑to‑action; bold reds for badges; yellow for iFastSocial branding.  White and black provide contrast.
+	•	Typography: A modern sans‑serif typeface (similar to Poppins or Montserrat).  Headings are bold and often sentence case; body text is medium weight.  Hashtag tags use uppercase or camelCase.
+	•	Spacing & layout: Generous vertical spacing separates sections.  Cards use large border‑radii (~1 rem) and drop shadows.  Sections often alternate background colours to distinguish content.  Many sections employ carousels or sliders to display multiple items horizontally.
+	•	Borders & shadows: Cards feature soft drop shadows and coloured borders.  Tags are pill‑shaped with solid backgrounds.
+	•	Interactive effects: Numerous carousels with arrow controls; video backgrounds; tabbed interfaces; map embeds; and call‑out bars.  The site uses fade‑in and slide animations to reveal content on scroll.
+
+This detailed breakdown captures the structure, content and design features of The Florida Local homepage as of October 2025.  The report is intended for designers and developers tasked with recreating the site or understanding its layout.

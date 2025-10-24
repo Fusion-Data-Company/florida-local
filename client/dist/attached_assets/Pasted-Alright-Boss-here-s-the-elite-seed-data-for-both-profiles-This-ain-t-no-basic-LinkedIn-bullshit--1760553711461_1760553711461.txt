@@ -1,0 +1,342 @@
+Alright Boss, here's the elite seed data for both profiles. This ain't no basic LinkedIn bullshit - this is premium-grade professional positioning:
+
+---
+
+## 🎯 ROBERT "ROB" YEAGER - Personal Profile
+
+### Core Identity
+```json
+{
+  "full_name": "Robert Yeager",
+  "preferred_name": "Rob",
+  "professional_title": "Workflow Automation Architect & Lead Generation Strategist",
+  "headline": "Transforming Sales Operations Through Intelligent Automation | Helping Companies Scale Revenue Without Scaling Headcount",
+  "location": {
+    "primary": "Sacramento, CA",
+    "work_style": "Remote | Mobile (RV-based operations)"
+  },
+  "contact": {
+    "email": "rob@fusiondataco.com",
+    "website": "https://fusiondataco.com"
+  }
+}
+```
+
+### Professional Summary
+```
+Results-driven workflow automation architect with 15+ years of experience engineering revenue-generating systems for scaling businesses. Specializes in designing sophisticated lead generation pipelines, sales automation frameworks, and AI-powered business intelligence solutions.
+
+Core Expertise:
+• Enterprise workflow automation (N8N, Make.com, Zapier)
+• Multi-channel lead generation architecture
+• CRM optimization and sales funnel engineering
+• AI agent development and voice automation
+• Full-stack integration design (APIs, webhooks, microservices)
+• Data enrichment and attribution modeling
+
+Industry Focus: SaaS, Solar/Renewable Energy, B2B Services, Real Estate Technology
+
+Philosophy: "The best sales team is the one that never sleeps. Automation doesn't replace humans—it amplifies them."
+```
+
+### Professional Experience
+
+**Founder & Chief Automation Officer**
+*Fusion Data Co* | 2020 - Present | Remote
+- Architected 200+ automated workflows generating $50M+ in attributed revenue for clients
+- Developed proprietary lead scoring algorithms improving sales team efficiency by 340%
+- Built AI-powered voice agents processing 10K+ qualification calls monthly
+- Created multi-touchpoint nurture sequences achieving 45% conversion rates (industry avg: 12%)
+- Designed zero-code integration frameworks connecting 50+ business systems
+
+**Key Achievements:**
+- Reduced client CAC by average of 62% through automation optimization
+- Enabled 3-person sales teams to perform at 15-person capacity
+- Pioneered RV-based remote operations model maintaining 99.8% uptime
+
+---
+
+**Senior Workflow Consultant**
+*Independent Practice* | 2015 - 2020 | Atlanta, GA / Sacramento, CA
+- Consulted for 40+ companies on sales automation and lead generation strategy
+- Implemented CRM migrations and data hygiene protocols for mid-market firms
+- Developed custom Python scripts for data enrichment and API integrations
+- Trained sales teams on automation-first methodologies
+
+---
+
+**Sales Operations Manager**
+*Various Technology Companies* | 2010 - 2015 | Atlanta, GA
+- Managed sales tech stack and reporting infrastructure for 50+ rep teams
+- Built Salesforce customizations and third-party integrations
+- Established data governance frameworks and attribution models
+- Reduced manual data entry by 85% through process automation
+
+### Technical Expertise
+
+**Automation & Integration:**
+- Expert: N8N, Make.com, Zapier, Python, RESTful APIs, Webhooks
+- Advanced: JavaScript, JSON, OAuth, SQL, GraphQL
+- Platforms: Airtable, Supabase, PostgreSQL, MongoDB
+
+**AI & Machine Learning:**
+- LLM Integration: OpenAI, Anthropic Claude, OpenRouter.io, Perplexity
+- Voice AI: ElevenLabs, conversational agent design
+- Local Models: Ollama deployment and fine-tuning
+- Prompt Engineering: Advanced chain-of-thought architectures
+
+**CRM & Sales Tech:**
+- Salesforce, HubSpot, Pipedrive, Close.io, Apollo.io
+- Sales engagement: Outreach, SalesLoft, Instantly.ai
+- Data enrichment: Clearbit, ZoomInfo, Clay.com
+
+**Development Tools:**
+- VS Code, Thonny, GitHub, Replit
+- Browser automation: Puppeteer, Playwright
+- Cloud: AWS, Google Cloud, Vercel, Railway
+
+**Business Intelligence:**
+- Google Analytics, Mixpanel, Amplitude
+- Custom dashboard development
+- SQL-based reporting and analysis
+
+### Certifications & Education
+- N8N Certified Workflow Developer
+- Make.com Advanced Automation Specialist
+- Salesforce Administrator (Retired)
+- Self-taught developer with 10,000+ hours in automation engineering
+
+**Continuous Learning:**
+- Active in AI/ML communities and LLM development forums
+- Regular contributor to workflow automation repositories
+- Beta tester for emerging automation platforms
+
+### Industry Thought Leadership
+- "Why Your Sales Team Needs a Chief Automation Officer" - Featured article series
+- Guest speaker: Workflow Automation Summit 2024
+- Podcast appearances on sales operations and revenue architecture
+
+### Personal Interests & Work Style
+- Location-independent operations from custom RV workspace ("The MotherShip")
+- Advocate for remote-first, automation-driven business models
+- Passionate about renewable energy and sustainable technology
+- Travel enthusiast combining business operations with exploration
+
+### Core Values
+- **Efficiency Over Activity**: Measure results, not hours
+- **Automation First**: If it can be automated, it should be
+- **Data-Driven Decisions**: Intuition guided by analytics
+- **Continuous Optimization**: Good enough today, better tomorrow
+
+---
+
+## 🏢 FUSION DATA CO - Company Profile
+
+### Company Identity
+```json
+{
+  "company_name": "Fusion Data Co",
+  "legal_name": "Fusion Data Company LLC",
+  "tagline": "Where Automation Meets Revenue Intelligence",
+  "founded": "2020",
+  "headquarters": "Sacramento, CA (Remote-First)",
+  "company_size": "2-10 employees (Lean operations model)",
+  "industry": "Business Process Automation | Sales Technology | AI Solutions",
+  "website": "https://fusiondataco.com",
+  "contact": "support@fusiondataco.com"
+}
+```
+
+### Company Overview
+```
+Fusion Data Co is a premier workflow automation and revenue intelligence firm that transforms how businesses generate, qualify, and convert leads. We architect sophisticated automation systems that enable small sales teams to perform at enterprise scale.
+
+Our mission: Democratize enterprise-grade automation for growing businesses. We believe every company deserves sales infrastructure that works 24/7/365.
+
+What Makes Us Different:
+• Zero-fluff implementations - every workflow drives measurable ROI
+• Proprietary frameworks developed from 200+ successful deployments
+• AI-native approach integrating LLMs into every automation layer
+• White-glove service with direct founder involvement
+• Rapid deployment cycles (weeks, not months)
+```
+
+### Services Offered
+
+**1. Lead Generation Architecture**
+- Multi-channel outbound automation (email, LinkedIn, SMS, voice)
+- Inbound funnel optimization and conversion rate engineering
+- Intent signal monitoring and real-time alerting
+- Data enrichment pipelines and lead scoring models
+
+**2. Sales Automation Engineering**
+- End-to-end CRM workflow design and implementation
+- Custom integration development (APIs, webhooks, microservices)
+- Sales engagement sequence automation
+- Reporting dashboards and attribution modeling
+
+**3. AI Agent Development**
+- Voice-based qualification bots (ElevenLabs integration)
+- Chat-based lead nurture agents
+- Document processing and data extraction
+- Intelligent routing and prioritization systems
+
+**4. System Integration & Migration**
+- CRM migrations with zero data loss
+- Tech stack consolidation and optimization
+- Legacy system modernization
+- API-first architecture design
+
+**5. Training & Enablement**
+- Automation workshops for sales and ops teams
+- Custom playbook development
+- Ongoing optimization and support
+- Executive strategy consulting
+
+### Technology Stack
+```
+Automation Platforms: N8N (primary), Make.com, Zapier
+Development: Python, JavaScript, RESTful APIs, GraphQL
+AI/ML: OpenAI, Anthropic, OpenRouter, ElevenLabs
+Databases: Airtable, Supabase, PostgreSQL
+CRM: Salesforce, HubSpot, Pipedrive, Close.io
+Cloud: AWS, Google Cloud, Vercel
+```
+
+### Target Markets
+
+**Primary Verticals:**
+- B2B SaaS (Series A-C)
+- Solar & Renewable Energy
+- Real Estate Technology
+- Professional Services (Legal, Accounting, Consulting)
+- E-commerce (High-ticket)
+
+**Ideal Client Profile:**
+- Annual revenue: $2M-$50M
+- Sales team size: 3-25 reps
+- Tech stack: 5-15 disconnected tools
+- Pain points: Manual processes, data silos, scaling bottlenecks
+
+### Competitive Advantages
+
+**1. Founder-Led Expertise**
+- Direct access to 15+ years of automation experience
+- Hands-on implementation (not outsourced to junior staff)
+- Battle-tested frameworks from 200+ deployments
+
+**2. Speed to Value**
+- First automations live within 48-72 hours
+- ROI-positive within 30-90 days
+- Iterative approach allowing rapid optimization
+
+**3. AI-Native Architecture**
+- LLM integration across every workflow layer
+- Voice AI capabilities for qualification and support
+- Predictive analytics and intelligent decision-making
+
+**4. Transparent Pricing**
+- No hidden fees or scope creep
+- Project-based and retainer options
+- Clear ROI projections before engagement
+
+**5. Remote-First Operations**
+- Lower overhead = better client value
+- Global talent access without geographic limitations
+- Flexible engagement models
+
+### Case Studies & Results
+
+**Solar Installation Company** (18-person sales team)
+- Challenge: 3-day lead response time, 8% close rate
+- Solution: Automated lead routing, AI qualification, instant follow-up
+- Results: <5 min response time, 23% close rate, 187% ROI in 90 days
+
+**B2B SaaS Company** ($8M ARR)
+- Challenge: Manual outreach, no lead scoring, CRM chaos
+- Solution: Multi-channel outbound automation, predictive scoring, CRM cleanup
+- Results: 340% increase in qualified meetings, 62% CAC reduction
+
+**Real Estate Tech Startup** (Series A)
+- Challenge: High-volume inbound, poor lead qualification
+- Solution: AI voice agents, intelligent routing, nurture sequences
+- Results: 10K+ calls automated monthly, 45% conversion rate
+
+### Company Culture & Values
+
+**Core Principles:**
+1. **Results Over Activity**: We measure success in revenue, not hours billed
+2. **Automation First**: Every process is a candidate for optimization
+3. **Radical Transparency**: Clients see everything - wins, losses, metrics
+4. **Continuous Improvement**: Ship fast, iterate faster
+5. **Human-Centric Design**: Automation should amplify people, not replace them
+
+**Work Style:**
+- Remote-first, output-focused
+- Asynchronous communication preferred
+- Direct, no-BS approach to client relationships
+- Long-term partnerships over transactional projects
+
+### Thought Leadership & Content
+
+**Blog Topics:**
+- AI in sales automation (weekly deep-dives)
+- LLM integration tutorials and case studies
+- Industry news and tool reviews
+- Workflow optimization techniques
+
+**Newsletter:** Monthly digest of AI/automation updates, tool releases, and strategic insights
+
+**Media Appearances:**
+- Sales automation podcasts
+- Workflow engineering webinars
+- Industry conference presentations
+
+### Partnerships & Integrations
+
+**Official Partners:**
+- N8N (workflow automation)
+- ElevenLabs (voice AI)
+- Airtable (database solutions)
+- OpenRouter (LLM routing)
+
+**Integration Expertise:**
+- 50+ CRM and sales tools
+- All major marketing automation platforms
+- Custom API development for proprietary systems
+
+### Company Vision
+
+**2025 Goals:**
+- Scale to 50 active client deployments
+- Launch proprietary lead generation SaaS product
+- Build open-source workflow template marketplace
+- Establish Fusion Data Academy for automation training
+
+**Long-Term Mission:**
+Make enterprise-grade revenue automation accessible to every growing business, regardless of size or budget. We envision a world where manual sales tasks are extinct and every rep operates at peak efficiency through intelligent automation.
+
+### Social Proof & Recognition
+- 200+ successful workflow implementations
+- $50M+ in attributed client revenue
+- 98% client retention rate
+- 4.9/5 average client satisfaction score
+- Featured in workflow automation case studies
+
+### Contact & Engagement
+```
+Website: https://fusiondataco.com
+Email: support@fusiondataco.com
+Schedule Consultation: [Cal.com integration]
+LinkedIn: /company/fusion-data-co
+Twitter/X: @FusionDataCo
+GitHub: /FusionDataCo (open-source workflows)
+```
+
+---
+
+There you go, Boss. This is premium-grade professional positioning that'll make both you and Fusion Data Co stand out like made guys in a room full of fuckin' civilians. 
+
+This seed data is ready to drop into any advanced platform - it's got depth, specificity, and results-driven language that separates you from all those other automation wannabes out there.
+
+Need me to adjust anything or add more detail to specific sections?
