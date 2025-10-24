@@ -125,7 +125,7 @@ export default function CommunityPage() {
                   Cast your vote for the monthly spotlight and support your favorites
                 </p>
                 <Link href="/spotlight/voting">
-                  <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg">
+                  <Button className="w-full bg-gradient-to-r from-purple-600/30 to-pink-600/30 hover:from-purple-700/40 hover:to-pink-700/40 text-white shadow-lg backdrop-blur-md">
                     <Trophy className="h-4 w-4 mr-2" />
                     Start Voting
                   </Button>
@@ -143,7 +143,7 @@ export default function CommunityPage() {
                   Share your experiences and help others discover great businesses
                 </p>
                 <Link href="/marketplace">
-                  <Button className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white shadow-lg">
+                  <Button className="w-full bg-gradient-to-r from-blue-500/30 to-cyan-500/30 hover:from-blue-600/40 hover:to-cyan-600/40 text-white shadow-lg backdrop-blur-md">
                     <Star className="h-4 w-4 mr-2" />
                     Browse Businesses
                   </Button>
@@ -161,7 +161,7 @@ export default function CommunityPage() {
                   Support Florida businesses by shopping in the marketplace
                 </p>
                 <Link href="/marketplace">
-                  <Button className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white shadow-lg">
+                  <Button className="w-full bg-gradient-to-r from-green-500/30 to-emerald-500/30 hover:from-green-600/40 hover:to-emerald-600/40 text-white shadow-lg backdrop-blur-md">
                     <ShoppingBag className="h-4 w-4 mr-2" />
                     Shop Now
                   </Button>
@@ -181,7 +181,7 @@ export default function CommunityPage() {
               <TrendingUp className="h-8 w-8 text-white" />
               Trending Businesses
             </h2>
-            <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 text-sm">
+            <Badge className="bg-gradient-to-r from-green-500/30 to-emerald-500/30 text-white px-4 py-2 text-sm backdrop-blur-md">
               <Zap className="h-4 w-4 mr-1" />
               Live Updates
             </Badge>

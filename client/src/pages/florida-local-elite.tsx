@@ -100,7 +100,7 @@ export default function FloridaLocalElite() {
       <div className="relative" style={{ zIndex: 10 }}>
 
       {/* 2. NEW HERO SECTION WITH VIDEO BACKGROUND - SCROLLS TO FRONT */}
-      <section className="relative overflow-hidden min-h-[700px] md:min-h-[850px] lg:min-h-[100vh] bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900" style={{ zIndex: 1000 }}>
+      <section className="relative overflow-hidden min-h-[700px] md:min-h-[850px] lg:min-h-[100vh] bg-gradient-to-br from-gray-900/20 via-blue-900/20 to-purple-900/20 backdrop-blur-sm" style={{ zIndex: 1000 }}>
         {/* Video Background - Trees Fountain Swans - Commented out to allow WebGL background */}
         {/* <div className="absolute inset-0 w-full h-full overflow-hidden" style={{ zIndex: 0 }}>
           <YouTubeBackground youtubeUrl="https://youtu.be/5RVvKpX9eBU" overlayOpacity={0.3} />
@@ -613,7 +613,7 @@ export default function FloridaLocalElite() {
             <Card className="p-8 flex flex-col items-center justify-center text-center rounded-3xl shadow-xl bg-white/95 backdrop-blur-sm">
               <div className="text-6xl mb-4">🍷</div>
               <h4 className="text-2xl font-bold mb-6">Reserve Your Table</h4>
-              <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 rounded-full text-lg">
+              <Button className="bg-gradient-to-r from-purple-600/30 to-pink-600/30 hover:from-purple-700/40 hover:to-pink-700/40 text-white px-8 py-6 rounded-full text-lg backdrop-blur-md">
                 Click Here to Reserve a Table Today!
               </Button>
             </Card>
@@ -654,7 +654,7 @@ export default function FloridaLocalElite() {
               </div>
             </Card>
             <div className="flex items-center justify-center">
-              <Button className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-xl px-12 py-8 rounded-full shadow-2xl">
+              <Button className="bg-gradient-to-r from-green-500/30 to-emerald-600/30 hover:from-green-600/40 hover:to-emerald-700/40 text-white text-xl px-12 py-8 rounded-full shadow-2xl backdrop-blur-md">
                 Book a Reservation Today
               </Button>
             </div>
@@ -678,7 +678,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 9. CENTRAL FLORIDA INSURANCE SCHOOL PROMOTION */}
-      <section className="py-12 lg:py-20 bg-gradient-to-br from-blue-600 to-blue-800 text-white">
+      <section className="py-12 lg:py-20 bg-gradient-to-br from-blue-600/20 to-blue-800/20 text-white backdrop-blur-sm">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto text-center">
             <h2 className="text-5xl font-bold mb-8">
@@ -726,7 +726,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 10. IPOWERMOVES LIVE PODCAST */}
-      <section className="py-12 lg:py-20 bg-gradient-to-br from-gray-900 to-blue-900 text-white relative overflow-hidden">
+      <section className="py-12 lg:py-20 bg-gradient-to-br from-gray-900/20 to-blue-900/20 text-white relative overflow-hidden backdrop-blur-sm">
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-10 text-4xl font-bold flex flex-wrap">
           {Array(20).fill("NEVER HUNT ALONE – Connect | Collaborate").map((text, i) => (
@@ -1279,7 +1279,7 @@ export default function FloridaLocalElite() {
       </section>
 
       {/* 21. DARK PURPLE ARTICLE LIST & FOOTER */}
-      <section className="py-12 lg:py-20 bg-gradient-to-r from-purple-900 to-indigo-900 text-white">
+      <section className="py-12 lg:py-20 bg-gradient-to-r from-purple-900/20 to-indigo-900/20 text-white backdrop-blur-sm">
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="grid md:grid-cols-2 gap-4">
             {[

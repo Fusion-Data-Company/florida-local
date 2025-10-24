@@ -106,7 +106,7 @@ export default function BusinessDashboard() {
   return (
     <div className="min-h-screen">
       {/* Hero Section with Business Info */}
-      <div className="relative bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 text-white overflow-hidden">
+      <div className="relative bg-gradient-to-r from-purple-600/20 via-blue-600/20 to-cyan-600/20 text-white overflow-hidden backdrop-blur-sm">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20"></div>
         <div className="container mx-auto px-4 py-12 relative z-10">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
@@ -242,7 +242,7 @@ export default function BusinessDashboard() {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="p-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500">
+                      <div className="p-3 rounded-full bg-gradient-to-r from-purple-500/30 to-pink-500/30 backdrop-blur-md">
                         <Sparkles className="h-6 w-6 text-white" />
                       </div>
                       <div>
@@ -252,14 +252,14 @@ export default function BusinessDashboard() {
                         </CardDescription>
                       </div>
                     </div>
-                    <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1">
+                    <Badge className="bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white px-3 py-1 backdrop-blur-md">
                       NEW
                     </Badge>
                   </div>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <Button
-                    className="w-full h-auto py-6 flex-col gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl transition-all"
+                    className="w-full h-auto py-6 flex-col gap-2 bg-gradient-to-r from-purple-600/30 to-pink-600/30 hover:from-purple-700/40 hover:to-pink-700/40 text-white shadow-lg hover:shadow-xl transition-all backdrop-blur-md"
                     size="lg"
                     onClick={() => window.location.href = '/ai/content-generator'}
                   >
@@ -341,7 +341,7 @@ export default function BusinessDashboard() {
                   </Button>
                 </Link>
                 <Link href="/ai/agents">
-                  <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white" size="lg">
+                  <Button className="w-full bg-gradient-to-r from-purple-600/30 to-blue-600/30 hover:from-purple-700/40 hover:to-blue-700/40 text-white backdrop-blur-md" size="lg">
                     <Bot className="mr-2 h-5 w-5" />
                     AI Agents
                     <Badge className="ml-2 bg-white/20 text-white">15</Badge>

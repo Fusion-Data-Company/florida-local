@@ -85,7 +85,7 @@ export default function BusinessAnalyticsPage() {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-6 shadow-lg">
+      <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-white py-6 shadow-lg backdrop-blur-sm">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="flex items-center gap-3">

@@ -451,7 +451,7 @@ export default function AIContentGenerator() {
                 <Button
                   onClick={handleGenerate}
                   disabled={generateMutation.isPending || !prompt.trim()}
-                  className="w-full h-12 text-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  className="w-full h-12 text-lg bg-gradient-to-r from-purple-600/30 to-pink-600/30 hover:from-purple-700/40 hover:to-pink-700/40 backdrop-blur-md"
                 >
                   {generateMutation.isPending ? (
                     <>

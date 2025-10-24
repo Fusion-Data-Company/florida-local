@@ -250,7 +250,7 @@ export default function GMBHub() {
                 size="lg"
                 onClick={() => connectMutation.mutate()}
                 disabled={connectMutation.isPending}
-                className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700"
+                className="bg-gradient-to-r from-blue-600/30 to-cyan-600/30 hover:from-blue-700/40 hover:to-cyan-700/40 backdrop-blur-md"
               >
                 {connectMutation.isPending ? (
                   <>

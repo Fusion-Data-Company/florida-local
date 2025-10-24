@@ -244,7 +244,7 @@ export default function MarketingHub() {
             </div>
             <Button
               size="lg"
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+              className="bg-gradient-to-r from-purple-600/30 to-pink-600/30 hover:from-purple-700/40 hover:to-pink-700/40 backdrop-blur-md"
             >
               <Plus className="h-5 w-5 mr-2" />
               Create Campaign

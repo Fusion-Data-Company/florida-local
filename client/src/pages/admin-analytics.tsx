@@ -39,7 +39,7 @@ export default function AdminAnalytics() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
       {/* Admin Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-6 shadow-lg">
+      <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-white py-6 shadow-lg backdrop-blur-sm">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
