@@ -158,7 +158,7 @@ export default function VideoBackground({
         />
       )}
 
-      <style jsx>{`
+      <style>{`
         @keyframes gradient-shift {
           0% {
             background-position: 0% 50%;
