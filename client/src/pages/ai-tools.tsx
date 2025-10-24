@@ -208,7 +208,7 @@ export default function AIToolsPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 items-center">
                 <Button 
-                  className="text-sm px-8 py-3 rounded-xl bg-white text-black border border-white/10 shadow-none hover:bg-white/90 transition-all duration-200 relative overflow-hidden group cyber-3d-lift"
+                  className="text-sm px-8 py-3 rounded-xl bg-white/30 text-white border border-white/10 shadow-none hover:bg-white/40 backdrop-blur-md transition-all duration-200 relative overflow-hidden group cyber-3d-lift"
                   onClick={() => setActiveTab('agents')}
                   data-testid="button-get-started"
                 >

@@ -37,7 +37,7 @@ export default function LoyaltyPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <TabsList className="grid w-full grid-cols-3 mb-8 h-auto p-2 bg-white dark:bg-slate-900 shadow-lg">
+            <TabsList className="grid w-full grid-cols-3 mb-8 h-auto p-2 bg-white/20 dark:bg-slate-900/30 shadow-lg backdrop-blur-md">
               <TabsTrigger
                 value="dashboard"
                 className="flex items-center gap-2 py-3 text-base data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white"

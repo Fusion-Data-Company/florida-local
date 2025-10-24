@@ -111,7 +111,7 @@ export default function FloridaLocalElite() {
 
       {/* 2. NEW HERO SECTION WITH VIDEO BACKGROUND - SCROLLS TO FRONT */}
       <section className="relative overflow-hidden min-h-[700px] md:min-h-[850px] lg:min-h-[100vh] bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900" style={{ zIndex: 1000 }}>
-        {/* Video Background - Trees Fountain Swans */}
+        {/* Video Background - Trees Fountain Swans - Commented out to allow WebGL background */}
         {/* <div className="absolute inset-0 w-full h-full overflow-hidden" style={{ zIndex: 0 }}>
           <YouTubeBackground youtubeUrl="https://youtu.be/5RVvKpX9eBU" overlayOpacity={0.3} />
         </div> */}

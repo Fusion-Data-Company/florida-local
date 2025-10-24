@@ -184,7 +184,7 @@ export default function VendorProductsPage() {
               <div className="col-span-full text-muted-foreground" data-testid="empty-products">No products yet. Create your first product!</div>
             ) : (
               products.map((product) => (
-                <Card key={product.id} className="vendor-product-card hover:shadow-lg transition-shadow relative bg-white/80 backdrop-blur-md" data-testid={`card-product-${product.id}`}>
+                <Card key={product.id} className="vendor-product-card hover:shadow-lg transition-shadow relative bg-white/30 backdrop-blur-md" data-testid={`card-product-${product.id}`}>
                   <CardHeader className="marble-content">
                     <CardTitle className="flex items-center justify-between">
                       <span className="truncate" data-testid={`text-product-name-${product.id}`}>{product.name}</span>

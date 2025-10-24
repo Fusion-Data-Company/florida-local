@@ -316,7 +316,7 @@ export default function BusinessDashboard() {
             <GMBStatusWidget businessId={Number(business.id)} variant="full" />
 
             {/* Quick Actions */}
-            <Card className="bg-white/80 backdrop-blur-md">
+            <Card className="bg-white/30 backdrop-blur-md">
               <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
                 <CardDescription>Manage your business day-to-day</CardDescription>
@@ -352,7 +352,7 @@ export default function BusinessDashboard() {
 
             {/* Recent Activity */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-white/80 backdrop-blur-md">
+              <Card className="bg-white/30 backdrop-blur-md">
                 <CardHeader>
                   <CardTitle>Recent Products</CardTitle>
                   <CardDescription>Your latest product listings</CardDescription>
@@ -387,7 +387,7 @@ export default function BusinessDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/80 backdrop-blur-md">
+              <Card className="bg-white/30 backdrop-blur-md">
                 <CardHeader>
                   <CardTitle>Recent Posts</CardTitle>
                   <CardDescription>Your latest social updates</CardDescription>
@@ -444,7 +444,7 @@ export default function BusinessDashboard() {
 
           {/* Products Tab */}
           <TabsContent value="products">
-            <Card className="bg-white/80 backdrop-blur-md">
+            <Card className="bg-white/30 backdrop-blur-md">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
@@ -509,7 +509,7 @@ export default function BusinessDashboard() {
 
           {/* Posts Tab */}
           <TabsContent value="posts">
-            <Card className="bg-white/80 backdrop-blur-md">
+            <Card className="bg-white/30 backdrop-blur-md">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>

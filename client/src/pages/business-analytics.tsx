@@ -53,7 +53,7 @@ export default function BusinessAnalyticsPage() {
     return (
       <div className="min-h-screen">
         <div className="flex items-center justify-center p-4 min-h-[80vh]">
-          <Card className="max-w-md w-full bg-white/90 backdrop-blur-md">
+          <Card className="max-w-md w-full bg-white/30 backdrop-blur-md">
           <CardHeader>
             <div className="flex items-center gap-3 mb-2">
               <Store className="h-8 w-8 text-blue-600" />
@@ -101,7 +101,7 @@ export default function BusinessAnalyticsPage() {
                   value={selectedBusinessId || ""}
                   onValueChange={setSelectedBusinessId}
                 >
-                  <SelectTrigger className="w-[250px] bg-white text-gray-900">
+                  <SelectTrigger className="w-[250px] bg-white/30 text-white backdrop-blur-md">
                     <SelectValue placeholder="Select a business" />
                   </SelectTrigger>
                   <SelectContent>

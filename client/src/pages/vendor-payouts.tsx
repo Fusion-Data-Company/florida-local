@@ -434,7 +434,7 @@ export default function VendorPayoutsPage() {
         </CardHeader>
         <CardContent className="marble-content">
           <Select value={selectedBusiness} onValueChange={setSelectedBusiness}>
-            <SelectTrigger className="w-full max-w-md bg-white/80 border-white/30" data-testid="select-business">
+            <SelectTrigger className="w-full max-w-md bg-white/30 border-white/30 backdrop-blur-md" data-testid="select-business">
               <SelectValue placeholder="Choose a business" />
             </SelectTrigger>
             <SelectContent>
@@ -628,7 +628,7 @@ export default function VendorPayoutsPage() {
                     >
                       <SelectTrigger 
                         id="payout-schedule" 
-                        className="bg-white/80 border-white/30"
+                        className="bg-white/30 border-white/30 backdrop-blur-md"
                         data-testid="payout-schedule"
                       >
                         <SelectValue />
@@ -679,7 +679,7 @@ export default function VendorPayoutsPage() {
                                   step="0.01"
                                   min="1"
                                   placeholder="100.00"
-                                  className="bg-white/80 border-white/30"
+                                  className="bg-white/30 border-white/30 backdrop-blur-md"
                                   data-testid="input-payout-amount"
                                   {...field}
                                 />
@@ -701,7 +701,7 @@ export default function VendorPayoutsPage() {
                                 <Input
                                   type="text"
                                   placeholder="Weekly payout"
-                                  className="bg-white/80 border-white/30"
+                                  className="bg-white/30 border-white/30 backdrop-blur-md"
                                   data-testid="input-payout-description"
                                   {...field}
                                 />
