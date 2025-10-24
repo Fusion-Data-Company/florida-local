@@ -9,13 +9,13 @@ import { Link } from "wouter";
 import { CtaCard } from "@/components/ui/call-to-action-cta";
 import SphereHero from "@/components/ui/geometric-sphere";
 import { HolographicCard } from "@/components/ui/holographic-card";
-// import YouTubeBackground from '@/components/youtube-background'; // Commented out to allow WebGL background
+import YouTubeBackground from '@/components/youtube-background';
 
 export default function CommunityPage() {
   return (
     <div className="min-h-screen relative">
-      {/* Video Background - Commented out to allow WebGL background */}
-      {/* <YouTubeBackground youtubeUrl="https://youtu.be/5xnaoI0cXjs" overlayOpacity={0.35} /> */}
+      {/* Video Background - Georgia Cityscape */}
+      <YouTubeBackground youtubeUrl="https://youtu.be/5xnaoI0cXjs" overlayOpacity={0.35} />
 
       <div className="relative z-10">
       {/* Geometric Sphere Hero Section */}
