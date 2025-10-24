@@ -61,11 +61,11 @@ function getContrastRatio(rgb1: [number, number, number], rgb2: [number, number,
   return (lighter + 0.05) / (darker + 0.05);
 }
 
-// Parse HSL string
+// Parse HSL string (supports decimal values like 27.5%)
 function parseHSL(hsl: string): [number, number, number] | null {
-  const match = hsl.match(/hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/);
+  const match = hsl.match(/hsl\((\d+\.?\d*),\s*(\d+\.?\d*)%,\s*(\d+\.?\d*)%\)/);
   if (!match) return null;
-  return [parseInt(match[1]), parseInt(match[2]), parseInt(match[3])];
+  return [parseFloat(match[1]), parseFloat(match[2]), parseFloat(match[3])];
 }
 
 // Analyze CSS variables
