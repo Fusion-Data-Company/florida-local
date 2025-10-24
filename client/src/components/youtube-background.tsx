@@ -14,6 +14,7 @@ export default function YouTubeBackground({
   const [videoId, setVideoId] = useState<string>('');
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
 
   useEffect(() => {
     // Extract video ID from YouTube URL
@@ -43,25 +44,24 @@ export default function YouTubeBackground({
     }
   }, [youtubeUrl]);
 
-  // YouTube embed URL with autoplay, loop, muted, no controls - optimized for backgrounds
+  // YouTube embed URL with visible controls for user interaction
   const embedUrl = useMemo(() => {
     if (!videoId) return '';
     
-    // Enhanced parameters for better background video experience
+    // Parameters for visible, interactive YouTube player
     const params = new URLSearchParams({
-      autoplay: '1',
-      mute: '1',
+      autoplay: '0', // Don't autoplay - let user click
+      mute: '0', // Allow sound when user plays
       loop: '1',
       playlist: videoId, // Required for loop to work
-      controls: '0',
-      showinfo: '0',
-      rel: '0',
-      modestbranding: '1',
+      controls: '1', // SHOW controls so users can click play
+      showinfo: '1', // Show video info
+      rel: '0', // Don't show related videos
+      modestbranding: '1', // Minimal YouTube branding
       playsinline: '1',
       enablejsapi: '1',
       iv_load_policy: '3', // Hide annotations
-      disablekb: '1', // Disable keyboard controls
-      fs: '0', // Hide fullscreen button
+      fs: '1', // Allow fullscreen
       origin: window.location.origin, // Security best practice
     });
     
@@ -103,25 +103,46 @@ export default function YouTubeBackground({
               width: '100vw',
               height: '100vh',
               objectFit: 'cover',
-              pointerEvents: 'none',
+              pointerEvents: 'auto', // Allow user interaction!
               border: 'none',
-              // Adjust positioning to ensure video fills the viewport
-              transform: 'scale(1.2)',
+              // Don't scale - show full player
+              transform: 'none',
               transformOrigin: 'center center',
             }}
-            allow="autoplay; encrypted-media"
-            allowFullScreen={false}
-            title="Background Video"
+            allow="autoplay; encrypted-media; fullscreen"
+            allowFullScreen={true}
+            title="Background Video - Click to Play"
             onLoad={handleIframeLoad}
             loading="lazy"
           />
           
-          {/* Additional overlay to ensure YouTube UI is hidden */}
+          {/* Click to play instruction overlay - hide after interaction */}
+          {!hasUserInteracted && (
+            <div 
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-10 text-center"
+              style={{
+                display: isLoading ? 'none' : 'block',
+              }}
+            >
+              <div className="bg-black/70 text-white px-6 py-4 rounded-lg backdrop-blur-sm animate-pulse">
+                <svg 
+                  className="w-16 h-16 mx-auto mb-2 opacity-80"
+                  fill="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+                <p className="text-lg font-semibold">Click to Play Background Video</p>
+                <p className="text-sm opacity-80 mt-1">Enhance your experience with video backgrounds</p>
+              </div>
+            </div>
+          )}
+          
+          {/* Invisible click detector to hide instructions */}
           <div 
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background: 'linear-gradient(to bottom, transparent 0%, transparent 70%, rgba(0,0,0,0.3) 100%)',
-            }}
+            className="absolute inset-0 z-5"
+            style={{ pointerEvents: hasUserInteracted ? 'none' : 'auto' }}
+            onClick={() => setHasUserInteracted(true)}
           />
         </>
       )}
