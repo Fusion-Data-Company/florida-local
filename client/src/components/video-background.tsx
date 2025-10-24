@@ -1,11 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 
-// Video file mapping for local videos in /Videos/ folder
+// Video sources mapping - now supports both YouTube URLs and local files
 const VIDEO_SOURCES = {
-  discover: '/Videos/discover-bg.mp4',
-  cityscape: '/Videos/cityscape-georgia-1.mp4',
-  jacksonville: '/Videos/Jacksonville-FL-bg.mp4',
-  fountain: '/Videos/Trees-Fountain-Trees-bg.mp4'
+  discover: 'https://youtu.be/Z8ioWqthS-o',
+  cityscape: 'https://youtu.be/5xnaoI0cXjs', 
+  jacksonville: 'https://youtu.be/I0qV37ezBJc',
+  fountain: 'https://youtu.be/5RVvKpX9eBU',
+  riga: 'https://youtu.be/3dKLJCz-T5Y'
 } as const;
 
 type VideoKey = keyof typeof VIDEO_SOURCES;
@@ -23,10 +24,10 @@ export default function VideoBackground({
   overlayOpacity = 0,
   randomize = false
 }: VideoBackgroundProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [hasError, setHasError] = useState(false);
   const [currentVideoSrc, setCurrentVideoSrc] = useState<string>('');
+  const [videoId, setVideoId] = useState<string>('');
+  const [hasError, setHasError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Initialize video source on mount
   useEffect(() => {
@@ -50,58 +51,82 @@ export default function VideoBackground({
     console.log('🎬 Video source selected:', selectedSrc);
   }, [videoSrc, videoKey, randomize]);
 
+  // Extract YouTube video ID from URL
   useEffect(() => {
     if (!currentVideoSrc) return;
     
-    const video = videoRef.current;
-    if (!video) return;
-
-    const handleCanPlay = () => {
-      console.log('✅ Video can play:', currentVideoSrc);
-      setIsLoaded(true);
-      setHasError(false);
-      // Attempt to play with error handling
-      video.play().catch(err => {
-        console.warn('Video autoplay prevented:', err);
-        // Try muted autoplay as fallback
-        video.muted = true;
-        video.play().catch(e => console.error('Video play failed:', e));
-      });
-    };
-
-    const handleError = (e: Event) => {
-      console.warn('❌ Video failed to load (using fallback background):', currentVideoSrc, e);
+    try {
+      setIsLoading(true);
+      
+      // Check if it's a YouTube URL
+      if (currentVideoSrc.includes('youtu.be') || currentVideoSrc.includes('youtube.com')) {
+        const url = new URL(currentVideoSrc);
+        let id = '';
+        
+        if (url.hostname === 'youtu.be') {
+          id = url.pathname.slice(1);
+        } else if (url.hostname.includes('youtube.com')) {
+          id = url.searchParams.get('v') || '';
+        }
+        
+        if (id) {
+          setVideoId(id);
+          setHasError(false);
+          console.log('✅ YouTube video ID extracted:', id);
+        } else {
+          throw new Error('Invalid YouTube URL');
+        }
+      } else {
+        // Not a YouTube URL - treat as local file (legacy support)
+        setVideoId('');
+        console.log('📁 Using local video file:', currentVideoSrc);
+      }
+    } catch (error) {
+      console.error('❌ Failed to process video URL:', currentVideoSrc, error);
       setHasError(true);
-      setIsLoaded(false);
-    };
-
-    const handleLoadStart = () => {
-      console.log('⏳ Loading video:', currentVideoSrc);
-      setIsLoaded(false);
-      setHasError(false);
-    };
-
-    video.addEventListener('loadstart', handleLoadStart);
-    video.addEventListener('canplay', handleCanPlay);
-    video.addEventListener('error', handleError);
-
-    // Force reload the video source
-    video.load();
-
-    return () => {
-      video.removeEventListener('loadstart', handleLoadStart);
-      video.removeEventListener('canplay', handleCanPlay);
-      video.removeEventListener('error', handleError);
-    };
+    } finally {
+      setIsLoading(false);
+    }
   }, [currentVideoSrc]);
+
+  // YouTube embed URL with autoplay, loop, muted, no controls - optimized for backgrounds
+  const embedUrl = useMemo(() => {
+    if (!videoId) return '';
+    
+    // Enhanced parameters for better background video experience
+    const params = new URLSearchParams({
+      autoplay: '1',
+      mute: '1',
+      loop: '1',
+      playlist: videoId, // Required for loop to work
+      controls: '0',
+      showinfo: '0',
+      rel: '0',
+      modestbranding: '1',
+      playsinline: '1',
+      enablejsapi: '1',
+      iv_load_policy: '3', // Hide annotations
+      disablekb: '1', // Disable keyboard controls
+      fs: '0', // Hide fullscreen button
+      origin: window.location.origin, // Security best practice
+    });
+    
+    return `https://www.youtube.com/embed/${videoId}?${params.toString()}`;
+  }, [videoId]);
+
+  // Handle iframe load events
+  const handleIframeLoad = () => {
+    console.log('✅ YouTube iframe loaded successfully for video:', videoId);
+    setIsLoading(false);
+  };
 
   return (
     <div
       className="video-overlay-passthrough fixed inset-0 w-full h-full overflow-hidden"
       style={{ zIndex: 0 }}
     >
-      {/* Fallback gradient background when video unavailable (production without Videos folder) */}
-      {(hasError || !currentVideoSrc) && (
+      {/* Loading/Fallback gradient background */}
+      {(hasError || (!videoId && !currentVideoSrc) || isLoading) && (
         <div
           className="absolute inset-0 w-full h-full"
           style={{
@@ -112,52 +137,49 @@ export default function VideoBackground({
         />
       )}
       
-      {/* Video - Optimized for web with preload and compression hints */}
-      {!hasError && currentVideoSrc && (
-        <video
-          ref={videoRef}
-          key={currentVideoSrc} // Force re-render when source changes
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
-            isLoaded ? 'opacity-100' : 'opacity-0'
-          }`}
-          style={{
-            objectPosition: 'center',
-            filter: 'brightness(1.0)',
-            transition: 'opacity 0.5s ease-in-out',
-            pointerEvents: 'none' // Ensure video doesn't capture mouse events
-          }}
-        >
-          <source src={currentVideoSrc} type="video/mp4" />
-          <source src={currentVideoSrc} type="video/quicktime" />
-          Your browser does not support the video tag.
-        </video>
+      {/* YouTube iframe for YouTube URLs */}
+      {!hasError && videoId && (
+        <>
+          <iframe
+            src={embedUrl}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+              isLoading ? 'opacity-0' : 'opacity-100'
+            }`}
+            style={{
+              width: '100vw',
+              height: '100vh',
+              objectFit: 'cover',
+              pointerEvents: 'none',
+              border: 'none',
+              // Scale up to fill screen and hide YouTube UI elements
+              transform: 'scale(1.5)',
+              transformOrigin: 'center',
+            }}
+            allow="autoplay; encrypted-media"
+            allowFullScreen={false}
+            title="Background Video"
+            onLoad={handleIframeLoad}
+            loading="lazy"
+          />
+          
+          {/* Additional overlay to ensure YouTube UI is hidden */}
+          <div 
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: 'linear-gradient(to bottom, transparent 0%, transparent 70%, rgba(0,0,0,0.3) 100%)',
+            }}
+          />
+        </>
       )}
 
-      {/* Loading state with animated gradient while video loads */}
-      {!isLoaded && !hasError && currentVideoSrc && (
-        <div
-          className="absolute inset-0 w-full h-full"
-          style={{
-            background: 'linear-gradient(135deg, #1a5f7a 0%, #0a2540 50%, #1a5f7a 100%)',
-            backgroundSize: '200% 200%',
-            animation: 'gradient-shift 15s ease infinite',
-          }}
-        />
-      )}
-
-      {/* Optional overlay - disabled for night video */}
+      {/* Optional overlay for darkening */}
       {overlayOpacity > 0 && (
         <div
           className="absolute inset-0 bg-black pointer-events-none"
           style={{ opacity: overlayOpacity }}
         />
       )}
-
+      
       <style>{`
         @keyframes gradient-shift {
           0% {
