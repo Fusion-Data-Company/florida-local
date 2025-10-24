@@ -422,15 +422,15 @@
   --popover: hsl(0, 0%, 15%);
   --popover-foreground: hsl(36, 25%, 96%);
   --primary: hsl(180, 100%, 40%);  /* Brightened Teal Lagoon */
-  --primary-foreground: hsl(36, 25%, 96%);
+  --primary-foreground: hsl(0, 0%, 10%);  /* Dark text for contrast (was cream) */
   --secondary: hsl(45, 95%, 65%);  /* Brightened Sunset Gold */
   --secondary-foreground: hsl(0, 0%, 10%);
   --muted: hsl(0, 0%, 20%);
   --muted-foreground: hsl(36, 20%, 70%);
   --accent: hsl(30, 55%, 60%);  /* Brightened Florida Bronze */
-  --accent-foreground: hsl(36, 25%, 96%);
+  --accent-foreground: hsl(0, 0%, 10%);  /* Dark text for contrast (was cream) */
   --destructive: hsl(0, 70%, 55%);
-  --destructive-foreground: hsl(36, 25%, 96%);
+  --destructive-foreground: hsl(0, 0%, 0%);  /* Pure black for WCAG AA compliance (was cream) */
   --border: hsl(0, 0%, 25%);
   --input: hsl(0, 0%, 18%);
   --ring: hsl(180, 100%, 40%);
