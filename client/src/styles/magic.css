@@ -77,6 +77,9 @@ body.has-video-bg .abstract-bg {
               0 2px 6px rgba(0,0,0,0.1);
   position: relative;
   overflow: hidden;
+  /* Force dark text for readability on light metallic backgrounds */
+  color: hsl(220, 15%, 15%) !important;
+  font-weight: 500;
 }
 
 .metallic-gold {
@@ -87,6 +90,9 @@ body.has-video-bg .abstract-bg {
               0 2px 6px rgba(197,160,40,0.2);
   position: relative;
   overflow: hidden;
+  /* Force dark text for readability on light gold backgrounds */
+  color: hsl(220, 15%, 15%) !important;
+  font-weight: 500;
 }
 
 .metallic-bronze {
@@ -97,6 +103,9 @@ body.has-video-bg .abstract-bg {
               0 2px 6px rgba(168,105,50,0.2);
   position: relative;
   overflow: hidden;
+  /* Force dark text for readability on light bronze backgrounds */
+  color: hsl(220, 15%, 15%) !important;
+  font-weight: 500;
 }
 
 .metallic-teal {
@@ -107,6 +116,9 @@ body.has-video-bg .abstract-bg {
               0 2px 6px rgba(0,107,107,0.2);
   position: relative;
   overflow: hidden;
+  /* Mix of dark text for light areas */
+  color: hsl(220, 15%, 15%) !important;
+  font-weight: 500;
 }
 
 .brushed-aluminum {
@@ -118,6 +130,9 @@ body.has-video-bg .abstract-bg {
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.8),
               0 4px 12px rgba(0,0,0,0.12);
   animation: brushed-shimmer 3s linear infinite;
+  /* Force dark text for readability on light aluminum backgrounds */
+  color: hsl(220, 15%, 15%) !important;
+  font-weight: 500;
 }
 
 @keyframes brushed-shimmer {
@@ -180,6 +195,9 @@ body.has-video-bg .abstract-bg {
   border: 1px solid rgba(255,255,255,0.3);
   box-shadow: 0 10px 30px rgba(0,0,0,0.1),
               inset 0 1px 0 rgba(255,255,255,0.5);
+  /* Force light text for glass on potentially dark backgrounds */
+  color: hsl(0, 0%, 95%);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .glass-section-overlay {
@@ -189,18 +207,27 @@ body.has-video-bg .abstract-bg {
     rgba(0,0,0,0.05) 100%);
   backdrop-filter: blur(40px) saturate(120%);
   -webkit-backdrop-filter: blur(40px) saturate(120%);
+  /* Light text for dark-tinted glass */
+  color: hsl(0, 0%, 95%);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .glass-tint-light {
   background: rgba(0,0,0,0.15);
   backdrop-filter: blur(40px) saturate(110%);
   -webkit-backdrop-filter: blur(40px) saturate(110%);
+  /* Light text for dark-tinted glass */
+  color: hsl(0, 0%, 95%);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .glass-tint-medium {
   background: rgba(255,255,255,0.25);
   backdrop-filter: blur(30px) saturate(120%);
   -webkit-backdrop-filter: blur(30px) saturate(120%);
+  /* Adaptive text for medium-tinted glass */
+  color: hsl(220, 15%, 15%);
+  font-weight: 500;
 }
 
 .frosted-panel {
@@ -211,6 +238,9 @@ body.has-video-bg .abstract-bg {
   -webkit-backdrop-filter: blur(20px) saturate(130%);
   border: 1px solid rgba(255,255,255,0.5) !important;
   box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important;
+  /* Dark text for light frosted backgrounds */
+  color: hsl(220, 15%, 15%) !important;
+  font-weight: 500;
 }
 
 /* LED & GLOW EFFECTS */
@@ -523,7 +553,9 @@ body.has-video-bg .abstract-bg {
 /* LEGACY STYLES (kept for compatibility) */
 .badge-metallic {
   background: linear-gradient(135deg,#9aa4a6,#dde2e6 40%,#a3adb2 60%,#dfe5e8);
-  color:#0f172a; border:1px solid rgba(255,255,255,0.5);
+  color: hsl(220, 15%, 15%) !important; /* Dark text for light metallic badge */
+  font-weight: 600 !important;
+  border:1px solid rgba(255,255,255,0.5);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 6px 18px rgba(0,0,0,0.15);
   position: relative; overflow: hidden;
 }
@@ -540,6 +572,9 @@ body.has-video-bg .abstract-bg {
   backdrop-filter: saturate(180%) blur(18px);
   border:1px solid rgba(255,255,255,0.6);
   box-shadow: 0 10px 30px rgba(2,6,23,0.15), inset 0 1px 0 rgba(255,255,255,0.9);
+  /* Dark text for light glass backgrounds */
+  color: hsl(220, 15%, 15%) !important;
+  font-weight: 500;
 }
 
 .btn-magic {

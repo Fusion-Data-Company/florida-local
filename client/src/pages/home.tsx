@@ -36,16 +36,14 @@ import beachWedding3 from "@/assets/stock_images/beach_wedding_ceremo_59009157.j
 import luxurySpa1 from "@/assets/stock_images/luxury_spa_wellness__78221b18.jpg";
 import luxurySpa2 from "@/assets/stock_images/luxury_wellness_spa__482737df.jpg";
 import luxurySpa3 from "@/assets/stock_images/luxury_wellness_spa__8f194a3c.jpg";
+import beachBg from "@/assets/stock_images/sunset_beach_ocean_w_beac4e3b.jpg";
 
 export default function Home() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const [, setLocation] = useLocation();
 
-  // Add class to body to indicate video background
-  useEffect(() => {
-    document.body.classList.add('has-video-bg');
-    return () => document.body.classList.remove('has-video-bg');
-  }, []);
+  // Beach background - no special body class needed
+  // (removed has-video-bg class that was blocking image backgrounds)
 
   // Fetch user businesses for dynamic button behavior
   const { data: userBusinesses = [] } = useQuery<Business[]>({
@@ -81,10 +79,21 @@ export default function Home() {
       {/* ULTRA PREMIUM EFFECTS */}
       {/* <AuroraAmbient intensity="medium" /> */}
 
-      {/* SHADER ANIMATION HERO */}
-      <div className="relative flex h-[650px] w-full flex-col items-center justify-center overflow-hidden" style={{ zIndex: 10 }}>
-        <ShaderAnimation/>
-        <span className="absolute pointer-events-none z-10 text-center text-7xl leading-none font-semibold tracking-tighter whitespace-pre-wrap text-white">
+      {/* BEACH BACKGROUND HERO */}
+      <div
+        className="relative flex h-[650px] w-full flex-col items-center justify-center overflow-hidden"
+        style={{
+          zIndex: 10,
+          backgroundImage: `url(${beachBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed'
+        }}
+      >
+        {/* Dark overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/50 via-slate-800/40 to-slate-900/50" />
+
+        <span className="absolute pointer-events-none z-10 text-center text-7xl leading-none font-semibold tracking-tighter whitespace-pre-wrap text-white drop-shadow-2xl">
           {userBusinesses[0]?.name ? `Discover ${userBusinesses[0].name}` : (user ? `Welcome, ${user.firstName || user.email}` : 'Discover The Florida Local')}
         </span>
       </div>
@@ -277,14 +286,11 @@ export default function Home() {
           <MarketplaceSection />
         </Parallax>
 
-        {/* Community Activity Section with White Overlay */}
+        {/* Community Activity Section */}
         <Parallax speed={-28}>
-          <section className="relative py-12">
-          <div className="absolute inset-0 bg-white/90"></div>
-          <div className="relative z-10">
+          <div className="relative mt-16">
             <SocialFeed />
           </div>
-          </section>
         </Parallax>
       </div>
 

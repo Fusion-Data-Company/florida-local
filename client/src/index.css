@@ -304,6 +304,177 @@
     text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
     font-weight: 700;
   }
+
+  /* ========================================================================
+     READABILITY & CONTRAST UTILITIES
+     Ensures all text has minimum WCAG AA contrast ratio (4.5:1)
+     ======================================================================== */
+
+  /* Adaptive text colors for different background types */
+  .text-adaptive-light {
+    color: hsl(220, 15%, 15%) !important; /* Dark text for light backgrounds */
+    text-shadow: none !important;
+  }
+
+  .text-adaptive-dark {
+    color: hsl(36, 30%, 98%) !important; /* Light text for dark backgrounds */
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
+  }
+
+  .text-readable-always {
+    color: hsl(220, 15%, 15%) !important; /* Ensures 4.5:1 minimum contrast */
+    font-weight: 500 !important;
+  }
+
+  .text-glass-safe {
+    color: hsl(220, 15%, 20%) !important; /* Dark text for glass/transparent backgrounds */
+    font-weight: 500 !important;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5) !important;
+  }
+
+  .text-glass-safe-dark {
+    color: hsl(0, 0%, 95%) !important; /* Light text for dark glass backgrounds */
+    font-weight: 500 !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7) !important;
+  }
+
+  /* Enhanced shadows for better readability */
+  .shadow-readable {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+  }
+
+  .shadow-readable-light {
+    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.8), 0 2px 6px rgba(255, 255, 255, 0.6) !important;
+  }
+
+  /* Muted text with better contrast */
+  .text-muted-readable {
+    color: hsl(220, 10%, 35%) !important; /* Darker than default muted-foreground */
+  }
+
+  .text-muted-readable-dark {
+    color: hsl(36, 20%, 80%) !important; /* Lighter for dark mode */
+  }
+
+  /* Force contrast for specific scenarios */
+  .text-force-dark {
+    color: hsl(0, 0%, 10%) !important;
+    font-weight: 500 !important;
+  }
+
+  .text-force-light {
+    color: hsl(0, 0%, 98%) !important;
+    font-weight: 500 !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
+  }
+
+  /* Gradient text with fallback for readability */
+  .text-gradient-safe {
+    background: linear-gradient(135deg, #008B8B 0%, #d4af37 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+  }
+
+  /* Fallback for browsers that don't support background-clip: text */
+  @supports not (-webkit-background-clip: text) {
+    .text-gradient-safe {
+      color: hsl(180, 100%, 27.5%) !important;
+    }
+  }
+
+  /* Card text readability */
+  .card-text-readable {
+    color: hsl(220, 15%, 15%) !important;
+  }
+
+  .card-text-readable h1,
+  .card-text-readable h2,
+  .card-text-readable h3,
+  .card-text-readable h4,
+  .card-text-readable h5,
+  .card-text-readable h6 {
+    color: hsl(220, 15%, 10%) !important;
+    font-weight: 600 !important;
+  }
+
+  .card-text-readable p {
+    color: hsl(220, 10%, 25%) !important;
+  }
+
+  .card-text-readable .muted {
+    color: hsl(220, 10%, 40%) !important;
+  }
+
+  /* Form text readability */
+  .form-label-readable {
+    color: hsl(220, 15%, 15%) !important;
+    font-weight: 600 !important;
+  }
+
+  .form-input-readable::placeholder {
+    color: hsl(220, 10%, 50%) !important;
+    opacity: 1 !important;
+  }
+
+  /* Link text with better contrast */
+  .link-readable {
+    color: hsl(180, 100%, 25%) !important; /* Darker teal for better contrast */
+    text-decoration: underline;
+    text-decoration-color: hsl(180, 100%, 25%, 0.3);
+  }
+
+  .link-readable:hover {
+    color: hsl(180, 100%, 20%) !important;
+    text-decoration-color: hsl(180, 100%, 20%) !important;
+  }
+
+  /* Badge text readability */
+  .badge-text-readable {
+    color: hsl(220, 15%, 15%) !important;
+    font-weight: 600 !important;
+  }
+
+  /* Navigation text readability */
+  .nav-text-readable {
+    color: hsl(0, 0%, 95%) !important;
+    font-weight: 500 !important;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8), 0 1px 3px rgba(0, 0, 0, 0.6) !important;
+  }
+
+  /* Footer text readability */
+  .footer-text-readable {
+    color: hsl(220, 15%, 20%) !important;
+  }
+
+  .footer-link-readable {
+    color: hsl(220, 15%, 30%) !important;
+  }
+
+  .footer-link-readable:hover {
+    color: hsl(180, 100%, 25%) !important;
+  }
+
+  /* Table text readability */
+  .table-text-readable th {
+    color: hsl(220, 15%, 10%) !important;
+    font-weight: 700 !important;
+  }
+
+  .table-text-readable td {
+    color: hsl(220, 10%, 20%) !important;
+  }
+
+  /* Dropdown menu text readability */
+  .dropdown-text-readable {
+    color: hsl(220, 15%, 15%) !important;
+  }
+
+  .dropdown-text-readable:hover {
+    color: hsl(180, 100%, 25%) !important;
+    background: hsl(180, 100%, 95%) !important;
+  }
 }
 
 :root {
@@ -500,6 +671,146 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  /* ========================================================================
+     GLOBAL READABILITY IMPROVEMENTS
+     Ensures all UI elements have readable text
+     ======================================================================== */
+
+  /* Cards with glass/transparent backgrounds */
+  .card,
+  [class*="glass-panel"],
+  [class*="glass-card"],
+  [class*="frosted"] {
+    color: var(--foreground);
+  }
+
+  /* Ensure muted text is readable - override default */
+  .text-muted-foreground {
+    color: hsl(220, 10%, 35%) !important;
+  }
+
+  .dark .text-muted-foreground {
+    color: hsl(36, 20%, 75%) !important;
+  }
+
+  /* Form inputs and labels */
+  label,
+  [class*="form-label"] {
+    color: var(--foreground);
+    font-weight: 500;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: hsl(220, 10%, 50%);
+    opacity: 1;
+  }
+
+  .dark input::placeholder,
+  .dark textarea::placeholder {
+    color: hsl(36, 20%, 65%);
+    opacity: 1;
+  }
+
+  /* Tables */
+  th {
+    color: var(--foreground);
+    font-weight: 700;
+  }
+
+  td {
+    color: var(--foreground);
+  }
+
+  /* Buttons - ensure text is always readable */
+  button {
+    font-weight: 500;
+  }
+
+  /* Badge text */
+  .badge,
+  [class*="badge"] {
+    font-weight: 600;
+  }
+
+  /* Links */
+  a:not([class*="button"]):not([class*="btn"]) {
+    color: hsl(180, 100%, 25%);
+  }
+
+  a:not([class*="button"]):not([class*="btn"]):hover {
+    color: hsl(180, 100%, 20%);
+  }
+
+  .dark a:not([class*="button"]):not([class*="btn"]) {
+    color: hsl(180, 100%, 45%);
+  }
+
+  .dark a:not([class*="button"]):not([class*="btn"]):hover {
+    color: hsl(180, 100%, 50%);
+  }
+
+  /* CRITICAL FIX: text-white on backdrop-blur with light backgrounds */
+  /* Force strong text-shadow on ALL text-white elements */
+  .text-white {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8), 0 1px 4px rgba(0, 0, 0, 0.6), 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+  }
+
+  /* Buttons with text-white and backdrop-blur MUST have strong shadows */
+  .text-white button,
+  .text-white [role="button"],
+  .text-white a,
+  button.text-white,
+  [role="button"].text-white,
+  a.text-white {
+    text-shadow: 0 3px 10px rgba(0, 0, 0, 0.9), 0 2px 6px rgba(0, 0, 0, 0.7), 0 5px 15px rgba(0, 0, 0, 0.6) !important;
+    font-weight: 600 !important;
+  }
+
+  /* Sections with text-white and backdrop-blur */
+  .text-white section,
+  .text-white div,
+  section.text-white,
+  div.text-white {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8), 0 1px 4px rgba(0, 0, 0, 0.6) !important;
+  }
+
+  /* Headings with text-white need extra strong shadows */
+  .text-white h1,
+  .text-white h2,
+  .text-white h3,
+  .text-white h4,
+  .text-white h5,
+  .text-white h6,
+  h1.text-white,
+  h2.text-white,
+  h3.text-white,
+  h4.text-white,
+  h5.text-white,
+  h6.text-white {
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.9), 0 2px 8px rgba(0, 0, 0, 0.7), 0 6px 20px rgba(0, 0, 0, 0.6) !important;
+    font-weight: 700 !important;
+  }
+
+  /* Placeholder text on light backgrounds */
+  .text-white input::placeholder,
+  .text-white textarea::placeholder,
+  input.text-white::placeholder,
+  textarea.text-white::placeholder {
+    color: hsl(0, 0%, 20%) !important;
+    opacity: 0.8 !important;
+    text-shadow: none !important;
+  }
+
+  /* Badges with backdrop-blur */
+  .text-white .badge,
+  .text-white [class*="Badge"],
+  .badge.text-white,
+  [class*="Badge"].text-white {
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8), 0 1px 3px rgba(0, 0, 0, 0.6) !important;
+    font-weight: 700 !important;
   }
 
   /* Navigation and headers must be on top */

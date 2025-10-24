@@ -101,7 +101,7 @@ export default function BusinessAnalyticsPage() {
                   value={selectedBusinessId || ""}
                   onValueChange={setSelectedBusinessId}
                 >
-                  <SelectTrigger className="w-[250px] bg-white/30 text-white backdrop-blur-md">
+                  <SelectTrigger className="w-[250px] bg-black/40 text-white backdrop-blur-md" style={{textShadow: '0 2px 6px rgba(0, 0, 0, 0.8)'}}>
                     <SelectValue placeholder="Select a business" />
                   </SelectTrigger>
                   <SelectContent>

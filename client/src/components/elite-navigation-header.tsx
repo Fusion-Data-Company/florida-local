@@ -88,9 +88,8 @@ export default function EliteNavigationHeader() {
                     <Link
                       key={item.href}
                       href={item.href}
-                      className={`elite-nav-item ${isActivePath(item.href) ? 'elite-nav-active' : ''}`}
+                      className={`elite-nav-item ${isActivePath(item.href) ? 'elite-nav-active' : ''} nav-text-readable`}
                       data-testid={item.testId}
-                      style={{ color: 'white', textShadow: '0 2px 4px rgba(0, 0, 0, 0.8)' }}
                     >
                       <IconComponent />
                       <span>{item.label}</span>
@@ -100,12 +99,12 @@ export default function EliteNavigationHeader() {
 
                 {/* BUSINESS DROPDOWN - FIXED SIZE */}
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="elite-nav-item" style={{ gap: '6px', color: 'white', textShadow: '0 2px 4px rgba(0, 0, 0, 0.8)' }}>
+                  <DropdownMenuTrigger className="elite-nav-item nav-text-readable" style={{ gap: '6px' }}>
                     <Building2 style={{ width: '18px', height: '18px' }} />
                     <span>Business</span>
                     <ChevronDown style={{ width: '14px', height: '14px', marginLeft: '-2px' }} />
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="elite-glass-dropdown w-52" style={{
+                  <DropdownMenuContent className="elite-glass-dropdown dropdown-text-readable w-52" style={{
                     background: 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.88) 100%)',
                     backdropFilter: 'blur(20px) saturate(180%)',
                     border: '1px solid rgba(0, 139, 139, 0.2)',
@@ -315,7 +314,7 @@ export default function EliteNavigationHeader() {
                         </Avatar>
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="elite-glass-dropdown w-52" style={{
+                    <DropdownMenuContent className="elite-glass-dropdown dropdown-text-readable w-52" style={{
                       background: 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.88) 100%)',
                       backdropFilter: 'blur(20px) saturate(180%)',
                       border: '1px solid rgba(0, 139, 139, 0.2)',

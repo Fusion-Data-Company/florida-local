@@ -131,7 +131,8 @@ const CtaCard = React.forwardRef<HTMLDivElement, CtaCardProps>(
                 placeholder={inputPlaceholder}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="h-14 flex-grow border-2 border-white/30 bg-white/15 backdrop-blur-xl text-white placeholder:text-white/70 focus:ring-2 focus:ring-[#d4af37]/60 focus:border-[#d4af37]/50 focus:ring-offset-0 transition-all duration-300 shadow-[0_4px_16px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.2)] hover:bg-white/20 hover:border-white/40 text-base font-semibold rounded-xl"
+                className="h-14 flex-grow border-2 border-white/30 bg-black/40 backdrop-blur-xl text-white placeholder:text-gray-300 focus:ring-2 focus:ring-[#d4af37]/60 focus:border-[#d4af37]/50 focus:ring-offset-0 transition-all duration-300 shadow-[0_4px_16px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.2)] hover:bg-black/50 hover:border-white/40 text-base font-semibold rounded-xl"
+                style={{textShadow: '0 2px 6px rgba(0, 0, 0, 0.8)'}}
                 aria-label={inputPlaceholder}
                 required
               />

@@ -83,16 +83,14 @@ export default function SocialFeed() {
   };
 
   return (
-    <section className="elite-feed-section py-20">
-      {/* Glass Filter for Liquid Glass Effect */}
-      <GlassFilter />
-
+    <section className="elite-feed-section py-20" style={{ background: 'transparent', backgroundColor: 'transparent' }}>
       <div className="container mx-auto px-4 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16 entrance-fade-up">
             <LiquidGlassHeaderCard
               title="Community Activity"
               subtitle="Stay connected with what's happening in your local business community. See updates, celebrate successes, and discover opportunities."
+              withDarkTint={false}
             />
           </div>
 

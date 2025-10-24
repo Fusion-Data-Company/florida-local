@@ -78,26 +78,27 @@ export default function MarketplaceSection() {
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         {/* Liquid Glass Header Card */}
-        <div className="max-w-4xl mx-auto mb-16 entrance-fade-up">
+        <div className="max-w-6xl mx-auto mb-16 entrance-fade-up">
           <LiquidGlassHeaderCard
             title="Local Marketplace"
             subtitle="Discover unique products and services from Florida's most innovative businesses. Support local entrepreneurs while finding exactly what you need."
           />
         </div>
 
-        <div className="flex flex-col lg:flex-row items-center justify-between mb-16">
-          <div className="lg:w-1/2 mb-8 lg:mb-0">
-            <Link href="/marketplace">
-              <button className="metallic-chrome px-12 py-6 rounded-3xl shine-sweep-hover apple-hover-depth metallic-button-press transition-all duration-300 hover:shadow-2xl">
-                <div className="flex items-center text-gray-900 text-lg font-semibold">
-                  <ShoppingBag className="h-5 w-5 mr-3" />
-                  <span>Explore Marketplace</span>
-                </div>
-              </button>
-            </Link>
-          </div>
-          
-          <div className="lg:w-1/2">
+        <div className="max-w-6xl mx-auto mb-16">
+          <div className="flex flex-col lg:flex-row items-stretch gap-8">
+            <div className="lg:w-auto flex items-center justify-center lg:justify-start">
+              <Link href="/marketplace">
+                <button className="metallic-chrome px-12 py-6 rounded-3xl shine-sweep-hover apple-hover-depth metallic-button-press transition-all duration-300 hover:shadow-2xl w-full lg:w-auto">
+                  <div className="flex items-center text-gray-900 text-lg font-semibold">
+                    <ShoppingBag className="h-5 w-5 mr-3" />
+                    <span>Explore Marketplace</span>
+                  </div>
+                </button>
+              </Link>
+            </div>
+
+            <div className="flex-1">
             {/* Premium Search and Filter Bar - ELITE LUXURY TRANSFORMATION */}
             <div className="search-panel-container premium-search-panel rounded-2xl p-8 transition-all duration-300 entrance-fade-up stagger-3 mouse-spotlight elevation-2">
               <div className="relative z-10">
@@ -247,19 +248,20 @@ export default function MarketplaceSection() {
                 </div>
               </div>
             </div>
+            </div>
           </div>
         </div>
 
         {/* Live Search Results (Top Matches) */}
         {searchData?.items && (debouncedQuery || categories.length || selectedCategory || minPrice || maxPrice || minRating || inStock || isDigital || tags.length) ? (
-          <div className="mb-12">
-            <div className="miami-section-header mb-6 flex items-center justify-between">
+          <div className="max-w-6xl mx-auto mb-16">
+            <div className="miami-section-header mb-8 flex items-center justify-between">
               <h3 className="text-2xl font-serif font-bold text-white">Top Matches</h3>
               <Link href={`/marketplace?${searchParams.toString()}`}>
                 <Button variant="outline" className="btn-magic">See all ({searchData?.total || 0})</Button>
               </Link>
             </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {searchData.items.slice(0, pageSize).map((product: Product, index: number) => (
                 <MagicEliteProductCard key={product.id} product={product} index={index} />
               ))}
@@ -268,14 +270,15 @@ export default function MarketplaceSection() {
         ) : null}
 
         {/* Miami Elite Featured Products Grid */}
-        <div className="max-w-3xl mx-auto mb-12 entrance-fade-up">
-          <LiquidGlassHeaderCard
-            title="Featured Products"
-            subtitle=""
-            className="py-4"
-          />
-        </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-12 entrance-fade-up">
+            <LiquidGlassHeaderCard
+              title="Featured Products"
+              subtitle=""
+              className="py-4"
+            />
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {isLoading ? (
             // Loading skeletons
             [...Array(4)].map((_, i) => (
@@ -302,6 +305,7 @@ export default function MarketplaceSection() {
               </p>
             </div>
           )}
+          </div>
         </div>
       </div>
     </section>

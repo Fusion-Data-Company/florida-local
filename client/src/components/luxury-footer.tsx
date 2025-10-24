@@ -101,8 +101,8 @@ export default function LuxuryFooter() {
                 </h2>
               </div>
             </div>
-            <p className="text-muted-foreground text-sm leading-relaxed mb-6">
-              Connecting Florida's finest businesses with discerning customers who appreciate luxury, 
+            <p className="text-muted-readable text-sm leading-relaxed mb-6">
+              Connecting Florida's finest businesses with discerning customers who appreciate luxury,
               quality, and exceptional service.
             </p>
             
@@ -158,31 +158,31 @@ export default function LuxuryFooter() {
             </h3>
             <ul className="space-y-3">
               <li>
-                <Link href="/create-business" className="group relative text-muted-foreground hover:text-foreground transition-all duration-300" data-testid="footer-create-business">
+                <Link href="/create-business" className="group relative footer-link-readable hover:text-foreground transition-all duration-300" data-testid="footer-create-business">
                   <span className="relative z-10">Create Business</span>
                   <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-secondary to-accent transition-all duration-300 group-hover:w-full"></div>
                 </Link>
               </li>
               <li>
-                <Link href="/vendor/products" className="group relative text-muted-foreground hover:text-foreground transition-all duration-300" data-testid="footer-manage-products">
+                <Link href="/vendor/products" className="group relative footer-link-readable hover:text-foreground transition-all duration-300" data-testid="footer-manage-products">
                   <span className="relative z-10">Manage Products</span>
                   <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-secondary to-accent transition-all duration-300 group-hover:w-full"></div>
                 </Link>
               </li>
               <li>
-                <Link href="/spotlight" className="group relative text-muted-foreground hover:text-foreground transition-all duration-300" data-testid="footer-spotlight">
+                <Link href="/spotlight" className="group relative footer-link-readable hover:text-foreground transition-all duration-300" data-testid="footer-spotlight">
                   <span className="relative z-10">Spotlight Program</span>
                   <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-secondary to-accent transition-all duration-300 group-hover:w-full"></div>
                 </Link>
               </li>
               <li>
-                <a href="#advertising" className="group relative text-muted-foreground hover:text-foreground transition-all duration-300" data-testid="footer-advertising">
+                <a href="#advertising" className="group relative footer-link-readable hover:text-foreground transition-all duration-300" data-testid="footer-advertising">
                   <span className="relative z-10">Advertising</span>
                   <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-secondary to-accent transition-all duration-300 group-hover:w-full"></div>
                 </a>
               </li>
               <li>
-                <a href="#analytics" className="group relative text-muted-foreground hover:text-foreground transition-all duration-300" data-testid="footer-analytics">
+                <a href="#analytics" className="group relative footer-link-readable hover:text-foreground transition-all duration-300" data-testid="footer-analytics">
                   <span className="relative z-10">Business Analytics</span>
                   <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-secondary to-accent transition-all duration-300 group-hover:w-full"></div>
                 </a>
@@ -197,31 +197,31 @@ export default function LuxuryFooter() {
             </h3>
             <ul className="space-y-3">
               <li>
-                <Link href="/" className="group relative text-muted-foreground hover:text-foreground transition-all duration-300" data-testid="footer-discover">
+                <Link href="/" className="group relative footer-link-readable hover:text-foreground transition-all duration-300" data-testid="footer-discover">
                   <span className="relative z-10">Discover</span>
                   <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-accent transition-all duration-300 group-hover:w-full"></div>
                 </Link>
               </li>
               <li>
-                <Link href="/marketplace" className="group relative text-muted-foreground hover:text-foreground transition-all duration-300" data-testid="footer-marketplace">
+                <Link href="/marketplace" className="group relative footer-link-readable hover:text-foreground transition-all duration-300" data-testid="footer-marketplace">
                   <span className="relative z-10">Marketplace</span>
                   <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-accent transition-all duration-300 group-hover:w-full"></div>
                 </Link>
               </li>
               <li>
-                <Link href="/messages" className="group relative text-muted-foreground hover:text-foreground transition-all duration-300" data-testid="footer-network">
+                <Link href="/messages" className="group relative footer-link-readable hover:text-foreground transition-all duration-300" data-testid="footer-network">
                   <span className="relative z-10">Network</span>
                   <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-accent transition-all duration-300 group-hover:w-full"></div>
                 </Link>
               </li>
               <li>
-                <Link href="/orders" className="group relative text-muted-foreground hover:text-foreground transition-all duration-300" data-testid="footer-orders">
+                <Link href="/orders" className="group relative footer-link-readable hover:text-foreground transition-all duration-300" data-testid="footer-orders">
                   <span className="relative z-10">My Orders</span>
                   <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-accent transition-all duration-300 group-hover:w-full"></div>
                 </Link>
               </li>
               <li>
-                <a href="#rewards" className="group relative text-muted-foreground hover:text-foreground transition-all duration-300" data-testid="footer-rewards">
+                <a href="#rewards" className="group relative footer-link-readable hover:text-foreground transition-all duration-300" data-testid="footer-rewards">
                   <span className="relative z-10">Loyalty Rewards</span>
                   <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-accent transition-all duration-300 group-hover:w-full"></div>
                 </a>
@@ -236,31 +236,31 @@ export default function LuxuryFooter() {
             </h3>
             <ul className="space-y-3">
               <li>
-                <a href="#privacy" className="group relative text-muted-foreground hover:text-foreground transition-all duration-300" data-testid="footer-privacy">
+                <a href="#privacy" className="group relative footer-link-readable hover:text-foreground transition-all duration-300" data-testid="footer-privacy">
                   <span className="relative z-10">Privacy Policy</span>
                   <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-accent to-secondary transition-all duration-300 group-hover:w-full"></div>
                 </a>
               </li>
               <li>
-                <a href="#terms" className="group relative text-muted-foreground hover:text-foreground transition-all duration-300" data-testid="footer-terms">
+                <a href="#terms" className="group relative footer-link-readable hover:text-foreground transition-all duration-300" data-testid="footer-terms">
                   <span className="relative z-10">Terms of Service</span>
                   <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-accent to-secondary transition-all duration-300 group-hover:w-full"></div>
                 </a>
               </li>
               <li>
-                <a href="#support" className="group relative text-muted-foreground hover:text-foreground transition-all duration-300" data-testid="footer-support">
+                <a href="#support" className="group relative footer-link-readable hover:text-foreground transition-all duration-300" data-testid="footer-support">
                   <span className="relative z-10">Customer Support</span>
                   <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-accent to-secondary transition-all duration-300 group-hover:w-full"></div>
                 </a>
               </li>
               <li>
-                <a href="#contact" className="group relative text-muted-foreground hover:text-foreground transition-all duration-300" data-testid="footer-contact">
+                <a href="#contact" className="group relative footer-link-readable hover:text-foreground transition-all duration-300" data-testid="footer-contact">
                   <span className="relative z-10">Contact Us</span>
                   <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-accent to-secondary transition-all duration-300 group-hover:w-full"></div>
                 </a>
               </li>
               <li>
-                <a href="#accessibility" className="group relative text-muted-foreground hover:text-foreground transition-all duration-300" data-testid="footer-accessibility">
+                <a href="#accessibility" className="group relative footer-link-readable hover:text-foreground transition-all duration-300" data-testid="footer-accessibility">
                   <span className="relative z-10">Accessibility</span>
                   <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-accent to-secondary transition-all duration-300 group-hover:w-full"></div>
                 </a>
@@ -313,29 +313,29 @@ export default function LuxuryFooter() {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-border/20">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex flex-col md:flex-row items-center gap-4 text-sm text-muted-foreground">
+            <div className="flex flex-col md:flex-row items-center gap-4 text-sm footer-text-readable">
               <p className="text-luxury">
                 © {currentYear} The Florida Local. All rights reserved.
               </p>
               <div className="flex items-center gap-4">
-                <span className="text-xs text-muted-foreground/70">Made with</span>
+                <span className="text-xs">Made with</span>
                 <Heart className="text-accent animate-pulse" size={16} />
-                <span className="text-xs text-muted-foreground/70">in Miami</span>
+                <span className="text-xs">in Miami</span>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-6 text-sm">
-              <a href="#security" className="group relative text-muted-foreground hover:text-foreground transition-all duration-300" data-testid="footer-security">
+              <a href="#security" className="group relative footer-link-readable hover:text-foreground transition-all duration-300" data-testid="footer-security">
                 <Shield className="mr-2 group-hover:text-secondary transition-colors duration-300" size={16} />
                 <span className="relative z-10">Secure</span>
                 <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-secondary to-accent transition-all duration-300 group-hover:w-full"></div>
               </a>
-              <a href="#certified" className="group relative text-muted-foreground hover:text-foreground transition-all duration-300" data-testid="footer-certified">
+              <a href="#certified" className="group relative footer-link-readable hover:text-foreground transition-all duration-300" data-testid="footer-certified">
                 <Award className="mr-2 group-hover:text-primary transition-colors duration-300" size={16} />
                 <span className="relative z-10">Certified</span>
                 <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-accent transition-all duration-300 group-hover:w-full"></div>
               </a>
-              <a href="#verified" className="group relative text-muted-foreground hover:text-foreground transition-all duration-300" data-testid="footer-verified">
+              <a href="#verified" className="group relative footer-link-readable hover:text-foreground transition-all duration-300" data-testid="footer-verified">
                 <CheckCircle className="mr-2 group-hover:text-accent transition-colors duration-300" size={16} />
                 <span className="relative z-10">Verified</span>
                 <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-accent to-secondary transition-all duration-300 group-hover:w-full"></div>

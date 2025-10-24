@@ -32875,7 +32875,7 @@ async function bootstrap() {
         connectSrc: ["'self'", "wss:", "ws:"],
         objectSrc: ["'none'"],
         mediaSrc: ["'self'"],
-        frameSrc: ["'none'"]
+        frameSrc: ["'self'", "https://www.youtube.com", "https://www.youtube-nocookie.com", "https://youtube.com", "https://youtu.be"]
       }
     },
     crossOriginEmbedderPolicy: false
@@ -32890,7 +32890,7 @@ async function bootstrap() {
         connectSrc: ["'self'", "wss:", "ws:"],
         objectSrc: ["'none'"],
         mediaSrc: ["'self'"],
-        frameSrc: ["'none'"]
+        frameSrc: ["'self'", "https://www.youtube.com", "https://www.youtube-nocookie.com", "https://youtube.com", "https://youtu.be"]
       }
     },
     crossOriginEmbedderPolicy: false
