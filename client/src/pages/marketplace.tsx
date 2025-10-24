@@ -21,8 +21,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Package, Image as ImageIcon } from "lucide-react";
 import {
-  ParticleField,
-  AuroraAmbient,
   PremiumLoader,
 } from "@/components/premium-ultra";
 import { PremiumBadge } from "@/components/premium-ui";
@@ -180,9 +178,6 @@ export default function Marketplace() {
 
   return (
     <div className="premium-page-wrapper premium-surface min-h-screen">
-      {/* ULTRA PREMIUM EFFECTS */}
-      <AuroraAmbient intensity="low" />
-
       {/* AI RECOMMENDATIONS - Show at top for authenticated users */}
       {isAuthenticated && user && (
         <AIRecommendations userId={user.id} limit={6} />
@@ -195,7 +190,6 @@ export default function Marketplace() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,166,251,0.08),transparent_50%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(255,138,0,0.05),transparent_50%)]" />
 
-        <ParticleField count={60} color="cyan" />
         <div className="container mx-auto px-4 lg:px-8 relative z-10">
           <div className="text-center mb-12">
             <div className="flex flex-col items-center justify-between gap-8 md:flex-row md:text-left">

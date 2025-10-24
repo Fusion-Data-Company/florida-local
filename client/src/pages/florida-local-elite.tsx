@@ -8,12 +8,6 @@ import {
   Star, Phone, Calendar, ChevronLeft, ChevronRight,
   Heart, Bookmark, Play, Sparkles
 } from "lucide-react";
-import {
-  AnimatedGradientHero,
-  ParticleField,
-  AuroraAmbient,
-  HoverTrail,
-} from "@/components/premium-ultra";
 import GlowHero from "@/components/ui/glow-hero";
 import { InfiniteSlider } from "@/components/ui/infinite-slider";
 import { ProgressiveBlur } from "@/components/ui/progressive-blur";
@@ -102,10 +96,6 @@ export default function FloridaLocalElite() {
         backgroundColor: 'transparent'
       }}
     >
-      {/* ULTRA PREMIUM EFFECTS */}
-      <AuroraAmbient intensity="medium" />
-      <HoverTrail />
-
       {/* CONTENT WRAPPER - Above all effects - PROPER Z-INDEX */}
       <div className="relative" style={{ zIndex: 10 }}>
 

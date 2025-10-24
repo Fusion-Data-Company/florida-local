@@ -6,10 +6,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  AuroraAmbient,
-  HoverTrail,
-} from "@/components/premium-ultra";
 import { PremiumGlassCard } from "@/components/premium-ui";
 import {
   Building2,
@@ -79,10 +75,6 @@ export default function EntrepreneursBusinesses() {
 
   return (
     <div className="min-h-screen marble-texture abstract-overlay-light relative overflow-hidden">
-      {/* ULTRA PREMIUM EFFECTS */}
-      <AuroraAmbient intensity="medium" />
-      <HoverTrail />
-
       <div className="relative" style={{ zIndex: 10 }}>
 
         {/* HERO SECTION */}

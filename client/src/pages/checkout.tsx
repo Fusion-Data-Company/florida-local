@@ -21,9 +21,6 @@ import { ArrowLeft, CreditCard, Lock, ShoppingBag, Shield, CheckCircle2 } from "
 import { Link } from "wouter";
 import { ApiCartItem } from "@/lib/types";
 import {
-  AnimatedGradientHero,
-  ParticleField,
-  AuroraAmbient,
   PremiumLoader,
   Transform3DCard,
 } from "@/components/premium-ultra";
@@ -202,7 +199,6 @@ export default function Checkout() {
         data-surface-tone="cool"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-green-50/88 to-blue-50/88 backdrop-blur-md" />
-        <AuroraAmbient intensity="low" />
         <div className="relative z-10">
         <div className="container mx-auto px-4 py-12 text-center relative z-10">
           <Transform3DCard className="entrance-scale-fade">
@@ -242,7 +238,6 @@ export default function Checkout() {
         data-surface-intensity="delicate"
         data-surface-tone="cool"
       >
-        <AuroraAmbient intensity="low" />
         <div className="container mx-auto px-4 py-12 text-center relative z-10">
           <Transform3DCard className="entrance-scale-fade">
             <PremiumGlassCard className="ambient-glow-purple elevation-3">
@@ -276,15 +271,12 @@ export default function Checkout() {
       data-surface-tone="cool"
     >
       <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-green-50/88 to-blue-50/88 backdrop-blur-md" />
-      {/* ULTRA PREMIUM EFFECTS */}
-      <AuroraAmbient intensity="low" />
 
       <div className="relative z-10">
 
       {/* FLORIDA LOCAL CHECKOUT HERO */}
       <div className="relative py-12 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[var(--fl-teal-lagoon)]/10 via-background to-[var(--fl-sunset-gold)]/10" />
-        <ParticleField count={25} color="cyan" />
         <div className="container mx-auto px-4 lg:px-8 relative z-10">
           <Button variant="ghost" asChild className="mb-4 hover:bg-white/10" data-testid="button-back-to-cart">
             <Link href="/cart">

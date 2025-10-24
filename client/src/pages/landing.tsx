@@ -5,12 +5,6 @@ import SocialFeed from "@/components/social-feed";
 import { Button } from "@/components/ui/button";
 import { StardustButton } from "@/components/ui/stardust-button";
 // import VideoBackground from "@/components/video-background"; // Commented out to allow WebGL background
-import {
-  AnimatedGradientHero,
-  ParticleField,
-  AuroraAmbient,
-  HoverTrail
-} from "@/components/premium-ultra";
 import GlowHero from "@/components/ui/glow-hero";
 import { Store, ShoppingCart, Users, Sparkles, TrendingUp, Building2, Palmtree, Star } from "lucide-react";
 
@@ -30,13 +24,10 @@ export default function Landing() {
       
       {/* Miami Elite Profile Creation CTA */}
       <section className="relative py-20 overflow-hidden">
-        {/* Animated Gradient Background */}
-        <AnimatedGradientHero>
-          <ParticleField count={60} color="cyan" />
+        {/* Gradient background removed to show WebGL */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/15 to-accent/20" />
 
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/15 to-accent/20" />
-
-          <div className="container mx-auto px-4 lg:px-8 text-center relative z-10">
+        <div className="container mx-auto px-4 lg:px-8 text-center relative z-10">
           <div className="max-w-4xl mx-auto">
             <GlowHero
               glowText="Ready to Shine in the Spotlight?"
@@ -130,8 +121,7 @@ export default function Landing() {
               </StardustButton>
             </div>
           </div>
-          </div>
-        </AnimatedGradientHero>
+        </div>
       </section>
 
       <MarketplaceSection />

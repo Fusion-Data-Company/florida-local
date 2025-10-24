@@ -9,9 +9,6 @@ import { ApiCartItem } from "@/lib/types";
 import { ShoppingCart, Trash2, Plus, Minus } from "lucide-react";
 import GlowHero from "@/components/ui/glow-hero";
 import {
-  AnimatedGradientHero,
-  ParticleField,
-  AuroraAmbient,
   PremiumLoader,
   Transform3DCard,
 } from "@/components/premium-ultra";
@@ -86,13 +83,10 @@ export default function CartPage() {
       data-surface-tone="warm"
     >
       <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-blue-50/88 to-orange-50/88 backdrop-blur-md" />
-      {/* ULTRA PREMIUM EFFECTS */}
-      <AuroraAmbient intensity="low" />
 
       <div className="relative z-10">
-      {/* ULTRA PREMIUM HERO */}
-      <AnimatedGradientHero className="py-12 gradient-shift">
-        <ParticleField count={30} color="purple" />
+      {/* HERO SECTION */}
+      <div className="py-12">
         <div className="container mx-auto px-4 lg:px-8 relative z-10">
           <div className="flex flex-col items-center gap-4 mb-4">
             <GlowHero
@@ -107,7 +101,7 @@ export default function CartPage() {
             )}
           </div>
         </div>
-      </AnimatedGradientHero>
+      </div>
 
       <div className="cart-container container mx-auto px-4 lg:px-8 py-10">
         <div className="marble-content">

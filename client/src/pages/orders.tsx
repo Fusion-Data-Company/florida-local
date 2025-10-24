@@ -9,9 +9,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Package, Calendar, ArrowRight, ShoppingBag, TrendingUp, Clock } from "lucide-react";
 import { format } from "date-fns";
 import {
-  AnimatedGradientHero,
-  ParticleField,
-  AuroraAmbient,
   PremiumLoader,
   Transform3DCard,
 } from "@/components/premium-ultra";
@@ -95,12 +92,8 @@ export default function Orders() {
       data-surface-intensity="delicate"
       data-surface-tone="warm"
     >
-      {/* ULTRA PREMIUM EFFECTS */}
-      <AuroraAmbient intensity="medium" />
-
-      {/* ULTRA PREMIUM HERO */}
-      <AnimatedGradientHero className="py-16">
-        <ParticleField count={35} color="purple" />
+      {/* HERO SECTION */}
+      <div className="py-16">
         <div className="container mx-auto px-4 lg:px-8 relative z-10">
           <div className="flex flex-col items-center gap-4 mb-4">
             <GlowHero 
@@ -124,7 +117,7 @@ export default function Orders() {
             </div>
           )}
         </div>
-      </AnimatedGradientHero>
+      </div>
 
       <div className="container mx-auto px-4 py-8 lg:px-8 relative">
         {/* Authentication Overlay */}

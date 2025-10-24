@@ -15,9 +15,6 @@ import GlowHero from "@/components/ui/glow-hero";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Store, Plus, ArrowRight, Star, Users, TrendingUp } from "lucide-react";
 import {
-  AnimatedGradientHero,
-  ParticleField,
-  AuroraAmbient,
   PremiumLoader,
   Transform3DCard,
   MicroIcon,

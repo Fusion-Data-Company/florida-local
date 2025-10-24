@@ -3,8 +3,6 @@ import { Bot, Brain, Sparkles, Zap, TrendingUp, Target } from "lucide-react";
 import AIAgentsHub from "@/components/ai-agents-hub";
 import GlowHero from "@/components/ui/glow-hero";
 import {
-  AuroraAmbient,
-  ParticleField,
   Transform3DCard,
   MicroIcon,
 } from "@/components/premium-ultra";
@@ -21,16 +19,10 @@ export default function AIAgentsPage() {
       data-surface-intensity="delicate"
       data-surface-tone="cool"
     >
-      {/* Premium Effects */}
-      <AuroraAmbient intensity="medium" />
-
       {/* Hero Section */}
-      <div className="relative py-24 overflow-hidden gradient-shift">
+      <div className="relative py-24 overflow-hidden">
         {/* Florida Local Brand Gradient Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-[var(--fl-teal-lagoon)]/10 via-background to-[var(--fl-sunset-gold)]/10" />
-
-        {/* Particle Field with Brand Colors */}
-        <ParticleField count={50} color="cyan" />
 
         <div className="container mx-auto px-4 lg:px-8 text-center relative z-10">
           {/* Hero Title */}
