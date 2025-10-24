@@ -9,7 +9,7 @@ packages = ["wget"]
 [deployment]
 deploymentTarget = "autoscale"
 build = ["npm", "run", "build"]
-run = ["node", "dist/index.js"]
+run = ["npm", "run", "start:prod"]
 
 [[ports]]
 localPort = 3577
@@ -51,6 +51,10 @@ exposeLocalhost = true
 localPort = 30191
 externalPort = 4200
 exposeLocalhost = true
+
+[[ports]]
+localPort = 33775
+externalPort = 9000
 
 [[ports]]
 localPort = 36197
