@@ -105,9 +105,9 @@ export default function YouTubeBackground({
               objectFit: 'cover',
               pointerEvents: 'none',
               border: 'none',
-              // Scale up to fill screen and hide YouTube UI elements
-              transform: 'scale(1.5)',
-              transformOrigin: 'center',
+              // Adjust positioning to ensure video fills the viewport
+              transform: 'scale(1.2)',
+              transformOrigin: 'center center',
             }}
             allow="autoplay; encrypted-media"
             allowFullScreen={false}

@@ -36,11 +36,11 @@ export default function HeroSection() {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden miami-hero-section">
-      {/* Hero Background with Beautiful Beach Image */}
+      {/* Hero Background - Transparent gradient overlay to show YouTube videos from parent pages */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-fixed" 
+        className="absolute inset-0" 
         style={{
-          backgroundImage: `linear-gradient(135deg, rgba(25,182,246,0.08) 0%, rgba(255,255,255,0.12) 25%, rgba(250,245,220,0.10) 50%, rgba(255,152,67,0.08) 75%, rgba(255,255,255,0.12) 100%), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2073&q=80')`
+          background: 'linear-gradient(135deg, rgba(25,182,246,0.08) 0%, rgba(255,255,255,0.12) 25%, rgba(250,245,220,0.10) 50%, rgba(255,152,67,0.08) 75%, rgba(255,255,255,0.12) 100%)'
         }}
       ></div>
       
