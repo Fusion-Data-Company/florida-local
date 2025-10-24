@@ -19,7 +19,7 @@ import ContentCreatorPromo from "@/components/ui/content-creator-promo";
 import { ThreeDPhotoCarousel } from "@/components/ui/3d-carousel";
 import { OfferCarousel, type Offer } from "@/components/ui/offer-carousel";
 import { HolographicCard } from "@/components/ui/holographic-card";
-// import YouTubeBackground from "@/components/youtube-background"; // Commented out to allow WebGL background
+import YouTubeBackground from "@/components/youtube-background";
 
 // Premium Metallic Badge Component
 const MetallicBadge = ({ children, color = "gold", className = "" }: { children: React.ReactNode; color?: "gold" | "platinum" | "bronze" | "emerald" | "ruby"; className?: string }) => {
@@ -101,10 +101,10 @@ export default function FloridaLocalElite() {
 
       {/* 2. NEW HERO SECTION WITH VIDEO BACKGROUND - SCROLLS TO FRONT */}
       <section className="relative overflow-hidden min-h-[700px] md:min-h-[850px] lg:min-h-[100vh] bg-gradient-to-br from-gray-900/20 via-blue-900/20 to-purple-900/20 backdrop-blur-sm" style={{ zIndex: 1000 }}>
-        {/* Video Background - Trees Fountain Swans - Commented out to allow WebGL background */}
-        {/* <div className="absolute inset-0 w-full h-full overflow-hidden" style={{ zIndex: 0 }}>
+        {/* Video Background - Trees Fountain Swans */}
+        <div className="absolute inset-0 w-full h-full overflow-hidden" style={{ zIndex: 0 }}>
           <YouTubeBackground youtubeUrl="https://youtu.be/5RVvKpX9eBU" overlayOpacity={0.3} />
-        </div> */}
+        </div>
 
         {/* Content Overlay - Absolutely positioned on video */}
         <div className="relative min-h-[700px] md:min-h-[850px] lg:min-h-[100vh]" style={{ zIndex: 10 }}>
