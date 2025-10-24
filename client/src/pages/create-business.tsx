@@ -19,7 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import GlowHero from "@/components/ui/glow-hero";
 import { StardustButton } from "@/components/ui/stardust-button";
 import { HolographicCard } from "@/components/ui/holographic-card";
-// import YouTubeBackground from '@/components/youtube-background'; // Commented out to allow WebGL background
+import YouTubeBackground from '@/components/youtube-background';
 import { ArrowLeft, Store, MapPin, Phone, Globe, Clock, Users, TrendingUp, Star, ArrowRight } from "lucide-react";
 
 // Create business form schema with validation
@@ -126,7 +126,7 @@ export default function CreateBusiness() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen relative">
-        {/* <YouTubeBackground youtubeUrl="https://youtu.be/I0qV37ezBJc" overlayOpacity={0.4} /> */}
+        <YouTubeBackground youtubeUrl="https://youtu.be/I0qV37ezBJc" overlayOpacity={0.4} />
 
         <div className="relative z-10 container mx-auto px-4 py-16 text-center min-h-screen flex items-center justify-center">
           <div className="max-w-md">
@@ -150,8 +150,8 @@ export default function CreateBusiness() {
 
   return (
     <div className="min-h-screen relative">
-      {/* Video Background - Commented out to allow WebGL background */}
-      {/* <YouTubeBackground youtubeUrl="https://youtu.be/I0qV37ezBJc" overlayOpacity={0.3} /> */}
+      {/* Video Background - Jacksonville Buildings */}
+      <YouTubeBackground youtubeUrl="https://youtu.be/I0qV37ezBJc" overlayOpacity={0.3} />
 
       <div className="relative z-10">
         {/* FLORIDA LOCAL HERO SECTION */}
