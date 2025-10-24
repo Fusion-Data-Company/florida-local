@@ -36,18 +36,16 @@ export default function HeroSection() {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden miami-hero-section">
-      {/* Hero Background - Removed to allow WebGL background to show through */}
-      {/* 
+      {/* Hero Background with Beautiful Beach Image */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-fixed" 
         style={{
           backgroundImage: `linear-gradient(135deg, rgba(25,182,246,0.08) 0%, rgba(255,255,255,0.12) 25%, rgba(250,245,220,0.10) 50%, rgba(255,152,67,0.08) 75%, rgba(255,255,255,0.12) 100%), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2073&q=80')`
         }}
       ></div>
-      */}
       
-      {/* Miami Luxury Depth Layers - Made more transparent for WebGL background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-transparent opacity-20" />
+      {/* Miami Luxury Depth Layers */}
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-900/10 via-cyan-900/5 to-teal-900/10" />
       <div className="absolute inset-0 miami-mesh-overlay opacity-10" />
 
       {/* Miami Luxury Floating Elements */}
