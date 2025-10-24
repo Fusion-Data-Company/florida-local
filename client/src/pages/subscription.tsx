@@ -4,7 +4,7 @@ import { ModernPricingPage, PricingCardProps } from "@/components/ui/animated-gl
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "wouter";
-import YouTubeBackground from "@/components/youtube-background";
+// import YouTubeBackground from "@/components/youtube-background"; // Commented out to allow WebGL background
 
 // Milestones for the roadmap showing business growth journey
 const milestonesData = [
@@ -108,8 +108,8 @@ export default function SubscriptionPage() {
         backgroundColor: 'transparent'
       }}
     >
-      {/* Video Background - Cityscape Drone */}
-      <YouTubeBackground youtubeUrl="https://youtu.be/5xnaoI0cXjs" overlayOpacity={0.4} />
+      {/* Video Background - Cityscape Drone - Commented out to allow WebGL background */}
+      {/* <YouTubeBackground youtubeUrl="https://youtu.be/5xnaoI0cXjs" overlayOpacity={0.4} /> */}
 
       <div className="w-full relative" style={{ zIndex: 20 }}>
       {/* Hero Section with Roadmap */}

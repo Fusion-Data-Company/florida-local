@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useLocation, Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, Home, RefreshCw } from "lucide-react";
-import YouTubeBackground from '@/components/youtube-background';
+// import YouTubeBackground from '@/components/youtube-background'; // Commented out to allow WebGL background
 
 export default function LoginError() {
   // Add class to body to indicate video background
@@ -105,11 +105,11 @@ export default function LoginError() {
         backgroundColor: 'transparent'
       }}
     >
-      {/* Video Background - Jacksonville Buildings */}
-      <YouTubeBackground youtubeUrl="https://youtu.be/I0qV37ezBJc" overlayOpacity={0.3} />
+      {/* Video Background - Jacksonville Buildings - Commented out to allow WebGL background */}
+      {/* <YouTubeBackground youtubeUrl="https://youtu.be/I0qV37ezBJc" overlayOpacity={0.3} /> */}
 
       <div className="max-w-md w-full mx-4 relative" style={{ zIndex: 20 }}>
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-200">
+        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-gray-200/50">
           <div className="flex justify-center mb-6">
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
               <AlertTriangle className="w-8 h-8 text-red-600" />

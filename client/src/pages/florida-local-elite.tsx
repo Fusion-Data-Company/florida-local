@@ -528,7 +528,7 @@ export default function FloridaLocalElite() {
 
               <div className="w-full">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                  <TabsList className="grid w-full grid-cols-3 bg-white rounded-2xl p-2 shadow-lg">
+                  <TabsList className="grid w-full grid-cols-3 bg-white/90 backdrop-blur-sm rounded-2xl p-2 shadow-lg">
                     <TabsTrigger value="restaurants" className="rounded-xl">Local Restaurants</TabsTrigger>
                     <TabsTrigger value="reviews" className="rounded-xl">Foodie Reviews</TabsTrigger>
                     <TabsTrigger value="menus" className="rounded-xl">Menus</TabsTrigger>
@@ -620,7 +620,7 @@ export default function FloridaLocalElite() {
             </div>
 
             {/* Reservation Card */}
-            <Card className="p-8 flex flex-col items-center justify-center text-center rounded-3xl shadow-xl bg-white">
+            <Card className="p-8 flex flex-col items-center justify-center text-center rounded-3xl shadow-xl bg-white/95 backdrop-blur-sm">
               <div className="text-6xl mb-4">🍷</div>
               <h4 className="text-2xl font-bold mb-6">Reserve Your Table</h4>
               <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 rounded-full text-lg">
@@ -634,10 +634,10 @@ export default function FloridaLocalElite() {
             <div className="flex items-center justify-between mb-4 bg-white/95 backdrop-blur-sm p-4 rounded-2xl shadow-lg">
               <h4 className="text-2xl font-bold text-gray-900">España Cuisine 🇪🇸 | Check Our Menu</h4>
               <div className="flex gap-2">
-                <Button variant="outline" size="icon" className="rounded-full bg-white">
+                <Button variant="outline" size="icon" className="rounded-full bg-white/90 backdrop-blur-sm">
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <Button variant="outline" size="icon" className="rounded-full bg-white">
+                <Button variant="outline" size="icon" className="rounded-full bg-white/90 backdrop-blur-sm">
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>

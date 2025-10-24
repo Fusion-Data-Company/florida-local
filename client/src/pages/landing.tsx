@@ -57,7 +57,7 @@ export default function Landing() {
                 {/* Glowing background effect */}
                 <div className="absolute -inset-1 bg-gradient-to-br from-primary/40 via-primary/20 to-transparent rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-                <div className="relative bg-white border border-border/50 p-8 rounded-2xl hover-lift shadow-luxury-multi transition-all duration-500 group-hover:border-primary/30 group-hover:shadow-primary/20">
+                <div className="relative bg-white/90 backdrop-blur-sm border border-border/50 p-8 rounded-2xl hover-lift shadow-luxury-multi transition-all duration-500 group-hover:border-primary/30 group-hover:shadow-primary/20">
                   <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg border-2 border-orange-400/30" style={{boxShadow: '0 8px 20px rgba(249, 115, 22, 0.4), inset 0 1px 0 rgba(255,255,255,0.3)'}}>
                     <Store className="text-white" size={32} />
                   </div>
