@@ -6,35 +6,32 @@ The Florida Local is a comprehensive platform designed to connect Florida-based 
 
 ## Recent Changes (October 24, 2025)
 
-**Revolution Hero WebGL Background - Universal Integration (PRODUCTION-READY):**
-- Successfully deployed the Revolution Hero WebGL background as a universal background across ALL pages (public and authenticated)
-- Created `WebGLBackground` component wrapper (`client/src/components/ui/webgl-background.tsx`) with global integration in `App.tsx`
-- **Advanced Features:**
-  - WebGL shader with fluid plasma effects, curl noise, voronoi patterns, and dynamic color streaks
-  - GSAP-powered animations with mouse interactivity and smooth color transitions
-  - Automatic CSS injection system that forces transparency on white backgrounds using MutationObserver
-  - Fixed positioning at z-index -100 to ensure it stays behind all content
-  - Performance optimized with requestAnimationFrame and efficient WebGL rendering
-- **Pages Updated (24 total):**
-  - **Public Pages (9):** landing.tsx, home.tsx, login-error.tsx, create-business.tsx, marketplace.tsx, subscription.tsx, florida-local-elite.tsx, community.tsx, cart.tsx
-  - **Authenticated Pages (7):** business-dashboard.tsx, business-analytics.tsx, ai-tools.tsx, loyalty.tsx, vendor-payouts.tsx, vendor-products.tsx, marketing-hub.tsx
-  - **Background Removal (9):** Removed AnimatedGradientHero, ParticleField, and AuroraAmbient from landing, checkout, cart, orders, florida-local-elite, marketplace, ai-agents, entrepreneurs-businesses
-  - **Hero Section:** Removed static Unsplash beach image background from hero-section.tsx
-- **Transparency Updates:**
-  - Changed page backgrounds from opaque (bg-white/80-90) to transparent (bg-white/20-30) across all pages
-  - Updated cards, inputs, buttons, and panels to use backdrop-blur with 10-30% opacity for WebGL visibility
-  - Text readability maintained with semi-transparent backgrounds and proper contrast ratios
-- **TypeScript Fixes:**
-  - Fixed business-dashboard.tsx businessId prop type errors (6 instances) - removed incorrect Number() conversions
-- **Dependencies Verified:**
-  - GSAP v3.13.0 (installed and working)
-  - All required packages confirmed: @react-three/fiber, @react-three/postprocessing
-- **Testing:**
-  - Screenshots confirm WebGL background visible on landing, marketplace, and subscription pages
-  - Browser console logs show WebGL system active with automatic transparency management
-  - All workflows restarted successfully with no errors
-- **Files Modified:** webgl-background.tsx (new), App.tsx, hero-section.tsx, 24 page components, business-dashboard.tsx
-- **Result:** Beautiful, performant WebGL background visible across entire platform while maintaining excellent text readability
+**YouTube Video Backgrounds Integration (PRODUCTION-READY):**
+- Successfully integrated YouTube-hosted video backgrounds across all major pages, replacing local video files for Autoscale deployment compatibility
+- **Video Mappings:**
+  - Home/Discover page: Discovery background video (https://youtu.be/Z8ioWqthS-o)
+  - Jacksonville/Florida pages (login-error, create-business): Jacksonville Buildings video (https://youtu.be/I0qV37ezBJc)
+  - Georgia/Community pages (subscription, community): Georgia Cityscape video (https://youtu.be/5xnaoI0cXjs)
+  - Elite/Premium page (florida-local-elite): Trees Fountain Swans video (https://youtu.be/5RVvKpX9eBU)
+  - Landing page: Riga Hyperlapse video (https://youtu.be/3dKLJCz-T5Y)
+- **Components Updated:**
+  - Enhanced `YouTubeBackground` component with production-ready features: error handling, loading states, fallback gradients
+  - Updated `VideoBackground` component to support both YouTube URLs and legacy local files
+  - All components now use YouTube embeds with optimized parameters for background usage
+- **Deployment Configuration:**
+  - Configured for Autoscale deployment with proper build and run commands
+  - Removed dependency on local /Videos folder (2.5GB saved)
+  - All videos hosted on YouTube for CDN delivery and optimal performance
+- **Testing Confirmed:**
+  - Console logs show successful YouTube video loading: "✅ YouTube video loaded" and "✅ YouTube iframe loaded successfully"
+  - Fallback gradient backgrounds implemented for network issues
+  - All workflows restarted and running without errors
+- **Files Modified:** youtube-background.tsx, video-background.tsx, home.tsx, landing.tsx, login-error.tsx, create-business.tsx, subscription.tsx, community.tsx, florida-local-elite.tsx
+- **Result:** Website now production-ready with YouTube-hosted video backgrounds, eliminating large video files from repository and ensuring compatibility with Autoscale deployment
+
+**Revolution Hero WebGL Background (Previous Update):**
+- WebGL background system remains available alongside YouTube backgrounds
+- Can be toggled between WebGL and YouTube backgrounds as needed
 
 ## Recent Changes (October 23, 2025)
 
